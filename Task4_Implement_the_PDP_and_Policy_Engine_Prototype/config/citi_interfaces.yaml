@@ -1,0 +1,39 @@
+# This file intentionally contains unresolved Task 1-3 integration points.
+# Fill these values after Citi provides the real interfaces.
+
+identity_provider:
+  type: null                 # TODO(CITI): jwt, spiffe, service-mesh, API key, etc.
+  issuer: null               # TODO(CITI): trusted identity issuer
+  audience: null             # TODO(CITI): PDP audience
+  subject_claim: null        # TODO(CITI): claim that identifies the calling agent
+  public_key_or_jwks_uri: null
+
+agent_registry:
+  source: null               # TODO(CITI): repo config, ADK registry, DB, service catalog
+  stable_agent_ids: []       # TODO(CITI): exact agent IDs used at runtime
+  role_mapping: {}           # TODO(CITI): agent ID -> roles
+
+resource_catalog:
+  source: null               # TODO(CITI): Task 1 ZT-IR or Task 2 scanner output
+  resource_ids: []           # TODO(CITI): exact tool/API/DB/ledger resource IDs
+  action_names: []           # TODO(CITI): exact operation/action names
+  data_classification_map: {}
+
+pep_contract:
+  caller_identity_header: null   # TODO(CITI): e.g. verified workload identity, not user input
+  workflow_id_header: null       # TODO(CITI)
+  trace_id_header: null          # TODO(CITI)
+  risk_provider_endpoint: null   # TODO(CITI): if risk is calculated by another service
+  human_approval_endpoint: null  # TODO(CITI): manual approval workflow
+
+banking_interfaces:
+  mcp_tools: []              # TODO(CITI): exact MCP tool names and schemas
+  fastapi_openapi_url: null  # TODO(CITI): backend OpenAPI URL/file
+  ledger_update_function: null
+  transaction_execution_function: null
+  reconciliation_result_source: null
+
+audit:
+  sink: null                 # TODO(CITI): SIEM/logging destination
+  required_fields: []        # TODO(CITI): Citi audit standard
+  retention_policy: null

@@ -1,0 +1,98 @@
+bundle: front_office
+policies:
+  - id: FO-FRAUD-READ-TRANSACTION-HISTORY
+    description: Fraud agent may read transaction history during fraud review.
+    priority: 200
+    effect: ALLOW_WITH_OBLIGATIONS
+    match:
+      subjects: [fraud_agent]
+      resources: [transaction_history]
+      actions: [read]
+      workflows: [fraud_review]
+      risk_levels: [low, medium, high]
+    obligations:
+      - type: enhanced_logging
+        parameters:
+          include: [subject, resource, workflow, decision_id]
+      - type: data_masking
+        parameters:
+          fields: [full_account_number, ssn]
+
+  - id: FO-FRAUD-DENY-TRANSFER
+    description: Fraud analysis identity must never execute customer transfers.
+    priority: 300
+    effect: DENY
+    match:
+      subjects: [fraud_agent]
+      resources: [banking_transfer]
+      actions: [execute, cancel]
+
+  - id: FO-MONITOR-READ-CUSTOMER-CONTEXT
+    description: Transaction monitoring may read customer context for screening.
+    priority: 150
+    effect: ALLOW_WITH_OBLIGATIONS
+    match:
+      subject_roles: [transaction_monitor]
+      resources: [customer_context]
+      actions: [read]
+      workflows: [transaction_monitoring, fraud_review]
+    obligations:
+      - type: data_masking
+        parameters:
+          fields: [ssn, full_account_number]
+      - type: enhanced_logging
+        parameters:
+          reason: restricted_customer_data
+
+  - id: FO-CUSTOMER-PROFILE-REAUTH
+    description: Weakly authenticated customer-service requests must reauthenticate.
+    priority: 210
+    effect: REAUTHENTICATE
+    match:
+      subjects: [customer_service_agent]
+      resources: [customer_profile]
+      actions: [read]
+      auth_strength_lte: 1
+
+  - id: FO-CUSTOMER-PROFILE-STRONG-AUTH
+    description: Strongly authenticated customer-service requests may read masked profile data.
+    priority: 210
+    effect: ALLOW_WITH_OBLIGATIONS
+    match:
+      subjects: [customer_service_agent]
+      resources: [customer_profile]
+      actions: [read]
+      auth_strength_gte: 2
+    obligations:
+      - type: data_masking
+        parameters:
+          fields: [ssn, full_account_number]
+      - type: enhanced_logging
+        parameters:
+          reason: customer_profile_access
+
+  - id: FO-HIGH-RISK-DECISION-MANUAL
+    description: High-risk transaction decisions require manual review.
+    priority: 250
+    effect: MANUAL_REVIEW
+    match:
+      subjects: [decision_agent]
+      resources: [transaction_decision]
+      actions: [approve]
+      min_risk: high
+      human_approved: false
+
+  - id: FO-HIGH-RISK-DECISION-APPROVED
+    description: A human-approved high-risk decision may proceed with enhanced logging.
+    priority: 250
+    effect: ALLOW_WITH_OBLIGATIONS
+    match:
+      subjects: [decision_agent]
+      resources: [transaction_decision]
+      actions: [approve]
+      min_risk: high
+      human_approved: true
+    obligations:
+      - type: enhanced_logging
+        parameters:
+          reason: high_risk_human_approval

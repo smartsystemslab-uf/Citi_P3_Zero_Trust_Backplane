@@ -1,0 +1,14 @@
+services:
+  pdp:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      ZT_POLICY_DIR: /app/policy_store
+      ZT_IDENTITY_FILE: /app/config/identities.yaml
+      ZT_RESOURCE_FILE: /app/config/resources.yaml
+      ZT_AUDIT_LOG: /app/runtime/decision_log.jsonl
+    volumes:
+      - ./policy_store:/app/policy_store:ro
+      - ./config:/app/config:ro
+      - ./runtime:/app/runtime

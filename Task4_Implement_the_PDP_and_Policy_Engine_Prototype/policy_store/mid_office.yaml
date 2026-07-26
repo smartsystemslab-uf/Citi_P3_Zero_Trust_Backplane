@@ -1,0 +1,82 @@
+bundle: mid_office
+policies:
+  - id: MO-ANALYST-READ-OPERATIONS
+    description: Operations analysts may read internal operations data.
+    priority: 120
+    effect: ALLOW
+    match:
+      subject_roles: [operations_analyst]
+      resources: [internal_operations_data]
+      actions: [read]
+      workflows: [operations_planning]
+
+  - id: MO-FORECAST-CREATE
+    description: Forecasting agent may create workload forecasts.
+    priority: 120
+    effect: ALLOW_WITH_OBLIGATIONS
+    match:
+      subjects: [forecasting_agent]
+      resources: [workload_forecast]
+      actions: [create]
+      workflows: [operations_planning]
+    obligations:
+      - type: enhanced_logging
+        parameters:
+          reason: planning_output
+
+  - id: MO-SCHEDULER-WRITE-DRAFT
+    description: Scheduling agent may create or update schedule drafts but not approve them.
+    priority: 120
+    effect: ALLOW
+    match:
+      subjects: [staff_scheduling_agent]
+      resources: [schedule_draft]
+      actions: [create, update]
+      workflows: [operations_planning]
+
+  - id: MO-VALIDATOR-APPROVE-SCHEDULE
+    description: Validation role may approve generated schedules.
+    priority: 140
+    effect: ALLOW_WITH_OBLIGATIONS
+    match:
+      subject_roles: [validator]
+      resources: [schedule_draft]
+      actions: [approve]
+      workflows: [operations_planning]
+    obligations:
+      - type: enhanced_logging
+        parameters:
+          reason: schedule_approval
+
+  - id: MO-FINANCIAL-DATA-READ
+    description: Financial data agent may read masked customer financial data for representative assist.
+    priority: 160
+    effect: ALLOW_WITH_OBLIGATIONS
+    match:
+      subjects: [financial_data_agent]
+      resources: [financial_customer_data]
+      actions: [read]
+      workflows: [representative_assist]
+      max_risk: medium
+    obligations:
+      - type: data_masking
+        parameters:
+          fields: [full_account_number, ssn]
+      - type: enhanced_logging
+        parameters:
+          reason: financial_customer_data
+
+  - id: MO-SUPPORT-GUIDANCE-BUSINESS-HOURS
+    description: Support guidance may read operations data during weekday business hours.
+    priority: 110
+    effect: ALLOW
+    match:
+      subjects: [support_guidance_agent]
+      resources: [internal_operations_data]
+      actions: [read]
+      workflows: [operations_planning]
+      time_windows:
+        - timezone: America/New_York
+          days: [MON, TUE, WED, THU, FRI]
+          start: "08:00"
+          end: "18:00"

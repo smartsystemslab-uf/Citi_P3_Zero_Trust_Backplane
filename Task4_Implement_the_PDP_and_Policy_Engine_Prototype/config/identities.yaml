@@ -1,0 +1,95 @@
+# Starter identity registry for Task 4 only.
+# TODO(CITI-IDENTITY): Replace names/roles with Citi's real workload identities.
+identities:
+  - id: front_office_agent
+    type: agent
+    roles: [front_office_entry]
+    domain: front_office
+  - id: transaction_monitoring_agent
+    type: agent
+    roles: [transaction_monitor]
+    domain: front_office
+  - id: fraud_agent
+    type: agent
+    roles: [fraud_analyst]
+    domain: front_office
+  - id: compliance_agent
+    type: agent
+    roles: [compliance_reader]
+    domain: front_office
+  - id: decision_agent
+    type: agent
+    roles: [risk_decision]
+    domain: front_office
+  - id: chatbot_agent
+    type: agent
+    roles: [customer_chat]
+    domain: front_office
+  - id: knowledge_base_agent
+    type: agent
+    roles: [knowledge_reader]
+    domain: front_office
+  - id: customer_service_agent
+    type: agent
+    roles: [customer_service]
+    domain: front_office
+  - id: transaction_processing_agent
+    type: agent
+    roles: [transaction_executor]
+    domain: front_office
+  - id: data_analysis_agent
+    type: agent
+    roles: [operations_analyst]
+    domain: mid_office
+  - id: forecasting_agent
+    type: agent
+    roles: [forecaster]
+    domain: mid_office
+  - id: staff_scheduling_agent
+    type: agent
+    roles: [scheduler]
+    domain: mid_office
+  - id: validation_agent
+    type: agent
+    roles: [validator]
+    domain: mid_office
+  - id: support_guidance_agent
+    type: agent
+    roles: [support_advisor]
+    domain: mid_office
+  - id: financial_data_agent
+    type: agent
+    roles: [financial_data_reader]
+    domain: mid_office
+  - id: recommender_agent
+    type: agent
+    roles: [product_recommender]
+    domain: mid_office
+  - id: loan_agent
+    type: agent
+    roles: [loan_support]
+    domain: mid_office
+  - id: risk_compliance_agent
+    type: agent
+    roles: [risk_compliance]
+    domain: mid_office
+  - id: back_office_agent
+    type: agent
+    roles: [back_office_orchestrator]
+    domain: back_office
+  - id: eod_agent
+    type: agent
+    roles: [eod_processor]
+    domain: back_office
+  - id: reconciliation_agent
+    type: agent
+    roles: [reconciler]
+    domain: back_office
+  - id: report_agent
+    type: agent
+    roles: [report_writer]
+    domain: back_office
+  - id: exception_agent
+    type: agent
+    roles: [exception_handler]
+    domain: back_office

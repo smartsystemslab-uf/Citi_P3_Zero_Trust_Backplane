@@ -1,0 +1,38 @@
+bundle: ledger_access
+policies:
+  - id: LEDGER-REPORT-DENY-UPDATE
+    description: Report agent may never update the ledger.
+    priority: 400
+    effect: DENY
+    match:
+      subjects: [report_agent]
+      resources: [ledger]
+      actions: [update]
+
+  - id: LEDGER-EOD-MANUAL-REVIEW
+    description: Ledger updates require an explicit human approval in this prototype.
+    priority: 300
+    effect: MANUAL_REVIEW
+    match:
+      subjects: [eod_agent]
+      resources: [ledger]
+      actions: [update]
+      workflows: [eod_processing]
+      human_approved: false
+
+  - id: LEDGER-EOD-APPROVED
+    description: Approved EOD ledger update may proceed with enhanced logging.
+    priority: 300
+    effect: ALLOW_WITH_OBLIGATIONS
+    match:
+      subjects: [eod_agent]
+      resources: [ledger]
+      actions: [update]
+      workflows: [eod_processing]
+      human_approved: true
+    obligations:
+      - type: enhanced_logging
+        parameters:
+          reason: critical_ledger_write
+      - type: require_change_ticket
+        parameters: {}

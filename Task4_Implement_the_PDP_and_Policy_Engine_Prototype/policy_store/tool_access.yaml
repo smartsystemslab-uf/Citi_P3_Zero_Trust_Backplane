@@ -1,0 +1,57 @@
+bundle: tool_access
+policies:
+  - id: TOOL-KB-SEARCH
+    description: Knowledge-base agent may search managed policy content.
+    priority: 130
+    effect: ALLOW
+    match:
+      subjects: [knowledge_base_agent, compliance_agent]
+      resources: [policy_knowledge_base]
+      actions: [read, search]
+
+  - id: TOOL-TRANSFER-LOW-MEDIUM-RISK
+    description: Transaction processing may execute a transfer only in the transaction workflow at bounded risk.
+    priority: 180
+    effect: ALLOW_WITH_OBLIGATIONS
+    match:
+      subjects: [transaction_processing_agent]
+      resources: [banking_transfer]
+      actions: [execute]
+      workflows: [customer_transaction]
+      max_risk: medium
+    obligations:
+      - type: enhanced_logging
+        parameters:
+          reason: financial_write
+      - type: require_idempotency_key
+        parameters: {}
+
+  - id: TOOL-TRANSFER-HIGH-RISK-MANUAL
+    description: High-risk transfers require manual review.
+    priority: 220
+    effect: MANUAL_REVIEW
+    match:
+      subjects: [transaction_processing_agent]
+      resources: [banking_transfer]
+      actions: [execute]
+      workflows: [customer_transaction]
+      min_risk: high
+      human_approved: false
+
+  - id: TOOL-TRANSFER-HIGH-RISK-APPROVED
+    description: Human-approved high-risk transfers may proceed with enhanced controls.
+    priority: 220
+    effect: ALLOW_WITH_OBLIGATIONS
+    match:
+      subjects: [transaction_processing_agent]
+      resources: [banking_transfer]
+      actions: [execute]
+      workflows: [customer_transaction]
+      min_risk: high
+      human_approved: true
+    obligations:
+      - type: enhanced_logging
+        parameters:
+          reason: high_risk_transfer
+      - type: require_idempotency_key
+        parameters: {}
