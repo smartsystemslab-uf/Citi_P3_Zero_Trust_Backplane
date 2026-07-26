@@ -1,0 +1,64 @@
+manifest_version: 1.0.0-alpha.1
+environment: prototype
+interfaces:
+- canonical_id: interface.http.pdp_authorize
+  type: http
+  runtime:
+    runtime_id: pdp_authorize
+    endpoint: http://127.0.0.1:8080/v1/authorize
+    function_name: null
+    service_name: zt-pdp
+    namespace: null
+    secret_refs: []
+    extensions: {}
+  authentication:
+    method: placeholder
+    issuer: null
+    audience: null
+    subject_claim: null
+    credential_ref: null
+    jwks_uri: null
+    extensions: {}
+  request_schema_ref: schemas/pdp_request.schema.json
+  response_schema_ref: schemas/pdp_response.schema.json
+  timeout_ms: 1000
+  status: confirmed
+- canonical_id: interface.mcp.execute_transfer
+  type: mcp
+  runtime:
+    runtime_id: execute_transfer
+    endpoint: null
+    function_name: execute_transfer
+    service_name: null
+    namespace: null
+    secret_refs: []
+    extensions: {}
+  authentication:
+    method: placeholder
+    issuer: null
+    audience: null
+    subject_claim: null
+    credential_ref: null
+    jwks_uri: null
+    extensions: {}
+  request_schema_ref: null
+  response_schema_ref: null
+  timeout_ms: 5000
+  status: provisional
+audit:
+  schema_ref: schemas/audit_event.schema.json
+  sink_interface_id: null
+  required_fields:
+  - timestamp
+  - trace_id
+  - subject_id
+  - resource_id
+  - action
+  - workflow_id
+  - decision
+  - policy_version
+  - outcome
+  retention: __CITI_REQUIRED__
+  redaction:
+  - parameters.account_number
+  - parameters.customer_id

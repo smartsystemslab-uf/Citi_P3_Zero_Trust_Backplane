@@ -1,0 +1,217 @@
+identities:
+- id: front_office_agent
+  canonical_id: agent.front_office.front_office
+  type: agent
+  roles:
+  - front_office_entry
+  domain: front_office
+  enabled: true
+  attributes:
+    manifest_status: provisional
+- id: transaction_monitoring_agent
+  canonical_id: agent.front_office.transaction_monitoring
+  type: agent
+  roles:
+  - transaction_monitor
+  domain: front_office
+  enabled: true
+  attributes:
+    manifest_status: provisional
+- id: fraud_agent
+  canonical_id: agent.front_office.fraud
+  type: agent
+  roles:
+  - fraud_analyst
+  domain: front_office
+  enabled: true
+  attributes:
+    manifest_status: provisional
+- id: compliance_agent
+  canonical_id: agent.front_office.compliance
+  type: agent
+  roles:
+  - compliance_reader
+  domain: front_office
+  enabled: true
+  attributes:
+    manifest_status: provisional
+- id: decision_agent
+  canonical_id: agent.front_office.decision
+  type: agent
+  roles:
+  - risk_decision
+  domain: front_office
+  enabled: true
+  attributes:
+    manifest_status: provisional
+- id: chatbot_agent
+  canonical_id: agent.front_office.chatbot
+  type: agent
+  roles:
+  - customer_chat
+  domain: front_office
+  enabled: true
+  attributes:
+    manifest_status: provisional
+- id: knowledge_base_agent
+  canonical_id: agent.front_office.knowledge_base
+  type: agent
+  roles:
+  - knowledge_reader
+  domain: front_office
+  enabled: true
+  attributes:
+    manifest_status: provisional
+- id: customer_service_agent
+  canonical_id: agent.front_office.customer_service
+  type: agent
+  roles:
+  - customer_service
+  domain: front_office
+  enabled: true
+  attributes:
+    manifest_status: provisional
+- id: transaction_processing_agent
+  canonical_id: agent.front_office.transaction_processing
+  type: agent
+  roles:
+  - transaction_executor
+  domain: front_office
+  enabled: true
+  attributes:
+    manifest_status: provisional
+- id: data_analysis_agent
+  canonical_id: agent.mid_office.data_analysis
+  type: agent
+  roles:
+  - operations_analyst
+  domain: mid_office
+  enabled: true
+  attributes:
+    manifest_status: provisional
+- id: forecasting_agent
+  canonical_id: agent.mid_office.forecasting
+  type: agent
+  roles:
+  - forecaster
+  domain: mid_office
+  enabled: true
+  attributes:
+    manifest_status: provisional
+- id: staff_scheduling_agent
+  canonical_id: agent.mid_office.staff_scheduling
+  type: agent
+  roles:
+  - scheduler
+  domain: mid_office
+  enabled: true
+  attributes:
+    manifest_status: provisional
+- id: validation_agent
+  canonical_id: agent.mid_office.validation
+  type: agent
+  roles:
+  - validator
+  domain: mid_office
+  enabled: true
+  attributes:
+    manifest_status: provisional
+- id: support_guidance_agent
+  canonical_id: agent.mid_office.support_guidance
+  type: agent
+  roles:
+  - support_advisor
+  domain: mid_office
+  enabled: true
+  attributes:
+    manifest_status: provisional
+- id: financial_data_agent
+  canonical_id: agent.mid_office.financial_data
+  type: agent
+  roles:
+  - financial_data_reader
+  domain: mid_office
+  enabled: true
+  attributes:
+    manifest_status: provisional
+- id: recommender_agent
+  canonical_id: agent.mid_office.recommender
+  type: agent
+  roles:
+  - product_recommender
+  domain: mid_office
+  enabled: true
+  attributes:
+    manifest_status: provisional
+- id: loan_agent
+  canonical_id: agent.mid_office.loan
+  type: agent
+  roles:
+  - loan_support
+  domain: mid_office
+  enabled: true
+  attributes:
+    manifest_status: provisional
+- id: risk_compliance_agent
+  canonical_id: agent.mid_office.risk_compliance
+  type: agent
+  roles:
+  - risk_compliance
+  domain: mid_office
+  enabled: true
+  attributes:
+    manifest_status: provisional
+- id: back_office_agent
+  canonical_id: agent.back_office.back_office
+  type: agent
+  roles:
+  - back_office_orchestrator
+  domain: back_office
+  enabled: true
+  attributes:
+    manifest_status: provisional
+- id: eod_agent
+  canonical_id: agent.back_office.eod
+  type: agent
+  roles:
+  - eod_processor
+  domain: back_office
+  enabled: true
+  attributes:
+    manifest_status: provisional
+- id: reconciliation_agent
+  canonical_id: agent.back_office.reconciliation
+  type: agent
+  roles:
+  - reconciler
+  domain: back_office
+  enabled: true
+  attributes:
+    manifest_status: provisional
+- id: report_agent
+  canonical_id: agent.back_office.report
+  type: agent
+  roles:
+  - report_writer
+  domain: back_office
+  enabled: true
+  attributes:
+    manifest_status: provisional
+- id: exception_agent
+  canonical_id: agent.back_office.exception
+  type: agent
+  roles:
+  - exception_handler
+  domain: back_office
+  enabled: true
+  attributes:
+    manifest_status: provisional
+- id: zt_pdp
+  canonical_id: service.shared.pdp
+  type: service
+  roles:
+  - authorization_decision
+  domain: shared
+  enabled: true
+  attributes:
+    manifest_status: confirmed

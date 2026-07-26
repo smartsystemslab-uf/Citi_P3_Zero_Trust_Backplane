@@ -1,0 +1,38 @@
+resources:
+- id: transaction_history
+  canonical_id: resource.front_office.transaction_history
+  actions:
+  - read
+  domain: front_office
+  classification: confidential
+  critical: false
+  attributes:
+    manifest_status: provisional
+- id: banking_transfer
+  canonical_id: resource.front_office.banking_transfer
+  actions:
+  - execute
+  domain: front_office
+  classification: restricted
+  critical: true
+  attributes:
+    manifest_status: provisional
+- id: reconciliation_results
+  canonical_id: resource.back_office.reconciliation_results
+  actions:
+  - read
+  domain: back_office
+  classification: confidential
+  critical: false
+  attributes:
+    manifest_status: provisional
+- id: ledger
+  canonical_id: resource.back_office.ledger
+  actions:
+  - read
+  - update
+  domain: back_office
+  classification: regulated
+  critical: true
+  attributes:
+    manifest_status: provisional

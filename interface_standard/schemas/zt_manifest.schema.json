@@ -1,0 +1,1001 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://zero-trust-backplane.example/schema/zt_manifest.schema.json",
+  "title": "Zero Trust Backplane System Manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "apiVersion",
+    "kind",
+    "metadata",
+    "spec"
+  ],
+  "properties": {
+    "apiVersion": {
+      "const": "ztb/v1alpha1"
+    },
+    "kind": {
+      "const": "ZeroTrustSystemManifest"
+    },
+    "metadata": {
+      "$ref": "#/$defs/metadata"
+    },
+    "spec": {
+      "$ref": "#/$defs/spec"
+    }
+  },
+  "$defs": {
+    "status": {
+      "type": "string",
+      "enum": [
+        "confirmed",
+        "provisional",
+        "placeholder",
+        "deprecated"
+      ]
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "provided_by",
+        "reference",
+        "verified_at"
+      ],
+      "properties": {
+        "provided_by": {
+          "type": "string",
+          "minLength": 1
+        },
+        "reference": {
+          "type": "string",
+          "minLength": 1
+        },
+        "verified_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "notes": {
+          "type": "string"
+        }
+      }
+    },
+    "recordMetadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "source"
+      ],
+      "properties": {
+        "display_name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/$defs/status"
+        },
+        "source": {
+          "$ref": "#/$defs/source"
+        },
+        "owner": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "extensions": {
+          "type": "object"
+        }
+      }
+    },
+    "binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "runtime_id"
+      ],
+      "properties": {
+        "runtime_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "endpoint": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "function_name": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "service_name": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "namespace": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "secret_refs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "extensions": {
+          "type": "object"
+        }
+      }
+    },
+    "authentication": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "method"
+      ],
+      "properties": {
+        "method": {
+          "type": "string",
+          "enum": [
+            "none",
+            "jwt",
+            "oauth2",
+            "mtls",
+            "spiffe",
+            "api_key_ref",
+            "service_mesh",
+            "custom",
+            "placeholder"
+          ]
+        },
+        "issuer": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "audience": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "subject_claim": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "credential_ref": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "jwks_uri": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "extensions": {
+          "type": "object"
+        }
+      }
+    },
+    "subject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "type",
+        "roles",
+        "domain",
+        "metadata",
+        "bindings"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^agent\\.[a-z0-9_]+\\.[a-z0-9_]+$|^service\\.[a-z0-9_]+\\.[a-z0-9_]+$|^user_group\\.[a-z0-9_]+$"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "agent",
+            "service",
+            "human",
+            "user_group"
+          ]
+        },
+        "roles": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "domain": {
+          "type": "string",
+          "enum": [
+            "front_office",
+            "mid_office",
+            "back_office",
+            "shared",
+            "external"
+          ]
+        },
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        },
+        "metadata": {
+          "$ref": "#/$defs/recordMetadata"
+        },
+        "bindings": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/binding"
+          }
+        },
+        "attributes": {
+          "type": "object"
+        }
+      }
+    },
+    "action": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "side_effect",
+        "criticality"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*$"
+        },
+        "side_effect": {
+          "type": "boolean"
+        },
+        "criticality": {
+          "type": "string",
+          "enum": [
+            "low",
+            "medium",
+            "high",
+            "critical"
+          ]
+        },
+        "requires_human_approval": {
+          "type": "boolean",
+          "default": false
+        },
+        "idempotent": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "parameter_schema_ref": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "resource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "type",
+        "domain",
+        "classification",
+        "actions",
+        "metadata",
+        "bindings"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^resource\\.[a-z0-9_]+\\.[a-z0-9_]+$"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "data",
+            "api",
+            "tool",
+            "database",
+            "ledger",
+            "model",
+            "report",
+            "queue",
+            "event",
+            "file",
+            "knowledge_base",
+            "other"
+          ]
+        },
+        "domain": {
+          "type": "string",
+          "enum": [
+            "front_office",
+            "mid_office",
+            "back_office",
+            "shared",
+            "external"
+          ]
+        },
+        "classification": {
+          "type": "string",
+          "enum": [
+            "public",
+            "internal",
+            "confidential",
+            "restricted",
+            "regulated"
+          ]
+        },
+        "actions": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/action"
+          }
+        },
+        "metadata": {
+          "$ref": "#/$defs/recordMetadata"
+        },
+        "bindings": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/binding"
+          }
+        },
+        "attributes": {
+          "type": "object"
+        }
+      }
+    },
+    "interface": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "type",
+        "metadata",
+        "bindings",
+        "authentication",
+        "request_schema_ref",
+        "response_schema_ref"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^interface\\.[a-z0-9_]+\\.[a-z0-9_]+$"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "http",
+            "mcp",
+            "grpc",
+            "python_function",
+            "database",
+            "event_bus",
+            "file",
+            "message_queue",
+            "custom"
+          ]
+        },
+        "metadata": {
+          "$ref": "#/$defs/recordMetadata"
+        },
+        "bindings": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/binding"
+          }
+        },
+        "authentication": {
+          "$ref": "#/$defs/authentication"
+        },
+        "request_schema_ref": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "response_schema_ref": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "timeout_ms": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "retry_policy": {
+          "type": "object"
+        },
+        "extensions": {
+          "type": "object"
+        }
+      }
+    },
+    "workflowStep": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "subject_id",
+        "action",
+        "resource_id",
+        "interface_id"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*$"
+        },
+        "subject_id": {
+          "type": "string"
+        },
+        "action": {
+          "type": "string"
+        },
+        "resource_id": {
+          "type": "string"
+        },
+        "interface_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "next": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "conditions": {
+          "type": "object"
+        }
+      }
+    },
+    "workflow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "domain",
+        "metadata",
+        "steps"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^workflow\\.[a-z0-9_]+\\.[a-z0-9_]+$"
+        },
+        "domain": {
+          "type": "string",
+          "enum": [
+            "front_office",
+            "mid_office",
+            "back_office",
+            "shared",
+            "external"
+          ]
+        },
+        "metadata": {
+          "$ref": "#/$defs/recordMetadata"
+        },
+        "steps": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/workflowStep"
+          }
+        },
+        "entry_step": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "attributes": {
+          "type": "object"
+        }
+      }
+    },
+    "pep": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "required",
+        "type",
+        "mode"
+      ],
+      "properties": {
+        "required": {
+          "type": "boolean"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "input",
+            "agent_route",
+            "tool",
+            "mcp",
+            "api",
+            "data",
+            "event",
+            "output",
+            "shared_middleware",
+            "none"
+          ]
+        },
+        "mode": {
+          "type": "string",
+          "enum": [
+            "shadow",
+            "enforce"
+          ]
+        },
+        "placement_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "fail_mode": {
+          "type": "string",
+          "enum": [
+            "closed",
+            "open_for_noncritical",
+            "shadow_only"
+          ]
+        }
+      }
+    },
+    "interaction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "caller_id",
+        "target_id",
+        "resource_id",
+        "action",
+        "workflow_id",
+        "interface_id",
+        "trust_boundary_id",
+        "risk",
+        "pep",
+        "metadata"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^edge\\.[a-z0-9_]+\\.[a-z0-9_]+$"
+        },
+        "caller_id": {
+          "type": "string"
+        },
+        "target_id": {
+          "type": "string"
+        },
+        "resource_id": {
+          "type": "string"
+        },
+        "action": {
+          "type": "string"
+        },
+        "workflow_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "interface_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "trust_boundary_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "risk": {
+          "type": "string",
+          "enum": [
+            "low",
+            "medium",
+            "high",
+            "critical"
+          ]
+        },
+        "data_types": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "side_effect": {
+          "type": "boolean"
+        },
+        "pep": {
+          "$ref": "#/$defs/pep"
+        },
+        "metadata": {
+          "$ref": "#/$defs/recordMetadata"
+        },
+        "attributes": {
+          "type": "object"
+        }
+      }
+    },
+    "trustBoundary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "from_zone",
+        "to_zone",
+        "metadata"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^boundary\\.[a-z0-9_]+\\.[a-z0-9_]+$"
+        },
+        "from_zone": {
+          "type": "string"
+        },
+        "to_zone": {
+          "type": "string"
+        },
+        "metadata": {
+          "$ref": "#/$defs/recordMetadata"
+        },
+        "attributes": {
+          "type": "object"
+        }
+      }
+    },
+    "unresolved": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "path",
+        "required_from",
+        "question",
+        "blocking_tasks",
+        "status"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^gap\\.[a-z0-9_]+$"
+        },
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "required_from": {
+          "type": "string",
+          "enum": [
+            "citi",
+            "project_team",
+            "security_team",
+            "operations_team",
+            "legal_compliance",
+            "unknown"
+          ]
+        },
+        "question": {
+          "type": "string",
+          "minLength": 1
+        },
+        "blocking_tasks": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 8
+          },
+          "uniqueItems": true
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "open",
+            "answered",
+            "not_applicable",
+            "deferred"
+          ]
+        },
+        "answer": {
+          "type": [
+            "string",
+            "number",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
+        },
+        "owner": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "due_date": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date"
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "manifest_version",
+        "environment",
+        "created_at",
+        "updated_at",
+        "owner"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_-]*$"
+        },
+        "manifest_version": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+\\.\\d+(-[0-9A-Za-z.-]+)?$"
+        },
+        "environment": {
+          "type": "string",
+          "enum": [
+            "example",
+            "prototype",
+            "citi_dev",
+            "citi_test",
+            "citi_stage",
+            "citi_prod"
+          ]
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "owner": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_revision": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "description": {
+          "type": "string"
+        }
+      }
+    },
+    "spec": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "defaults",
+        "subjects",
+        "resources",
+        "interfaces",
+        "workflows",
+        "interactions",
+        "trust_boundaries",
+        "policy_bundles",
+        "audit",
+        "unresolved"
+      ],
+      "properties": {
+        "defaults": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "decision",
+            "pep_mode",
+            "environment_binding",
+            "placeholder_token"
+          ],
+          "properties": {
+            "decision": {
+              "const": "DENY"
+            },
+            "pep_mode": {
+              "type": "string",
+              "enum": [
+                "shadow",
+                "enforce"
+              ]
+            },
+            "environment_binding": {
+              "type": "string"
+            },
+            "placeholder_token": {
+              "const": "__CITI_REQUIRED__"
+            },
+            "clock_skew_seconds": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "extensions": {
+              "type": "object"
+            }
+          }
+        },
+        "subjects": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/subject"
+          }
+        },
+        "resources": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/resource"
+          }
+        },
+        "interfaces": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/interface"
+          }
+        },
+        "workflows": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/workflow"
+          }
+        },
+        "interactions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/interaction"
+          }
+        },
+        "trust_boundaries": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/trustBoundary"
+          }
+        },
+        "policy_bundles": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "uri",
+              "version",
+              "status"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "uri": {
+                "type": "string"
+              },
+              "version": {
+                "type": "string"
+              },
+              "status": {
+                "$ref": "#/$defs/status"
+              },
+              "checksum": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            }
+          }
+        },
+        "audit": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "schema_ref",
+            "sink_interface_id",
+            "required_fields",
+            "retention",
+            "redaction"
+          ],
+          "properties": {
+            "schema_ref": {
+              "type": "string"
+            },
+            "sink_interface_id": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "required_fields": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "uniqueItems": true
+            },
+            "retention": {
+              "type": "string"
+            },
+            "redaction": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "uniqueItems": true
+            }
+          }
+        },
+        "unresolved": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/unresolved"
+          }
+        },
+        "extensions": {
+          "type": "object"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,42 @@
+questionnaire_version: "1.0"
+questions:
+  - id: gap.citi_identity_issuer
+    category: identity
+    question: What trusted issuer identifies Citi banking-agent workloads?
+    expected_format: issuer URL or service identifier
+    manifest_path: spec.interfaces[id=interface.http.pdp_authorize].authentication.issuer
+  - id: gap.citi_agent_runtime_ids
+    category: identity
+    question: What stable runtime identity is used by each agent in each environment?
+    expected_format: canonical agent ID to runtime workload ID mapping
+    manifest_path: spec.subjects[*].bindings.<environment>.runtime_id
+  - id: gap.citi_authentication_method
+    category: identity
+    question: Which authentication method protects agent-to-agent and agent-to-service calls?
+    expected_format: jwt, mTLS, SPIFFE, service mesh, or custom specification
+    manifest_path: spec.interfaces[*].authentication
+  - id: gap.citi_interfaces
+    category: interface
+    question: What are the exact MCP tool names, FastAPI routes, Python functions, database methods, and event topics?
+    expected_format: interface inventory with request and response schemas
+    manifest_path: spec.interfaces
+  - id: gap.citi_resource_bindings
+    category: resource
+    question: Which runtime endpoint or function implements each logical resource and action?
+    expected_format: canonical resource/action to environment binding mapping
+    manifest_path: spec.resources[*].bindings.<environment>
+  - id: gap.citi_workflows
+    category: workflow
+    question: What are the authoritative workflow names, steps, branches, and execution order?
+    expected_format: workflow definitions and interaction edges
+    manifest_path: spec.workflows and spec.interactions
+  - id: gap.citi_risk
+    category: risk
+    question: What risk levels and human-approval rules apply to each action?
+    expected_format: action criticality and approval requirements
+    manifest_path: spec.resources[*].actions
+  - id: gap.citi_audit
+    category: audit
+    question: What audit destination, mandatory fields, redaction rules, and retention requirements apply?
+    expected_format: audit configuration and sink interface
+    manifest_path: spec.audit

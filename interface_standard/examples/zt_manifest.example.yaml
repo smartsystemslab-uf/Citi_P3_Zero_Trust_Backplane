@@ -1,0 +1,545 @@
+apiVersion: ztb/v1alpha1
+kind: ZeroTrustSystemManifest
+metadata:
+  name: citi-banking-agent-example
+  manifest_version: 1.0.0-alpha.1
+  environment: example
+  created_at: "2026-07-26T00:00:00Z"
+  updated_at: "2026-07-26T00:00:00Z"
+  owner: zero_trust_backplane_team
+  source_revision: null
+  description: Example manifest using provisional banking-agent information.
+spec:
+  defaults:
+    decision: DENY
+    pep_mode: enforce
+    environment_binding: prototype
+    placeholder_token: __CITI_REQUIRED__
+    clock_skew_seconds: 30
+    extensions: {}
+  subjects:
+    - id: agent.front_office.fraud
+      type: agent
+      roles: [fraud_analyst]
+      domain: front_office
+      enabled: true
+      metadata:
+        display_name: Fraud Agent
+        description: Performs fraud analysis on suspicious transactions.
+        status: provisional
+        source:
+          provided_by: project_architecture
+          reference: Banking Architecture / front-office workflow
+          verified_at: null
+        owner: null
+        tags: [banking_agent]
+        extensions: {}
+      bindings:
+        prototype:
+          runtime_id: fraud_agent
+          endpoint: null
+          function_name: null
+          service_name: null
+          namespace: null
+          secret_refs: []
+          extensions: {}
+        citi_dev:
+          runtime_id: null
+          endpoint: null
+          function_name: null
+          service_name: null
+          namespace: null
+          secret_refs: []
+          extensions: {}
+      attributes: {}
+    - id: agent.back_office.report
+      type: agent
+      roles: [report_writer]
+      domain: back_office
+      enabled: true
+      metadata:
+        display_name: Report Agent
+        description: Reads reconciliation results and writes reports.
+        status: provisional
+        source:
+          provided_by: project_architecture
+          reference: Banking Architecture / back-office workflow
+          verified_at: null
+        owner: null
+        tags: [banking_agent]
+        extensions: {}
+      bindings:
+        prototype:
+          runtime_id: report_agent
+          endpoint: null
+          function_name: null
+          service_name: null
+          namespace: null
+          secret_refs: []
+          extensions: {}
+        citi_dev:
+          runtime_id: null
+          endpoint: null
+          function_name: null
+          service_name: null
+          namespace: null
+          secret_refs: []
+          extensions: {}
+      attributes: {}
+    - id: service.shared.pdp
+      type: service
+      roles: [authorization_decision]
+      domain: shared
+      enabled: true
+      metadata:
+        display_name: PDP Service
+        description: Central authorization decision service.
+        status: confirmed
+        source:
+          provided_by: task4_prototype
+          reference: src/zt_backplane/pdp_service.py
+          verified_at: "2026-07-26T00:00:00Z"
+        owner: zero_trust_backplane_team
+        tags: [pdp]
+        extensions: {}
+      bindings:
+        prototype:
+          runtime_id: zt_pdp
+          endpoint: http://127.0.0.1:8080
+          function_name: null
+          service_name: zt-pdp
+          namespace: null
+          secret_refs: []
+          extensions: {}
+      attributes: {}
+  resources:
+    - id: resource.front_office.transaction_history
+      type: data
+      domain: front_office
+      classification: confidential
+      actions:
+        - name: read
+          side_effect: false
+          criticality: medium
+          requires_human_approval: false
+          idempotent: true
+          parameter_schema_ref: null
+      metadata:
+        display_name: Transaction History
+        description: Transaction history used by fraud analysis.
+        status: provisional
+        source:
+          provided_by: project_architecture
+          reference: Banking Architecture / fraud workflow
+          verified_at: null
+        owner: null
+        tags: [transaction_data]
+        extensions: {}
+      bindings:
+        prototype:
+          runtime_id: transaction_history
+          endpoint: null
+          function_name: null
+          service_name: null
+          namespace: null
+          secret_refs: []
+          extensions: {}
+        citi_dev:
+          runtime_id: null
+          endpoint: null
+          function_name: null
+          service_name: null
+          namespace: null
+          secret_refs: []
+          extensions: {}
+      attributes: {}
+    - id: resource.front_office.banking_transfer
+      type: api
+      domain: front_office
+      classification: restricted
+      actions:
+        - name: execute
+          side_effect: true
+          criticality: critical
+          requires_human_approval: true
+          idempotent: false
+          parameter_schema_ref: schemas/transfer_request.schema.json
+      metadata:
+        display_name: Banking Transfer
+        description: Executes a banking transfer.
+        status: provisional
+        source:
+          provided_by: project_architecture
+          reference: Banking Architecture / transaction handling workflow
+          verified_at: null
+        owner: null
+        tags: [financial_write]
+        extensions: {}
+      bindings:
+        prototype:
+          runtime_id: banking_transfer
+          endpoint: null
+          function_name: execute_transfer
+          service_name: null
+          namespace: null
+          secret_refs: []
+          extensions: {}
+        citi_dev:
+          runtime_id: null
+          endpoint: null
+          function_name: null
+          service_name: null
+          namespace: null
+          secret_refs: []
+          extensions: {}
+      attributes: {}
+    - id: resource.back_office.reconciliation_results
+      type: data
+      domain: back_office
+      classification: confidential
+      actions:
+        - name: read
+          side_effect: false
+          criticality: medium
+          requires_human_approval: false
+          idempotent: true
+          parameter_schema_ref: null
+      metadata:
+        display_name: Reconciliation Results
+        description: Results produced by reconciliation processing.
+        status: provisional
+        source:
+          provided_by: project_architecture
+          reference: Banking Architecture / back-office workflow
+          verified_at: null
+        owner: null
+        tags: [reconciliation]
+        extensions: {}
+      bindings:
+        prototype:
+          runtime_id: reconciliation_results
+          endpoint: null
+          function_name: null
+          service_name: null
+          namespace: null
+          secret_refs: []
+          extensions: {}
+      attributes: {}
+    - id: resource.back_office.ledger
+      type: ledger
+      domain: back_office
+      classification: regulated
+      actions:
+        - name: read
+          side_effect: false
+          criticality: high
+          requires_human_approval: false
+          idempotent: true
+          parameter_schema_ref: null
+        - name: update
+          side_effect: true
+          criticality: critical
+          requires_human_approval: true
+          idempotent: false
+          parameter_schema_ref: null
+      metadata:
+        display_name: Ledger
+        description: Financial ledger protected as a critical resource.
+        status: provisional
+        source:
+          provided_by: project_architecture
+          reference: Banking Architecture / EOD workflow
+          verified_at: null
+        owner: null
+        tags: [financial_write, critical]
+        extensions: {}
+      bindings:
+        prototype:
+          runtime_id: ledger
+          endpoint: null
+          function_name: ledger_update
+          service_name: null
+          namespace: null
+          secret_refs: []
+          extensions: {}
+        citi_dev:
+          runtime_id: null
+          endpoint: null
+          function_name: null
+          service_name: null
+          namespace: null
+          secret_refs: []
+          extensions: {}
+      attributes: {}
+  interfaces:
+    - id: interface.http.pdp_authorize
+      type: http
+      metadata:
+        display_name: PDP Authorization API
+        description: Common PEP-to-PDP authorization endpoint.
+        status: confirmed
+        source:
+          provided_by: task4_prototype
+          reference: POST /v1/authorize
+          verified_at: "2026-07-26T00:00:00Z"
+        owner: zero_trust_backplane_team
+        tags: [pdp]
+        extensions: {}
+      bindings:
+        prototype:
+          runtime_id: pdp_authorize
+          endpoint: http://127.0.0.1:8080/v1/authorize
+          function_name: null
+          service_name: zt-pdp
+          namespace: null
+          secret_refs: []
+          extensions: {}
+        citi_dev:
+          runtime_id: null
+          endpoint: null
+          function_name: null
+          service_name: null
+          namespace: null
+          secret_refs: []
+          extensions: {}
+      authentication:
+        method: placeholder
+        issuer: null
+        audience: null
+        subject_claim: null
+        credential_ref: null
+        jwks_uri: null
+        extensions: {}
+      request_schema_ref: schemas/pdp_request.schema.json
+      response_schema_ref: schemas/pdp_response.schema.json
+      timeout_ms: 1000
+      retry_policy:
+        max_attempts: 1
+      extensions: {}
+    - id: interface.mcp.execute_transfer
+      type: mcp
+      metadata:
+        display_name: Execute Transfer MCP Tool
+        description: Prototype transfer interface; Citi binding is unresolved.
+        status: provisional
+        source:
+          provided_by: project_repository_summary
+          reference: MCP tool execute_transfer
+          verified_at: null
+        owner: null
+        tags: [financial_write]
+        extensions: {}
+      bindings:
+        prototype:
+          runtime_id: execute_transfer
+          endpoint: null
+          function_name: execute_transfer
+          service_name: null
+          namespace: null
+          secret_refs: []
+          extensions: {}
+        citi_dev:
+          runtime_id: null
+          endpoint: null
+          function_name: null
+          service_name: null
+          namespace: null
+          secret_refs: []
+          extensions: {}
+      authentication:
+        method: placeholder
+        issuer: null
+        audience: null
+        subject_claim: null
+        credential_ref: null
+        jwks_uri: null
+        extensions: {}
+      request_schema_ref: null
+      response_schema_ref: null
+      timeout_ms: 5000
+      retry_policy:
+        max_attempts: 1
+      extensions: {}
+  workflows:
+    - id: workflow.front_office.fraud_review
+      domain: front_office
+      metadata:
+        display_name: Fraud Review
+        description: Fraud analysis reads transaction history.
+        status: provisional
+        source:
+          provided_by: project_architecture
+          reference: Banking Architecture / fraud workflow
+          verified_at: null
+        owner: null
+        tags: []
+        extensions: {}
+      entry_step: read_history
+      steps:
+        - id: read_history
+          subject_id: agent.front_office.fraud
+          action: read
+          resource_id: resource.front_office.transaction_history
+          interface_id: null
+          next: []
+          conditions: {}
+      attributes: {}
+    - id: workflow.back_office.report_generation
+      domain: back_office
+      metadata:
+        display_name: Report Generation
+        description: Report agent reads reconciliation results.
+        status: provisional
+        source:
+          provided_by: project_architecture
+          reference: Banking Architecture / back-office workflow
+          verified_at: null
+        owner: null
+        tags: []
+        extensions: {}
+      entry_step: read_results
+      steps:
+        - id: read_results
+          subject_id: agent.back_office.report
+          action: read
+          resource_id: resource.back_office.reconciliation_results
+          interface_id: null
+          next: []
+          conditions: {}
+      attributes: {}
+  interactions:
+    - id: edge.fraud_review.read_history
+      caller_id: agent.front_office.fraud
+      target_id: resource.front_office.transaction_history
+      resource_id: resource.front_office.transaction_history
+      action: read
+      workflow_id: workflow.front_office.fraud_review
+      interface_id: null
+      trust_boundary_id: boundary.agent.data
+      risk: medium
+      data_types: [transaction_history]
+      side_effect: false
+      pep:
+        required: true
+        type: data
+        mode: enforce
+        placement_id: pep.fraud_history
+        fail_mode: closed
+      metadata:
+        display_name: Fraud Agent Reads History
+        description: Intended protected read path.
+        status: provisional
+        source:
+          provided_by: project_architecture
+          reference: Banking Architecture / fraud workflow
+          verified_at: null
+        owner: null
+        tags: []
+        extensions: {}
+      attributes: {}
+    - id: edge.report_generation.read_reconciliation
+      caller_id: agent.back_office.report
+      target_id: resource.back_office.reconciliation_results
+      resource_id: resource.back_office.reconciliation_results
+      action: read
+      workflow_id: workflow.back_office.report_generation
+      interface_id: null
+      trust_boundary_id: boundary.agent.data
+      risk: medium
+      data_types: [reconciliation_result]
+      side_effect: false
+      pep:
+        required: true
+        type: data
+        mode: enforce
+        placement_id: pep.report_reconciliation
+        fail_mode: closed
+      metadata:
+        display_name: Report Agent Reads Reconciliation
+        description: Intended protected read path.
+        status: provisional
+        source:
+          provided_by: project_architecture
+          reference: Banking Architecture / back-office workflow
+          verified_at: null
+        owner: null
+        tags: []
+        extensions: {}
+      attributes: {}
+  trust_boundaries:
+    - id: boundary.agent.data
+      from_zone: banking_agent_runtime
+      to_zone: protected_data_service
+      metadata:
+        display_name: Agent-to-Data Boundary
+        description: Boundary between an agent and protected banking data.
+        status: provisional
+        source:
+          provided_by: zero_trust_backplane_team
+          reference: Task 3 placement rules
+          verified_at: null
+        owner: zero_trust_backplane_team
+        tags: []
+        extensions: {}
+      attributes: {}
+  policy_bundles:
+    - id: bundle.task4.prototype
+      uri: ../zero_trust_pdp_task4/policy_store
+      version: content-hash
+      status: provisional
+      checksum: null
+  audit:
+    schema_ref: schemas/audit_event.schema.json
+    sink_interface_id: null
+    required_fields:
+      - timestamp
+      - trace_id
+      - subject_id
+      - resource_id
+      - action
+      - workflow_id
+      - decision
+      - policy_version
+      - outcome
+    retention: __CITI_REQUIRED__
+    redaction:
+      - parameters.account_number
+      - parameters.customer_id
+  unresolved:
+    - id: gap.citi_identity_issuer
+      path: spec.interfaces[id=interface.http.pdp_authorize].authentication.issuer
+      required_from: citi
+      question: What trusted issuer identifies Citi banking-agent workloads?
+      blocking_tasks: [4, 6]
+      status: open
+      answer: null
+      owner: null
+      due_date: null
+    - id: gap.citi_agent_runtime_ids
+      path: spec.subjects[*].bindings.citi_dev.runtime_id
+      required_from: citi
+      question: What are the stable runtime workload identities for Citi agents?
+      blocking_tasks: [2, 4, 6]
+      status: open
+      answer: null
+      owner: null
+      due_date: null
+    - id: gap.citi_resource_bindings
+      path: spec.resources[*].bindings.citi_dev
+      required_from: citi
+      question: What APIs, MCP tools, functions, databases, and ledger endpoints implement each resource?
+      blocking_tasks: [2, 3, 6]
+      status: open
+      answer: null
+      owner: null
+      due_date: null
+    - id: gap.citi_audit_retention
+      path: spec.audit.retention
+      required_from: citi
+      question: What audit retention and destination requirements apply?
+      blocking_tasks: [6, 7]
+      status: open
+      answer: null
+      owner: null
+      due_date: null
+  extensions: {}

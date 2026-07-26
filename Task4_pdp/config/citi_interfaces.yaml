@@ -1,0 +1,263 @@
+manifest_version: 1.0.0-alpha.1
+environment: prototype
+interfaces:
+- canonical_id: interface.http.pdp_authorize
+  type: http
+  runtime:
+    runtime_id: pdp_authorize
+    endpoint: http://127.0.0.1:8080/v1/authorize
+    function_name: null
+    service_name: null
+    namespace: null
+    secret_refs: []
+    extensions: {}
+  authentication:
+    method: placeholder
+    issuer: null
+    audience: null
+    subject_claim: null
+    credential_ref: null
+    jwks_uri: null
+    extensions: {}
+  request_schema_ref: schemas/pdp_request.schema.json
+  response_schema_ref: schemas/pdp_response.schema.json
+  timeout_ms: 1000
+  status: confirmed
+- canonical_id: interface.mcp.get_customer_context
+  type: mcp
+  runtime:
+    runtime_id: get_customer_context
+    endpoint: null
+    function_name: get_customer_context
+    service_name: null
+    namespace: null
+    secret_refs: []
+    extensions: {}
+  authentication:
+    method: placeholder
+    issuer: null
+    audience: null
+    subject_claim: null
+    credential_ref: null
+    jwks_uri: null
+    extensions: {}
+  request_schema_ref: null
+  response_schema_ref: null
+  timeout_ms: 5000
+  status: provisional
+- canonical_id: interface.mcp.execute_transfer
+  type: mcp
+  runtime:
+    runtime_id: execute_transfer
+    endpoint: null
+    function_name: execute_transfer
+    service_name: null
+    namespace: null
+    secret_refs: []
+    extensions: {}
+  authentication:
+    method: placeholder
+    issuer: null
+    audience: null
+    subject_claim: null
+    credential_ref: null
+    jwks_uri: null
+    extensions: {}
+  request_schema_ref: null
+  response_schema_ref: null
+  timeout_ms: 5000
+  status: provisional
+- canonical_id: interface.mcp.search_policies
+  type: mcp
+  runtime:
+    runtime_id: search_policies
+    endpoint: null
+    function_name: search_policies
+    service_name: null
+    namespace: null
+    secret_refs: []
+    extensions: {}
+  authentication:
+    method: placeholder
+    issuer: null
+    audience: null
+    subject_claim: null
+    credential_ref: null
+    jwks_uri: null
+    extensions: {}
+  request_schema_ref: null
+  response_schema_ref: null
+  timeout_ms: 5000
+  status: provisional
+- canonical_id: interface.mcp.store_report
+  type: mcp
+  runtime:
+    runtime_id: store_report
+    endpoint: null
+    function_name: store_report
+    service_name: null
+    namespace: null
+    secret_refs: []
+    extensions: {}
+  authentication:
+    method: placeholder
+    issuer: null
+    audience: null
+    subject_claim: null
+    credential_ref: null
+    jwks_uri: null
+    extensions: {}
+  request_schema_ref: null
+  response_schema_ref: null
+  timeout_ms: 5000
+  status: provisional
+- canonical_id: interface.mcp.create_exception_case
+  type: mcp
+  runtime:
+    runtime_id: create_exception_case
+    endpoint: null
+    function_name: create_exception_case
+    service_name: null
+    namespace: null
+    secret_refs: []
+    extensions: {}
+  authentication:
+    method: placeholder
+    issuer: null
+    audience: null
+    subject_claim: null
+    credential_ref: null
+    jwks_uri: null
+    extensions: {}
+  request_schema_ref: null
+  response_schema_ref: null
+  timeout_ms: 5000
+  status: provisional
+- canonical_id: interface.mcp.ledger_update
+  type: mcp
+  runtime:
+    runtime_id: ledger_update
+    endpoint: null
+    function_name: ledger_update
+    service_name: null
+    namespace: null
+    secret_refs: []
+    extensions: {}
+  authentication:
+    method: placeholder
+    issuer: null
+    audience: null
+    subject_claim: null
+    credential_ref: null
+    jwks_uri: null
+    extensions: {}
+  request_schema_ref: null
+  response_schema_ref: null
+  timeout_ms: 5000
+  status: provisional
+- canonical_id: interface.mcp.get_eod_batches
+  type: mcp
+  runtime:
+    runtime_id: get_eod_batches
+    endpoint: null
+    function_name: get_eod_batches
+    service_name: null
+    namespace: null
+    secret_refs: []
+    extensions: {}
+  authentication:
+    method: placeholder
+    issuer: null
+    audience: null
+    subject_claim: null
+    credential_ref: null
+    jwks_uri: null
+    extensions: {}
+  request_schema_ref: null
+  response_schema_ref: null
+  timeout_ms: 5000
+  status: provisional
+- canonical_id: interface.mcp.write_final_report
+  type: mcp
+  runtime:
+    runtime_id: write_final_report
+    endpoint: null
+    function_name: write_final_report
+    service_name: null
+    namespace: null
+    secret_refs: []
+    extensions: {}
+  authentication:
+    method: placeholder
+    issuer: null
+    audience: null
+    subject_claim: null
+    credential_ref: null
+    jwks_uri: null
+    extensions: {}
+  request_schema_ref: null
+  response_schema_ref: null
+  timeout_ms: 5000
+  status: provisional
+- canonical_id: interface.http.banking_backend
+  type: http
+  runtime:
+    runtime_id: banking_backend
+    endpoint: null
+    function_name: null
+    service_name: null
+    namespace: null
+    secret_refs: []
+    extensions: {}
+  authentication:
+    method: placeholder
+    issuer: null
+    audience: null
+    subject_claim: null
+    credential_ref: null
+    jwks_uri: null
+    extensions: {}
+  request_schema_ref: null
+  response_schema_ref: null
+  timeout_ms: 5000
+  status: placeholder
+- canonical_id: interface.database.banking_database
+  type: database
+  runtime:
+    runtime_id: banking_database
+    endpoint: null
+    function_name: null
+    service_name: null
+    namespace: null
+    secret_refs: []
+    extensions: {}
+  authentication:
+    method: placeholder
+    issuer: null
+    audience: null
+    subject_claim: null
+    credential_ref: null
+    jwks_uri: null
+    extensions: {}
+  request_schema_ref: null
+  response_schema_ref: null
+  timeout_ms: 5000
+  status: placeholder
+audit:
+  schema_ref: schemas/audit_event.schema.json
+  sink_interface_id: null
+  required_fields:
+  - timestamp
+  - trace_id
+  - subject_id
+  - resource_id
+  - action
+  - workflow_id
+  - decision
+  - policy_version
+  - outcome
+  retention: __CITI_REQUIRED__
+  redaction:
+  - parameters.account_number
+  - parameters.customer_id
+  - parameters.token

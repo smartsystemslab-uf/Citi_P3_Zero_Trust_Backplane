@@ -1,0 +1,100 @@
+# Overlay keys are merged by canonical id. Do not change canonical ids.
+metadata:
+  environment: citi_dev
+  source_revision: __CITI_REQUIRED__
+  updated_at: "2026-07-26T00:00:00Z"
+spec:
+  defaults:
+    environment_binding: citi_dev
+  subjects:
+    - id: agent.front_office.fraud
+      metadata:
+        status: placeholder
+        owner: null
+      bindings:
+        citi_dev:
+          runtime_id: null
+          endpoint: null
+          function_name: null
+          service_name: null
+          namespace: null
+          secret_refs: []
+          extensions: {}
+    - id: agent.back_office.report
+      metadata:
+        status: placeholder
+        owner: null
+      bindings:
+        citi_dev:
+          runtime_id: null
+          endpoint: null
+          function_name: null
+          service_name: null
+          namespace: null
+          secret_refs: []
+          extensions: {}
+  resources:
+    - id: resource.front_office.transaction_history
+      metadata:
+        status: placeholder
+        owner: null
+      bindings:
+        citi_dev:
+          runtime_id: null
+          endpoint: null
+          function_name: null
+          service_name: null
+          namespace: null
+          secret_refs: []
+          extensions: {}
+    - id: resource.back_office.ledger
+      metadata:
+        status: placeholder
+        owner: null
+      bindings:
+        citi_dev:
+          runtime_id: null
+          endpoint: null
+          function_name: null
+          service_name: null
+          namespace: null
+          secret_refs: []
+          extensions: {}
+  interfaces:
+    - id: interface.http.pdp_authorize
+      metadata:
+        status: placeholder
+        owner: null
+      bindings:
+        citi_dev:
+          runtime_id: null
+          endpoint: null
+          function_name: null
+          service_name: null
+          namespace: null
+          secret_refs: []
+          extensions: {}
+      authentication:
+        method: placeholder
+        issuer: null
+        audience: null
+        subject_claim: null
+        credential_ref: null
+        jwks_uri: null
+        extensions: {}
+  audit:
+    sink_interface_id: null
+    retention: __CITI_REQUIRED__
+  unresolved:
+    - id: gap.citi_identity_issuer
+      status: open
+      answer: null
+    - id: gap.citi_agent_runtime_ids
+      status: open
+      answer: null
+    - id: gap.citi_resource_bindings
+      status: open
+      answer: null
+    - id: gap.citi_audit_retention
+      status: open
+      answer: null

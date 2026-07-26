@@ -1,0 +1,28 @@
+identities:
+- id: fraud_agent
+  canonical_id: agent.front_office.fraud
+  type: agent
+  roles:
+  - fraud_analyst
+  domain: front_office
+  enabled: true
+  attributes:
+    manifest_status: provisional
+- id: report_agent
+  canonical_id: agent.back_office.report
+  type: agent
+  roles:
+  - report_writer
+  domain: back_office
+  enabled: true
+  attributes:
+    manifest_status: provisional
+- id: zt_pdp
+  canonical_id: service.shared.pdp
+  type: service
+  roles:
+  - authorization_decision
+  domain: shared
+  enabled: true
+  attributes:
+    manifest_status: confirmed

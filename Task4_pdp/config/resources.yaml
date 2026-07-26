@@ -1,0 +1,181 @@
+resources:
+- id: transaction_history
+  canonical_id: resource.front_office.transaction_history
+  actions:
+  - read
+  domain: front_office
+  classification: confidential
+  critical: false
+  attributes:
+    manifest_status: provisional
+- id: customer_context
+  canonical_id: resource.front_office.customer_context
+  actions:
+  - read
+  domain: front_office
+  classification: restricted
+  critical: false
+  attributes:
+    manifest_status: provisional
+- id: customer_profile
+  canonical_id: resource.front_office.customer_profile
+  actions:
+  - read
+  - update
+  domain: front_office
+  classification: restricted
+  critical: false
+  attributes:
+    manifest_status: provisional
+- id: policy_knowledge_base
+  canonical_id: resource.front_office.policy_knowledge_base
+  actions:
+  - read
+  - search
+  domain: front_office
+  classification: internal
+  critical: false
+  attributes:
+    manifest_status: provisional
+- id: banking_transfer
+  canonical_id: resource.front_office.banking_transfer
+  actions:
+  - execute
+  - cancel
+  domain: front_office
+  classification: restricted
+  critical: true
+  attributes:
+    manifest_status: provisional
+- id: transaction_decision
+  canonical_id: resource.front_office.transaction_decision
+  actions:
+  - read
+  - approve
+  - reject
+  domain: front_office
+  classification: restricted
+  critical: true
+  attributes:
+    manifest_status: provisional
+- id: internal_operations_data
+  canonical_id: resource.mid_office.internal_operations_data
+  actions:
+  - read
+  domain: mid_office
+  classification: internal
+  critical: false
+  attributes:
+    manifest_status: provisional
+- id: workload_forecast
+  canonical_id: resource.mid_office.workload_forecast
+  actions:
+  - read
+  - create
+  domain: mid_office
+  classification: internal
+  critical: false
+  attributes:
+    manifest_status: provisional
+- id: schedule_draft
+  canonical_id: resource.mid_office.schedule_draft
+  actions:
+  - read
+  - create
+  - update
+  - approve
+  domain: mid_office
+  classification: internal
+  critical: false
+  attributes:
+    manifest_status: provisional
+- id: financial_customer_data
+  canonical_id: resource.mid_office.financial_customer_data
+  actions:
+  - read
+  domain: mid_office
+  classification: restricted
+  critical: false
+  attributes:
+    manifest_status: provisional
+- id: product_catalog
+  canonical_id: resource.mid_office.product_catalog
+  actions:
+  - read
+  - search
+  domain: mid_office
+  classification: internal
+  critical: false
+  attributes:
+    manifest_status: provisional
+- id: loan_workflow
+  canonical_id: resource.mid_office.loan_workflow
+  actions:
+  - read
+  - recommend
+  - submit
+  domain: mid_office
+  classification: restricted
+  critical: true
+  attributes:
+    manifest_status: provisional
+- id: ledger_snapshot
+  canonical_id: resource.back_office.ledger_snapshot
+  actions:
+  - read
+  domain: back_office
+  classification: restricted
+  critical: false
+  attributes:
+    manifest_status: provisional
+- id: ledger
+  canonical_id: resource.back_office.ledger
+  actions:
+  - read
+  - update
+  domain: back_office
+  classification: regulated
+  critical: true
+  attributes:
+    manifest_status: provisional
+- id: reconciliation_results
+  canonical_id: resource.back_office.reconciliation_results
+  actions:
+  - read
+  - create
+  domain: back_office
+  classification: confidential
+  critical: false
+  attributes:
+    manifest_status: provisional
+- id: final_report
+  canonical_id: resource.back_office.final_report
+  actions:
+  - read
+  - create
+  - store
+  domain: back_office
+  classification: confidential
+  critical: false
+  attributes:
+    manifest_status: provisional
+- id: exception_case
+  canonical_id: resource.back_office.exception_case
+  actions:
+  - read
+  - create
+  - update
+  domain: back_office
+  classification: confidential
+  critical: false
+  attributes:
+    manifest_status: provisional
+- id: eod_batches
+  canonical_id: resource.back_office.eod_batches
+  actions:
+  - read
+  domain: back_office
+  classification: restricted
+  critical: false
+  attributes:
+    manifest_status: provisional

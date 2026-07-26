@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "zero-trust-backplane-interface"
+version = "1.0.0a1"
+description = "Unified interface and manifest standard for the Zero Trust Backplane"
+requires-python = ">=3.11"
+dependencies = [
+  "PyYAML>=6.0,<7.0",
+  "jsonschema>=4.22,<5.0",
+]
+
+[project.optional-dependencies]
+test = ["pytest>=8.0,<10.0"]
+
+[project.scripts]
+zt-interface = "zt_interface.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+addopts = "-q"
