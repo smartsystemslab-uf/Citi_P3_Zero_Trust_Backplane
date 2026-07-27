@@ -1,0 +1,16 @@
+services:
+  pdp:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      ZT_ENABLE_ADMIN_RELOAD: "false"
+    volumes:
+      - ./runtime:/app/runtime
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL

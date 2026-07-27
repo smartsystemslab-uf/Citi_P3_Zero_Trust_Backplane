@@ -1,0 +1,65 @@
+# Security adapters required from Citi. This file is separate from and does not
+# modify the approved Zero Trust Backplane interface standard.
+workload_identity:
+  provider_type: null          # TODO(CITI): mTLS/SPIFFE/JWT/service mesh
+  trust_root_or_jwks: null
+  canonical_to_runtime_binding_source: null
+  pep_signing_key_source: null # TODO(CITI): HSM/KMS/short-lived workload key
+
+risk_engine:
+  endpoint: null
+  issuer: null
+  jwks_or_certificate: null
+  score_range: [0, 1000]
+  threshold_version: null
+  assertion_ttl_seconds: null
+
+identity_and_authentication:
+  provider: null
+  issuer: null
+  factor_mapping_version: null
+  identity_epoch_source: null
+
+workflow_orchestrator:
+  endpoint: null
+  issuer: null
+  workflow_registry: null
+  signed_step_assertion: null
+
+human_approval_service:
+  endpoint: null
+  issuer: null
+  approver_role_source: null
+  approval_ttl_seconds: null
+  approval_replay_store: null
+
+secondary_authorizer:
+  endpoint: null
+  issuer: null
+  independence_boundary: null   # Must not share the PDP compromise domain.
+
+policy_authority:
+  repository: null
+  signing_key: null
+  approval_process: null
+  rollback_state_store: null
+
+pdp_decision_signing:
+  key_source: null
+  key_rotation: null
+  public_key_distribution: null
+
+replay_protection:
+  shared_store: null             # TODO(CITI): Redis/DB with atomic consume
+  nonce_ttl_seconds: null
+  jti_ttl_seconds: null
+
+trusted_time:
+  source: null                   # TODO(CITI): hardened system/NTP time
+  maximum_clock_skew_seconds: null
+
+audit:
+  independent_sink: null
+  append_only_storage: null
+  cross_component_correlation: null
+  retention_policy: null

@@ -1,0 +1,38 @@
+# DEVELOPMENT TRUST STORE ONLY.
+# TODO(CITI-KEYS): replace PEM files with Citi PKI/KMS/HSM/JWKS/SPIFFE trust roots.
+issuers:
+  - id: pep.prototype
+    keys:
+      - key_id: pep-1
+        public_key_file: ../security/dev_keys/pep_public.pem
+        purposes: [request_proof]
+  - id: risk.prototype
+    keys:
+      - key_id: risk-1
+        public_key_file: ../security/dev_keys/risk_public.pem
+        purposes: [risk_assertion]
+  - id: idp.prototype
+    keys:
+      - key_id: idp-1
+        public_key_file: ../security/dev_keys/idp_public.pem
+        purposes: [auth_assertion]
+  - id: workflow.prototype
+    keys:
+      - key_id: workflow-1
+        public_key_file: ../security/dev_keys/workflow_public.pem
+        purposes: [workflow_assertion]
+  - id: approval.prototype
+    keys:
+      - key_id: approval-1
+        public_key_file: ../security/dev_keys/approval_public.pem
+        purposes: [human_approval]
+  - id: secondary.prototype
+    keys:
+      - key_id: secondary-1
+        public_key_file: ../security/dev_keys/secondary_public.pem
+        purposes: [secondary_authorization]
+  - id: policy.prototype
+    keys:
+      - key_id: policy-1
+        public_key_file: ../security/dev_keys/policy_public.pem
+        purposes: [policy_bundle]

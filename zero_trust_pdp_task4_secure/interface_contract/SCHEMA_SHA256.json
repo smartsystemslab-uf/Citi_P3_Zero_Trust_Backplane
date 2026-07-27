@@ -1,0 +1,8 @@
+{
+  "audit_event.schema.json": "5ea224317deee3a11d21cc8bb7774c4396269a1e562bb55b333cc6f4c7a37ce5",
+  "pdp_request.schema.json": "ed9d384d87c9f044d472bf3d17a3e504836ff7e1e3ea544c3ab08f104f52b44f",
+  "pdp_response.schema.json": "edc99dc2a25540f5b1b94d68ea6047f523d1069c129ff7649e0af64f4d4ccc5e",
+  "permit_lease.schema.json": "31d60f5209cfb7e21420b3666e87ed8b06373ce100af8e537067f0108e5e5b6c",
+  "policy_bundle.schema.json": "33551134188863cb950f5fee4e91ff4192884c72cc30a239150f04a73779a937",
+  "zt_manifest.schema.json": "411bd7e7be49eb20c01786a1fdebbf51c108ab09b87fe1bda7fbe899022bd957"
+}

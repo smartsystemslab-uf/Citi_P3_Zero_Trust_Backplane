@@ -1,0 +1,24 @@
+# Prototype quantitative mappings. Citi must replace these with approved values.
+clock_skew_seconds: 5
+max_assertion_lifetime_seconds: 300
+risk_threshold_version: prototype-risk-thresholds-1
+auth_factor_mapping_version: prototype-auth-factors-1
+
+# The external risk engine computes a 0-1000 score. PDP validates the signed
+# score-to-level mapping; it does not independently replace Citi's fraud model.
+risk_thresholds:
+  low: [0, 249]
+  medium: [250, 499]
+  high: [500, 749]
+  critical: [750, 1000]
+
+# The trusted identity provider supplies signed authentication factors. PDP
+# deterministically calculates auth_strength from this versioned mapping.
+auth_factor_weights:
+  workload_identity: 1
+  user_session: 1
+  mfa: 2
+  hardware_backed_key: 2
+  step_up_authentication: 2
+  human_operator_present: 1
+  managed_device: 1
