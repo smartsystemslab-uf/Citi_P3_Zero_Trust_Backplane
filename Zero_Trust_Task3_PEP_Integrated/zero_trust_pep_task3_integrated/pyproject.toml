@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "zero-trust-pep-task3-integrated"
+version = "1.0.0"
+description = "Task 3 PEP placement and code generation integrated with the unified interface and Task 4 PDP"
+requires-python = ">=3.11"
+dependencies = [
+  "pydantic>=2.8,<3.0",
+  "PyYAML>=6.0,<7.0",
+  "jsonschema>=4.23,<5.0",
+  "httpx>=0.27,<1.0",
+]
+
+[project.optional-dependencies]
+fastapi = ["fastapi>=0.115,<1.0"]
+test = ["pytest>=8.0,<10.0", "fastapi>=0.115,<1.0"]
+
+[project.scripts]
+zt-pep = "zt_pep.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src", "generated"]
+testpaths = ["tests"]
+addopts = "-q"

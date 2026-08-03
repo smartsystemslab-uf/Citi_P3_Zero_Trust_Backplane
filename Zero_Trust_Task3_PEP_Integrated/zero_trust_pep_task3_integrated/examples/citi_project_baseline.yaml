@@ -1,0 +1,2915 @@
+apiVersion: ztb/v1alpha1
+kind: ZeroTrustSystemManifest
+metadata:
+  name: citi-zero-trust-backplane-baseline
+  manifest_version: 1.0.0-alpha.1
+  environment: prototype
+  created_at: '2026-07-26T00:00:00Z'
+  updated_at: '2026-07-26T00:00:00Z'
+  owner: zero_trust_backplane_team
+  source_revision: null
+  description: Project-wide baseline containing current provisional architecture and
+    explicit Citi replacement gaps.
+spec:
+  defaults:
+    decision: DENY
+    pep_mode: enforce
+    environment_binding: prototype
+    placeholder_token: __CITI_REQUIRED__
+    clock_skew_seconds: 30
+    extensions: {}
+  subjects:
+  - id: agent.front_office.front_office
+    type: agent
+    roles:
+    - front_office_entry
+    domain: front_office
+    enabled: true
+    metadata:
+      display_name: Front Office Agent
+      description: Prototype logical identity for Front Office Agent.
+      status: provisional
+      source:
+        provided_by: project_architecture
+        reference: Banking Architecture and current Task 4 prototype
+        verified_at: null
+        notes: ''
+      owner: null
+      tags:
+      - banking_agent
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: front_office_agent
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+      citi_dev:
+        runtime_id: null
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    attributes: {}
+  - id: agent.front_office.transaction_monitoring
+    type: agent
+    roles:
+    - transaction_monitor
+    domain: front_office
+    enabled: true
+    metadata:
+      display_name: Transaction Monitoring Agent
+      description: Prototype logical identity for Transaction Monitoring Agent.
+      status: provisional
+      source:
+        provided_by: project_architecture
+        reference: Banking Architecture and current Task 4 prototype
+        verified_at: null
+        notes: ''
+      owner: null
+      tags:
+      - banking_agent
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: transaction_monitoring_agent
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+      citi_dev:
+        runtime_id: null
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    attributes: {}
+  - id: agent.front_office.fraud
+    type: agent
+    roles:
+    - fraud_analyst
+    domain: front_office
+    enabled: true
+    metadata:
+      display_name: Fraud Agent
+      description: Prototype logical identity for Fraud Agent.
+      status: provisional
+      source:
+        provided_by: project_architecture
+        reference: Banking Architecture and current Task 4 prototype
+        verified_at: null
+        notes: ''
+      owner: null
+      tags:
+      - banking_agent
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: fraud_agent
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+      citi_dev:
+        runtime_id: null
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    attributes: {}
+  - id: agent.front_office.compliance
+    type: agent
+    roles:
+    - compliance_reader
+    domain: front_office
+    enabled: true
+    metadata:
+      display_name: Compliance Agent
+      description: Prototype logical identity for Compliance Agent.
+      status: provisional
+      source:
+        provided_by: project_architecture
+        reference: Banking Architecture and current Task 4 prototype
+        verified_at: null
+        notes: ''
+      owner: null
+      tags:
+      - banking_agent
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: compliance_agent
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+      citi_dev:
+        runtime_id: null
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    attributes: {}
+  - id: agent.front_office.decision
+    type: agent
+    roles:
+    - risk_decision
+    domain: front_office
+    enabled: true
+    metadata:
+      display_name: Decision Agent
+      description: Prototype logical identity for Decision Agent.
+      status: provisional
+      source:
+        provided_by: project_architecture
+        reference: Banking Architecture and current Task 4 prototype
+        verified_at: null
+        notes: ''
+      owner: null
+      tags:
+      - banking_agent
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: decision_agent
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+      citi_dev:
+        runtime_id: null
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    attributes: {}
+  - id: agent.front_office.chatbot
+    type: agent
+    roles:
+    - customer_chat
+    domain: front_office
+    enabled: true
+    metadata:
+      display_name: Chatbot Agent
+      description: Prototype logical identity for Chatbot Agent.
+      status: provisional
+      source:
+        provided_by: project_architecture
+        reference: Banking Architecture and current Task 4 prototype
+        verified_at: null
+        notes: ''
+      owner: null
+      tags:
+      - banking_agent
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: chatbot_agent
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+      citi_dev:
+        runtime_id: null
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    attributes: {}
+  - id: agent.front_office.knowledge_base
+    type: agent
+    roles:
+    - knowledge_reader
+    domain: front_office
+    enabled: true
+    metadata:
+      display_name: Knowledge Base Agent
+      description: Prototype logical identity for Knowledge Base Agent.
+      status: provisional
+      source:
+        provided_by: project_architecture
+        reference: Banking Architecture and current Task 4 prototype
+        verified_at: null
+        notes: ''
+      owner: null
+      tags:
+      - banking_agent
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: knowledge_base_agent
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+      citi_dev:
+        runtime_id: null
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    attributes: {}
+  - id: agent.front_office.customer_service
+    type: agent
+    roles:
+    - customer_service
+    domain: front_office
+    enabled: true
+    metadata:
+      display_name: Customer Service Agent
+      description: Prototype logical identity for Customer Service Agent.
+      status: provisional
+      source:
+        provided_by: project_architecture
+        reference: Banking Architecture and current Task 4 prototype
+        verified_at: null
+        notes: ''
+      owner: null
+      tags:
+      - banking_agent
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: customer_service_agent
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+      citi_dev:
+        runtime_id: null
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    attributes: {}
+  - id: agent.front_office.transaction_processing
+    type: agent
+    roles:
+    - transaction_executor
+    domain: front_office
+    enabled: true
+    metadata:
+      display_name: Transaction Processing Agent
+      description: Prototype logical identity for Transaction Processing Agent.
+      status: provisional
+      source:
+        provided_by: project_architecture
+        reference: Banking Architecture and current Task 4 prototype
+        verified_at: null
+        notes: ''
+      owner: null
+      tags:
+      - banking_agent
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: transaction_processing_agent
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+      citi_dev:
+        runtime_id: null
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    attributes: {}
+  - id: agent.mid_office.data_analysis
+    type: agent
+    roles:
+    - operations_analyst
+    domain: mid_office
+    enabled: true
+    metadata:
+      display_name: Data Analysis Agent
+      description: Prototype logical identity for Data Analysis Agent.
+      status: provisional
+      source:
+        provided_by: project_architecture
+        reference: Banking Architecture and current Task 4 prototype
+        verified_at: null
+        notes: ''
+      owner: null
+      tags:
+      - banking_agent
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: data_analysis_agent
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+      citi_dev:
+        runtime_id: null
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    attributes: {}
+  - id: agent.mid_office.forecasting
+    type: agent
+    roles:
+    - forecaster
+    domain: mid_office
+    enabled: true
+    metadata:
+      display_name: Forecasting Agent
+      description: Prototype logical identity for Forecasting Agent.
+      status: provisional
+      source:
+        provided_by: project_architecture
+        reference: Banking Architecture and current Task 4 prototype
+        verified_at: null
+        notes: ''
+      owner: null
+      tags:
+      - banking_agent
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: forecasting_agent
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+      citi_dev:
+        runtime_id: null
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    attributes: {}
+  - id: agent.mid_office.staff_scheduling
+    type: agent
+    roles:
+    - scheduler
+    domain: mid_office
+    enabled: true
+    metadata:
+      display_name: Staff Scheduling Agent
+      description: Prototype logical identity for Staff Scheduling Agent.
+      status: provisional
+      source:
+        provided_by: project_architecture
+        reference: Banking Architecture and current Task 4 prototype
+        verified_at: null
+        notes: ''
+      owner: null
+      tags:
+      - banking_agent
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: staff_scheduling_agent
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+      citi_dev:
+        runtime_id: null
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    attributes: {}
+  - id: agent.mid_office.validation
+    type: agent
+    roles:
+    - validator
+    domain: mid_office
+    enabled: true
+    metadata:
+      display_name: Validation Agent
+      description: Prototype logical identity for Validation Agent.
+      status: provisional
+      source:
+        provided_by: project_architecture
+        reference: Banking Architecture and current Task 4 prototype
+        verified_at: null
+        notes: ''
+      owner: null
+      tags:
+      - banking_agent
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: validation_agent
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+      citi_dev:
+        runtime_id: null
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    attributes: {}
+  - id: agent.mid_office.support_guidance
+    type: agent
+    roles:
+    - support_advisor
+    domain: mid_office
+    enabled: true
+    metadata:
+      display_name: Support Guidance Agent
+      description: Prototype logical identity for Support Guidance Agent.
+      status: provisional
+      source:
+        provided_by: project_architecture
+        reference: Banking Architecture and current Task 4 prototype
+        verified_at: null
+        notes: ''
+      owner: null
+      tags:
+      - banking_agent
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: support_guidance_agent
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+      citi_dev:
+        runtime_id: null
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    attributes: {}
+  - id: agent.mid_office.financial_data
+    type: agent
+    roles:
+    - financial_data_reader
+    domain: mid_office
+    enabled: true
+    metadata:
+      display_name: Financial Data Agent
+      description: Prototype logical identity for Financial Data Agent.
+      status: provisional
+      source:
+        provided_by: project_architecture
+        reference: Banking Architecture and current Task 4 prototype
+        verified_at: null
+        notes: ''
+      owner: null
+      tags:
+      - banking_agent
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: financial_data_agent
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+      citi_dev:
+        runtime_id: null
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    attributes: {}
+  - id: agent.mid_office.recommender
+    type: agent
+    roles:
+    - product_recommender
+    domain: mid_office
+    enabled: true
+    metadata:
+      display_name: Recommender Agent
+      description: Prototype logical identity for Recommender Agent.
+      status: provisional
+      source:
+        provided_by: project_architecture
+        reference: Banking Architecture and current Task 4 prototype
+        verified_at: null
+        notes: ''
+      owner: null
+      tags:
+      - banking_agent
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: recommender_agent
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+      citi_dev:
+        runtime_id: null
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    attributes: {}
+  - id: agent.mid_office.loan
+    type: agent
+    roles:
+    - loan_support
+    domain: mid_office
+    enabled: true
+    metadata:
+      display_name: Loan Agent
+      description: Prototype logical identity for Loan Agent.
+      status: provisional
+      source:
+        provided_by: project_architecture
+        reference: Banking Architecture and current Task 4 prototype
+        verified_at: null
+        notes: ''
+      owner: null
+      tags:
+      - banking_agent
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: loan_agent
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+      citi_dev:
+        runtime_id: null
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    attributes: {}
+  - id: agent.mid_office.risk_compliance
+    type: agent
+    roles:
+    - risk_compliance
+    domain: mid_office
+    enabled: true
+    metadata:
+      display_name: Risk Compliance Agent
+      description: Prototype logical identity for Risk Compliance Agent.
+      status: provisional
+      source:
+        provided_by: project_architecture
+        reference: Banking Architecture and current Task 4 prototype
+        verified_at: null
+        notes: ''
+      owner: null
+      tags:
+      - banking_agent
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: risk_compliance_agent
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+      citi_dev:
+        runtime_id: null
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    attributes: {}
+  - id: agent.back_office.back_office
+    type: agent
+    roles:
+    - back_office_orchestrator
+    domain: back_office
+    enabled: true
+    metadata:
+      display_name: Back Office Agent
+      description: Prototype logical identity for Back Office Agent.
+      status: provisional
+      source:
+        provided_by: project_architecture
+        reference: Banking Architecture and current Task 4 prototype
+        verified_at: null
+        notes: ''
+      owner: null
+      tags:
+      - banking_agent
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: back_office_agent
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+      citi_dev:
+        runtime_id: null
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    attributes: {}
+  - id: agent.back_office.eod
+    type: agent
+    roles:
+    - eod_processor
+    domain: back_office
+    enabled: true
+    metadata:
+      display_name: EOD Agent
+      description: Prototype logical identity for EOD Agent.
+      status: provisional
+      source:
+        provided_by: project_architecture
+        reference: Banking Architecture and current Task 4 prototype
+        verified_at: null
+        notes: ''
+      owner: null
+      tags:
+      - banking_agent
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: eod_agent
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+      citi_dev:
+        runtime_id: null
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    attributes: {}
+  - id: agent.back_office.reconciliation
+    type: agent
+    roles:
+    - reconciler
+    domain: back_office
+    enabled: true
+    metadata:
+      display_name: Reconciliation Agent
+      description: Prototype logical identity for Reconciliation Agent.
+      status: provisional
+      source:
+        provided_by: project_architecture
+        reference: Banking Architecture and current Task 4 prototype
+        verified_at: null
+        notes: ''
+      owner: null
+      tags:
+      - banking_agent
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: reconciliation_agent
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+      citi_dev:
+        runtime_id: null
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    attributes: {}
+  - id: agent.back_office.report
+    type: agent
+    roles:
+    - report_writer
+    domain: back_office
+    enabled: true
+    metadata:
+      display_name: Report Agent
+      description: Prototype logical identity for Report Agent.
+      status: provisional
+      source:
+        provided_by: project_architecture
+        reference: Banking Architecture and current Task 4 prototype
+        verified_at: null
+        notes: ''
+      owner: null
+      tags:
+      - banking_agent
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: report_agent
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+      citi_dev:
+        runtime_id: null
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    attributes: {}
+  - id: agent.back_office.exception
+    type: agent
+    roles:
+    - exception_handler
+    domain: back_office
+    enabled: true
+    metadata:
+      display_name: Exception Agent
+      description: Prototype logical identity for Exception Agent.
+      status: provisional
+      source:
+        provided_by: project_architecture
+        reference: Banking Architecture and current Task 4 prototype
+        verified_at: null
+        notes: ''
+      owner: null
+      tags:
+      - banking_agent
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: exception_agent
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+      citi_dev:
+        runtime_id: null
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    attributes: {}
+  - id: service.shared.pdp
+    type: service
+    roles:
+    - authorization_decision
+    domain: shared
+    enabled: true
+    metadata:
+      display_name: PDP Service
+      description: Central Task 4 authorization decision service.
+      status: confirmed
+      source:
+        provided_by: task4_prototype
+        reference: src/zt_backplane/pdp_service.py
+        verified_at: null
+        notes: ''
+      owner: zero_trust_backplane_team
+      tags:
+      - pdp
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: zt_pdp
+        endpoint: http://127.0.0.1:8080
+        function_name: null
+        service_name: zt-pdp
+        namespace: null
+        secret_refs: []
+        extensions: {}
+      citi_dev:
+        runtime_id: null
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    attributes: {}
+  resources:
+  - id: resource.front_office.transaction_history
+    type: data
+    domain: front_office
+    classification: confidential
+    actions:
+    - name: read
+      side_effect: false
+      criticality: medium
+      requires_human_approval: false
+      idempotent: true
+      parameter_schema_ref: null
+    metadata:
+      display_name: Transaction History
+      description: Logical resource transaction_history.
+      status: provisional
+      source:
+        provided_by: project_architecture
+        reference: Banking Architecture and current Task 4 prototype
+        verified_at: null
+        notes: ''
+      owner: null
+      tags: []
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: transaction_history
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+      citi_dev:
+        runtime_id: null
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    attributes: {}
+  - id: resource.front_office.customer_context
+    type: data
+    domain: front_office
+    classification: restricted
+    actions:
+    - name: read
+      side_effect: false
+      criticality: medium
+      requires_human_approval: false
+      idempotent: true
+      parameter_schema_ref: null
+    metadata:
+      display_name: Customer Context
+      description: Logical resource customer_context.
+      status: provisional
+      source:
+        provided_by: project_architecture
+        reference: Banking Architecture and current Task 4 prototype
+        verified_at: null
+        notes: ''
+      owner: null
+      tags: []
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: customer_context
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+      citi_dev:
+        runtime_id: null
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    attributes: {}
+  - id: resource.front_office.customer_profile
+    type: data
+    domain: front_office
+    classification: restricted
+    actions:
+    - name: read
+      side_effect: false
+      criticality: medium
+      requires_human_approval: false
+      idempotent: true
+      parameter_schema_ref: null
+    - name: update
+      side_effect: true
+      criticality: high
+      requires_human_approval: true
+      idempotent: false
+      parameter_schema_ref: null
+    metadata:
+      display_name: Customer Profile
+      description: Logical resource customer_profile.
+      status: provisional
+      source:
+        provided_by: project_architecture
+        reference: Banking Architecture and current Task 4 prototype
+        verified_at: null
+        notes: ''
+      owner: null
+      tags: []
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: customer_profile
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+      citi_dev:
+        runtime_id: null
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    attributes: {}
+  - id: resource.front_office.policy_knowledge_base
+    type: knowledge_base
+    domain: front_office
+    classification: internal
+    actions:
+    - name: read
+      side_effect: false
+      criticality: low
+      requires_human_approval: false
+      idempotent: true
+      parameter_schema_ref: null
+    - name: search
+      side_effect: false
+      criticality: low
+      requires_human_approval: false
+      idempotent: true
+      parameter_schema_ref: null
+    metadata:
+      display_name: Policy Knowledge Base
+      description: Logical resource policy_knowledge_base.
+      status: provisional
+      source:
+        provided_by: project_architecture
+        reference: Banking Architecture and current Task 4 prototype
+        verified_at: null
+        notes: ''
+      owner: null
+      tags: []
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: policy_knowledge_base
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+      citi_dev:
+        runtime_id: null
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    attributes: {}
+  - id: resource.front_office.banking_transfer
+    type: api
+    domain: front_office
+    classification: restricted
+    actions:
+    - name: execute
+      side_effect: true
+      criticality: critical
+      requires_human_approval: true
+      idempotent: false
+      parameter_schema_ref: null
+    - name: cancel
+      side_effect: true
+      criticality: critical
+      requires_human_approval: true
+      idempotent: false
+      parameter_schema_ref: null
+    metadata:
+      display_name: Banking Transfer
+      description: Logical resource banking_transfer.
+      status: provisional
+      source:
+        provided_by: project_architecture
+        reference: Banking Architecture and current Task 4 prototype
+        verified_at: null
+        notes: ''
+      owner: null
+      tags:
+      - critical
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: banking_transfer
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+      citi_dev:
+        runtime_id: null
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    attributes: {}
+  - id: resource.front_office.transaction_decision
+    type: data
+    domain: front_office
+    classification: restricted
+    actions:
+    - name: read
+      side_effect: false
+      criticality: medium
+      requires_human_approval: false
+      idempotent: true
+      parameter_schema_ref: null
+    - name: approve
+      side_effect: true
+      criticality: critical
+      requires_human_approval: true
+      idempotent: false
+      parameter_schema_ref: null
+    - name: reject
+      side_effect: true
+      criticality: high
+      requires_human_approval: false
+      idempotent: false
+      parameter_schema_ref: null
+    metadata:
+      display_name: Transaction Decision
+      description: Logical resource transaction_decision.
+      status: provisional
+      source:
+        provided_by: project_architecture
+        reference: Banking Architecture and current Task 4 prototype
+        verified_at: null
+        notes: ''
+      owner: null
+      tags:
+      - critical
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: transaction_decision
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+      citi_dev:
+        runtime_id: null
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    attributes: {}
+  - id: resource.mid_office.internal_operations_data
+    type: data
+    domain: mid_office
+    classification: internal
+    actions:
+    - name: read
+      side_effect: false
+      criticality: low
+      requires_human_approval: false
+      idempotent: true
+      parameter_schema_ref: null
+    metadata:
+      display_name: Internal Operations Data
+      description: Logical resource internal_operations_data.
+      status: provisional
+      source:
+        provided_by: project_architecture
+        reference: Banking Architecture and current Task 4 prototype
+        verified_at: null
+        notes: ''
+      owner: null
+      tags: []
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: internal_operations_data
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+      citi_dev:
+        runtime_id: null
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    attributes: {}
+  - id: resource.mid_office.workload_forecast
+    type: data
+    domain: mid_office
+    classification: internal
+    actions:
+    - name: read
+      side_effect: false
+      criticality: low
+      requires_human_approval: false
+      idempotent: true
+      parameter_schema_ref: null
+    - name: create
+      side_effect: true
+      criticality: medium
+      requires_human_approval: false
+      idempotent: false
+      parameter_schema_ref: null
+    metadata:
+      display_name: Workload Forecast
+      description: Logical resource workload_forecast.
+      status: provisional
+      source:
+        provided_by: project_architecture
+        reference: Banking Architecture and current Task 4 prototype
+        verified_at: null
+        notes: ''
+      owner: null
+      tags: []
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: workload_forecast
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+      citi_dev:
+        runtime_id: null
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    attributes: {}
+  - id: resource.mid_office.schedule_draft
+    type: data
+    domain: mid_office
+    classification: internal
+    actions:
+    - name: read
+      side_effect: false
+      criticality: low
+      requires_human_approval: false
+      idempotent: true
+      parameter_schema_ref: null
+    - name: create
+      side_effect: true
+      criticality: medium
+      requires_human_approval: false
+      idempotent: false
+      parameter_schema_ref: null
+    - name: update
+      side_effect: true
+      criticality: medium
+      requires_human_approval: false
+      idempotent: false
+      parameter_schema_ref: null
+    - name: approve
+      side_effect: true
+      criticality: high
+      requires_human_approval: true
+      idempotent: false
+      parameter_schema_ref: null
+    metadata:
+      display_name: Schedule Draft
+      description: Logical resource schedule_draft.
+      status: provisional
+      source:
+        provided_by: project_architecture
+        reference: Banking Architecture and current Task 4 prototype
+        verified_at: null
+        notes: ''
+      owner: null
+      tags: []
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: schedule_draft
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+      citi_dev:
+        runtime_id: null
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    attributes: {}
+  - id: resource.mid_office.financial_customer_data
+    type: data
+    domain: mid_office
+    classification: restricted
+    actions:
+    - name: read
+      side_effect: false
+      criticality: high
+      requires_human_approval: false
+      idempotent: true
+      parameter_schema_ref: null
+    metadata:
+      display_name: Financial Customer Data
+      description: Logical resource financial_customer_data.
+      status: provisional
+      source:
+        provided_by: project_architecture
+        reference: Banking Architecture and current Task 4 prototype
+        verified_at: null
+        notes: ''
+      owner: null
+      tags: []
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: financial_customer_data
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+      citi_dev:
+        runtime_id: null
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    attributes: {}
+  - id: resource.mid_office.product_catalog
+    type: data
+    domain: mid_office
+    classification: internal
+    actions:
+    - name: read
+      side_effect: false
+      criticality: low
+      requires_human_approval: false
+      idempotent: true
+      parameter_schema_ref: null
+    - name: search
+      side_effect: false
+      criticality: low
+      requires_human_approval: false
+      idempotent: true
+      parameter_schema_ref: null
+    metadata:
+      display_name: Product Catalog
+      description: Logical resource product_catalog.
+      status: provisional
+      source:
+        provided_by: project_architecture
+        reference: Banking Architecture and current Task 4 prototype
+        verified_at: null
+        notes: ''
+      owner: null
+      tags: []
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: product_catalog
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+      citi_dev:
+        runtime_id: null
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    attributes: {}
+  - id: resource.mid_office.loan_workflow
+    type: api
+    domain: mid_office
+    classification: restricted
+    actions:
+    - name: read
+      side_effect: false
+      criticality: medium
+      requires_human_approval: false
+      idempotent: true
+      parameter_schema_ref: null
+    - name: recommend
+      side_effect: false
+      criticality: medium
+      requires_human_approval: false
+      idempotent: true
+      parameter_schema_ref: null
+    - name: submit
+      side_effect: true
+      criticality: critical
+      requires_human_approval: true
+      idempotent: false
+      parameter_schema_ref: null
+    metadata:
+      display_name: Loan Workflow
+      description: Logical resource loan_workflow.
+      status: provisional
+      source:
+        provided_by: project_architecture
+        reference: Banking Architecture and current Task 4 prototype
+        verified_at: null
+        notes: ''
+      owner: null
+      tags:
+      - critical
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: loan_workflow
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+      citi_dev:
+        runtime_id: null
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    attributes: {}
+  - id: resource.back_office.ledger_snapshot
+    type: data
+    domain: back_office
+    classification: restricted
+    actions:
+    - name: read
+      side_effect: false
+      criticality: high
+      requires_human_approval: false
+      idempotent: true
+      parameter_schema_ref: null
+    metadata:
+      display_name: Ledger Snapshot
+      description: Logical resource ledger_snapshot.
+      status: provisional
+      source:
+        provided_by: project_architecture
+        reference: Banking Architecture and current Task 4 prototype
+        verified_at: null
+        notes: ''
+      owner: null
+      tags: []
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: ledger_snapshot
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+      citi_dev:
+        runtime_id: null
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    attributes: {}
+  - id: resource.back_office.ledger
+    type: ledger
+    domain: back_office
+    classification: regulated
+    actions:
+    - name: read
+      side_effect: false
+      criticality: high
+      requires_human_approval: false
+      idempotent: true
+      parameter_schema_ref: null
+    - name: update
+      side_effect: true
+      criticality: critical
+      requires_human_approval: true
+      idempotent: false
+      parameter_schema_ref: null
+    metadata:
+      display_name: Ledger
+      description: Logical resource ledger.
+      status: provisional
+      source:
+        provided_by: project_architecture
+        reference: Banking Architecture and current Task 4 prototype
+        verified_at: null
+        notes: ''
+      owner: null
+      tags:
+      - critical
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: ledger
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+      citi_dev:
+        runtime_id: null
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    attributes: {}
+  - id: resource.back_office.reconciliation_results
+    type: data
+    domain: back_office
+    classification: confidential
+    actions:
+    - name: read
+      side_effect: false
+      criticality: medium
+      requires_human_approval: false
+      idempotent: true
+      parameter_schema_ref: null
+    - name: create
+      side_effect: true
+      criticality: high
+      requires_human_approval: false
+      idempotent: false
+      parameter_schema_ref: null
+    metadata:
+      display_name: Reconciliation Results
+      description: Logical resource reconciliation_results.
+      status: provisional
+      source:
+        provided_by: project_architecture
+        reference: Banking Architecture and current Task 4 prototype
+        verified_at: null
+        notes: ''
+      owner: null
+      tags: []
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: reconciliation_results
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+      citi_dev:
+        runtime_id: null
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    attributes: {}
+  - id: resource.back_office.final_report
+    type: report
+    domain: back_office
+    classification: confidential
+    actions:
+    - name: read
+      side_effect: false
+      criticality: medium
+      requires_human_approval: false
+      idempotent: true
+      parameter_schema_ref: null
+    - name: create
+      side_effect: true
+      criticality: medium
+      requires_human_approval: false
+      idempotent: false
+      parameter_schema_ref: null
+    - name: store
+      side_effect: true
+      criticality: high
+      requires_human_approval: false
+      idempotent: false
+      parameter_schema_ref: null
+    metadata:
+      display_name: Final Report
+      description: Logical resource final_report.
+      status: provisional
+      source:
+        provided_by: project_architecture
+        reference: Banking Architecture and current Task 4 prototype
+        verified_at: null
+        notes: ''
+      owner: null
+      tags: []
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: final_report
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+      citi_dev:
+        runtime_id: null
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    attributes: {}
+  - id: resource.back_office.exception_case
+    type: data
+    domain: back_office
+    classification: confidential
+    actions:
+    - name: read
+      side_effect: false
+      criticality: medium
+      requires_human_approval: false
+      idempotent: true
+      parameter_schema_ref: null
+    - name: create
+      side_effect: true
+      criticality: high
+      requires_human_approval: false
+      idempotent: false
+      parameter_schema_ref: null
+    - name: update
+      side_effect: true
+      criticality: high
+      requires_human_approval: false
+      idempotent: false
+      parameter_schema_ref: null
+    metadata:
+      display_name: Exception Case
+      description: Logical resource exception_case.
+      status: provisional
+      source:
+        provided_by: project_architecture
+        reference: Banking Architecture and current Task 4 prototype
+        verified_at: null
+        notes: ''
+      owner: null
+      tags: []
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: exception_case
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+      citi_dev:
+        runtime_id: null
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    attributes: {}
+  - id: resource.back_office.eod_batches
+    type: data
+    domain: back_office
+    classification: restricted
+    actions:
+    - name: read
+      side_effect: false
+      criticality: high
+      requires_human_approval: false
+      idempotent: true
+      parameter_schema_ref: null
+    metadata:
+      display_name: Eod Batches
+      description: Logical resource eod_batches.
+      status: provisional
+      source:
+        provided_by: project_architecture
+        reference: Banking Architecture and current Task 4 prototype
+        verified_at: null
+        notes: ''
+      owner: null
+      tags: []
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: eod_batches
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+      citi_dev:
+        runtime_id: null
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    attributes: {}
+  interfaces:
+  - id: interface.http.pdp_authorize
+    type: http
+    metadata:
+      display_name: PDP Authorization API
+      description: Interface definition for PDP Authorization API.
+      status: confirmed
+      source:
+        provided_by: project_architecture
+        reference: Current project repository summary and Task 4 prototype
+        verified_at: null
+        notes: ''
+      owner: null
+      tags:
+      - interface
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: pdp_authorize
+        endpoint: http://127.0.0.1:8080/v1/authorize
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+      citi_dev:
+        runtime_id: null
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    authentication:
+      method: placeholder
+      issuer: null
+      audience: null
+      subject_claim: null
+      credential_ref: null
+      jwks_uri: null
+      extensions: {}
+    request_schema_ref: schemas/pdp_request.schema.json
+    response_schema_ref: schemas/pdp_response.schema.json
+    timeout_ms: 1000
+    retry_policy:
+      max_attempts: 1
+    extensions: {}
+  - id: interface.mcp.get_customer_context
+    type: mcp
+    metadata:
+      display_name: Get Customer Context
+      description: Interface definition for Get Customer Context.
+      status: provisional
+      source:
+        provided_by: project_architecture
+        reference: Current project repository summary and Task 4 prototype
+        verified_at: null
+        notes: ''
+      owner: null
+      tags:
+      - interface
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: get_customer_context
+        endpoint: null
+        function_name: get_customer_context
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+      citi_dev:
+        runtime_id: null
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    authentication:
+      method: placeholder
+      issuer: null
+      audience: null
+      subject_claim: null
+      credential_ref: null
+      jwks_uri: null
+      extensions: {}
+    request_schema_ref: null
+    response_schema_ref: null
+    timeout_ms: 5000
+    retry_policy:
+      max_attempts: 1
+    extensions: {}
+  - id: interface.mcp.execute_transfer
+    type: mcp
+    metadata:
+      display_name: Execute Transfer
+      description: Interface definition for Execute Transfer.
+      status: provisional
+      source:
+        provided_by: project_architecture
+        reference: Current project repository summary and Task 4 prototype
+        verified_at: null
+        notes: ''
+      owner: null
+      tags:
+      - interface
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: execute_transfer
+        endpoint: null
+        function_name: execute_transfer
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+      citi_dev:
+        runtime_id: null
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    authentication:
+      method: placeholder
+      issuer: null
+      audience: null
+      subject_claim: null
+      credential_ref: null
+      jwks_uri: null
+      extensions: {}
+    request_schema_ref: null
+    response_schema_ref: null
+    timeout_ms: 5000
+    retry_policy:
+      max_attempts: 1
+    extensions: {}
+  - id: interface.mcp.search_policies
+    type: mcp
+    metadata:
+      display_name: Search Policies
+      description: Interface definition for Search Policies.
+      status: provisional
+      source:
+        provided_by: project_architecture
+        reference: Current project repository summary and Task 4 prototype
+        verified_at: null
+        notes: ''
+      owner: null
+      tags:
+      - interface
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: search_policies
+        endpoint: null
+        function_name: search_policies
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+      citi_dev:
+        runtime_id: null
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    authentication:
+      method: placeholder
+      issuer: null
+      audience: null
+      subject_claim: null
+      credential_ref: null
+      jwks_uri: null
+      extensions: {}
+    request_schema_ref: null
+    response_schema_ref: null
+    timeout_ms: 5000
+    retry_policy:
+      max_attempts: 1
+    extensions: {}
+  - id: interface.mcp.store_report
+    type: mcp
+    metadata:
+      display_name: Store Report
+      description: Interface definition for Store Report.
+      status: provisional
+      source:
+        provided_by: project_architecture
+        reference: Current project repository summary and Task 4 prototype
+        verified_at: null
+        notes: ''
+      owner: null
+      tags:
+      - interface
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: store_report
+        endpoint: null
+        function_name: store_report
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+      citi_dev:
+        runtime_id: null
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    authentication:
+      method: placeholder
+      issuer: null
+      audience: null
+      subject_claim: null
+      credential_ref: null
+      jwks_uri: null
+      extensions: {}
+    request_schema_ref: null
+    response_schema_ref: null
+    timeout_ms: 5000
+    retry_policy:
+      max_attempts: 1
+    extensions: {}
+  - id: interface.mcp.create_exception_case
+    type: mcp
+    metadata:
+      display_name: Create Exception Case
+      description: Interface definition for Create Exception Case.
+      status: provisional
+      source:
+        provided_by: project_architecture
+        reference: Current project repository summary and Task 4 prototype
+        verified_at: null
+        notes: ''
+      owner: null
+      tags:
+      - interface
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: create_exception_case
+        endpoint: null
+        function_name: create_exception_case
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+      citi_dev:
+        runtime_id: null
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    authentication:
+      method: placeholder
+      issuer: null
+      audience: null
+      subject_claim: null
+      credential_ref: null
+      jwks_uri: null
+      extensions: {}
+    request_schema_ref: null
+    response_schema_ref: null
+    timeout_ms: 5000
+    retry_policy:
+      max_attempts: 1
+    extensions: {}
+  - id: interface.mcp.ledger_update
+    type: mcp
+    metadata:
+      display_name: Ledger Update
+      description: Interface definition for Ledger Update.
+      status: provisional
+      source:
+        provided_by: project_architecture
+        reference: Current project repository summary and Task 4 prototype
+        verified_at: null
+        notes: ''
+      owner: null
+      tags:
+      - interface
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: ledger_update
+        endpoint: null
+        function_name: ledger_update
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+      citi_dev:
+        runtime_id: null
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    authentication:
+      method: placeholder
+      issuer: null
+      audience: null
+      subject_claim: null
+      credential_ref: null
+      jwks_uri: null
+      extensions: {}
+    request_schema_ref: null
+    response_schema_ref: null
+    timeout_ms: 5000
+    retry_policy:
+      max_attempts: 1
+    extensions: {}
+  - id: interface.mcp.get_eod_batches
+    type: mcp
+    metadata:
+      display_name: Get EOD Batches
+      description: Interface definition for Get EOD Batches.
+      status: provisional
+      source:
+        provided_by: project_architecture
+        reference: Current project repository summary and Task 4 prototype
+        verified_at: null
+        notes: ''
+      owner: null
+      tags:
+      - interface
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: get_eod_batches
+        endpoint: null
+        function_name: get_eod_batches
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+      citi_dev:
+        runtime_id: null
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    authentication:
+      method: placeholder
+      issuer: null
+      audience: null
+      subject_claim: null
+      credential_ref: null
+      jwks_uri: null
+      extensions: {}
+    request_schema_ref: null
+    response_schema_ref: null
+    timeout_ms: 5000
+    retry_policy:
+      max_attempts: 1
+    extensions: {}
+  - id: interface.mcp.write_final_report
+    type: mcp
+    metadata:
+      display_name: Write Final Report
+      description: Interface definition for Write Final Report.
+      status: provisional
+      source:
+        provided_by: project_architecture
+        reference: Current project repository summary and Task 4 prototype
+        verified_at: null
+        notes: ''
+      owner: null
+      tags:
+      - interface
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: write_final_report
+        endpoint: null
+        function_name: write_final_report
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+      citi_dev:
+        runtime_id: null
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    authentication:
+      method: placeholder
+      issuer: null
+      audience: null
+      subject_claim: null
+      credential_ref: null
+      jwks_uri: null
+      extensions: {}
+    request_schema_ref: null
+    response_schema_ref: null
+    timeout_ms: 5000
+    retry_policy:
+      max_attempts: 1
+    extensions: {}
+  - id: interface.http.banking_backend
+    type: http
+    metadata:
+      display_name: Banking Backend API
+      description: Interface definition for Banking Backend API.
+      status: placeholder
+      source:
+        provided_by: project_architecture
+        reference: Current project repository summary and Task 4 prototype
+        verified_at: null
+        notes: ''
+      owner: null
+      tags:
+      - interface
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: banking_backend
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+      citi_dev:
+        runtime_id: null
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    authentication:
+      method: placeholder
+      issuer: null
+      audience: null
+      subject_claim: null
+      credential_ref: null
+      jwks_uri: null
+      extensions: {}
+    request_schema_ref: null
+    response_schema_ref: null
+    timeout_ms: 5000
+    retry_policy:
+      max_attempts: 1
+    extensions: {}
+  - id: interface.database.banking_database
+    type: database
+    metadata:
+      display_name: Banking Database
+      description: Interface definition for Banking Database.
+      status: placeholder
+      source:
+        provided_by: project_architecture
+        reference: Current project repository summary and Task 4 prototype
+        verified_at: null
+        notes: ''
+      owner: null
+      tags:
+      - interface
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: banking_database
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+      citi_dev:
+        runtime_id: null
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    authentication:
+      method: placeholder
+      issuer: null
+      audience: null
+      subject_claim: null
+      credential_ref: null
+      jwks_uri: null
+      extensions: {}
+    request_schema_ref: null
+    response_schema_ref: null
+    timeout_ms: 5000
+    retry_policy:
+      max_attempts: 1
+    extensions: {}
+  workflows:
+  - id: workflow.front_office.customer_transaction
+    domain: front_office
+    metadata:
+      display_name: Customer Transaction
+      description: Customer service and transfer execution workflow.
+      status: provisional
+      source:
+        provided_by: project_architecture
+        reference: Banking Architecture and current Task 4 prototype
+        verified_at: null
+        notes: ''
+      owner: null
+      tags: []
+      extensions: {}
+    entry_step: get_context
+    steps:
+    - id: get_context
+      subject_id: agent.front_office.customer_service
+      action: read
+      resource_id: resource.front_office.customer_context
+      interface_id: interface.mcp.get_customer_context
+      next:
+      - execute_transfer
+      conditions: {}
+    - id: execute_transfer
+      subject_id: agent.front_office.transaction_processing
+      action: execute
+      resource_id: resource.front_office.banking_transfer
+      interface_id: interface.mcp.execute_transfer
+      next: []
+      conditions: {}
+    attributes: {}
+  - id: workflow.front_office.fraud_review
+    domain: front_office
+    metadata:
+      display_name: Fraud Review
+      description: Monitoring, fraud analysis, compliance search, and decision workflow.
+      status: provisional
+      source:
+        provided_by: project_architecture
+        reference: Banking Architecture and current Task 4 prototype
+        verified_at: null
+        notes: ''
+      owner: null
+      tags: []
+      extensions: {}
+    entry_step: monitor_context
+    steps:
+    - id: monitor_context
+      subject_id: agent.front_office.transaction_monitoring
+      action: read
+      resource_id: resource.front_office.customer_context
+      interface_id: interface.mcp.get_customer_context
+      next:
+      - fraud_read
+      conditions: {}
+    - id: fraud_read
+      subject_id: agent.front_office.fraud
+      action: read
+      resource_id: resource.front_office.transaction_history
+      interface_id: null
+      next:
+      - policy_search
+      conditions: {}
+    - id: policy_search
+      subject_id: agent.front_office.compliance
+      action: search
+      resource_id: resource.front_office.policy_knowledge_base
+      interface_id: interface.mcp.search_policies
+      next:
+      - decision_read
+      conditions: {}
+    - id: decision_read
+      subject_id: agent.front_office.decision
+      action: read
+      resource_id: resource.front_office.transaction_decision
+      interface_id: null
+      next: []
+      conditions: {}
+    attributes: {}
+  - id: workflow.back_office.eod_processing
+    domain: back_office
+    metadata:
+      display_name: EOD Processing
+      description: EOD, ledger update, reconciliation, report, and exception workflow.
+      status: provisional
+      source:
+        provided_by: project_architecture
+        reference: Banking Architecture and current Task 4 prototype
+        verified_at: null
+        notes: ''
+      owner: null
+      tags: []
+      extensions: {}
+    entry_step: get_batches
+    steps:
+    - id: get_batches
+      subject_id: agent.back_office.eod
+      action: read
+      resource_id: resource.back_office.eod_batches
+      interface_id: interface.mcp.get_eod_batches
+      next:
+      - ledger_update
+      conditions: {}
+    - id: ledger_update
+      subject_id: agent.back_office.eod
+      action: update
+      resource_id: resource.back_office.ledger
+      interface_id: interface.mcp.ledger_update
+      next:
+      - reconcile
+      conditions: {}
+    - id: reconcile
+      subject_id: agent.back_office.reconciliation
+      action: create
+      resource_id: resource.back_office.reconciliation_results
+      interface_id: null
+      next:
+      - write_report
+      - create_exception
+      conditions: {}
+    - id: write_report
+      subject_id: agent.back_office.report
+      action: create
+      resource_id: resource.back_office.final_report
+      interface_id: interface.mcp.write_final_report
+      next:
+      - store_report
+      conditions: {}
+    - id: store_report
+      subject_id: agent.back_office.report
+      action: store
+      resource_id: resource.back_office.final_report
+      interface_id: interface.mcp.store_report
+      next: []
+      conditions: {}
+    - id: create_exception
+      subject_id: agent.back_office.exception
+      action: create
+      resource_id: resource.back_office.exception_case
+      interface_id: interface.mcp.create_exception_case
+      next: []
+      conditions: {}
+    attributes: {}
+  interactions:
+  - id: edge.customer_transaction.get_context
+    caller_id: agent.front_office.customer_service
+    target_id: resource.front_office.customer_context
+    resource_id: resource.front_office.customer_context
+    action: read
+    workflow_id: workflow.front_office.customer_transaction
+    interface_id: interface.mcp.get_customer_context
+    trust_boundary_id: boundary.agent.mcp
+    risk: medium
+    data_types: []
+    side_effect: false
+    pep:
+      required: true
+      type: mcp
+      mode: enforce
+      placement_id: pep.customer_transaction.get_context
+      fail_mode: closed
+    metadata:
+      display_name: Edge Customer_Transaction Get_Context
+      description: Protected interaction edge.
+      status: provisional
+      source:
+        provided_by: project_architecture
+        reference: Banking Architecture and current Task 4 prototype
+        verified_at: null
+        notes: ''
+      owner: null
+      tags: []
+      extensions: {}
+    attributes: {}
+  - id: edge.customer_transaction.execute_transfer
+    caller_id: agent.front_office.transaction_processing
+    target_id: resource.front_office.banking_transfer
+    resource_id: resource.front_office.banking_transfer
+    action: execute
+    workflow_id: workflow.front_office.customer_transaction
+    interface_id: interface.mcp.execute_transfer
+    trust_boundary_id: boundary.agent.mcp
+    risk: critical
+    data_types: []
+    side_effect: true
+    pep:
+      required: true
+      type: mcp
+      mode: enforce
+      placement_id: pep.customer_transaction.execute_transfer
+      fail_mode: closed
+    metadata:
+      display_name: Edge Customer_Transaction Execute_Transfer
+      description: Protected interaction edge.
+      status: provisional
+      source:
+        provided_by: project_architecture
+        reference: Banking Architecture and current Task 4 prototype
+        verified_at: null
+        notes: ''
+      owner: null
+      tags: []
+      extensions: {}
+    attributes: {}
+  - id: edge.fraud_review.read_history
+    caller_id: agent.front_office.fraud
+    target_id: resource.front_office.transaction_history
+    resource_id: resource.front_office.transaction_history
+    action: read
+    workflow_id: workflow.front_office.fraud_review
+    interface_id: null
+    trust_boundary_id: boundary.agent.data
+    risk: medium
+    data_types: []
+    side_effect: false
+    pep:
+      required: true
+      type: data
+      mode: enforce
+      placement_id: pep.fraud_review.read_history
+      fail_mode: closed
+    metadata:
+      display_name: Edge Fraud_Review Read_History
+      description: Protected interaction edge.
+      status: provisional
+      source:
+        provided_by: project_architecture
+        reference: Banking Architecture and current Task 4 prototype
+        verified_at: null
+        notes: ''
+      owner: null
+      tags: []
+      extensions: {}
+    attributes: {}
+  - id: edge.fraud_review.search_policies
+    caller_id: agent.front_office.compliance
+    target_id: resource.front_office.policy_knowledge_base
+    resource_id: resource.front_office.policy_knowledge_base
+    action: search
+    workflow_id: workflow.front_office.fraud_review
+    interface_id: interface.mcp.search_policies
+    trust_boundary_id: boundary.agent.mcp
+    risk: medium
+    data_types: []
+    side_effect: false
+    pep:
+      required: true
+      type: mcp
+      mode: enforce
+      placement_id: pep.fraud_review.search_policies
+      fail_mode: closed
+    metadata:
+      display_name: Edge Fraud_Review Search_Policies
+      description: Protected interaction edge.
+      status: provisional
+      source:
+        provided_by: project_architecture
+        reference: Banking Architecture and current Task 4 prototype
+        verified_at: null
+        notes: ''
+      owner: null
+      tags: []
+      extensions: {}
+    attributes: {}
+  - id: edge.eod_processing.get_batches
+    caller_id: agent.back_office.eod
+    target_id: resource.back_office.eod_batches
+    resource_id: resource.back_office.eod_batches
+    action: read
+    workflow_id: workflow.back_office.eod_processing
+    interface_id: interface.mcp.get_eod_batches
+    trust_boundary_id: boundary.event.agent
+    risk: high
+    data_types: []
+    side_effect: false
+    pep:
+      required: true
+      type: event
+      mode: enforce
+      placement_id: pep.eod_processing.get_batches
+      fail_mode: closed
+    metadata:
+      display_name: Edge Eod_Processing Get_Batches
+      description: Protected interaction edge.
+      status: provisional
+      source:
+        provided_by: project_architecture
+        reference: Banking Architecture and current Task 4 prototype
+        verified_at: null
+        notes: ''
+      owner: null
+      tags: []
+      extensions: {}
+    attributes: {}
+  - id: edge.eod_processing.ledger_update
+    caller_id: agent.back_office.eod
+    target_id: resource.back_office.ledger
+    resource_id: resource.back_office.ledger
+    action: update
+    workflow_id: workflow.back_office.eod_processing
+    interface_id: interface.mcp.ledger_update
+    trust_boundary_id: boundary.agent.mcp
+    risk: critical
+    data_types: []
+    side_effect: true
+    pep:
+      required: true
+      type: mcp
+      mode: enforce
+      placement_id: pep.eod_processing.ledger_update
+      fail_mode: closed
+    metadata:
+      display_name: Edge Eod_Processing Ledger_Update
+      description: Protected interaction edge.
+      status: provisional
+      source:
+        provided_by: project_architecture
+        reference: Banking Architecture and current Task 4 prototype
+        verified_at: null
+        notes: ''
+      owner: null
+      tags: []
+      extensions: {}
+    attributes: {}
+  - id: edge.eod_processing.reconcile
+    caller_id: agent.back_office.reconciliation
+    target_id: resource.back_office.reconciliation_results
+    resource_id: resource.back_office.reconciliation_results
+    action: create
+    workflow_id: workflow.back_office.eod_processing
+    interface_id: null
+    trust_boundary_id: boundary.agent.data
+    risk: high
+    data_types: []
+    side_effect: true
+    pep:
+      required: true
+      type: data
+      mode: enforce
+      placement_id: pep.eod_processing.reconcile
+      fail_mode: closed
+    metadata:
+      display_name: Edge Eod_Processing Reconcile
+      description: Protected interaction edge.
+      status: provisional
+      source:
+        provided_by: project_architecture
+        reference: Banking Architecture and current Task 4 prototype
+        verified_at: null
+        notes: ''
+      owner: null
+      tags: []
+      extensions: {}
+    attributes: {}
+  - id: edge.eod_processing.write_report
+    caller_id: agent.back_office.report
+    target_id: resource.back_office.final_report
+    resource_id: resource.back_office.final_report
+    action: create
+    workflow_id: workflow.back_office.eod_processing
+    interface_id: interface.mcp.write_final_report
+    trust_boundary_id: boundary.agent.mcp
+    risk: medium
+    data_types: []
+    side_effect: true
+    pep:
+      required: true
+      type: mcp
+      mode: enforce
+      placement_id: pep.eod_processing.write_report
+      fail_mode: closed
+    metadata:
+      display_name: Edge Eod_Processing Write_Report
+      description: Protected interaction edge.
+      status: provisional
+      source:
+        provided_by: project_architecture
+        reference: Banking Architecture and current Task 4 prototype
+        verified_at: null
+        notes: ''
+      owner: null
+      tags: []
+      extensions: {}
+    attributes: {}
+  - id: edge.eod_processing.store_report
+    caller_id: agent.back_office.report
+    target_id: resource.back_office.final_report
+    resource_id: resource.back_office.final_report
+    action: store
+    workflow_id: workflow.back_office.eod_processing
+    interface_id: interface.mcp.store_report
+    trust_boundary_id: boundary.agent.mcp
+    risk: high
+    data_types: []
+    side_effect: true
+    pep:
+      required: true
+      type: mcp
+      mode: enforce
+      placement_id: pep.eod_processing.store_report
+      fail_mode: closed
+    metadata:
+      display_name: Edge Eod_Processing Store_Report
+      description: Protected interaction edge.
+      status: provisional
+      source:
+        provided_by: project_architecture
+        reference: Banking Architecture and current Task 4 prototype
+        verified_at: null
+        notes: ''
+      owner: null
+      tags: []
+      extensions: {}
+    attributes: {}
+  - id: edge.eod_processing.create_exception
+    caller_id: agent.back_office.exception
+    target_id: resource.back_office.exception_case
+    resource_id: resource.back_office.exception_case
+    action: create
+    workflow_id: workflow.back_office.eod_processing
+    interface_id: interface.mcp.create_exception_case
+    trust_boundary_id: boundary.agent.mcp
+    risk: high
+    data_types: []
+    side_effect: true
+    pep:
+      required: true
+      type: mcp
+      mode: enforce
+      placement_id: pep.eod_processing.create_exception
+      fail_mode: closed
+    metadata:
+      display_name: Edge Eod_Processing Create_Exception
+      description: Protected interaction edge.
+      status: provisional
+      source:
+        provided_by: project_architecture
+        reference: Banking Architecture and current Task 4 prototype
+        verified_at: null
+        notes: ''
+      owner: null
+      tags: []
+      extensions: {}
+    attributes: {}
+  trust_boundaries:
+  - id: boundary.agent.mcp
+    from_zone: agent_runtime
+    to_zone: mcp_tool_runtime
+    metadata:
+      display_name: Agent-to-MCP Boundary
+      description: Agent-to-MCP Boundary.
+      status: provisional
+      source:
+        provided_by: project_architecture
+        reference: Banking Architecture and current Task 4 prototype
+        verified_at: null
+        notes: ''
+      owner: null
+      tags: []
+      extensions: {}
+    attributes: {}
+  - id: boundary.agent.data
+    from_zone: agent_runtime
+    to_zone: protected_data_service
+    metadata:
+      display_name: Agent-to-Data Boundary
+      description: Agent-to-Data Boundary.
+      status: provisional
+      source:
+        provided_by: project_architecture
+        reference: Banking Architecture and current Task 4 prototype
+        verified_at: null
+        notes: ''
+      owner: null
+      tags: []
+      extensions: {}
+    attributes: {}
+  - id: boundary.event.agent
+    from_zone: event_source
+    to_zone: agent_runtime
+    metadata:
+      display_name: Event-to-Agent Boundary
+      description: Event-to-Agent Boundary.
+      status: provisional
+      source:
+        provided_by: project_architecture
+        reference: Banking Architecture and current Task 4 prototype
+        verified_at: null
+        notes: ''
+      owner: null
+      tags: []
+      extensions: {}
+    attributes: {}
+  - id: boundary.agent.api
+    from_zone: agent_runtime
+    to_zone: banking_api
+    metadata:
+      display_name: Agent-to-API Boundary
+      description: Agent-to-API Boundary.
+      status: provisional
+      source:
+        provided_by: project_architecture
+        reference: Banking Architecture and current Task 4 prototype
+        verified_at: null
+        notes: ''
+      owner: null
+      tags: []
+      extensions: {}
+    attributes: {}
+  policy_bundles:
+  - id: bundle.task4.prototype
+    uri: ../zero_trust_pdp_task4/policy_store
+    version: content-hash
+    status: provisional
+    checksum: null
+  audit:
+    schema_ref: schemas/audit_event.schema.json
+    sink_interface_id: null
+    required_fields:
+    - timestamp
+    - trace_id
+    - subject_id
+    - resource_id
+    - action
+    - workflow_id
+    - decision
+    - policy_version
+    - outcome
+    retention: __CITI_REQUIRED__
+    redaction:
+    - parameters.account_number
+    - parameters.customer_id
+    - parameters.token
+  unresolved:
+  - id: gap.citi_identity_provider
+    path: spec.interfaces[*].authentication
+    required_from: citi
+    question: What identity provider and credentials authenticate Citi agent workloads?
+    blocking_tasks:
+    - 4
+    - 6
+    status: open
+    answer: null
+    owner: null
+    due_date: null
+  - id: gap.citi_agent_runtime_ids
+    path: spec.subjects[*].bindings.citi_dev.runtime_id
+    required_from: citi
+    question: What are the stable Citi runtime identities for every banking agent?
+    blocking_tasks:
+    - 2
+    - 4
+    - 6
+    status: open
+    answer: null
+    owner: null
+    due_date: null
+  - id: gap.citi_interface_bindings
+    path: spec.interfaces[*].bindings.citi_dev
+    required_from: citi
+    question: What are the exact Citi MCP, API, function, database, and event interface
+      bindings?
+    blocking_tasks:
+    - 2
+    - 3
+    - 6
+    status: open
+    answer: null
+    owner: null
+    due_date: null
+  - id: gap.citi_request_response_schemas
+    path: spec.interfaces[*].request_schema_ref
+    required_from: citi
+    question: What are the authoritative request and response schemas for each interface?
+    blocking_tasks:
+    - 2
+    - 3
+    - 4
+    - 6
+    status: open
+    answer: null
+    owner: null
+    due_date: null
+  - id: gap.citi_resource_owners
+    path: spec.resources[*].metadata.owner
+    required_from: citi
+    question: Which Citi team owns each protected resource?
+    blocking_tasks:
+    - 1
+    - 6
+    - 7
+    status: open
+    answer: null
+    owner: null
+    due_date: null
+  - id: gap.citi_workflow_confirmation
+    path: spec.workflows
+    required_from: citi
+    question: Which workflow steps and branches are authoritative in Citi deployment?
+    blocking_tasks:
+    - 1
+    - 2
+    - 6
+    status: open
+    answer: null
+    owner: null
+    due_date: null
+  - id: gap.citi_risk_approval_rules
+    path: spec.resources[*].actions
+    required_from: citi
+    question: Which actions require manual approval, reauthentication, or special
+      obligations?
+    blocking_tasks:
+    - 4
+    - 6
+    status: open
+    answer: null
+    owner: null
+    due_date: null
+  - id: gap.citi_audit_requirements
+    path: spec.audit
+    required_from: citi
+    question: What audit sink, fields, redaction, and retention requirements apply?
+    blocking_tasks:
+    - 4
+    - 6
+    - 7
+    status: open
+    answer: null
+    owner: null
+    due_date: null
+  - id: gap.citi_deployment_network
+    path: spec.extensions.deployment
+    required_from: citi
+    question: What service names, namespaces, network zones, and trust boundaries
+      exist in Citi environments?
+    blocking_tasks:
+    - 1
+    - 3
+    - 6
+    status: open
+    answer: null
+    owner: null
+    due_date: null
+  extensions:
+    deployment: {}

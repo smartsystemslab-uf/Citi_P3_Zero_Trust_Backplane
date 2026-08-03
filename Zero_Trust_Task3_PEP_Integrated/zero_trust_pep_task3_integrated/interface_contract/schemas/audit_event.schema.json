@@ -1,0 +1,157 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://zero-trust-backplane.example/schema/audit_event.schema.json",
+  "title": "Zero Trust Audit Event",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "event_id",
+    "timestamp",
+    "trace_id",
+    "component",
+    "event_type",
+    "subject_id",
+    "resource_id",
+    "action",
+    "workflow_id",
+    "decision",
+    "policy_version",
+    "outcome",
+    "environment"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "event_id": {
+      "type": "string"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "trace_id": {
+      "type": "string"
+    },
+    "request_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "decision_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "component": {
+      "type": "string",
+      "enum": [
+        "scanner",
+        "generator",
+        "pep",
+        "pdp",
+        "policy_engine",
+        "permit_validator",
+        "revocation_service",
+        "audit_pipeline",
+        "workflow"
+      ]
+    },
+    "event_type": {
+      "type": "string"
+    },
+    "subject_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "runtime_subject_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "resource_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "runtime_resource_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "action": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "workflow_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "decision": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "policy_version": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "permit_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "outcome": {
+      "type": "string",
+      "enum": [
+        "success",
+        "blocked",
+        "failed",
+        "timeout",
+        "manual_review",
+        "shadow_only"
+      ]
+    },
+    "reason": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "obligations": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "latency_ms": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "environment": {
+      "type": "string"
+    },
+    "details": {
+      "type": "object"
+    }
+  }
+}

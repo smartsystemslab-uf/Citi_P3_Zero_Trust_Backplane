@@ -1,0 +1,19 @@
+{
+  "coverage_claim_scope": "Known interaction edges in the unified manifest only",
+  "deduplicated_component_savings": 7,
+  "interaction_edges_total": 10,
+  "known_direct_bypass_paths": 0,
+  "logical_pep_count": 10,
+  "physical_pep_count": 3,
+  "protected_sensitive_edges": 10,
+  "sensitive_interaction_edges": 10,
+  "sensitive_inventory_resources_without_discovered_edges": [
+    "resource.back_office.ledger_snapshot",
+    "resource.front_office.customer_profile",
+    "resource.front_office.transaction_decision",
+    "resource.mid_office.financial_customer_data",
+    "resource.mid_office.loan_workflow",
+    "resource.mid_office.schedule_draft"
+  ],
+  "sensitive_path_coverage_percent": 100.0
+}

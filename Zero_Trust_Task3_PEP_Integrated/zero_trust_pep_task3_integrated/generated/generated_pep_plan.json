@@ -1,0 +1,613 @@
+{
+  "compatibility": {
+    "edge_registry_checks": [
+      {
+        "action_present": true,
+        "candidate_policy_ids": [
+          "policy.tool.transfer_pending_review",
+          "policy.tool.transfer_approved"
+        ],
+        "edge_id": "edge.customer_transaction.execute_transfer",
+        "expected_if_no_policy": "DENY (Task 4 default-deny)",
+        "identity_present": true,
+        "identity_runtime_matches": true,
+        "placement_id": "pep.customer_transaction.execute_transfer",
+        "resource_present": true,
+        "resource_runtime_matches": true
+      },
+      {
+        "action_present": true,
+        "candidate_policy_ids": [],
+        "edge_id": "edge.customer_transaction.get_context",
+        "expected_if_no_policy": "DENY (Task 4 default-deny)",
+        "identity_present": true,
+        "identity_runtime_matches": true,
+        "placement_id": "pep.customer_transaction.get_context",
+        "resource_present": true,
+        "resource_runtime_matches": true
+      },
+      {
+        "action_present": true,
+        "candidate_policy_ids": [],
+        "edge_id": "edge.eod_processing.create_exception",
+        "expected_if_no_policy": "DENY (Task 4 default-deny)",
+        "identity_present": true,
+        "identity_runtime_matches": true,
+        "placement_id": "pep.eod_processing.create_exception",
+        "resource_present": true,
+        "resource_runtime_matches": true
+      },
+      {
+        "action_present": true,
+        "candidate_policy_ids": [
+          "policy.back_office.eod_read_batches"
+        ],
+        "edge_id": "edge.eod_processing.get_batches",
+        "expected_if_no_policy": "DENY (Task 4 default-deny)",
+        "identity_present": true,
+        "identity_runtime_matches": true,
+        "placement_id": "pep.eod_processing.get_batches",
+        "resource_present": true,
+        "resource_runtime_matches": true
+      },
+      {
+        "action_present": true,
+        "candidate_policy_ids": [
+          "policy.ledger.eod_pending_review",
+          "policy.ledger.eod_approved_update"
+        ],
+        "edge_id": "edge.eod_processing.ledger_update",
+        "expected_if_no_policy": "DENY (Task 4 default-deny)",
+        "identity_present": true,
+        "identity_runtime_matches": true,
+        "placement_id": "pep.eod_processing.ledger_update",
+        "resource_present": true,
+        "resource_runtime_matches": true
+      },
+      {
+        "action_present": true,
+        "candidate_policy_ids": [],
+        "edge_id": "edge.eod_processing.reconcile",
+        "expected_if_no_policy": "DENY (Task 4 default-deny)",
+        "identity_present": true,
+        "identity_runtime_matches": true,
+        "placement_id": "pep.eod_processing.reconcile",
+        "resource_present": true,
+        "resource_runtime_matches": true
+      },
+      {
+        "action_present": true,
+        "candidate_policy_ids": [],
+        "edge_id": "edge.eod_processing.store_report",
+        "expected_if_no_policy": "DENY (Task 4 default-deny)",
+        "identity_present": true,
+        "identity_runtime_matches": true,
+        "placement_id": "pep.eod_processing.store_report",
+        "resource_present": true,
+        "resource_runtime_matches": true
+      },
+      {
+        "action_present": true,
+        "candidate_policy_ids": [],
+        "edge_id": "edge.eod_processing.write_report",
+        "expected_if_no_policy": "DENY (Task 4 default-deny)",
+        "identity_present": true,
+        "identity_runtime_matches": true,
+        "placement_id": "pep.eod_processing.write_report",
+        "resource_present": true,
+        "resource_runtime_matches": true
+      },
+      {
+        "action_present": true,
+        "candidate_policy_ids": [
+          "policy.front_office.fraud_read_transaction_history"
+        ],
+        "edge_id": "edge.fraud_review.read_history",
+        "expected_if_no_policy": "DENY (Task 4 default-deny)",
+        "identity_present": true,
+        "identity_runtime_matches": true,
+        "placement_id": "pep.fraud_review.read_history",
+        "resource_present": true,
+        "resource_runtime_matches": true
+      },
+      {
+        "action_present": true,
+        "candidate_policy_ids": [
+          "policy.tool.knowledge_search"
+        ],
+        "edge_id": "edge.fraud_review.search_policies",
+        "expected_if_no_policy": "DENY (Task 4 default-deny)",
+        "identity_present": true,
+        "identity_runtime_matches": true,
+        "placement_id": "pep.fraud_review.search_policies",
+        "resource_present": true,
+        "resource_runtime_matches": true
+      }
+    ],
+    "schema_checks": [
+      {
+        "match": true,
+        "schema": "pdp_request.schema.json",
+        "task3_sha256": "ed9d384d87c9f044d472bf3d17a3e504836ff7e1e3ea544c3ab08f104f52b44f",
+        "task4_sha256": "ed9d384d87c9f044d472bf3d17a3e504836ff7e1e3ea544c3ab08f104f52b44f"
+      },
+      {
+        "match": true,
+        "schema": "pdp_response.schema.json",
+        "task3_sha256": "edc99dc2a25540f5b1b94d68ea6047f523d1069c129ff7649e0af64f4d4ccc5e",
+        "task4_sha256": "edc99dc2a25540f5b1b94d68ea6047f523d1069c129ff7649e0af64f4d4ccc5e"
+      },
+      {
+        "match": true,
+        "schema": "audit_event.schema.json",
+        "task3_sha256": "5ea224317deee3a11d21cc8bb7774c4396269a1e562bb55b333cc6f4c7a37ce5",
+        "task4_sha256": "5ea224317deee3a11d21cc8bb7774c4396269a1e562bb55b333cc6f4c7a37ce5"
+      },
+      {
+        "match": true,
+        "schema": "zt_manifest.schema.json",
+        "task3_sha256": "411bd7e7be49eb20c01786a1fdebbf51c108ab09b87fe1bda7fbe899022bd957",
+        "task4_sha256": "411bd7e7be49eb20c01786a1fdebbf51c108ab09b87fe1bda7fbe899022bd957"
+      }
+    ],
+    "summary": {
+      "all_pep_requests_resolve_in_task4_registry": true,
+      "compatible": true,
+      "interface_schemas_match": true,
+      "note": "Compatibility means Task 4 accepts the canonical request contract and can return a policy decision. Edges without a candidate allow policy are intentionally denied by Task 4 default-deny."
+    },
+    "task4_package": "zero_trust_pdp_task4_secure"
+  },
+  "coverage": {
+    "coverage_claim_scope": "Known interaction edges in the unified manifest only",
+    "deduplicated_component_savings": 7,
+    "interaction_edges_total": 10,
+    "known_direct_bypass_paths": 0,
+    "logical_pep_count": 10,
+    "physical_pep_count": 3,
+    "protected_sensitive_edges": 10,
+    "sensitive_interaction_edges": 10,
+    "sensitive_inventory_resources_without_discovered_edges": [
+      "resource.back_office.ledger_snapshot",
+      "resource.front_office.customer_profile",
+      "resource.front_office.transaction_decision",
+      "resource.mid_office.financial_customer_data",
+      "resource.mid_office.loan_workflow",
+      "resource.mid_office.schedule_draft"
+    ],
+    "sensitive_path_coverage_percent": 100.0
+  },
+  "environment_binding": "prototype",
+  "findings": [
+    {
+      "blocks_milestone": false,
+      "category": "scanner_coverage_gap",
+      "edge_id": null,
+      "id": "finding.resource_back_office_ledger_snapshot.no_discovered_path",
+      "message": "Sensitive resource exists in the inventory but no interaction edge reaches it. Task 3 cannot prove or place path-specific enforcement until Task 2 discovers the path.",
+      "resource_id": "resource.back_office.ledger_snapshot",
+      "severity": "information"
+    },
+    {
+      "blocks_milestone": false,
+      "category": "scanner_coverage_gap",
+      "edge_id": null,
+      "id": "finding.resource_front_office_customer_profile.no_discovered_path",
+      "message": "Sensitive resource exists in the inventory but no interaction edge reaches it. Task 3 cannot prove or place path-specific enforcement until Task 2 discovers the path.",
+      "resource_id": "resource.front_office.customer_profile",
+      "severity": "information"
+    },
+    {
+      "blocks_milestone": false,
+      "category": "scanner_coverage_gap",
+      "edge_id": null,
+      "id": "finding.resource_front_office_transaction_decision.no_discovered_path",
+      "message": "Sensitive resource exists in the inventory but no interaction edge reaches it. Task 3 cannot prove or place path-specific enforcement until Task 2 discovers the path.",
+      "resource_id": "resource.front_office.transaction_decision",
+      "severity": "information"
+    },
+    {
+      "blocks_milestone": false,
+      "category": "scanner_coverage_gap",
+      "edge_id": null,
+      "id": "finding.resource_mid_office_financial_customer_data.no_discovered_path",
+      "message": "Sensitive resource exists in the inventory but no interaction edge reaches it. Task 3 cannot prove or place path-specific enforcement until Task 2 discovers the path.",
+      "resource_id": "resource.mid_office.financial_customer_data",
+      "severity": "information"
+    },
+    {
+      "blocks_milestone": false,
+      "category": "scanner_coverage_gap",
+      "edge_id": null,
+      "id": "finding.resource_mid_office_loan_workflow.no_discovered_path",
+      "message": "Sensitive resource exists in the inventory but no interaction edge reaches it. Task 3 cannot prove or place path-specific enforcement until Task 2 discovers the path.",
+      "resource_id": "resource.mid_office.loan_workflow",
+      "severity": "information"
+    },
+    {
+      "blocks_milestone": false,
+      "category": "scanner_coverage_gap",
+      "edge_id": null,
+      "id": "finding.resource_mid_office_schedule_draft.no_discovered_path",
+      "message": "Sensitive resource exists in the inventory but no interaction edge reaches it. Task 3 cannot prove or place path-specific enforcement until Task 2 discovers the path.",
+      "resource_id": "resource.mid_office.schedule_draft",
+      "severity": "information"
+    }
+  ],
+  "generated_at": "2026-08-03T04:03:41.126263Z",
+  "logical_peps": [
+    {
+      "action": "execute",
+      "adapter_module": "mcp_wrappers.py",
+      "attributes": {
+        "inferred_pep_type": "mcp",
+        "manifest_pep_type": "mcp",
+        "sensitive": true
+      },
+      "critical": true,
+      "edge_id": "edge.customer_transaction.execute_transfer",
+      "fail_mode": "closed",
+      "interface_id": "interface.mcp.execute_transfer",
+      "interface_type": "mcp",
+      "mode": "enforce",
+      "pep_type": "mcp",
+      "physical_pep_id": "physical_pep.mcp_enforce_closed_shared_mcp_gateway",
+      "placement_id": "pep.customer_transaction.execute_transfer",
+      "resource_canonical_id": "resource.front_office.banking_transfer",
+      "resource_classification": "restricted",
+      "resource_runtime_id": "banking_transfer",
+      "resource_type": "api",
+      "risk": "critical",
+      "side_effect": true,
+      "source_status": "provisional",
+      "subject_canonical_id": "agent.front_office.transaction_processing",
+      "subject_runtime_id": "transaction_processing_agent",
+      "target_id": "resource.front_office.banking_transfer",
+      "trust_boundary_id": "boundary.agent.mcp",
+      "workflow_id": "workflow.front_office.customer_transaction"
+    },
+    {
+      "action": "read",
+      "adapter_module": "mcp_wrappers.py",
+      "attributes": {
+        "inferred_pep_type": "mcp",
+        "manifest_pep_type": "mcp",
+        "sensitive": true
+      },
+      "critical": false,
+      "edge_id": "edge.customer_transaction.get_context",
+      "fail_mode": "closed",
+      "interface_id": "interface.mcp.get_customer_context",
+      "interface_type": "mcp",
+      "mode": "enforce",
+      "pep_type": "mcp",
+      "physical_pep_id": "physical_pep.mcp_enforce_closed_shared_mcp_gateway",
+      "placement_id": "pep.customer_transaction.get_context",
+      "resource_canonical_id": "resource.front_office.customer_context",
+      "resource_classification": "restricted",
+      "resource_runtime_id": "customer_context",
+      "resource_type": "data",
+      "risk": "medium",
+      "side_effect": false,
+      "source_status": "provisional",
+      "subject_canonical_id": "agent.front_office.customer_service",
+      "subject_runtime_id": "customer_service_agent",
+      "target_id": "resource.front_office.customer_context",
+      "trust_boundary_id": "boundary.agent.mcp",
+      "workflow_id": "workflow.front_office.customer_transaction"
+    },
+    {
+      "action": "create",
+      "adapter_module": "mcp_wrappers.py",
+      "attributes": {
+        "inferred_pep_type": "mcp",
+        "manifest_pep_type": "mcp",
+        "sensitive": true
+      },
+      "critical": false,
+      "edge_id": "edge.eod_processing.create_exception",
+      "fail_mode": "closed",
+      "interface_id": "interface.mcp.create_exception_case",
+      "interface_type": "mcp",
+      "mode": "enforce",
+      "pep_type": "mcp",
+      "physical_pep_id": "physical_pep.mcp_enforce_closed_shared_mcp_gateway",
+      "placement_id": "pep.eod_processing.create_exception",
+      "resource_canonical_id": "resource.back_office.exception_case",
+      "resource_classification": "confidential",
+      "resource_runtime_id": "exception_case",
+      "resource_type": "data",
+      "risk": "high",
+      "side_effect": true,
+      "source_status": "provisional",
+      "subject_canonical_id": "agent.back_office.exception",
+      "subject_runtime_id": "exception_agent",
+      "target_id": "resource.back_office.exception_case",
+      "trust_boundary_id": "boundary.agent.mcp",
+      "workflow_id": "workflow.back_office.eod_processing"
+    },
+    {
+      "action": "read",
+      "adapter_module": "event_wrappers.py",
+      "attributes": {
+        "inferred_pep_type": "event",
+        "manifest_pep_type": "event",
+        "sensitive": true
+      },
+      "critical": false,
+      "edge_id": "edge.eod_processing.get_batches",
+      "fail_mode": "closed",
+      "interface_id": "interface.mcp.get_eod_batches",
+      "interface_type": "mcp",
+      "mode": "enforce",
+      "pep_type": "event",
+      "physical_pep_id": "physical_pep.event_enforce_closed_mcp",
+      "placement_id": "pep.eod_processing.get_batches",
+      "resource_canonical_id": "resource.back_office.eod_batches",
+      "resource_classification": "restricted",
+      "resource_runtime_id": "eod_batches",
+      "resource_type": "data",
+      "risk": "high",
+      "side_effect": false,
+      "source_status": "provisional",
+      "subject_canonical_id": "agent.back_office.eod",
+      "subject_runtime_id": "eod_agent",
+      "target_id": "resource.back_office.eod_batches",
+      "trust_boundary_id": "boundary.event.agent",
+      "workflow_id": "workflow.back_office.eod_processing"
+    },
+    {
+      "action": "update",
+      "adapter_module": "mcp_wrappers.py",
+      "attributes": {
+        "inferred_pep_type": "mcp",
+        "manifest_pep_type": "mcp",
+        "sensitive": true
+      },
+      "critical": true,
+      "edge_id": "edge.eod_processing.ledger_update",
+      "fail_mode": "closed",
+      "interface_id": "interface.mcp.ledger_update",
+      "interface_type": "mcp",
+      "mode": "enforce",
+      "pep_type": "mcp",
+      "physical_pep_id": "physical_pep.mcp_enforce_closed_shared_mcp_gateway",
+      "placement_id": "pep.eod_processing.ledger_update",
+      "resource_canonical_id": "resource.back_office.ledger",
+      "resource_classification": "regulated",
+      "resource_runtime_id": "ledger",
+      "resource_type": "ledger",
+      "risk": "critical",
+      "side_effect": true,
+      "source_status": "provisional",
+      "subject_canonical_id": "agent.back_office.eod",
+      "subject_runtime_id": "eod_agent",
+      "target_id": "resource.back_office.ledger",
+      "trust_boundary_id": "boundary.agent.mcp",
+      "workflow_id": "workflow.back_office.eod_processing"
+    },
+    {
+      "action": "create",
+      "adapter_module": "data_wrappers.py",
+      "attributes": {
+        "inferred_pep_type": "data",
+        "manifest_pep_type": "data",
+        "sensitive": true
+      },
+      "critical": false,
+      "edge_id": "edge.eod_processing.reconcile",
+      "fail_mode": "closed",
+      "interface_id": null,
+      "interface_type": null,
+      "mode": "enforce",
+      "pep_type": "data",
+      "physical_pep_id": "physical_pep.data_enforce_closed_shared_data_access_guard",
+      "placement_id": "pep.eod_processing.reconcile",
+      "resource_canonical_id": "resource.back_office.reconciliation_results",
+      "resource_classification": "confidential",
+      "resource_runtime_id": "reconciliation_results",
+      "resource_type": "data",
+      "risk": "high",
+      "side_effect": true,
+      "source_status": "provisional",
+      "subject_canonical_id": "agent.back_office.reconciliation",
+      "subject_runtime_id": "reconciliation_agent",
+      "target_id": "resource.back_office.reconciliation_results",
+      "trust_boundary_id": "boundary.agent.data",
+      "workflow_id": "workflow.back_office.eod_processing"
+    },
+    {
+      "action": "store",
+      "adapter_module": "mcp_wrappers.py",
+      "attributes": {
+        "inferred_pep_type": "mcp",
+        "manifest_pep_type": "mcp",
+        "sensitive": true
+      },
+      "critical": false,
+      "edge_id": "edge.eod_processing.store_report",
+      "fail_mode": "closed",
+      "interface_id": "interface.mcp.store_report",
+      "interface_type": "mcp",
+      "mode": "enforce",
+      "pep_type": "mcp",
+      "physical_pep_id": "physical_pep.mcp_enforce_closed_shared_mcp_gateway",
+      "placement_id": "pep.eod_processing.store_report",
+      "resource_canonical_id": "resource.back_office.final_report",
+      "resource_classification": "confidential",
+      "resource_runtime_id": "final_report",
+      "resource_type": "report",
+      "risk": "high",
+      "side_effect": true,
+      "source_status": "provisional",
+      "subject_canonical_id": "agent.back_office.report",
+      "subject_runtime_id": "report_agent",
+      "target_id": "resource.back_office.final_report",
+      "trust_boundary_id": "boundary.agent.mcp",
+      "workflow_id": "workflow.back_office.eod_processing"
+    },
+    {
+      "action": "create",
+      "adapter_module": "mcp_wrappers.py",
+      "attributes": {
+        "inferred_pep_type": "mcp",
+        "manifest_pep_type": "mcp",
+        "sensitive": true
+      },
+      "critical": false,
+      "edge_id": "edge.eod_processing.write_report",
+      "fail_mode": "closed",
+      "interface_id": "interface.mcp.write_final_report",
+      "interface_type": "mcp",
+      "mode": "enforce",
+      "pep_type": "mcp",
+      "physical_pep_id": "physical_pep.mcp_enforce_closed_shared_mcp_gateway",
+      "placement_id": "pep.eod_processing.write_report",
+      "resource_canonical_id": "resource.back_office.final_report",
+      "resource_classification": "confidential",
+      "resource_runtime_id": "final_report",
+      "resource_type": "report",
+      "risk": "medium",
+      "side_effect": true,
+      "source_status": "provisional",
+      "subject_canonical_id": "agent.back_office.report",
+      "subject_runtime_id": "report_agent",
+      "target_id": "resource.back_office.final_report",
+      "trust_boundary_id": "boundary.agent.mcp",
+      "workflow_id": "workflow.back_office.eod_processing"
+    },
+    {
+      "action": "read",
+      "adapter_module": "data_wrappers.py",
+      "attributes": {
+        "inferred_pep_type": "data",
+        "manifest_pep_type": "data",
+        "sensitive": true
+      },
+      "critical": false,
+      "edge_id": "edge.fraud_review.read_history",
+      "fail_mode": "closed",
+      "interface_id": null,
+      "interface_type": null,
+      "mode": "enforce",
+      "pep_type": "data",
+      "physical_pep_id": "physical_pep.data_enforce_closed_shared_data_access_guard",
+      "placement_id": "pep.fraud_review.read_history",
+      "resource_canonical_id": "resource.front_office.transaction_history",
+      "resource_classification": "confidential",
+      "resource_runtime_id": "transaction_history",
+      "resource_type": "data",
+      "risk": "medium",
+      "side_effect": false,
+      "source_status": "provisional",
+      "subject_canonical_id": "agent.front_office.fraud",
+      "subject_runtime_id": "fraud_agent",
+      "target_id": "resource.front_office.transaction_history",
+      "trust_boundary_id": "boundary.agent.data",
+      "workflow_id": "workflow.front_office.fraud_review"
+    },
+    {
+      "action": "search",
+      "adapter_module": "mcp_wrappers.py",
+      "attributes": {
+        "inferred_pep_type": "mcp",
+        "manifest_pep_type": "mcp",
+        "sensitive": true
+      },
+      "critical": false,
+      "edge_id": "edge.fraud_review.search_policies",
+      "fail_mode": "closed",
+      "interface_id": "interface.mcp.search_policies",
+      "interface_type": "mcp",
+      "mode": "enforce",
+      "pep_type": "mcp",
+      "physical_pep_id": "physical_pep.mcp_enforce_closed_shared_mcp_gateway",
+      "placement_id": "pep.fraud_review.search_policies",
+      "resource_canonical_id": "resource.front_office.policy_knowledge_base",
+      "resource_classification": "internal",
+      "resource_runtime_id": "policy_knowledge_base",
+      "resource_type": "knowledge_base",
+      "risk": "medium",
+      "side_effect": false,
+      "source_status": "provisional",
+      "subject_canonical_id": "agent.front_office.compliance",
+      "subject_runtime_id": "compliance_agent",
+      "target_id": "resource.front_office.policy_knowledge_base",
+      "trust_boundary_id": "boundary.agent.mcp",
+      "workflow_id": "workflow.front_office.fraud_review"
+    }
+  ],
+  "manifest_name": "citi-zero-trust-backplane-baseline",
+  "manifest_version": "1.0.0-alpha.1",
+  "physical_peps": [
+    {
+      "adapter_module": "data_wrappers.py",
+      "description": "Shared data enforcement component. It routes each operation using the logical placement ID and preserves per-edge PDP decisions.",
+      "fail_mode": "closed",
+      "interfaces": [],
+      "logical_placements": [
+        "pep.eod_processing.reconcile",
+        "pep.fraud_review.read_history"
+      ],
+      "mode": "enforce",
+      "pep_type": "data",
+      "physical_pep_id": "physical_pep.data_enforce_closed_shared_data_access_guard",
+      "resources": [
+        "resource.back_office.reconciliation_results",
+        "resource.front_office.transaction_history"
+      ]
+    },
+    {
+      "adapter_module": "event_wrappers.py",
+      "description": "Shared event enforcement component. It routes each operation using the logical placement ID and preserves per-edge PDP decisions.",
+      "fail_mode": "closed",
+      "interfaces": [
+        "interface.mcp.get_eod_batches"
+      ],
+      "logical_placements": [
+        "pep.eod_processing.get_batches"
+      ],
+      "mode": "enforce",
+      "pep_type": "event",
+      "physical_pep_id": "physical_pep.event_enforce_closed_mcp",
+      "resources": [
+        "resource.back_office.eod_batches"
+      ]
+    },
+    {
+      "adapter_module": "mcp_wrappers.py",
+      "description": "Shared mcp enforcement component. It routes each operation using the logical placement ID and preserves per-edge PDP decisions.",
+      "fail_mode": "closed",
+      "interfaces": [
+        "interface.mcp.create_exception_case",
+        "interface.mcp.execute_transfer",
+        "interface.mcp.get_customer_context",
+        "interface.mcp.ledger_update",
+        "interface.mcp.search_policies",
+        "interface.mcp.store_report",
+        "interface.mcp.write_final_report"
+      ],
+      "logical_placements": [
+        "pep.customer_transaction.execute_transfer",
+        "pep.customer_transaction.get_context",
+        "pep.eod_processing.create_exception",
+        "pep.eod_processing.ledger_update",
+        "pep.eod_processing.store_report",
+        "pep.eod_processing.write_report",
+        "pep.fraud_review.search_policies"
+      ],
+      "mode": "enforce",
+      "pep_type": "mcp",
+      "physical_pep_id": "physical_pep.mcp_enforce_closed_shared_mcp_gateway",
+      "resources": [
+        "resource.back_office.exception_case",
+        "resource.back_office.final_report",
+        "resource.back_office.ledger",
+        "resource.front_office.banking_transfer",
+        "resource.front_office.customer_context",
+        "resource.front_office.policy_knowledge_base"
+      ]
+    }
+  ],
+  "schema_version": "1.0"
+}

@@ -1,0 +1,101 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://zero-trust-backplane.example/schema/policy_bundle.schema.json",
+  "title": "Policy Bundle",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "apiVersion",
+    "kind",
+    "metadata",
+    "policies"
+  ],
+  "properties": {
+    "apiVersion": {
+      "const": "ztb/v1alpha1"
+    },
+    "kind": {
+      "const": "PolicyBundle"
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "version",
+        "domain",
+        "status"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "domain": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "confirmed",
+            "provisional",
+            "placeholder",
+            "deprecated"
+          ]
+        }
+      }
+    },
+    "policies": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "description",
+          "priority",
+          "effect",
+          "match",
+          "obligations",
+          "enabled"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^policy\\.[a-z0-9_.-]+$"
+          },
+          "description": {
+            "type": "string"
+          },
+          "priority": {
+            "type": "integer"
+          },
+          "effect": {
+            "type": "string",
+            "enum": [
+              "ALLOW",
+              "DENY",
+              "MANUAL_REVIEW",
+              "ALLOW_WITH_OBLIGATIONS",
+              "REAUTHENTICATE"
+            ]
+          },
+          "match": {
+            "type": "object"
+          },
+          "obligations": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "enabled": {
+            "type": "boolean"
+          }
+        }
+      }
+    }
+  }
+}

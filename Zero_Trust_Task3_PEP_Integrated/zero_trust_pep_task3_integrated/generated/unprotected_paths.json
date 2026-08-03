@@ -1,0 +1,56 @@
+[
+  {
+    "blocks_milestone": false,
+    "category": "scanner_coverage_gap",
+    "edge_id": null,
+    "id": "finding.resource_back_office_ledger_snapshot.no_discovered_path",
+    "message": "Sensitive resource exists in the inventory but no interaction edge reaches it. Task 3 cannot prove or place path-specific enforcement until Task 2 discovers the path.",
+    "resource_id": "resource.back_office.ledger_snapshot",
+    "severity": "information"
+  },
+  {
+    "blocks_milestone": false,
+    "category": "scanner_coverage_gap",
+    "edge_id": null,
+    "id": "finding.resource_front_office_customer_profile.no_discovered_path",
+    "message": "Sensitive resource exists in the inventory but no interaction edge reaches it. Task 3 cannot prove or place path-specific enforcement until Task 2 discovers the path.",
+    "resource_id": "resource.front_office.customer_profile",
+    "severity": "information"
+  },
+  {
+    "blocks_milestone": false,
+    "category": "scanner_coverage_gap",
+    "edge_id": null,
+    "id": "finding.resource_front_office_transaction_decision.no_discovered_path",
+    "message": "Sensitive resource exists in the inventory but no interaction edge reaches it. Task 3 cannot prove or place path-specific enforcement until Task 2 discovers the path.",
+    "resource_id": "resource.front_office.transaction_decision",
+    "severity": "information"
+  },
+  {
+    "blocks_milestone": false,
+    "category": "scanner_coverage_gap",
+    "edge_id": null,
+    "id": "finding.resource_mid_office_financial_customer_data.no_discovered_path",
+    "message": "Sensitive resource exists in the inventory but no interaction edge reaches it. Task 3 cannot prove or place path-specific enforcement until Task 2 discovers the path.",
+    "resource_id": "resource.mid_office.financial_customer_data",
+    "severity": "information"
+  },
+  {
+    "blocks_milestone": false,
+    "category": "scanner_coverage_gap",
+    "edge_id": null,
+    "id": "finding.resource_mid_office_loan_workflow.no_discovered_path",
+    "message": "Sensitive resource exists in the inventory but no interaction edge reaches it. Task 3 cannot prove or place path-specific enforcement until Task 2 discovers the path.",
+    "resource_id": "resource.mid_office.loan_workflow",
+    "severity": "information"
+  },
+  {
+    "blocks_milestone": false,
+    "category": "scanner_coverage_gap",
+    "edge_id": null,
+    "id": "finding.resource_mid_office_schedule_draft.no_discovered_path",
+    "message": "Sensitive resource exists in the inventory but no interaction edge reaches it. Task 3 cannot prove or place path-specific enforcement until Task 2 discovers the path.",
+    "resource_id": "resource.mid_office.schedule_draft",
+    "severity": "information"
+  }
+]

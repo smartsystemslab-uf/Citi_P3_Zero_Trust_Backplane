@@ -1,0 +1,130 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://zero-trust-backplane.example/schema/pdp_request.schema.json",
+  "title": "PDP Authorization Request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "request_id",
+    "trace_id",
+    "subject",
+    "resource",
+    "action",
+    "context",
+    "parameters"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "request_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "trace_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "subject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "canonical_id",
+        "runtime_id",
+        "identity_evidence"
+      ],
+      "properties": {
+        "canonical_id": {
+          "type": "string"
+        },
+        "runtime_id": {
+          "type": "string"
+        },
+        "identity_evidence": {
+          "type": "object"
+        }
+      }
+    },
+    "resource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "canonical_id",
+        "runtime_id"
+      ],
+      "properties": {
+        "canonical_id": {
+          "type": "string"
+        },
+        "runtime_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "action": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*$"
+    },
+    "context": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": [
+        "workflow_id",
+        "risk",
+        "timestamp",
+        "environment"
+      ],
+      "properties": {
+        "workflow_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "workflow_instance_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "risk": {
+          "type": "string",
+          "enum": [
+            "low",
+            "medium",
+            "high",
+            "critical"
+          ]
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "environment": {
+          "type": "string"
+        },
+        "auth_strength": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10
+        },
+        "human_approval": {
+          "type": "object"
+        }
+      }
+    },
+    "parameters": {
+      "type": "object"
+    },
+    "request_hash": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  }
+}
