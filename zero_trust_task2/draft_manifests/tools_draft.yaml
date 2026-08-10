@@ -1,0 +1,430 @@
+zt_ir_version: '1.0'
+manifest_type: tools_draft
+tools:
+- tool_id: validate_eod_readiness
+  display_name: Check whether a batch is ready for end-of-day processing and return
+    readiness evidence.
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_adk/bank_adk/tools/back_office_tools.py:4
+  domain: back
+  action_type: compute
+  has_side_effects: false
+  risk_level: 2
+  requires_live_decision: false
+  audit_required: false
+  allowed_callers: []
+  calls_api: []
+  pii_fields: []
+  compliance_tags: []
+  idempotency_key: null
+  operation_class: read
+  status: provisional
+- tool_id: get_eod_batch
+  display_name: Return the batch payload and expected totals for EOD processing.
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_adk/bank_adk/tools/back_office_tools.py:11
+  domain: back
+  action_type: read
+  has_side_effects: false
+  risk_level: 2
+  requires_live_decision: false
+  audit_required: false
+  allowed_callers: []
+  calls_api: []
+  pii_fields: []
+  compliance_tags: []
+  idempotency_key: null
+  operation_class: read
+  status: provisional
+- tool_id: apply_ledger_updates
+  display_name: Apply ledger updates and mark the batch as ledger-updated in the system
+    of record.
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_adk/bank_adk/tools/back_office_tools.py:15
+  domain: back
+  action_type: financial_write
+  has_side_effects: true
+  risk_level: 4
+  requires_live_decision: true
+  audit_required: true
+  allowed_callers: []
+  calls_api: []
+  pii_fields: []
+  compliance_tags: []
+  idempotency_key: null
+  operation_class: financial
+  status: provisional
+- tool_id: get_reconciliation_data
+  display_name: Return the expected and posted totals used by the reconciliation agent.
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_adk/bank_adk/tools/back_office_tools.py:19
+  domain: back
+  action_type: read
+  has_side_effects: false
+  risk_level: 2
+  requires_live_decision: false
+  audit_required: false
+  allowed_callers: []
+  calls_api: []
+  pii_fields: []
+  compliance_tags: []
+  idempotency_key: null
+  operation_class: read
+  status: provisional
+- tool_id: create_exception_case
+  display_name: Create an exception case for reconciliation mismatches and abnormal
+    EOD outcomes.
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_adk/bank_adk/tools/back_office_tools.py:26
+  domain: back
+  action_type: state_change
+  has_side_effects: true
+  risk_level: 4
+  requires_live_decision: false
+  audit_required: true
+  allowed_callers: []
+  calls_api: []
+  pii_fields: []
+  compliance_tags: []
+  idempotency_key: null
+  operation_class: write
+  status: provisional
+- tool_id: store_report
+  display_name: Store a generated end-of-day report after reconciliation succeeds.
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_adk/bank_adk/tools/back_office_tools.py:30
+  domain: back
+  action_type: compute
+  has_side_effects: false
+  risk_level: 2
+  requires_live_decision: false
+  audit_required: false
+  allowed_callers: []
+  calls_api: []
+  pii_fields: []
+  compliance_tags: []
+  idempotency_key: null
+  operation_class: read
+  status: provisional
+- tool_id: _load
+  display_name: Auto-discovered tool _load
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_adk/bank_adk/tools/csr_tools.py:10
+  domain: mid
+  action_type: compute
+  has_side_effects: false
+  risk_level: 2
+  requires_live_decision: false
+  audit_required: false
+  allowed_callers: []
+  calls_api: []
+  pii_fields: []
+  compliance_tags: []
+  idempotency_key: null
+  operation_class: read
+  status: provisional
+- tool_id: get_customer_financial_profile
+  display_name: Return the customer's financial profile, balances, risk tier, and
+    notes for representative support.
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_adk/bank_adk/tools/csr_tools.py:14
+  domain: mid
+  action_type: read
+  has_side_effects: false
+  risk_level: 2
+  requires_live_decision: false
+  audit_required: false
+  allowed_callers: []
+  calls_api: []
+  pii_fields: []
+  compliance_tags: []
+  idempotency_key: null
+  operation_class: read
+  status: provisional
+- tool_id: search_product_catalog
+  display_name: Search product offerings and next-best-action candidates relevant
+    to the customer's needs.
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_adk/bank_adk/tools/csr_tools.py:28
+  domain: mid
+  action_type: read
+  has_side_effects: false
+  risk_level: 2
+  requires_live_decision: false
+  audit_required: false
+  allowed_callers: []
+  calls_api: []
+  pii_fields: []
+  compliance_tags: []
+  idempotency_key: null
+  operation_class: read
+  status: provisional
+- tool_id: search_loan_playbooks
+  display_name: Search loan guidance, underwriting steps, and internal process playbooks.
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_adk/bank_adk/tools/csr_tools.py:33
+  domain: mid
+  action_type: read
+  has_side_effects: false
+  risk_level: 2
+  requires_live_decision: false
+  audit_required: false
+  allowed_callers: []
+  calls_api: []
+  pii_fields: []
+  compliance_tags: []
+  idempotency_key: null
+  operation_class: read
+  status: provisional
+- tool_id: get_customer_context
+  display_name: Return full customer context, profile, linked accounts, and recent
+    transactions for a customer id.
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_adk/bank_adk/tools/customer_tools.py:8
+  domain: front
+  action_type: read
+  has_side_effects: false
+  risk_level: 2
+  requires_live_decision: false
+  audit_required: false
+  allowed_callers: []
+  calls_api: []
+  pii_fields: []
+  compliance_tags: []
+  idempotency_key: null
+  operation_class: read
+  status: provisional
+- tool_id: get_transaction_context
+  display_name: Return transaction details, metadata, channel, current status, and
+    decision context for a transaction id.
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_adk/bank_adk/tools/customer_tools.py:23
+  domain: front
+  action_type: read
+  has_side_effects: false
+  risk_level: 2
+  requires_live_decision: false
+  audit_required: false
+  allowed_callers: []
+  calls_api: []
+  pii_fields: []
+  compliance_tags: []
+  idempotency_key: null
+  operation_class: read
+  status: provisional
+- tool_id: list_recent_transactions
+  display_name: Return recent transactions for a customer to support anomaly screening
+    and fraud investigation.
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_adk/bank_adk/tools/customer_tools.py:37
+  domain: front
+  action_type: read
+  has_side_effects: false
+  risk_level: 2
+  requires_live_decision: false
+  audit_required: false
+  allowed_callers: []
+  calls_api: []
+  pii_fields: []
+  compliance_tags: []
+  idempotency_key: null
+  operation_class: read
+  status: provisional
+- tool_id: submit_manual_review
+  display_name: Open a manual review case when an automated decision is low-confidence
+    or high-risk.
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_adk/bank_adk/tools/customer_tools.py:50
+  domain: front
+  action_type: state_change
+  has_side_effects: true
+  risk_level: 4
+  requires_live_decision: false
+  audit_required: true
+  allowed_callers: []
+  calls_api: []
+  pii_fields: []
+  compliance_tags: []
+  idempotency_key: null
+  operation_class: write
+  status: provisional
+- tool_id: execute_transfer
+  display_name: Execute a banking transfer through the external banking API layer
+    and return the posting result.
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_adk/bank_adk/tools/customer_tools.py:56
+  domain: front
+  action_type: financial_write
+  has_side_effects: true
+  risk_level: 4
+  requires_live_decision: true
+  audit_required: true
+  allowed_callers: []
+  calls_api: []
+  pii_fields: []
+  compliance_tags: []
+  idempotency_key: null
+  operation_class: financial
+  status: provisional
+- tool_id: _load
+  display_name: Auto-discovered tool _load
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_adk/bank_adk/tools/knowledge_tools.py:9
+  domain: shared
+  action_type: compute
+  has_side_effects: false
+  risk_level: 2
+  requires_live_decision: false
+  audit_required: false
+  allowed_callers: []
+  calls_api: []
+  pii_fields: []
+  compliance_tags: []
+  idempotency_key: null
+  operation_class: read
+  status: provisional
+- tool_id: search_policies
+  display_name: Search the banking policy and compliance knowledge base for rules
+    relevant to the current case.
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_adk/bank_adk/tools/knowledge_tools.py:13
+  domain: shared
+  action_type: read
+  has_side_effects: false
+  risk_level: 2
+  requires_live_decision: false
+  audit_required: false
+  allowed_callers: []
+  calls_api: []
+  pii_fields: []
+  compliance_tags: []
+  idempotency_key: null
+  operation_class: read
+  status: provisional
+- tool_id: search_faqs
+  display_name: Search customer FAQs and service policies for informational questions.
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_adk/bank_adk/tools/knowledge_tools.py:24
+  domain: shared
+  action_type: read
+  has_side_effects: false
+  risk_level: 2
+  requires_live_decision: false
+  audit_required: false
+  allowed_callers: []
+  calls_api: []
+  pii_fields: []
+  compliance_tags: []
+  idempotency_key: null
+  operation_class: read
+  status: provisional
+- tool_id: _load
+  display_name: Auto-discovered tool _load
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_adk/bank_adk/tools/ops_tools.py:7
+  domain: mid
+  action_type: compute
+  has_side_effects: false
+  risk_level: 2
+  requires_live_decision: false
+  audit_required: false
+  allowed_callers: []
+  calls_api: []
+  pii_fields: []
+  compliance_tags: []
+  idempotency_key: null
+  operation_class: read
+  status: provisional
+- tool_id: get_operations_snapshot
+  display_name: Return internal operations, queue, and workload data for planning
+    and forecasting.
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_adk/bank_adk/tools/ops_tools.py:10
+  domain: mid
+  action_type: read
+  has_side_effects: false
+  risk_level: 2
+  requires_live_decision: false
+  audit_required: false
+  allowed_callers: []
+  calls_api: []
+  pii_fields: []
+  compliance_tags: []
+  idempotency_key: null
+  operation_class: read
+  status: provisional
+- tool_id: persist_validated_schedule
+  display_name: Persist a validated staffing schedule after the validation agent approves
+    it.
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_adk/bank_adk/tools/ops_tools.py:17
+  domain: mid
+  action_type: compute
+  has_side_effects: false
+  risk_level: 2
+  requires_live_decision: false
+  audit_required: false
+  allowed_callers: []
+  calls_api: []
+  pii_fields: []
+  compliance_tags: []
+  idempotency_key: null
+  operation_class: read
+  status: provisional
+- tool_id: get_support_playbooks
+  display_name: Retrieve internal support guidance playbooks and operating recommendations.
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_adk/bank_adk/tools/ops_tools.py:21
+  domain: mid
+  action_type: read
+  has_side_effects: false
+  risk_level: 2
+  requires_live_decision: false
+  audit_required: false
+  allowed_callers: []
+  calls_api: []
+  pii_fields: []
+  compliance_tags: []
+  idempotency_key: null
+  operation_class: read
+  status: provisional
+- tool_id: rank_records
+  display_name: Auto-discovered tool rank_records
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_adk/bank_adk/tools/search.py:3
+  domain: shared
+  action_type: compute
+  has_side_effects: false
+  risk_level: 2
+  requires_live_decision: false
+  audit_required: false
+  allowed_callers: []
+  calls_api: []
+  pii_fields: []
+  compliance_tags: []
+  idempotency_key: null
+  operation_class: read
+  status: provisional

@@ -1,0 +1,135 @@
+zt_ir_version: '1.0'
+manifest_type: databases_draft
+databases:
+- database_id: customers
+  display_name: Customer table
+  db_type: relational
+  engine: SQLite
+  table_name: customers
+  classification: confidential
+  contains_pii: true
+  contains_financial: false
+  contains_audit: false
+  allowed_operations:
+  - SELECT
+  - INSERT
+  - UPDATE
+  - DELETE
+  allowed_api_callers: []
+  compliance_tags: []
+  risk_level: 3
+  immutable: false
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_backend/app/models.py:6
+- database_id: accounts
+  display_name: Account table
+  db_type: relational
+  engine: SQLite
+  table_name: accounts
+  classification: confidential
+  contains_pii: false
+  contains_financial: true
+  contains_audit: false
+  allowed_operations:
+  - SELECT
+  - INSERT
+  - UPDATE
+  - DELETE
+  allowed_api_callers: []
+  compliance_tags: []
+  risk_level: 3
+  immutable: false
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_backend/app/models.py:21
+- database_id: policies
+  display_name: Policy table
+  db_type: relational
+  engine: SQLite
+  table_name: policies
+  classification: internal
+  contains_pii: false
+  contains_financial: false
+  contains_audit: false
+  allowed_operations:
+  - SELECT
+  - INSERT
+  - UPDATE
+  - DELETE
+  allowed_api_callers: []
+  compliance_tags: []
+  risk_level: 3
+  immutable: false
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_backend/app/models.py:35
+- database_id: rules
+  display_name: Rule table
+  db_type: relational
+  engine: SQLite
+  table_name: rules
+  classification: internal
+  contains_pii: false
+  contains_financial: false
+  contains_audit: false
+  allowed_operations:
+  - SELECT
+  - INSERT
+  - UPDATE
+  - DELETE
+  allowed_api_callers: []
+  compliance_tags: []
+  risk_level: 3
+  immutable: false
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_backend/app/models.py:48
+- database_id: transactions
+  display_name: Transaction table
+  db_type: relational
+  engine: SQLite
+  table_name: transactions
+  classification: confidential
+  contains_pii: false
+  contains_financial: true
+  contains_audit: false
+  allowed_operations:
+  - SELECT
+  - INSERT
+  - UPDATE
+  - DELETE
+  allowed_api_callers: []
+  compliance_tags: []
+  risk_level: 3
+  immutable: false
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_backend/app/models.py:64
+- database_id: audit_logs
+  display_name: AuditLog table
+  db_type: relational
+  engine: SQLite
+  table_name: audit_logs
+  classification: restricted
+  contains_pii: false
+  contains_financial: false
+  contains_audit: true
+  allowed_operations:
+  - SELECT
+  - INSERT
+  - UPDATE
+  - DELETE
+  allowed_api_callers: []
+  compliance_tags: []
+  risk_level: 3
+  immutable: true
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_backend/app/models.py:79

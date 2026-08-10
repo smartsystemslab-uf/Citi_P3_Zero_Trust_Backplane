@@ -1,0 +1,83 @@
+zt_ir_version: '1.0'
+manifest_type: interaction_edges_draft
+interaction_edges:
+- edge_id: edge_001
+  edge_type: api_to_database
+  from_id: create_customer
+  from_type: api
+  to_id: unknown
+  to_type: database
+  risk_level: 4
+  pep_required: true
+  pep_type: data_pep
+  http_method: POST
+  db_operation: INSERT
+  operation_class: write
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: task2_scanner
+- edge_id: edge_002
+  edge_type: api_to_database
+  from_id: create_account
+  from_type: api
+  to_id: unknown
+  to_type: database
+  risk_level: 4
+  pep_required: true
+  pep_type: data_pep
+  http_method: POST
+  db_operation: INSERT
+  operation_class: write
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: task2_scanner
+- edge_id: edge_003
+  edge_type: api_to_database
+  from_id: create_policy
+  from_type: api
+  to_id: unknown
+  to_type: database
+  risk_level: 4
+  pep_required: true
+  pep_type: data_pep
+  http_method: POST
+  db_operation: INSERT
+  operation_class: write
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: task2_scanner
+- edge_id: edge_004
+  edge_type: api_to_database
+  from_id: create_rule
+  from_type: api
+  to_id: unknown
+  to_type: database
+  risk_level: 4
+  pep_required: true
+  pep_type: data_pep
+  http_method: POST
+  db_operation: INSERT
+  operation_class: write
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: task2_scanner
+- edge_id: edge_005
+  edge_type: api_to_database
+  from_id: update_transaction_status
+  from_type: api
+  to_id: unknown
+  to_type: database
+  risk_level: 4
+  pep_required: true
+  pep_type: data_pep
+  http_method: PATCH
+  db_operation: INSERT
+  operation_class: write
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: task2_scanner

@@ -1,0 +1,550 @@
+zt_ir_version: '1.0'
+manifest_type: agents_draft
+agents:
+- agent_id: validation_checkpoint_agent
+  description: Checks readiness before the batch enters ordered end-of-day processing.
+  domain: back
+  role: specialist
+  risk_tier: medium
+  authorized_tools: []
+  authorized_transfers: []
+  reads_from: []
+  writes_to: []
+  requires_prior_steps: []
+  pep_type: tool_pep
+  trust_level: low_trust
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_adk/bank_adk/agents/back_office.py:9
+- agent_id: eod_processing_agent
+  description: Drives the ordered end-of-day operational sequence and prepares ledger
+    posting instructions.
+  domain: back
+  role: specialist
+  risk_tier: medium
+  authorized_tools: []
+  authorized_transfers: []
+  reads_from: []
+  writes_to: []
+  requires_prior_steps: []
+  pep_type: tool_pep
+  trust_level: low_trust
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_adk/bank_adk/agents/back_office.py:13
+- agent_id: ledger_update_agent
+  description: Applies the actual ledger updates prepared during EOD processing.
+  domain: back
+  role: specialist
+  risk_tier: medium
+  authorized_tools: []
+  authorized_transfers: []
+  reads_from: []
+  writes_to: []
+  requires_prior_steps: []
+  pep_type: tool_pep
+  trust_level: low_trust
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_adk/bank_adk/agents/back_office.py:17
+- agent_id: reconciliation_agent
+  description: Verifies whether ledger results and expected totals are consistent
+    after EOD processing.
+  domain: back
+  role: specialist
+  risk_tier: medium
+  authorized_tools: []
+  authorized_transfers: []
+  reads_from: []
+  writes_to: []
+  requires_prior_steps: []
+  pep_type: tool_pep
+  trust_level: low_trust
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_adk/bank_adk/agents/back_office.py:21
+- agent_id: report_writing_agent
+  description: Generates and stores the final end-of-day report for clean batches.
+  domain: back
+  role: specialist
+  risk_tier: medium
+  authorized_tools: []
+  authorized_transfers: []
+  reads_from: []
+  writes_to: []
+  requires_prior_steps: []
+  pep_type: tool_pep
+  trust_level: low_trust
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_adk/bank_adk/agents/back_office.py:25
+- agent_id: exception_agent
+  description: Creates and summarizes an exception case when reconciliation fails.
+  domain: back
+  role: specialist
+  risk_tier: medium
+  authorized_tools: []
+  authorized_transfers: []
+  reads_from: []
+  writes_to: []
+  requires_prior_steps: []
+  pep_type: tool_pep
+  trust_level: low_trust
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_adk/bank_adk/agents/back_office.py:29
+- agent_id: back_office_router
+  description: Routes scheduled operational processing into the EOD reconciliation
+    and reporting workflow.
+  domain: back
+  role: router
+  risk_tier: medium
+  authorized_tools: []
+  authorized_transfers: []
+  reads_from: []
+  writes_to: []
+  requires_prior_steps: []
+  pep_type: route_pep
+  trust_level: low_trust
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_adk/bank_adk/agents/back_office.py:42
+- agent_id: transaction_monitoring_agent
+  description: Performs first-pass anomaly screening using customer context, transaction
+    details, and recent activity.
+  domain: front
+  role: specialist
+  risk_tier: medium
+  authorized_tools: []
+  authorized_transfers: []
+  reads_from: []
+  writes_to: []
+  requires_prior_steps: []
+  pep_type: tool_pep
+  trust_level: low_trust
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_adk/bank_adk/agents/front_office.py:10
+- agent_id: fraud_detection_agent
+  description: Performs deeper fraud analysis on transactions that were flagged by
+    monitoring.
+  domain: front
+  role: specialist
+  risk_tier: medium
+  authorized_tools: []
+  authorized_transfers: []
+  reads_from: []
+  writes_to: []
+  requires_prior_steps: []
+  pep_type: tool_pep
+  trust_level: low_trust
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_adk/bank_adk/agents/front_office.py:19
+- agent_id: compliance_agent
+  description: Retrieves and applies compliance rules, policy, and regulatory guidance
+    to the transaction review.
+  domain: front
+  role: specialist
+  risk_tier: medium
+  authorized_tools: []
+  authorized_transfers: []
+  reads_from: []
+  writes_to: []
+  requires_prior_steps: []
+  pep_type: tool_pep
+  trust_level: low_trust
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_adk/bank_adk/agents/front_office.py:28
+- agent_id: decision_making_agent
+  description: Combines monitoring, fraud, and compliance outputs into a final recommendation
+    with confidence handling.
+  domain: front
+  role: specialist
+  risk_tier: medium
+  authorized_tools: []
+  authorized_transfers: []
+  reads_from: []
+  writes_to: []
+  requires_prior_steps: []
+  pep_type: tool_pep
+  trust_level: low_trust
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_adk/bank_adk/agents/front_office.py:37
+- agent_id: knowledge_base_agent
+  description: Answers informational customer questions by retrieving FAQs and customer-facing
+    policies.
+  domain: front
+  role: specialist
+  risk_tier: medium
+  authorized_tools: []
+  authorized_transfers: []
+  reads_from: []
+  writes_to: []
+  requires_prior_steps: []
+  pep_type: tool_pep
+  trust_level: low_trust
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_adk/bank_adk/agents/front_office.py:53
+- agent_id: transaction_processing_agent
+  description: Executes approved customer transactions through the banking API layer.
+  domain: front
+  role: specialist
+  risk_tier: medium
+  authorized_tools: []
+  authorized_transfers: []
+  reads_from: []
+  writes_to: []
+  requires_prior_steps: []
+  pep_type: tool_pep
+  trust_level: low_trust
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_adk/bank_adk/agents/front_office.py:62
+- agent_id: customer_service_agent
+  description: Handles service-oriented routing and prepares requests for backend
+    transaction execution.
+  domain: front
+  role: specialist
+  risk_tier: medium
+  authorized_tools: []
+  authorized_transfers: []
+  reads_from: []
+  writes_to: []
+  requires_prior_steps: []
+  pep_type: tool_pep
+  trust_level: low_trust
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_adk/bank_adk/agents/front_office.py:71
+- agent_id: chatbot_intent_agent
+  description: Determines whether a customer chatbot request is informational or requires
+    service or action handling.
+  domain: front
+  role: specialist
+  risk_tier: medium
+  authorized_tools: []
+  authorized_transfers: []
+  reads_from: []
+  writes_to: []
+  requires_prior_steps: []
+  pep_type: tool_pep
+  trust_level: low_trust
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_adk/bank_adk/agents/front_office.py:79
+- agent_id: front_office_router
+  description: Routes customer-facing work into either the transaction risk workflow
+    or the customer-service chatbot workflow.
+  domain: front
+  role: router
+  risk_tier: medium
+  authorized_tools: []
+  authorized_transfers: []
+  reads_from: []
+  writes_to: []
+  requires_prior_steps: []
+  pep_type: route_pep
+  trust_level: low_trust
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_adk/bank_adk/agents/front_office.py:94
+- agent_id: data_analysis_agent
+  description: Analyzes internal operations data and extracts workload patterns.
+  domain: mid
+  role: specialist
+  risk_tier: medium
+  authorized_tools: []
+  authorized_transfers: []
+  reads_from: []
+  writes_to: []
+  requires_prior_steps: []
+  pep_type: tool_pep
+  trust_level: low_trust
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_adk/bank_adk/agents/mid_office.py:11
+- agent_id: forecasting_agent
+  description: Forecasts near-term operational demand from recent workload patterns.
+  domain: mid
+  role: specialist
+  risk_tier: medium
+  authorized_tools: []
+  authorized_transfers: []
+  reads_from: []
+  writes_to: []
+  requires_prior_steps: []
+  pep_type: tool_pep
+  trust_level: low_trust
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_adk/bank_adk/agents/mid_office.py:16
+- agent_id: staff_scheduling_agent
+  description: Translates forecasted demand into staffing and allocation proposals.
+  domain: mid
+  role: specialist
+  risk_tier: medium
+  authorized_tools: []
+  authorized_transfers: []
+  reads_from: []
+  writes_to: []
+  requires_prior_steps: []
+  pep_type: tool_pep
+  trust_level: low_trust
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_adk/bank_adk/agents/mid_office.py:21
+- agent_id: validation_agent
+  description: Validates schedules and plans before they are released to operations.
+  domain: mid
+  role: specialist
+  risk_tier: medium
+  authorized_tools: []
+  authorized_transfers: []
+  reads_from: []
+  writes_to: []
+  requires_prior_steps: []
+  pep_type: tool_pep
+  trust_level: low_trust
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_adk/bank_adk/agents/mid_office.py:26
+- agent_id: support_guidance_agent
+  description: Generates internal support guidance for operational teams.
+  domain: mid
+  role: specialist
+  risk_tier: medium
+  authorized_tools: []
+  authorized_transfers: []
+  reads_from: []
+  writes_to: []
+  requires_prior_steps: []
+  pep_type: tool_pep
+  trust_level: low_trust
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_adk/bank_adk/agents/mid_office.py:31
+- agent_id: planning_summary_agent
+  description: Merges the planning workflow outputs into one final mid-office planning
+    response.
+  domain: mid
+  role: specialist
+  risk_tier: medium
+  authorized_tools: []
+  authorized_transfers: []
+  reads_from: []
+  writes_to: []
+  requires_prior_steps: []
+  pep_type: tool_pep
+  trust_level: low_trust
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_adk/bank_adk/agents/mid_office.py:36
+- agent_id: financial_data_agent
+  description: Retrieves customer-specific financial information for representative
+    support.
+  domain: mid
+  role: specialist
+  risk_tier: medium
+  authorized_tools: []
+  authorized_transfers: []
+  reads_from: []
+  writes_to: []
+  requires_prior_steps: []
+  pep_type: tool_pep
+  trust_level: low_trust
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_adk/bank_adk/agents/mid_office.py:49
+- agent_id: recommender_agent
+  description: Finds relevant product suggestions and next-best actions for the representative.
+  domain: mid
+  role: specialist
+  risk_tier: medium
+  authorized_tools: []
+  authorized_transfers: []
+  reads_from: []
+  writes_to: []
+  requires_prior_steps: []
+  pep_type: tool_pep
+  trust_level: low_trust
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_adk/bank_adk/agents/mid_office.py:53
+- agent_id: loan_agent
+  description: Supports loan process guidance for internal representatives.
+  domain: mid
+  role: specialist
+  risk_tier: medium
+  authorized_tools: []
+  authorized_transfers: []
+  reads_from: []
+  writes_to: []
+  requires_prior_steps: []
+  pep_type: tool_pep
+  trust_level: low_trust
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_adk/bank_adk/agents/mid_office.py:57
+- agent_id: risk_compliance_agent
+  description: Checks policy and risk constraints before recommendations are shown
+    to representatives.
+  domain: mid
+  role: specialist
+  risk_tier: medium
+  authorized_tools: []
+  authorized_transfers: []
+  reads_from: []
+  writes_to: []
+  requires_prior_steps: []
+  pep_type: tool_pep
+  trust_level: low_trust
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_adk/bank_adk/agents/mid_office.py:61
+- agent_id: representative_merge_agent
+  description: Merges all representative-assist specialist outputs into one CSR-facing
+    answer.
+  domain: mid
+  role: specialist
+  risk_tier: medium
+  authorized_tools: []
+  authorized_transfers: []
+  reads_from: []
+  writes_to: []
+  requires_prior_steps: []
+  pep_type: tool_pep
+  trust_level: low_trust
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_adk/bank_adk/agents/mid_office.py:65
+- agent_id: mid_office_router
+  description: Routes internal operational work into planning/support or representative-assist
+    workflows.
+  domain: mid
+  role: router
+  risk_tier: medium
+  authorized_tools: []
+  authorized_transfers: []
+  reads_from: []
+  writes_to: []
+  requires_prior_steps: []
+  pep_type: route_pep
+  trust_level: low_trust
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_adk/bank_adk/agents/mid_office.py:76
+- agent_id: user_proxy_agent
+  description: Primary entry-point agent that routes requests into front office, mid
+    office, or back office banking workflows.
+  domain: root
+  role: specialist
+  risk_tier: medium
+  authorized_tools: []
+  authorized_transfers: []
+  reads_from: []
+  writes_to: []
+  requires_prior_steps: []
+  pep_type: tool_pep
+  trust_level: low_trust
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_adk/bank_adk/agents/root.py:33
+- agent_id: mid_office_planning_parallel
+  description: Runs schedule validation and support guidance in parallel after the
+    schedule draft exists.
+  domain: shared
+  role: workflow
+  risk_tier: medium
+  authorized_tools: []
+  authorized_transfers: []
+  reads_from: []
+  writes_to: []
+  requires_prior_steps: []
+  pep_type: none
+  trust_level: low_trust
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_adk/bank_adk/agents/workflow_agents.py:223
+- agent_id: mid_office_planning_workflow
+  description: Strict planning pipeline with deterministic execution order and LLM
+    specialists.
+  domain: shared
+  role: workflow
+  risk_tier: medium
+  authorized_tools: []
+  authorized_transfers: []
+  reads_from: []
+  writes_to: []
+  requires_prior_steps: []
+  pep_type: none
+  trust_level: low_trust
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_adk/bank_adk/agents/workflow_agents.py:228
+- agent_id: representative_assist_parallel
+  description: Runs representative-assist specialists in parallel.
+  domain: shared
+  role: workflow
+  risk_tier: medium
+  authorized_tools: []
+  authorized_transfers: []
+  reads_from: []
+  writes_to: []
+  requires_prior_steps: []
+  pep_type: none
+  trust_level: low_trust
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_adk/bank_adk/agents/workflow_agents.py:248
+- agent_id: representative_assistant_workflow
+  description: Fan-out/fan-in representative assist workflow.
+  domain: shared
+  role: workflow
+  risk_tier: medium
+  authorized_tools: []
+  authorized_transfers: []
+  reads_from: []
+  writes_to: []
+  requires_prior_steps: []
+  pep_type: none
+  trust_level: low_trust
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_adk/bank_adk/agents/workflow_agents.py:258

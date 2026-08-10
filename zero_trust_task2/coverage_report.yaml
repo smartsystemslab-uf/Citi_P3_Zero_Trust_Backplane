@@ -1,0 +1,92 @@
+discovered_agents: 33
+discovered_tools: 23
+discovered_apis: 19
+discovered_databases: 6
+discovered_edges: 5
+coverage_percent: null
+details:
+  agents:
+  - validation_checkpoint_agent
+  - eod_processing_agent
+  - ledger_update_agent
+  - reconciliation_agent
+  - report_writing_agent
+  - exception_agent
+  - back_office_router
+  - transaction_monitoring_agent
+  - fraud_detection_agent
+  - compliance_agent
+  - decision_making_agent
+  - knowledge_base_agent
+  - transaction_processing_agent
+  - customer_service_agent
+  - chatbot_intent_agent
+  - front_office_router
+  - data_analysis_agent
+  - forecasting_agent
+  - staff_scheduling_agent
+  - validation_agent
+  - support_guidance_agent
+  - planning_summary_agent
+  - financial_data_agent
+  - recommender_agent
+  - loan_agent
+  - risk_compliance_agent
+  - representative_merge_agent
+  - mid_office_router
+  - user_proxy_agent
+  - mid_office_planning_parallel
+  - mid_office_planning_workflow
+  - representative_assist_parallel
+  - representative_assistant_workflow
+  tools:
+  - validate_eod_readiness
+  - get_eod_batch
+  - apply_ledger_updates
+  - get_reconciliation_data
+  - create_exception_case
+  - store_report
+  - _load
+  - get_customer_financial_profile
+  - search_product_catalog
+  - search_loan_playbooks
+  - get_customer_context
+  - get_transaction_context
+  - list_recent_transactions
+  - submit_manual_review
+  - execute_transfer
+  - _load
+  - search_policies
+  - search_faqs
+  - _load
+  - get_operations_snapshot
+  - persist_validated_schedule
+  - get_support_playbooks
+  - rank_records
+  apis:
+  - startup_event
+  - health
+  - create_customer
+  - get_customer
+  - list_customer_accounts
+  - get_customer_context
+  - list_customer_transactions
+  - create_account
+  - get_account
+  - monitoring_evaluate_transaction
+  - banking_api_transfer
+  - get_transaction
+  - list_transactions
+  - create_policy
+  - list_policies
+  - search_policies
+  - create_rule
+  - list_rules
+  - update_transaction_status
+  databases:
+  - customers
+  - accounts
+  - policies
+  - rules
+  - transactions
+  - audit_logs
