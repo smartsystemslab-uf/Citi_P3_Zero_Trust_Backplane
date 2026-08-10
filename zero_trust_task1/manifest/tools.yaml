@@ -1,0 +1,573 @@
+# ============================================================
+# Tool / Resource Registry — ZT-IR Manifest
+# Citi Banking ADK  |  Phase 1 Step 3
+#
+# Sources:
+#   ADK tools: citi_banking_adk/bank_adk/tools/
+#   MCP tools: citi_banking_mcp_server/mcp_server.py
+#
+# Risk levels:
+#   1 — read-only, no PII, no financial data
+#   2 — read-only, PII or financial data
+#   3 — state-change, no financial impact
+#   4 — state-change with financial or compliance impact
+#   5 — financial write or ledger mutation — highest risk
+#
+# action_type taxonomy:
+#   read          — fetches data, no side effects
+#   compute       — runs analysis/simulation, no persistent side effects
+#   state_change  — modifies non-financial operational state
+#   financial_write — creates or modifies a financial transaction
+#   ledger_write  — directly mutates ledger entries
+#   batch_trigger — kicks off a batch process with downstream effects
+# ============================================================
+
+zt_ir_version: "1.0"
+manifest_type: tools
+
+tools:
+
+  # ── ADK Tools — Front Office ─────────────────────────────────
+
+  - tool_id: get_customer_context
+    display_name: Get Customer Context
+    source: adk
+    domain: front
+    action_type: read
+    has_side_effects: false
+    risk_level: 2
+    # customer_id is PII — links to a real person's identity
+    pii_fields:
+      - customer_id
+    compliance_tags:
+      - GDPR
+      - KYC
+    requires_live_decision: false
+    audit_required: true
+    allowed_callers:
+      - transaction_monitoring_agent
+      - fraud_detection_agent
+      - compliance_agent
+
+  - tool_id: get_transaction_context
+    display_name: Get Transaction Context
+    source: adk
+    domain: front
+    action_type: read
+    has_side_effects: false
+    risk_level: 2
+    pii_fields:
+      - transaction_id
+      - from_account_id
+      - to_account_id
+    compliance_tags:
+      - PCI-DSS
+      - AML
+    requires_live_decision: false
+    audit_required: true
+    allowed_callers:
+      - transaction_monitoring_agent
+      - fraud_detection_agent
+      - compliance_agent
+
+  - tool_id: list_recent_transactions
+    display_name: List Recent Transactions
+    source: adk
+    domain: front
+    action_type: read
+    has_side_effects: false
+    risk_level: 2
+    pii_fields:
+      - customer_id
+      - account_id
+    compliance_tags:
+      - PCI-DSS
+      - AML
+    requires_live_decision: false
+    audit_required: true
+    allowed_callers:
+      - transaction_monitoring_agent
+      - fraud_detection_agent
+
+  - tool_id: submit_manual_review
+    display_name: Submit Manual Review
+    source: adk
+    domain: front
+    action_type: state_change
+    has_side_effects: true
+    risk_level: 4
+    # Creates a review case — triggers a human workflow in the compliance team
+    pii_fields:
+      - customer_id
+      - transaction_id
+    compliance_tags:
+      - AML
+      - SOX
+      - KYC
+    requires_live_decision: true
+    audit_required: true
+    allowed_callers:
+      - decision_making_agent
+    # decision_making_agent is the ONLY agent that may escalate to manual review
+
+  - tool_id: execute_transfer
+    display_name: Execute Transfer
+    source: adk
+    domain: front
+    action_type: financial_write
+    has_side_effects: true
+    risk_level: 5
+    # Moves real money — the highest-risk ADK tool
+    pii_fields:
+      - customer_id
+      - source_account
+      - destination_account
+    compliance_tags:
+      - PCI-DSS
+      - AML
+      - SOX
+    requires_live_decision: true
+    audit_required: true
+    idempotency_key: memo
+    allowed_callers:
+      - transaction_processing_agent
+    # Only transaction_processing_agent may call execute_transfer.
+    # It must have a valid fo_service_result with execution_required=true.
+
+  - tool_id: search_faqs
+    display_name: Search FAQs
+    source: adk
+    domain: front
+    action_type: read
+    has_side_effects: false
+    risk_level: 1
+    pii_fields: []
+    compliance_tags: []
+    requires_live_decision: false
+    audit_required: false
+    allowed_callers:
+      - knowledge_base_agent
+
+  - tool_id: search_policies
+    display_name: Search Policies
+    source: adk
+    domain: shared
+    action_type: read
+    has_side_effects: false
+    risk_level: 1
+    pii_fields: []
+    compliance_tags: []
+    requires_live_decision: false
+    audit_required: false
+    allowed_callers:
+      - compliance_agent
+      - risk_compliance_agent
+
+  # ── ADK Tools — Mid Office ────────────────────────────────────
+
+  - tool_id: get_operations_snapshot
+    display_name: Get Operations Snapshot
+    source: adk
+    domain: mid
+    action_type: read
+    has_side_effects: false
+    risk_level: 1
+    pii_fields: []
+    compliance_tags: []
+    requires_live_decision: false
+    audit_required: false
+    allowed_callers:
+      - data_analysis_agent
+      - forecasting_agent
+
+  - tool_id: persist_validated_schedule
+    display_name: Persist Validated Schedule
+    source: adk
+    domain: mid
+    action_type: state_change
+    has_side_effects: true
+    risk_level: 3
+    # Commits a staffing schedule — operational impact but not financial
+    pii_fields: []
+    compliance_tags:
+      - LABOR_COMPLIANCE
+    requires_live_decision: false
+    audit_required: true
+    allowed_callers:
+      - validation_agent
+
+  - tool_id: get_support_playbooks
+    display_name: Get Support Playbooks
+    source: adk
+    domain: mid
+    action_type: read
+    has_side_effects: false
+    risk_level: 1
+    pii_fields: []
+    compliance_tags: []
+    requires_live_decision: false
+    audit_required: false
+    allowed_callers:
+      - support_guidance_agent
+
+  - tool_id: get_customer_financial_profile
+    display_name: Get Customer Financial Profile
+    source: adk
+    domain: mid
+    action_type: read
+    has_side_effects: false
+    risk_level: 2
+    # Contains account balances, credit scores, income data — highly sensitive PII
+    pii_fields:
+      - customer_id
+      - account_numbers
+      - credit_score
+      - income
+    compliance_tags:
+      - GDPR
+      - GLBA
+      - KYC
+    requires_live_decision: false
+    audit_required: true
+    allowed_callers:
+      - financial_data_agent
+
+  - tool_id: search_product_catalog
+    display_name: Search Product Catalog
+    source: adk
+    domain: mid
+    action_type: read
+    has_side_effects: false
+    risk_level: 1
+    pii_fields: []
+    compliance_tags: []
+    requires_live_decision: false
+    audit_required: false
+    allowed_callers:
+      - recommender_agent
+
+  - tool_id: search_loan_playbooks
+    display_name: Search Loan Playbooks
+    source: adk
+    domain: mid
+    action_type: read
+    has_side_effects: false
+    risk_level: 1
+    pii_fields: []
+    compliance_tags: []
+    requires_live_decision: false
+    audit_required: false
+    allowed_callers:
+      - loan_agent
+
+  # ── ADK Tools — Back Office ───────────────────────────────────
+
+  - tool_id: validate_eod_readiness
+    display_name: Validate EOD Readiness
+    source: adk
+    domain: back
+    action_type: read
+    has_side_effects: false
+    risk_level: 2
+    pii_fields: []
+    compliance_tags:
+      - SOX
+    requires_live_decision: false
+    audit_required: true
+    allowed_callers:
+      - validation_checkpoint_agent
+
+  - tool_id: get_eod_batch
+    display_name: Get EOD Batch
+    source: adk
+    domain: back
+    action_type: read
+    has_side_effects: false
+    risk_level: 3
+    # Batch data contains aggregated financial information
+    pii_fields:
+      - account_ids
+    compliance_tags:
+      - SOX
+      - PCI-DSS
+    requires_live_decision: false
+    audit_required: true
+    allowed_callers:
+      - eod_processing_agent
+
+  - tool_id: apply_ledger_updates
+    display_name: Apply Ledger Updates
+    source: adk
+    domain: back
+    action_type: ledger_write
+    has_side_effects: true
+    risk_level: 5
+    # Directly mutates the ledger — irreversible without a corrective entry
+    pii_fields:
+      - affected_accounts
+    compliance_tags:
+      - SOX
+      - PCI-DSS
+      - BASEL_III
+    requires_live_decision: true
+    audit_required: true
+    idempotency_key: ledger_reference
+    allowed_callers:
+      - ledger_update_agent
+    # Hard precondition: bo_validation_report.ready AND bo_processing_report must exist
+
+  - tool_id: get_reconciliation_data
+    display_name: Get Reconciliation Data
+    source: adk
+    domain: back
+    action_type: read
+    has_side_effects: false
+    risk_level: 3
+    pii_fields:
+      - account_ids
+    compliance_tags:
+      - SOX
+    requires_live_decision: false
+    audit_required: true
+    allowed_callers:
+      - reconciliation_agent
+
+  - tool_id: store_report
+    display_name: Store EOD Report
+    source: adk
+    domain: back
+    action_type: state_change
+    has_side_effects: true
+    risk_level: 3
+    pii_fields: []
+    compliance_tags:
+      - SOX
+    requires_live_decision: false
+    audit_required: true
+    allowed_callers:
+      - report_writing_agent
+
+  - tool_id: create_exception_case
+    display_name: Create Exception Case
+    source: adk
+    domain: back
+    action_type: state_change
+    has_side_effects: true
+    risk_level: 4
+    # Creates a compliance exception — triggers escalation chain
+    pii_fields:
+      - affected_accounts
+    compliance_tags:
+      - SOX
+      - BASEL_III
+    requires_live_decision: true
+    audit_required: true
+    allowed_callers:
+      - exception_agent
+
+  # ── MCP Tools — Front Office ──────────────────────────────────
+
+  - tool_id: get_transaction
+    display_name: MCP Get Transaction
+    source: mcp
+    domain: front
+    action_type: read
+    has_side_effects: false
+    risk_level: 2
+    pii_fields:
+      - transaction_id
+      - from_account_id
+      - to_account_id
+    compliance_tags:
+      - PCI-DSS
+    requires_live_decision: false
+    audit_required: true
+    allowed_callers:
+      - user_proxy_agent
+      - transaction_monitoring_agent
+      - fraud_detection_agent
+
+  - tool_id: run_fraud_and_compliance_workflow
+    display_name: MCP Run Fraud & Compliance Workflow
+    source: mcp
+    domain: front
+    action_type: compute
+    has_side_effects: false
+    risk_level: 3
+    # Triggers backend evaluation pipeline — read + compute, no persistent write
+    pii_fields:
+      - from_account_id
+      - to_account_id
+    compliance_tags:
+      - AML
+      - PCI-DSS
+    requires_live_decision: false
+    audit_required: true
+    allowed_callers:
+      - transaction_monitoring_agent
+      - fraud_detection_agent
+
+  - tool_id: update_transaction_status
+    display_name: MCP Update Transaction Status
+    source: mcp
+    domain: front
+    action_type: financial_write
+    has_side_effects: true
+    risk_level: 5
+    # Sets APPROVED / REJECTED / MANUAL_REVIEW — has direct financial consequence
+    pii_fields:
+      - transaction_id
+    compliance_tags:
+      - AML
+      - SOX
+      - PCI-DSS
+    requires_live_decision: true
+    audit_required: true
+    idempotency_key: transaction_id
+    allowed_callers:
+      - decision_making_agent
+    # Rationale field is mandatory — checked by Tool PEP before forwarding
+
+  # ── MCP Tools — Mid Office ────────────────────────────────────
+
+  - tool_id: get_branch_workload
+    display_name: MCP Get Branch Workload
+    source: mcp
+    domain: mid
+    action_type: read
+    has_side_effects: false
+    risk_level: 1
+    pii_fields: []
+    compliance_tags: []
+    requires_live_decision: false
+    audit_required: false
+    allowed_callers:
+      - data_analysis_agent
+      - forecasting_agent
+
+  - tool_id: propose_staffing_adjustment
+    display_name: MCP Propose Staffing Adjustment
+    source: mcp
+    domain: mid
+    action_type: compute
+    has_side_effects: false
+    risk_level: 1
+    # Simulation only — returns a workload balance score, does not commit
+    pii_fields: []
+    compliance_tags: []
+    requires_live_decision: false
+    audit_required: false
+    allowed_callers:
+      - staff_scheduling_agent
+
+  - tool_id: get_customer_product_affinity
+    display_name: MCP Get Customer Product Affinity
+    source: mcp
+    domain: mid
+    action_type: read
+    has_side_effects: false
+    risk_level: 2
+    # Links customer_id to behavioral predictions — PII by association
+    pii_fields:
+      - customer_id
+    compliance_tags:
+      - GDPR
+      - GLBA
+    requires_live_decision: false
+    audit_required: true
+    allowed_callers:
+      - recommender_agent
+
+  # ── MCP Tools — Back Office ───────────────────────────────────
+
+  - tool_id: trigger_eod_reconciliation
+    display_name: MCP Trigger EOD Reconciliation
+    source: mcp
+    domain: back
+    action_type: batch_trigger
+    has_side_effects: true
+    risk_level: 5
+    # Kicks off the EOD batch — triggers a chain of financial operations
+    pii_fields: []
+    compliance_tags:
+      - SOX
+      - BASEL_III
+    requires_live_decision: true
+    audit_required: true
+    allowed_callers:
+      - validation_checkpoint_agent
+      - eod_processing_agent
+
+  - tool_id: get_reconciliation_mismatches
+    display_name: MCP Get Reconciliation Mismatches
+    source: mcp
+    domain: back
+    action_type: read
+    has_side_effects: false
+    risk_level: 3
+    pii_fields:
+      - affected_account
+    compliance_tags:
+      - SOX
+    requires_live_decision: false
+    audit_required: true
+    allowed_callers:
+      - reconciliation_agent
+      - exception_agent
+
+  - tool_id: resolve_ledger_entry
+    display_name: MCP Resolve Ledger Entry
+    source: mcp
+    domain: back
+    action_type: ledger_write
+    has_side_effects: true
+    risk_level: 5
+    # Adjusts a ledger entry — corrective financial mutation
+    pii_fields:
+      - transaction_id
+    compliance_tags:
+      - SOX
+      - BASEL_III
+      - PCI-DSS
+    requires_live_decision: true
+    audit_required: true
+    idempotency_key: transaction_id
+    allowed_callers:
+      - exception_agent
+    # correction_amount must be validated by Tool PEP before forwarding
+
+# ── Risk summary (auto-derived — for quick reference) ─────────
+risk_summary:
+  risk_level_5:
+    - execute_transfer
+    - apply_ledger_updates
+    - update_transaction_status
+    - trigger_eod_reconciliation
+    - resolve_ledger_entry
+  risk_level_4:
+    - submit_manual_review
+    - create_exception_case
+  risk_level_3:
+    - persist_validated_schedule
+    - get_eod_batch
+    - get_reconciliation_data
+    - store_report
+    - run_fraud_and_compliance_workflow
+    - get_reconciliation_mismatches
+  risk_level_2:
+    - get_customer_context
+    - get_transaction_context
+    - list_recent_transactions
+    - get_customer_financial_profile
+    - validate_eod_readiness
+    - get_transaction
+    - get_customer_product_affinity
+  risk_level_1:
+    - search_faqs
+    - search_policies
+    - get_operations_snapshot
+    - get_support_playbooks
+    - search_product_catalog
+    - search_loan_playbooks
+    - get_branch_workload
+    - propose_staffing_adjustment

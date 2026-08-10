@@ -1,0 +1,289 @@
+# ============================================================
+# API Registry — ZT-IR Manifest
+# Citi Banking ADK  |  Task 1 Deliverable
+#
+# Source of truth: citi_banking_backend/app/main.py
+# Every HTTP endpoint the backend exposes must have an entry here.
+# Tools calling an API that is not listed default to DENY.
+#
+# Risk levels follow the same 1–5 scale as tools.yaml:
+#   1 — read-only, no PII, no financial data
+#   2 — read-only, PII or financial data
+#   3 — compute / non-financial state read
+#   4 — state-change with compliance impact
+#   5 — financial write or ledger mutation (CRITICAL)
+# ============================================================
+
+zt_ir_version: "1.1"
+manifest_type: apis
+
+apis:
+
+  # ── Customer Data (read, PII) ─────────────────────────────────
+
+  - api_id: get-customer
+    display_name: Get Customer
+    service: citi_banking_backend
+    base_url: http://localhost:8000
+    path: /customers/{customer_id}
+    method: GET
+    domain: front
+    action_type: read
+    has_side_effects: false
+    risk_level: 2
+    requires_auth: true
+    audit_required: true
+    reads_tables:
+      - db-customers
+    writes_tables: []
+    pii_fields:
+      - customer_id
+      - full_name
+      - email
+      - phone
+      - address
+    compliance_tags:
+      - GDPR
+      - KYC
+    operation_class: sensitive_data
+    allowed_callers:
+      - get_customer_context
+
+  - api_id: get-customer-context
+    display_name: Get Customer Context (Full Profile)
+    service: citi_banking_backend
+    base_url: http://localhost:8000
+    path: /customers/{customer_id}/context
+    method: GET
+    domain: front
+    action_type: read
+    has_side_effects: false
+    risk_level: 3
+    requires_auth: true
+    audit_required: true
+    reads_tables:
+      - db-customers
+      - db-accounts
+    writes_tables: []
+    pii_fields:
+      - customer_id
+      - full_name
+      - email
+      - phone
+      - address
+    compliance_tags:
+      - GDPR
+      - GLBA
+      - KYC
+    operation_class: sensitive_data
+    allowed_callers:
+      - get_customer_context
+      - get_customer_financial_profile
+
+  - api_id: get-customer-transactions
+    display_name: Get Customer Transaction History
+    service: citi_banking_backend
+    base_url: http://localhost:8000
+    path: /customers/{customer_id}/transactions
+    method: GET
+    domain: front
+    action_type: read
+    has_side_effects: false
+    risk_level: 3
+    requires_auth: true
+    audit_required: true
+    reads_tables:
+      - db-customers
+      - db-accounts
+      - db-transactions
+    writes_tables: []
+    pii_fields:
+      - customer_id
+      - from_account_id
+      - to_account_id
+    compliance_tags:
+      - PCI-DSS
+      - AML
+      - GDPR
+    operation_class: sensitive_data
+    allowed_callers:
+      - list_recent_transactions
+
+  # ── Transaction Data (read, financial+PII) ────────────────────
+
+  - api_id: get-transaction
+    display_name: Get Transaction Detail
+    service: citi_banking_backend
+    base_url: http://localhost:8000
+    path: /transactions/{transaction_id}
+    method: GET
+    domain: front
+    action_type: read
+    has_side_effects: false
+    risk_level: 2
+    requires_auth: true
+    audit_required: true
+    reads_tables:
+      - db-transactions
+    writes_tables: []
+    pii_fields:
+      - transaction_id
+      - from_account_id
+      - to_account_id
+    compliance_tags:
+      - PCI-DSS
+      - AML
+    operation_class: sensitive_data
+    allowed_callers:
+      - get_transaction_context
+      - get_transaction
+
+  # ── Monitoring / Fraud Evaluation (compute) ───────────────────
+
+  - api_id: evaluate-transaction
+    display_name: Evaluate Transaction (Fraud/Risk Assessment)
+    service: citi_banking_backend
+    base_url: http://localhost:8000
+    path: /monitoring/evaluate_transaction
+    method: POST
+    domain: front
+    action_type: compute
+    has_side_effects: false
+    risk_level: 3
+    requires_auth: true
+    audit_required: true
+    reads_tables:
+      - db-transactions
+      - db-rules
+    writes_tables: []
+    pii_fields:
+      - from_account_id
+      - to_account_id
+    compliance_tags:
+      - AML
+      - PCI-DSS
+    operation_class: read
+    allowed_callers:
+      - run_fraud_and_compliance_workflow
+
+  # ── Financial Writes (CRITICAL — risk level 5) ────────────────
+
+  - api_id: execute-transfer
+    display_name: Execute Banking Transfer
+    service: citi_banking_backend
+    base_url: http://localhost:8000
+    path: /banking-api/transfer
+    method: POST
+    domain: back
+    action_type: financial_write
+    has_side_effects: true
+    risk_level: 5
+    requires_auth: true
+    audit_required: true
+    reads_tables:
+      - db-accounts
+    writes_tables:
+      - db-transactions
+      - db-accounts
+      - db-audit-logs
+    pii_fields:
+      - source_account
+      - destination_account
+      - customer_id
+    compliance_tags:
+      - PCI-DSS
+      - AML
+      - SOX
+    idempotency_key: memo
+    operation_class: critical
+    allowed_callers:
+      - execute_transfer
+
+  - api_id: update-transaction-status
+    display_name: Update Transaction Status
+    service: citi_banking_backend
+    base_url: http://localhost:8000
+    path: /transactions/{transaction_id}/status
+    method: PATCH
+    domain: front
+    action_type: financial_write
+    has_side_effects: true
+    risk_level: 5
+    requires_auth: true
+    audit_required: true
+    reads_tables:
+      - db-transactions
+    writes_tables:
+      - db-transactions
+      - db-audit-logs
+    pii_fields:
+      - transaction_id
+    compliance_tags:
+      - AML
+      - SOX
+      - PCI-DSS
+    idempotency_key: transaction_id
+    operation_class: critical
+    allowed_callers:
+      - update_transaction_status
+
+  # ── Policy & Rule Lookups (read, no PII) ──────────────────────
+
+  - api_id: search-policies
+    display_name: Search Compliance Policies
+    service: citi_banking_backend
+    base_url: http://localhost:8000
+    path: /policies/search
+    method: GET
+    domain: shared
+    action_type: read
+    has_side_effects: false
+    risk_level: 1
+    requires_auth: true
+    audit_required: false
+    reads_tables:
+      - db-policies
+    writes_tables: []
+    pii_fields: []
+    compliance_tags: []
+    operation_class: read
+    allowed_callers:
+      - search_policies
+      - search_faqs
+
+  - api_id: list-rules
+    display_name: List Evaluation Rules
+    service: citi_banking_backend
+    base_url: http://localhost:8000
+    path: /rules
+    method: GET
+    domain: shared
+    action_type: read
+    has_side_effects: false
+    risk_level: 1
+    requires_auth: true
+    audit_required: false
+    reads_tables:
+      - db-rules
+    writes_tables: []
+    pii_fields: []
+    compliance_tags: []
+    operation_class: read
+    allowed_callers:
+      - run_fraud_and_compliance_workflow
+
+# ── Risk summary ──────────────────────────────────────────────
+risk_summary:
+  risk_level_5:
+    - execute-transfer
+    - update-transaction-status
+  risk_level_3:
+    - get-customer-context
+    - get-customer-transactions
+    - evaluate-transaction
+  risk_level_2:
+    - get-customer
+    - get-transaction
+  risk_level_1:
+    - search-policies
+    - list-rules

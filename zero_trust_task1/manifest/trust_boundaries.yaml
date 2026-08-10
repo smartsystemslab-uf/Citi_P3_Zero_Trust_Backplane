@@ -1,0 +1,250 @@
+# ============================================================
+# Trust Boundaries — ZT-IR Manifest
+# Citi Banking ADK  |  Task 1 Deliverable
+#
+# A trust boundary is a perimeter within which entities share
+# a common trust level. Traffic crossing a boundary must pass
+# through a PEP. Traffic within a boundary is still subject to
+# tool_pep rules at each tool call.
+#
+# Seven boundaries in this system:
+#   B1 — external           : internet → user_proxy_agent (input PEP)
+#   B2 — front_office       : front-facing agents (customer-data access)
+#   B3 — mid_office         : internal operations agents (PII access)
+#   B4 — back_office        : batch processing + ledger agents (critical)
+#   B5 — backend_api        : FastAPI service (request validation)
+#   B6 — mcp_server         : MCP protocol bridge (tool-call gating)
+#   B7 — database_tier      : SQLite/PostgreSQL (data-level enforcement)
+#
+# allowed_ingress_from:
+#   Each boundary lists which boundaries are permitted to send
+#   traffic to it. Any unlisted source is implicitly DENY.
+#
+# mtls_required: Phase 1 = false (token-based).
+#                Phase 4 upgrades to true (SPIFFE SVIDs + mTLS).
+# ============================================================
+
+zt_ir_version: "1.1"
+manifest_type: trust_boundaries
+
+trust_boundaries:
+
+  # ── B1: External (internet-facing) ───────────────────────────
+  - boundary_id: b-external
+    display_name: External (Internet)
+    description: >
+      All traffic originating outside the system — customer browsers,
+      mobile apps, external API consumers. The input PEP sits at the
+      edge of this boundary and validates every inbound request before
+      it reaches user_proxy_agent.
+    type: external
+    encompasses:
+      - user_proxy_agent
+    ingress_pep: input_pep
+    egress_pep: output_pep
+    mtls_required: false
+    network_policy: >
+      Accept only requests bearing a valid session token (JWT or equivalent).
+      All non-authenticated requests are dropped at the input PEP.
+      Output PEP scans all responses for PII before returning to caller.
+    allowed_ingress_from: []    # no boundary is upstream of external — it is the origin
+
+  # ── B2: Front Office ─────────────────────────────────────────
+  - boundary_id: b-front-office
+    display_name: Front Office
+    description: >
+      Customer-facing agents handling transaction risk review, chatbot
+      interactions, and execution decisions. Agents in this boundary
+      have access to customer PII (via tool calls) and can initiate
+      financial writes through execute_transfer and update_transaction_status.
+    type: internal
+    encompasses:
+      - front_office_router
+      - transaction_monitoring_agent
+      - fraud_detection_agent
+      - compliance_agent
+      - decision_making_agent
+      - chatbot_intent_agent
+      - knowledge_base_agent
+      - customer_service_agent
+      - transaction_processing_agent
+    ingress_pep: route_pep
+    egress_pep: output_pep
+    mtls_required: false
+    network_policy: >
+      Allow traffic only from b-external (via user_proxy_agent transfer).
+      No direct ingress from mid-office or back-office agents.
+      Egress to b-backend-api allowed only via tool calls (not direct HTTP).
+    allowed_ingress_from:
+      - b-external
+
+  # ── B3: Mid Office ────────────────────────────────────────────
+  - boundary_id: b-mid-office
+    display_name: Mid Office
+    description: >
+      Internal operational agents supporting planning and CSR assistance.
+      These agents access customer financial profiles (PII via tool calls)
+      and commit staffing schedules. No direct financial-write capability.
+    type: internal
+    encompasses:
+      - mid_office_router
+      - data_analysis_agent
+      - forecasting_agent
+      - staff_scheduling_agent
+      - validation_agent
+      - support_guidance_agent
+      - planning_summary_agent
+      - financial_data_agent
+      - recommender_agent
+      - loan_agent
+      - risk_compliance_agent
+      - representative_merge_agent
+    ingress_pep: route_pep
+    egress_pep: output_pep
+    mtls_required: false
+    network_policy: >
+      Allow traffic only from b-external (via user_proxy_agent transfer).
+      No direct ingress from front-office or back-office agents.
+      No agents in this boundary may call financial-write tools.
+    allowed_ingress_from:
+      - b-external
+
+  # ── B4: Back Office ───────────────────────────────────────────
+  - boundary_id: b-back-office
+    display_name: Back Office (Batch + Ledger)
+    description: >
+      Agents running the EOD batch: validation, processing, ledger writes,
+      reconciliation, and exception handling. The highest-risk boundary —
+      ledger_update_agent and exception_agent can mutate financial state
+      directly. Trigger requires user_role=system or ops_scheduler.
+    type: internal
+    encompasses:
+      - back_office_router
+      - validation_checkpoint_agent
+      - eod_processing_agent
+      - ledger_update_agent
+      - reconciliation_agent
+      - report_writing_agent
+      - exception_agent
+    ingress_pep: route_pep
+    egress_pep: output_pep
+    mtls_required: false
+    network_policy: >
+      Allow traffic only from b-external (via user_proxy_agent transfer).
+      User role must be system or ops_scheduler — deny customer/internal_rep roles.
+      No cross-domain ingress from b-front-office or b-mid-office.
+      Phase 4: additionally require system-role SPIFFE SVID.
+    allowed_ingress_from:
+      - b-external
+
+  # ── B5: Backend API (FastAPI) ─────────────────────────────────
+  - boundary_id: b-backend-api
+    display_name: Backend API Service (FastAPI)
+    description: >
+      The citi_banking_backend FastAPI service. Every HTTP request to this
+      service must originate from an authorized tool call. No agent or
+      external system may call this service directly (bypassing tools).
+      An API PEP validates the request at the service boundary.
+    type: service_mesh
+    encompasses:
+      - get-customer
+      - get-customer-context
+      - get-customer-transactions
+      - get-transaction
+      - evaluate-transaction
+      - execute-transfer
+      - update-transaction-status
+      - search-policies
+      - list-rules
+    ingress_pep: api_pep
+    egress_pep: none
+    mtls_required: false
+    network_policy: >
+      Accept HTTP requests only from b-front-office tool calls or b-mcp-server.
+      All requests must carry a tool-call identity header set by the tool PEP.
+      Reject any request without this header (prevents direct external access).
+      Phase 4: require client certificate (tool-side mTLS).
+    allowed_ingress_from:
+      - b-front-office
+      - b-mid-office
+      - b-back-office
+      - b-mcp-server
+
+  # ── B6: MCP Server ────────────────────────────────────────────
+  - boundary_id: b-mcp-server
+    display_name: MCP Protocol Server
+    description: >
+      The citi_banking_mcp_server acting as a protocol bridge between
+      ADK agents and the FastAPI backend. It is a partial PEP:
+      it gates all tool calls that transit through it (tool_pep function)
+      but cannot enforce agent-to-agent authentication or transport security
+      across the ADK in-process boundary.
+    type: service_mesh
+    encompasses:
+      - get_transaction
+      - run_fraud_and_compliance_workflow
+      - update_transaction_status
+      - get_branch_workload
+      - propose_staffing_adjustment
+      - get_customer_product_affinity
+      - trigger_eod_reconciliation
+      - get_reconciliation_mismatches
+      - resolve_ledger_entry
+    ingress_pep: tool_pep
+    egress_pep: none
+    mtls_required: false
+    network_policy: >
+      Accept tool call requests only from agents declared in allowed_callers
+      for each MCP tool. Reject calls from any other agent.
+      Forward to b-backend-api using an HTTP request with tool-call identity header.
+      MCP tools are enumerated — any tool call not in the manifest is rejected.
+    allowed_ingress_from:
+      - b-front-office
+      - b-mid-office
+      - b-back-office
+
+  # ── B7: Database Tier ─────────────────────────────────────────
+  - boundary_id: b-database-tier
+    display_name: Database Tier (SQLite / PostgreSQL)
+    description: >
+      The SQLAlchemy ORM + database layer. Access is mediated exclusively
+      through the FastAPI service — no agent, tool, or external system
+      connects to the database directly. The data PEP enforces which
+      API endpoints may run which SQL operations on which tables.
+      audit_logs is immutable: UPDATE and DELETE are blocked unconditionally.
+    type: database
+    encompasses:
+      - db-customers
+      - db-accounts
+      - db-policies
+      - db-rules
+      - db-transactions
+      - db-audit-logs
+    ingress_pep: api_pep
+    egress_pep: none
+    mtls_required: false
+    network_policy: >
+      Accept SQL queries only from b-backend-api (FastAPI ORM).
+      No direct database connections from agents, tools, or external systems.
+      Each table's allowed_api_callers list is enforced at the ORM layer.
+      audit_logs: INSERT only — UPDATE and DELETE are hard-blocked.
+    allowed_ingress_from:
+      - b-backend-api
+
+# ── Cross-boundary traffic matrix (simplified) ───────────────
+# Read down the columns: which source boundaries may send to which targets.
+#
+#                       b-ext  b-fo  b-mo  b-bo  b-api  b-mcp  b-db
+# b-external            —      ✓     ✓     ✓     ✗      ✗      ✗
+# b-front-office        ✗      —     ✗     ✗     ✓      ✓      ✗
+# b-mid-office          ✗      ✗     —     ✗     ✓      ✓      ✗
+# b-back-office         ✗      ✗     ✗     —     ✓      ✓      ✗
+# b-backend-api         ✗      ✗     ✗     ✗     —      ✗      ✓
+# b-mcp-server          ✗      ✗     ✗     ✗     ✓      —      ✗
+# b-database-tier       ✗      ✗     ✗     ✗     ✗      ✗      —
+#
+# Any cell marked ✗ is DENY. Missing routes do not exist.
+traffic_matrix_note: >
+  All agent-to-agent transfers are within or from b-external only.
+  No horizontal movement between front/mid/back without going through
+  b-external (user_proxy_agent). This enforces domain separation.

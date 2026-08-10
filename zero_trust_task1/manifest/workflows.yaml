@@ -1,0 +1,230 @@
+# ============================================================
+# Workflow Registry — ZT-IR Manifest
+# Citi Banking ADK  |  Task 1 Deliverable
+#
+# Source of truth: citi_banking_adk/bank_adk/agents/
+# A workflow is an ordered agent execution sequence with defined
+# entry and exit conditions. The Route PEP enforces:
+#   - entry agent is reached only from an authorized upstream
+#   - execution_order is followed (pipeline gates)
+#   - exit_conditions are written before the workflow terminates
+#
+# Five workflows:
+#   1. front_office_transaction   — transaction risk review + execution
+#   2. customer_service_chatbot   — FAQ and service routing
+#   3. mid_office_planning        — staffing and operations planning
+#   4. representative_assistant   — CSR support and recommendations
+#   5. back_office_eod            — end-of-day batch reconciliation
+# ============================================================
+
+zt_ir_version: "1.1"
+manifest_type: workflows
+
+workflows:
+
+  # ── 1. Front Office: Transaction Risk Workflow ────────────────
+  # Triggered by a customer requesting a financial transaction.
+  # Performs three parallel specialist reviews, then passes to
+  # a decision agent, and finally to execution if approved.
+
+  - workflow_id: front_office_transaction
+    display_name: Front Office Transaction Risk & Execution
+    domain: front
+    trigger: user_request
+    entry_agent: front_office_router
+    execution_order:
+      - front_office_router
+      - transaction_monitoring_agent
+      - fraud_detection_agent
+      - compliance_agent
+      - decision_making_agent
+      - transaction_processing_agent
+    parallel_steps:
+      - [transaction_monitoring_agent, fraud_detection_agent, compliance_agent]
+    exit_conditions:
+      success:
+        - fo_monitoring_report
+        - fo_fraud_report
+        - fo_compliance_report
+        - fo_decision_report
+        - fo_transaction_execution
+      failure:
+        - fo_decision_report           # may indicate REJECTED or MANUAL_REVIEW
+    risk_tier: critical
+    requires_user_role:
+      - customer
+      - internal_rep
+    pipeline_gates:
+      # fraud and compliance may not run until monitoring is complete
+      - gate: fraud_detection_agent must have fo_monitoring_report
+        enforced_by: route_pep
+      - gate: compliance_agent must have fo_monitoring_report
+        enforced_by: route_pep
+      # decision agent requires all three specialist reports
+      - gate: decision_making_agent must have fo_monitoring_report, fo_fraud_report, fo_compliance_report
+        enforced_by: route_pep
+      # execution requires an approved service plan
+      - gate: transaction_processing_agent must have fo_service_result with execution_required=true
+        enforced_by: tool_pep
+
+  # ── 2. Front Office: Customer Service Chatbot Workflow ────────
+  # Triggered by general customer inquiries — not necessarily a transaction.
+  # Intent classifier first, then routes to knowledge or service sub-path.
+
+  - workflow_id: customer_service_chatbot
+    display_name: Customer Service Chatbot
+    domain: front
+    trigger: user_request
+    entry_agent: front_office_router
+    execution_order:
+      - front_office_router
+      - chatbot_intent_agent
+      - knowledge_base_agent       # activated when intent == informational
+      - customer_service_agent     # activated when intent == service
+      - transaction_processing_agent  # activated when service_result.execution_required == true
+    parallel_steps: []
+    exit_conditions:
+      success:
+        - fo_chatbot_intent
+        - fo_knowledge_answer        # OR fo_service_result (mutually exclusive paths)
+      failure:
+        - fo_chatbot_intent          # intent must always be written even on failure
+    risk_tier: medium
+    requires_user_role:
+      - customer
+    pipeline_gates:
+      - gate: knowledge_base_agent must have fo_chatbot_intent with intent=informational
+        enforced_by: route_pep
+      - gate: customer_service_agent must have fo_chatbot_intent with intent=service
+        enforced_by: route_pep
+      - gate: transaction_processing_agent must have fo_service_result with execution_required=true
+        enforced_by: tool_pep
+
+  # ── 3. Mid Office: Planning & Support Workflow ────────────────
+  # Triggered by internal operations team for workload forecasting
+  # and scheduling. Runs in parallel across three specialist paths.
+
+  - workflow_id: mid_office_planning
+    display_name: Mid-Office Operations Planning
+    domain: mid
+    trigger: user_request
+    entry_agent: mid_office_router
+    execution_order:
+      - mid_office_router
+      - data_analysis_agent
+      - forecasting_agent
+      - staff_scheduling_agent
+      - validation_agent
+      - support_guidance_agent
+      - planning_summary_agent
+    parallel_steps:
+      - [forecasting_agent, support_guidance_agent]   # both can read mo_workload_analysis in parallel
+    exit_conditions:
+      success:
+        - mo_workload_analysis
+        - mo_forecast_report
+        - mo_schedule_draft
+        - mo_validation_report
+        - mo_support_guidance
+        - mid_office_planning_result
+      failure:
+        - mo_workload_analysis       # at minimum analysis must be present
+    risk_tier: low
+    requires_user_role:
+      - internal_rep
+      - ops_scheduler
+    pipeline_gates:
+      - gate: forecasting_agent must have mo_workload_analysis
+        enforced_by: route_pep
+      - gate: staff_scheduling_agent must have mo_forecast_report
+        enforced_by: route_pep
+      - gate: validation_agent must have mo_schedule_draft
+        enforced_by: route_pep
+      - gate: planning_summary_agent must have all five sub-reports
+        enforced_by: route_pep
+
+  # ── 4. Mid Office: Representative Assistant Workflow ──────────
+  # Triggered by a CSR needing customer-specific guidance.
+  # Retrieves financial profile then fans out to specialists.
+
+  - workflow_id: representative_assistant
+    display_name: Representative Assistant (CSR Support)
+    domain: mid
+    trigger: user_request
+    entry_agent: mid_office_router
+    execution_order:
+      - mid_office_router
+      - financial_data_agent
+      - recommender_agent
+      - loan_agent
+      - risk_compliance_agent
+      - representative_merge_agent
+    parallel_steps:
+      - [recommender_agent, loan_agent, risk_compliance_agent]
+    exit_conditions:
+      success:
+        - mo_customer_data_report
+        - mo_recommender_report
+        - mo_loan_report
+        - mo_risk_compliance_report
+        - mid_office_representative_result
+      failure:
+        - mo_customer_data_report    # data retrieval is the critical first gate
+    risk_tier: high
+    requires_user_role:
+      - internal_rep
+    pipeline_gates:
+      - gate: recommender_agent must have mo_customer_data_report
+        enforced_by: route_pep
+      - gate: loan_agent must have mo_customer_data_report
+        enforced_by: route_pep
+      - gate: risk_compliance_agent must have mo_customer_data_report
+        enforced_by: route_pep
+      - gate: representative_merge_agent must have all four sub-reports
+        enforced_by: route_pep
+
+  # ── 5. Back Office: End-of-Day Reconciliation Workflow ────────
+  # System-initiated only. Runs ordered — each step gates the next.
+  # Highest-risk workflow: includes ledger_write and exception creation.
+  # Branches at reconciliation: report_writing_agent (match) OR
+  # exception_agent (mismatch) — never both.
+
+  - workflow_id: back_office_eod
+    display_name: Back-Office End-of-Day Reconciliation
+    domain: back
+    trigger: schedule
+    entry_agent: back_office_router
+    execution_order:
+      - back_office_router
+      - validation_checkpoint_agent
+      - eod_processing_agent
+      - ledger_update_agent
+      - reconciliation_agent
+      - report_writing_agent        # branch A: reconciliation.matched == true
+      - exception_agent             # branch B: reconciliation.matched == false
+    parallel_steps: []              # strictly sequential — each step gates the next
+    exit_conditions:
+      success:
+        - bo_validation_report
+        - bo_processing_report
+        - bo_ledger_update_report
+        - bo_reconciliation_report
+        - bo_report_output           # written if reconciliation matched
+      failure:
+        - bo_reconciliation_report
+        - bo_exception_output        # written if reconciliation found a mismatch
+    risk_tier: critical
+    requires_user_role:
+      - system
+      - ops_scheduler
+    pipeline_gates:
+      - gate: eod_processing_agent must have bo_validation_report.ready == true
+        enforced_by: route_pep
+      - gate: ledger_update_agent must have bo_validation_report AND bo_processing_report
+        enforced_by: tool_pep
+      - gate: reconciliation_agent must have bo_ledger_update_report
+        enforced_by: route_pep
+      - gate: report_writing_agent activated only when bo_reconciliation_report.matched == true
+        enforced_by: route_pep
+      - gate: exception_agent activated only when bo_reconciliation_report.matched == false
+        enforced_by: route_pep

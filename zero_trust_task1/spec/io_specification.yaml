@@ -1,0 +1,401 @@
+# ============================================================
+# I/O Specification — Zero Trust Backplane
+# Citi Banking ADK  |  Task 1 Deliverable
+#
+# Defines the input and output contracts for each major
+# component of the Zero Trust Backplane pipeline.
+#
+# Components covered:
+#   1. Manifest Scanner       (Phase 2) — reads code, produces manifests
+#   2. PEP Generator          (Phase 3) — reads manifests, produces enforcement stubs
+#   3. PDP                    (Phase 4) — receives decision requests, returns permits
+#   4. Audit Emitter          (Phase 5) — receives events, writes to audit plane
+#   5. ZT-IR Validator        (Phase 1) — validates manifests against schema
+#
+# File format conventions:
+#   - Human-authored configuration files: YAML (supports comments, readable)
+#   - Machine-generated runtime artifacts: JSON (strict, fast, no comments)
+#   - Schema definitions: YAML (this file and zt_manifest_schema.yaml)
+# ============================================================
+
+zt_ir_version: "1.1"
+spec_name: io_specification
+
+# ══════════════════════════════════════════════════════════════
+# 1. ZT-IR Validator (Phase 1 — active now)
+# Validates all manifest YAML files against zt_manifest_schema.yaml
+# ══════════════════════════════════════════════════════════════
+
+zt_ir_validator:
+  description: >
+    Validates every manifest file in zero_trust/manifest/ against
+    the ZT-IR schema. Reports structural errors, missing required fields,
+    unknown field names, and enum violations.
+
+  inputs:
+    schema_file:
+      path: zero_trust/schema/zt_manifest_schema.yaml
+      format: yaml
+      description: Master schema — defines the shape of all manifest entities
+
+    manifest_files:
+      path: zero_trust/manifest/*.yaml
+      format: yaml
+      entities:
+        - agents.yaml       → entity: subject
+        - tools.yaml        → entity: tool
+        - apis.yaml         → entity: api
+        - databases.yaml    → entity: database
+        - workflows.yaml    → entity: workflow
+        - interaction_edges.yaml → entity: interaction_edge
+        - trust_boundaries.yaml  → entity: trust_boundary
+        - policy_intent.yaml     → entity: policy_rule
+        - identity_context.yaml  → entity: identity_context
+
+  outputs:
+    validation_report:
+      path: zero_trust/output/validation_report.json
+      format: json
+      schema:
+        status:             ENUM(valid, invalid, warnings_only)
+        manifest_file:      string
+        entity_count:       integer
+        errors:
+          - entity_id:      string
+            field:          string
+            error_type:     ENUM(missing_required, unknown_field, enum_violation, type_mismatch)
+            message:        string
+        warnings:
+          - entity_id:      string
+            message:        string
+
+# ══════════════════════════════════════════════════════════════
+# 2. Manifest Scanner (Phase 2 — planned)
+# Reads the ADK codebase and auto-generates/updates manifests
+# ══════════════════════════════════════════════════════════════
+
+manifest_scanner:
+  description: >
+    Static analysis tool that reads the ADK agent source files and
+    produces draft manifest entries for all discovered agents and tools.
+    Output is a set of YAML stubs that must be reviewed and enriched
+    by a human before becoming authoritative manifests.
+
+  inputs:
+    agent_source_files:
+      paths:
+        - citi_banking_adk/bank_adk/agents/root.py
+        - citi_banking_adk/bank_adk/agents/front_office.py
+        - citi_banking_adk/bank_adk/agents/mid_office.py
+        - citi_banking_adk/bank_adk/agents/back_office.py
+      format: python
+      extraction_targets:
+        - LlmAgent instantiations (name, description, tools)
+        - SequentialAgent / ParallelAgent wrappers (workflow structure)
+        - transfer_to_agent calls (authorized_transfers)
+
+    tool_source_files:
+      paths:
+        - citi_banking_adk/bank_adk/tools/*.py
+        - citi_banking_mcp_server/mcp_server.py
+      format: python
+      extraction_targets:
+        - @tool decorated functions (ADK tools)
+        - @mcp_server.tool decorated functions (MCP tools)
+        - Function signatures (argument names and types)
+        - HTTP calls inside tool functions (determines calls_api)
+
+    api_source_files:
+      paths:
+        - citi_banking_backend/app/main.py
+      format: python
+      extraction_targets:
+        - FastAPI route decorators (@app.get, @app.post, etc.)
+        - Path parameters, query parameters, request body schemas
+        - SQLAlchemy ORM queries inside route handlers (determines reads_tables)
+        - SQLAlchemy ORM writes (INSERT/UPDATE — determines writes_tables)
+
+    model_source_files:
+      paths:
+        - citi_banking_backend/app/models.py
+      format: python
+      extraction_targets:
+        - SQLAlchemy model class definitions (table names and columns)
+        - Column types and constraints (nullable, unique, foreign keys)
+
+  outputs:
+    draft_manifests:
+      path: zero_trust/output/draft_manifests/
+      format: yaml
+      files:
+        - agents_draft.yaml
+        - tools_draft.yaml
+        - apis_draft.yaml
+        - databases_draft.yaml
+        - interaction_edges_draft.yaml
+      note: >
+        Draft manifests contain auto-extracted structural facts but are
+        missing human-assigned security attributes: risk_level, pep_type,
+        trust_level, operation_class, compliance_tags, pii_fields.
+        Human review is required before promoting to zero_trust/manifest/.
+
+    coverage_report:
+      path: zero_trust/output/coverage_report.json
+      format: json
+      schema:
+        coverage_percent: float
+        discovered_agents: integer
+        manifest_agents: integer
+        uncovered_agents:
+          - agent_id: string
+            source_file: string
+            reason: string
+        coverage_gaps:
+          - gap_type: ENUM(missing_agent, missing_tool, missing_api, missing_edge)
+            description: string
+
+# ══════════════════════════════════════════════════════════════
+# 3. PEP Generator (Phase 3 — planned)
+# Reads the validated manifests and produces enforcement stubs
+# for each edge where pep_required=true
+# ══════════════════════════════════════════════════════════════
+
+pep_generator:
+  description: >
+    Code generator that reads the interaction_edges manifest and
+    emits one PEP enforcement stub per edge where pep_required=true.
+    Stubs are Python/TypeScript middleware modules wired into the
+    ADK agent chain and FastAPI middleware layer.
+
+  inputs:
+    validated_manifests:
+      path: zero_trust/manifest/
+      format: yaml
+      required_files:
+        - agents.yaml
+        - tools.yaml
+        - apis.yaml
+        - databases.yaml
+        - interaction_edges.yaml
+        - trust_boundaries.yaml
+        - policy_intent.yaml
+        - identity_context.yaml
+
+    pep_templates:
+      path: zero_trust/templates/
+      format: python
+      templates:
+        - route_pep.py.j2      # ADK agent transfer interceptor
+        - tool_pep.py.j2       # ADK/MCP tool call interceptor
+        - api_pep.py.j2        # FastAPI middleware
+        - data_pep.py.j2       # SQLAlchemy query interceptor
+
+  outputs:
+    pep_stubs:
+      path: zero_trust/generated/peps/
+      format: python
+      naming: "{edge_id}_{pep_type}.py"
+      generated_for:
+        edge_types:
+          - agent_to_agent    → route_pep
+          - agent_to_tool     → tool_pep
+          - tool_to_api       → api_pep
+          - mcp_tool_to_api   → api_pep
+          - api_to_database   → data_pep
+
+    pdp_call_stubs:
+      path: zero_trust/generated/pdp/
+      format: python
+      description: >
+        For each edge where requires_live_decision=true (risk_level 5),
+        the PEP stub includes a call to the PDP client.
+        These stubs encode the decision request schema from identity_context.yaml.
+
+    opa_rego_policies:
+      path: zero_trust/generated/rego/
+      format: rego
+      description: >
+        One OPA Rego policy file per policy_rule in policy_intent.yaml.
+        The PDP loads these at startup and evaluates incoming decision requests.
+
+    pep_manifest:
+      path: zero_trust/output/pep_manifest.json
+      format: json
+      schema:
+        generated_at:   iso8601
+        schema_version: string
+        pep_count:      integer
+        peps:
+          - edge_id:    string
+            pep_type:   ENUM(route_pep, tool_pep, api_pep, data_pep)
+            stub_path:  string
+            calls_pdp:  boolean
+            risk_level: integer
+
+# ══════════════════════════════════════════════════════════════
+# 4. PDP (Policy Decision Point) — Runtime (Phase 4 — planned)
+# Receives decision requests, evaluates OPA policies, returns permits
+# ══════════════════════════════════════════════════════════════
+
+pdp:
+  description: >
+    The central decision authority. Runs as a sidecar service alongside
+    each agent (or as a shared service in Phase 3). Receives decision
+    requests from PEP stubs, evaluates them against OPA Rego policies,
+    and returns a signed permit lease or a denial.
+    Must never be in the hot execution path — maximum latency budget: 50ms.
+
+  decision_request:
+    format: json
+    schema:
+      subject:
+        session_id:     string     # from identity_context required_claims
+        agent_id:       string
+        user_role:      string
+        workflow_state: object
+        risk_context:   object     # null if absent
+      resource:
+        tool_id:        string     # or api_id / database_id / transfer_target
+        action:         ENUM(call, read, write, transfer, output, query)
+      request:
+        args_hash:      string     # SHA-256 of serialized arguments
+        args_schema:    object     # field names and types only (no values)
+        timestamp:      iso8601
+      context:
+        policy_version: string
+        identity_epoch: string
+
+  decision_response:
+    format: json
+    schema:
+      decision:         ENUM(allow, deny, require_manual_review)
+      permit_lease:
+        request_hash:   string     # binds permit to exact args_hash — cannot be reused for different args
+        expires_at:     iso8601    # short-lived — 30s for risk_level 5, 60s for risk_level 3–4
+        max_uses:       integer    # 1 for financial writes; higher for read operations
+        policy_version: string     # invalidated if policy bundle updates
+        identity_epoch: string     # invalidated if identity store updates
+        signature:      string     # HMAC-SHA256 — PEP must verify before honoring
+      denial_reason:    string     # present only when decision == deny
+      obligations:
+        - ENUM(audit_log, emit_financial_event, emit_ledger_event, alert_security_team,
+               emit_batch_event, alert_privacy_team, require_manual_review)
+
+  sla:
+    p99_latency_ms: 50
+    fail_mode: >
+      If the PDP is unreachable, critical-class operations (operation_class=critical)
+      default to DENY (fail closed). Read operations may use a cached
+      last-known-good decision with ttl_seconds=10 (fail open for reads only).
+
+# ══════════════════════════════════════════════════════════════
+# 5. Audit Emitter (Phase 5 — planned)
+# Receives structured events from PEPs and writes to audit plane
+# ══════════════════════════════════════════════════════════════
+
+audit_emitter:
+  description: >
+    Every PEP emits a structured event for each decision (allow or deny).
+    The audit emitter collects events, redacts PII fields, and writes
+    to the immutable audit log (db-audit-logs). Provides the data stream
+    for the Observability module (already built in Phase 0).
+
+  event_schema:
+    format: json
+    fields:
+      event_id:       string     # UUID
+      timestamp:      iso8601
+      session_id:     string     # from identity_context — ties to audit record chain
+      agent_id:       string
+      pep_type:       ENUM(route_pep, tool_pep, api_pep, data_pep, output_pep)
+      edge_id:        string     # from interaction_edges manifest
+      resource:       string     # tool_id / api_id / database_id / transfer_target
+      action:         string
+      decision:       ENUM(allow, deny, require_manual_review)
+      operation_class: string
+      risk_level:     integer
+      pii_redacted:   boolean    # true if pii_fields were present and redacted
+      obligations_fulfilled: list[string]
+      denial_reason:  string     # present when decision == deny
+
+  pii_redaction_rules:
+    description: >
+      Before writing to audit log, the audit emitter replaces PII field values
+      with a HMAC-SHA256 hash keyed by the audit signing key.
+      This preserves correlation (same customer_id → same hash) while
+      preventing PII from appearing in plain text in the audit log.
+    fields_always_redacted:
+      - full_name
+      - email
+      - phone
+      - address
+      - ip_address
+      - source_account
+      - destination_account
+    fields_hashed_for_correlation:
+      - customer_id
+      - transaction_id
+      - from_account_id
+      - to_account_id
+
+# ══════════════════════════════════════════════════════════════
+# M1 Milestone — Completion criteria and verification method
+# ══════════════════════════════════════════════════════════════
+
+m1_completion_criteria:
+  description: >
+    The system satisfies Milestone M1 when all of the following are true.
+    The ZT-IR Validator (component 1 above) runs as the acceptance test.
+
+  criteria:
+
+    - id: m1-c1
+      statement: >
+        Every agent in the ADK codebase has a corresponding entry in agents.yaml.
+        No agent executes without a manifest entry.
+      verified_by: coverage_report.coverage_percent == 100% for agents
+
+    - id: m1-c2
+      statement: >
+        The system can describe: Agent → Tool → API → Database → Ledger
+        using one standardized representation (the ZT-IR).
+      verified_by: >
+        interaction_edges.yaml contains at least one complete chain:
+        agent_to_tool + tool_to_api + api_to_database for a risk_level 5 operation.
+
+    - id: m1-c3
+      statement: >
+        Every operation is classified as exactly one of:
+        read, write, financial, sensitive_data, critical.
+      verified_by: >
+        All entries in tools.yaml, apis.yaml, and interaction_edges.yaml
+        have a non-empty operation_class field that matches the operation_class
+        taxonomy in zt_manifest_schema.yaml.
+
+    - id: m1-c4
+      statement: >
+        The five risk classes are correctly applied:
+        execute_transfer, apply_ledger_updates, update_transaction_status,
+        trigger_eod_reconciliation, resolve_ledger_entry are all
+        classified as operation_class=critical with risk_level=5.
+      verified_by: >
+        zt_ir_validator checks that all tools in
+        operation_class.critical.tools list have risk_level=5 and
+        requires_live_decision=true.
+
+    - id: m1-c5
+      statement: >
+        The default decision for any unlisted subject/resource/action
+        combination is DENY.
+      verified_by: >
+        policy_intent.yaml has default_decision: deny and this value
+        is validated against the schema.
+
+    - id: m1-c6
+      statement: >
+        All PII-bearing operations are identified and marked
+        with pii_fields and compliance_tags.
+      verified_by: >
+        All entities with contains_pii=true (databases.yaml) are
+        referenced by at least one api entry that has a non-empty
+        pii_fields list.

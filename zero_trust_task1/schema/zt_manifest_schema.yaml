@@ -1,0 +1,248 @@
+# ============================================================
+# zt_manifest_schema.yaml
+# Zero Trust Backplane — Task 1 Deliverable
+# Citi Banking ADK  |  M1 Schema Definition
+#
+# This is the MASTER schema for the Zero Trust Intermediate
+# Representation (ZT-IR). Every manifest file in manifest/
+# must conform to one or more entity types defined here.
+#
+# Ten ZT-IR entity types:
+#   1. subject          — agent (LlmAgent)
+#   2. tool             — callable function (ADK or MCP)
+#   3. api              — FastAPI/OpenAPI HTTP endpoint
+#   4. database         — relational table or ledger resource
+#   5. workflow         — ordered agent execution sequence
+#   6. interaction_edge — directed relationship between any two entities
+#   7. trust_boundary   — network/security perimeter
+#   8. policy_rule      — authorization rule (compiled to OPA Rego)
+#   9. identity_context — claims carried on every PDP decision
+#  10. operation_class  — M1 classification taxonomy
+#
+# Default stance: any entity, action, or relationship not
+# explicitly defined in a manifest defaults to DENY.
+# ============================================================
+
+zt_ir_version: "1.1"
+schema_name: zt_manifest_schema
+
+# ── 1. subject (agent) ────────────────────────────────────────
+subject:
+  agent_id:             <required> string
+  description:          <required> string
+  domain:               <required> ENUM(root, front, mid, back)
+  role:                 <required> ENUM(entry_point, router, specialist, workflow, merger)
+  risk_tier:            <required> ENUM(low, medium, high, critical)
+  authorized_tools:     <required> list[tool_id]
+  authorized_transfers: <required> list[agent_id]
+  pep_type:             <required> ENUM(route_pep, tool_pep, output_pep, none)
+  trust_level:          <required> ENUM(untrusted, low_trust, trusted)
+  reads_from:           [optional] list[state_key]
+  writes_to:            [optional] string
+  requires_prior_steps: [optional] list[state_key]
+  endpoint:             [optional] string   # runtime address when deployed as service
+  communication_method: [optional] ENUM(in_process, http, grpc, mcp_stdio, mcp_sse)
+
+# ── 2. tool ───────────────────────────────────────────────────
+tool:
+  tool_id:              <required> string
+  display_name:         <required> string
+  source:               <required> ENUM(adk, mcp)
+  domain:               <required> ENUM(front, mid, back, shared)
+  action_type:          <required> ENUM(read, compute, state_change, financial_write, ledger_write, batch_trigger)
+  has_side_effects:     <required> boolean
+  risk_level:           <required> integer         # 1–5
+  requires_live_decision: <required> boolean
+  audit_required:       <required> boolean
+  allowed_callers:      <required> list[agent_id]
+  calls_api:            [optional] list[api_id]    # which API endpoints this tool invokes
+  pii_fields:           [optional] list[string]
+  compliance_tags:      [optional] list[string]
+  idempotency_key:      [optional] string
+  operation_class:      <required> ENUM(read, write, financial, sensitive_data, critical)
+
+# ── 3. api (HTTP endpoint) ────────────────────────────────────
+api:
+  api_id:               <required> string          # kebab-case unique id
+  display_name:         <required> string
+  service:              <required> string           # backend service name
+  base_url:             <required> string           # e.g. http://localhost:8000
+  path:                 <required> string           # e.g. /customers/{customer_id}/context
+  method:               <required> ENUM(GET, POST, PUT, PATCH, DELETE)
+  domain:               <required> ENUM(front, mid, back, shared)
+  action_type:          <required> ENUM(read, compute, state_change, financial_write, ledger_write, batch_trigger)
+  has_side_effects:     <required> boolean
+  risk_level:           <required> integer          # 1–5
+  requires_auth:        <required> boolean
+  audit_required:       <required> boolean
+  reads_tables:         [optional] list[database_id]
+  writes_tables:        [optional] list[database_id]
+  pii_fields:           [optional] list[string]     # path/body param names containing PII
+  compliance_tags:      [optional] list[string]
+  idempotency_key:      [optional] string
+  operation_class:      <required> ENUM(read, write, financial, sensitive_data, critical)
+  allowed_callers:      <required> list[tool_id]    # which tools are permitted to call this endpoint
+
+# ── 4. database (table or ledger resource) ────────────────────
+database:
+  database_id:          <required> string
+  display_name:         <required> string
+  db_type:              <required> ENUM(relational, ledger, document, cache, object_store)
+  engine:               [optional] string           # e.g. SQLite, PostgreSQL, SQLAlchemy
+  table_name:           <required> string
+  classification:       <required> ENUM(public, internal, confidential, restricted)
+  contains_pii:         <required> boolean
+  contains_financial:   <required> boolean
+  contains_audit:       <required> boolean
+  allowed_operations:   <required> list[ENUM(SELECT, INSERT, UPDATE, DELETE)]
+  allowed_api_callers:  <required> list[api_id]     # only these APIs may access this table
+  compliance_tags:      [optional] list[string]
+  risk_level:           <required> integer           # 1–5
+  immutable:            <required> boolean           # true = append-only (audit tables)
+
+# ── 5. workflow ───────────────────────────────────────────────
+workflow:
+  workflow_id:          <required> string
+  display_name:         <required> string
+  domain:               <required> ENUM(front, mid, back)
+  trigger:              <required> ENUM(user_request, schedule, agent_transfer, event)
+  entry_agent:          <required> agent_id
+  execution_order:      <required> list[agent_id]   # declared order; actual may branch
+  exit_conditions:
+    success:            <required> list[state_key]  # keys that must be present on success
+    failure:            <required> list[state_key]  # keys written on failure
+  parallel_steps:       [optional] list[list[agent_id]]  # agents that run in parallel
+  risk_tier:            <required> ENUM(low, medium, high, critical)
+  requires_user_role:   [optional] list[string]     # user roles that may trigger this workflow
+
+# ── 6. interaction_edge (directed relationship) ───────────────
+# Covers ALL relationship types in one entity.
+# from_type and to_type identify which registry to look up.
+interaction_edge:
+  edge_id:              <required> string
+  edge_type:            <required> ENUM(
+                          agent_to_agent,
+                          agent_to_tool,
+                          tool_to_api,
+                          api_to_database,
+                          agent_to_api,     # direct — should be rare; tools mediate normally
+                          mcp_tool_to_api   # MCP tool bridging to FastAPI
+                        )
+  from_id:              <required> string   # agent_id / tool_id / api_id
+  from_type:            <required> ENUM(subject, tool, api, database)
+  to_id:                <required> string   # tool_id / api_id / database_id / agent_id
+  to_type:              <required> ENUM(subject, tool, api, database)
+  # Risk and enforcement
+  risk_level:           <required> integer  # 1–5
+  pep_required:         <required> boolean
+  pep_type:             [optional] ENUM(route_pep, tool_pep, api_pep, data_pep)
+  # For agent→agent: workflow gate condition
+  trigger:              [optional] string
+  required_state:       [optional] list[state_key]
+  # For tool→api / api→database: HTTP/SQL operation
+  http_method:          [optional] ENUM(GET, POST, PUT, PATCH, DELETE)
+  db_operation:         [optional] ENUM(SELECT, INSERT, UPDATE, DELETE)
+  operation_class:      <required> ENUM(read, write, financial, sensitive_data, critical)
+
+# ── 7. trust_boundary ─────────────────────────────────────────
+trust_boundary:
+  boundary_id:          <required> string
+  display_name:         <required> string
+  description:          <required> string
+  type:                 <required> ENUM(external, internal, service_mesh, database)
+  encompasses:          <required> list[string]     # agent_ids, api_ids, or database_ids inside
+  ingress_pep:          <required> ENUM(input_pep, route_pep, api_pep, none)
+  egress_pep:           <required> ENUM(output_pep, tool_pep, api_pep, none)
+  mtls_required:        <required> boolean
+  network_policy:       <required> string           # "allow only listed sources" or "deny all direct"
+  allowed_ingress_from: <required> list[boundary_id]
+
+# ── 8. policy_rule ────────────────────────────────────────────
+policy_rule:
+  rule_id:              <required> string
+  description:          <required> string
+  compliance_basis:     [optional] string
+  subject:              <required> string            # agent_id or "*"
+  resource:             <required> string            # tool_id, api_id, database_id, or "*"
+  action:               <required> ENUM(call, read, write, transfer, output, query)
+  conditions:           [optional] list[string]
+  decision:             <required> ENUM(allow, deny, require_manual_review)
+  obligations:          [optional] list[string]
+  on_condition_fail:    <required> ENUM(deny, require_manual_review, allow_with_flag)
+  priority:             <required> integer
+
+# ── 9. identity_context ───────────────────────────────────────
+identity_context:
+  required_claims:
+    session_id:         string    # UUID — set by input PEP, scopes all audit records
+    agent_id:           string    # PEP-set — not self-reported
+    user_role:          ENUM(customer, internal_rep, ops_scheduler, system, auditor)
+    workflow_state:     object    # map of state_key → {status, completed_by, timestamp}
+  optional_claims:
+    risk_context:       object    # transaction_amount, aml_cleared, risk_tier, fraud_risk
+    device_context:     object    # channel, ip_address, user_agent
+    user_id:            string    # PII — hashed in audit log
+  propagation:
+    scope:              ENUM(session)
+    strategy:           ENUM(downscope)
+    ttl_seconds:        integer
+
+# ── 10. operation_class (M1 taxonomy) ─────────────────────────
+# Classifies every operation into one of five risk classes.
+# Used by the Scanner (Phase 2) to auto-assign risk levels
+# and by the PEP generator (Phase 3) to determine enforcement intensity.
+operation_class:
+  read:
+    description:        Retrieves data without modifying any state
+    http_methods:       [GET]
+    db_operations:      [SELECT]
+    action_types:       [read, compute]
+    risk_levels:        [1, 2, 3]
+    requires_live_pdp:  false
+    audit_required:     false     # unless tool/api sets audit_required: true
+
+  write:
+    description:        Creates or modifies non-financial operational state
+    http_methods:       [POST, PUT, PATCH, DELETE]
+    db_operations:      [INSERT, UPDATE, DELETE]
+    action_types:       [state_change]
+    risk_levels:        [3, 4]
+    requires_live_pdp:  false
+    audit_required:     true
+
+  financial:
+    description:        Creates, modifies, or executes financial transactions
+    http_methods:       [POST, PATCH]
+    db_operations:      [INSERT, UPDATE]
+    action_types:       [financial_write]
+    risk_levels:        [4, 5]
+    requires_live_pdp:  true
+    audit_required:     true
+    permit_max_uses:    1         # single-use permit lease only
+
+  sensitive_data:
+    description:        Accesses personally identifiable or confidential information
+    indicators:
+      - pii_fields list is non-empty
+      - compliance_tags includes GDPR, GLBA, or KYC
+      - database.contains_pii is true
+    risk_levels:        [2, 3, 4, 5]
+    requires_live_pdp:  false     # unless risk_level >= 4
+    audit_required:     true
+    pii_redaction:      true      # PEP redacts PII fields before writing to audit log
+
+  critical:
+    description:        Irreversible operations with direct financial or compliance impact
+    action_types:       [financial_write, ledger_write, batch_trigger]
+    risk_levels:        [5]
+    requires_live_pdp:  true
+    audit_required:     true
+    permit_max_uses:    1
+    permit_ttl_seconds: 30        # shortest-lived permit lease
+    fail_mode:          closed    # if PDP unreachable, deny — never allow
+    tools:
+      - execute_transfer
+      - apply_ledger_updates
+      - update_transaction_status
+      - trigger_eod_reconciliation
+      - resolve_ledger_entry

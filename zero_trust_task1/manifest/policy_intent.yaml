@@ -1,0 +1,479 @@
+# ============================================================
+# Policy Intent — ZT-IR Manifest
+# Citi Banking ADK  |  Phase 1 Step 4
+#
+# These rules are the human-readable form of the authorization
+# policies that will be compiled into OPA Rego in Phase 3.
+#
+# Sources:
+#   - 15-check deterministic evaluator (evaluation.py)
+#   - tool allowed_callers (tools.yaml)
+#   - agent requires_prior_steps (agents.yaml)
+#   - compliance requirements (SOX, PCI-DSS, AML, GDPR)
+#
+# Evaluation order: rules are evaluated by priority (lower = first).
+# A DENY at any priority stops evaluation — no lower-priority allow
+# can override it.
+#
+# on_condition_fail:
+#   deny                 — hard deny, return error
+#   require_manual_review — escalate to human reviewer
+#   allow_with_flag      — allow but log an anomaly event
+# ============================================================
+
+zt_ir_version: "1.0"
+manifest_type: policy_intent
+
+# ── Default stance ────────────────────────────────────────────
+default_decision: deny
+# Any subject/resource/action combination not matched by a rule
+# defaults to DENY. Missing entries are not implicit permission.
+
+policy_rules:
+
+  # ══ INPUT BOUNDARY ═══════════════════════════════════════════
+  # Rules that govern what enters the system
+
+  - rule_id: require-valid-session
+    description: >
+      Every inbound request must carry a valid session_id and user_role.
+      Requests without a session context are dropped before reaching
+      user_proxy_agent. Corresponds to evaluator check: expectation_defined.
+    compliance_basis: IT General access Controls — access control over financial systems
+    subject: "*"
+    resource: user_proxy_agent
+    action: call
+    conditions:
+      - identity.session_id is present and non-empty
+      - identity.user_role in [customer, internal_rep, ops_scheduler, system, auditor]
+    decision: allow
+    obligations:
+      - audit_log
+    on_condition_fail: deny
+    priority: 1
+
+  - rule_id: block-prompt-injection-patterns
+    description: >
+      Input containing known prompt injection patterns (override system prompt,
+      ignore instructions, claim authority waiver) must be denied at the input PEP
+      before any agent processes it. Directly addresses F_DPI failure type.
+    compliance_basis: NIST AI RMF — adversarial input controls
+    subject: "*"
+    resource: user_proxy_agent
+    action: call
+    conditions:
+      - input.message does not match prompt_injection_pattern_list
+    decision: allow
+    obligations:
+      - audit_log
+    on_condition_fail: deny
+    priority: 2
+
+  # ══ ROUTE BOUNDARY ════════════════════════════════════════════
+  # Rules that govern agent-to-agent transfers
+
+  - rule_id: front-office-router-allowed-targets
+    description: >
+      front_office_router may only transfer to its declared sub-agents.
+      Any other transfer target is a routing failure (F_route).
+      Corresponds to evaluator check: required_transfers_present and
+      forbidden_tools_absent (applied to routes).
+    compliance_basis: Least-privilege routing — agents must not exceed declared scope
+    subject: front_office_router
+    resource: transfer_target
+    action: transfer
+    conditions:
+      - transfer.to_agent in [front_office_transaction_workflow, customer_service_chatbot_workflow]
+    decision: allow
+    obligations:
+      - audit_log
+    on_condition_fail: deny
+    priority: 10
+
+  - rule_id: mid-office-router-allowed-targets
+    description: >
+      mid_office_router may only transfer to mid-office sub-workflows.
+    compliance_basis: Least-privilege routing
+    subject: mid_office_router
+    resource: transfer_target
+    action: transfer
+    conditions:
+      - transfer.to_agent in [mid_office_planning_workflow, representative_assistant_workflow]
+    decision: allow
+    obligations:
+      - audit_log
+    on_condition_fail: deny
+    priority: 10
+
+  - rule_id: back-office-router-allowed-targets
+    description: >
+      back_office_router may only transfer to the EOD workflow.
+    compliance_basis: Least-privilege routing
+    subject: back_office_router
+    resource: transfer_target
+    action: transfer
+    conditions:
+      - transfer.to_agent in [back_office_eod_workflow]
+    decision: allow
+    obligations:
+      - audit_log
+    on_condition_fail: deny
+    priority: 10
+
+  - rule_id: no-cross-domain-transfers
+    description: >
+      No agent may transfer control across domain boundaries (front→back,
+      mid→front, etc.) without going through user_proxy_agent.
+      Prevents unauthorized domain escalation (F_route).
+    compliance_basis: Separation of duties — front/mid/back office are independent control environments
+    subject: "*"
+    resource: transfer_target
+    action: transfer
+    conditions:
+      - NOT (transfer.from_domain != transfer.to_domain AND transfer.from_agent != user_proxy_agent)
+    decision: allow
+    obligations:
+      - audit_log
+    on_condition_fail: deny
+    priority: 5
+
+  # ══ TOOL BOUNDARY ═════════════════════════════════════════════
+  # Rules that govern tool calls — one rule per high-risk tool or group
+
+  - rule_id: execute-transfer-caller-restriction
+    description: >
+      execute_transfer may only be called by transaction_processing_agent.
+      No other agent in the system has authority to move money.
+      Corresponds to evaluator check: required_tools_present and forbidden_tools_absent.
+    compliance_basis: PCI-DSS requirement 7 — restrict access to cardholder data by business need
+    subject: transaction_processing_agent
+    resource: execute_transfer
+    action: call
+    conditions:
+      - identity.agent_id == transaction_processing_agent
+      - session_state.fo_service_result is present
+      - session_state.fo_service_result.execution_required == true
+      - session_state.fo_service_result.source_account is present
+      - session_state.fo_service_result.destination_account is present
+      - session_state.fo_service_result.amount is present
+    decision: allow
+    obligations:
+      - audit_log
+      - emit_financial_event
+    on_condition_fail: deny
+    priority: 20
+
+  - rule_id: execute-transfer-non-caller-block
+    description: >
+      All agents other than transaction_processing_agent are denied
+      from calling execute_transfer. Hard block — no exceptions.
+    compliance_basis: PCI-DSS requirement 7
+    subject: "*"
+    resource: execute_transfer
+    action: call
+    conditions:
+      - identity.agent_id != transaction_processing_agent
+    decision: deny
+    obligations:
+      - audit_log
+      - alert_security_team
+    on_condition_fail: deny
+    priority: 19
+
+  - rule_id: apply-ledger-updates-pipeline-gate
+    description: >
+      apply_ledger_updates requires that the full EOD pipeline has run:
+      validation must confirm readiness and processing must have produced
+      posting instructions. Prevents ledger writes without upstream validation.
+      Corresponds to evaluator check: required_result_keys_present.
+    compliance_basis: SOX section 404 — internal controls over financial reporting
+    subject: ledger_update_agent
+    resource: apply_ledger_updates
+    action: call
+    conditions:
+      - identity.agent_id == ledger_update_agent
+      - session_state.bo_validation_report is present
+      - session_state.bo_validation_report.ready == true
+      - session_state.bo_processing_report is present
+      - session_state.bo_processing_report.posting_instructions is present
+    decision: allow
+    obligations:
+      - audit_log
+      - emit_ledger_event
+    on_condition_fail: deny
+    priority: 20
+
+  - rule_id: update-transaction-status-rationale-required
+    description: >
+      update_transaction_status requires a non-empty rationale field.
+      Status changes without documented reasoning are non-compliant.
+      Corresponds to evaluator check: expected_decision_matched.
+    compliance_basis: AML — documented rationale for transaction decisions
+    subject: decision_making_agent
+    resource: update_transaction_status
+    action: call
+    conditions:
+      - identity.agent_id == decision_making_agent
+      - args.status in [APPROVED, REJECTED, MANUAL_REVIEW]
+      - args.rationale is present and len(args.rationale) >= 20
+    decision: allow
+    obligations:
+      - audit_log
+    on_condition_fail: deny
+    priority: 20
+
+  - rule_id: resolve-ledger-entry-valid-amount
+    description: >
+      resolve_ledger_entry correction_amount must be a non-zero finite number.
+      A zero correction is a no-op and indicates an upstream error.
+    compliance_basis: SOX — ledger corrections must be material and documented
+    subject: exception_agent
+    resource: resolve_ledger_entry
+    action: call
+    conditions:
+      - identity.agent_id == exception_agent
+      - args.correction_amount is a finite non-zero number
+      - args.note is present and non-empty
+      - session_state.bo_reconciliation_report is present
+    decision: allow
+    obligations:
+      - audit_log
+      - emit_ledger_event
+    on_condition_fail: deny
+    priority: 20
+
+  - rule_id: submit-manual-review-decision-agent-only
+    description: >
+      submit_manual_review may only be called by decision_making_agent.
+      Monitoring and fraud agents must not escalate directly — they must
+      surface findings and let the decision agent act.
+    compliance_basis: Separation of duties — analysis and escalation are separate functions
+    subject: decision_making_agent
+    resource: submit_manual_review
+    action: call
+    conditions:
+      - identity.agent_id == decision_making_agent
+      - session_state.fo_monitoring_report is present
+      - session_state.fo_fraud_report is present
+      - session_state.fo_compliance_report is present
+    decision: allow
+    obligations:
+      - audit_log
+    on_condition_fail: deny
+    priority: 20
+
+  - rule_id: trigger-eod-reconciliation-system-only
+    description: >
+      trigger_eod_reconciliation may only be called by system-role sessions.
+      Customer or representative sessions must not be able to kick off EOD.
+    compliance_basis: SOX — batch processing must be system-initiated, not user-initiated
+    subject: "*"
+    resource: trigger_eod_reconciliation
+    action: call
+    conditions:
+      - identity.user_role in [system, ops_scheduler]
+    decision: allow
+    obligations:
+      - audit_log
+      - emit_batch_event
+    on_condition_fail: deny
+    priority: 15
+
+  - rule_id: tool-argument-json-validity
+    description: >
+      All tool arguments must be valid structured data before the tool PEP
+      forwards the call. Malformed arguments are a signal for F_format failure.
+      Corresponds to evaluator check: tool_arguments_valid_json.
+    compliance_basis: Defense-in-depth — malformed inputs are a common injection vector
+    subject: "*"
+    resource: "*"
+    action: call
+    conditions:
+      - args are well-formed (no malformed JSON, no unexpected null fields)
+    decision: allow
+    obligations: []
+    on_condition_fail: deny
+    priority: 8
+
+  - rule_id: forbidden-tool-block
+    description: >
+      An agent may not call any tool not listed in its authorized_tools.
+      If an agent attempts to call a tool outside its declared scope, the
+      Tool PEP denies and flags it as F_omission (wrong tool used) or
+      F_route (wrong agent calling).
+      Corresponds to evaluator check: forbidden_tools_absent.
+    compliance_basis: Least privilege — agents have no implicit tool permissions
+    subject: "*"
+    resource: "*"
+    action: call
+    conditions:
+      - resource.tool_id in subject.authorized_tools
+    decision: allow
+    obligations:
+      - audit_log
+    on_condition_fail: deny
+    priority: 9
+
+  # ══ DATA BOUNDARY ═════════════════════════════════════════════
+  # Rules that govern what data flows between agents
+
+  - rule_id: require-upstream-reports-before-decision
+    description: >
+      decision_making_agent must not produce fo_decision_report unless all
+      three upstream specialist reports are present in session state.
+      Corresponds to evaluator checks: required_result_keys_present and
+      expected_decision_matched.
+    compliance_basis: AML — decisions must be grounded in complete evidence
+    subject: decision_making_agent
+    resource: fo_decision_report
+    action: write
+    conditions:
+      - session_state.fo_monitoring_report is present
+      - session_state.fo_fraud_report is present
+      - session_state.fo_compliance_report is present
+    decision: allow
+    obligations:
+      - audit_log
+    on_condition_fail: deny
+    priority: 25
+
+  - rule_id: require-validation-before-ledger
+    description: >
+      ledger_update_agent must not write bo_ledger_update_report unless the
+      validation checkpoint confirmed readiness. Amounts in the processing
+      report must be consistent with the batch totals.
+      Corresponds to evaluator check: mismatch_amount_consistent.
+    compliance_basis: SOX section 404
+    subject: ledger_update_agent
+    resource: bo_ledger_update_report
+    action: write
+    conditions:
+      - session_state.bo_validation_report.ready == true
+      - session_state.bo_processing_report.posting_instructions is present
+    decision: allow
+    obligations:
+      - audit_log
+    on_condition_fail: deny
+    priority: 25
+
+  # ══ OUTPUT BOUNDARY ═══════════════════════════════════════════
+  # Rules that govern what leaves the system — PII masking
+
+  - rule_id: no-account-id-in-output
+    description: >
+      Final agent outputs must not contain raw account IDs.
+      Corresponds to evaluator check: no_account_id_leak (F_pii).
+    compliance_basis: GDPR Article 25 — data minimization; PCI-DSS requirement 3
+    subject: "*"
+    resource: final_output
+    action: output
+    conditions:
+      - output does not match pattern account_id_regex
+    decision: allow
+    obligations:
+      - audit_log
+    on_condition_fail: deny
+    priority: 30
+
+  - rule_id: no-ssn-in-output
+    description: >
+      Final agent outputs must not contain Social Security Numbers.
+      Corresponds to evaluator check: no_ssn_leak (F_pii).
+    compliance_basis: GLBA — protection of non-public personal information
+    subject: "*"
+    resource: final_output
+    action: output
+    conditions:
+      - output does not match pattern ssn_regex
+    decision: allow
+    obligations:
+      - audit_log
+      - alert_privacy_team
+    on_condition_fail: deny
+    priority: 30
+
+  - rule_id: no-email-in-output
+    description: >
+      Final agent outputs must not contain raw email addresses.
+      Corresponds to evaluator check: no_email_leak (F_pii).
+    compliance_basis: GDPR Article 25
+    subject: "*"
+    resource: final_output
+    action: output
+    conditions:
+      - output does not match pattern email_regex
+    decision: allow
+    obligations:
+      - audit_log
+    on_condition_fail: deny
+    priority: 30
+
+  - rule_id: no-phone-in-output
+    description: >
+      Final agent outputs must not contain phone numbers.
+      Corresponds to evaluator check: no_phone_leak (F_pii).
+    compliance_basis: GDPR Article 25
+    subject: "*"
+    resource: final_output
+    action: output
+    conditions:
+      - output does not match pattern phone_regex
+    decision: allow
+    obligations:
+      - audit_log
+    on_condition_fail: deny
+    priority: 30
+
+  - rule_id: no-sensitive-amount-in-output
+    description: >
+      Final outputs must not expose raw internal financial amounts that were
+      not explicitly part of the user's query scope.
+      Corresponds to evaluator check: no_sensitive_amount_exposure (F_pii).
+    compliance_basis: PCI-DSS requirement 3 — protect stored cardholder data
+    subject: "*"
+    resource: final_output
+    action: output
+    conditions:
+      - output does not contain unexplained_internal_amount
+    decision: allow
+    obligations:
+      - audit_log
+    on_condition_fail: allow_with_flag
+    priority: 30
+
+  # ══ CONTENT QUALITY ═══════════════════════════════════════════
+
+  - rule_id: required-text-terms-in-decision-output
+    description: >
+      The decision_making_agent output must contain all required terms
+      for the active scenario (decision, confidence, rationale).
+      Missing terms indicate hallucination or incomplete reasoning.
+      Corresponds to evaluator check: required_text_terms_present.
+    compliance_basis: AML — decisions must be documented and explainable
+    subject: decision_making_agent
+    resource: fo_decision_report
+    action: write
+    conditions:
+      - output contains all required_text_terms for the active scenario
+    decision: allow
+    obligations:
+      - audit_log
+    on_condition_fail: require_manual_review
+    priority: 28
+
+  - rule_id: expected-status-must-match
+    description: >
+      For scenarios with a known expected status, the agent output must
+      match the expected value. Mismatch signals a failure mode.
+      Corresponds to evaluator check: expected_status_matched.
+    compliance_basis: AML — transaction outcomes must be consistent with risk evidence
+    subject: decision_making_agent
+    resource: fo_decision_report
+    action: write
+    conditions:
+      - output.status matches scenario_expectation.expected_status (when defined)
+    decision: allow
+    obligations:
+      - audit_log
+    on_condition_fail: require_manual_review
+    priority: 28

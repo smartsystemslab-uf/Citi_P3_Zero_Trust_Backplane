@@ -1,0 +1,553 @@
+# ============================================================
+# Agent Inventory — ZT-IR Manifest
+# Citi Banking ADK  |  Phase 1 Step 2
+#
+# Source of truth: citi_banking_adk/bank_adk/agents/
+# Every LlmAgent and workflow agent declared in the system
+# must have an entry here. Unknown agents default to DENY.
+# ============================================================
+
+zt_ir_version: "1.0"
+manifest_type: agents
+
+agents:
+
+  # ── Root / Entry ─────────────────────────────────────────────
+
+  - agent_id: user_proxy_agent
+    description: >
+      Primary entry point. Routes customer-facing requests to front office,
+      internal planning work to mid office, and scheduled operations to
+      back office. Never solves domain tasks itself.
+    domain: root
+    role: entry_point
+    risk_tier: high
+    # Receives MCP bridge tools dynamically at startup
+    authorized_tools: []
+    authorized_transfers:
+      - front_office_router
+      - mid_office_router
+      - back_office_router
+    reads_from: []
+    writes_to: root_routing_result
+    requires_prior_steps: []
+    pep_type: route_pep
+    trust_level: untrusted
+    # All inbound requests start here — input PEP sits before this agent
+
+  # ── Front Office ─────────────────────────────────────────────
+
+  - agent_id: front_office_router
+    description: >
+      Routes customer-facing work into the transaction risk workflow
+      (fraud/compliance review) or the customer service chatbot workflow.
+    domain: front
+    role: router
+    risk_tier: high
+    authorized_tools: []
+    authorized_transfers:
+      - front_office_transaction_workflow
+      - customer_service_chatbot_workflow
+    reads_from: []
+    writes_to: front_office_router_result
+    requires_prior_steps: []
+    pep_type: route_pep
+    trust_level: low_trust
+
+  - agent_id: transaction_monitoring_agent
+    description: >
+      First-pass anomaly screening. Assesses amount, channel, timing,
+      velocity, counterparty novelty, and device changes.
+    domain: front
+    role: specialist
+    risk_tier: medium
+    authorized_tools:
+      - get_customer_context
+      - get_transaction_context
+      - list_recent_transactions
+    authorized_transfers: []
+    reads_from: []
+    writes_to: fo_monitoring_report
+    requires_prior_steps: []
+    pep_type: tool_pep
+    trust_level: low_trust
+
+  - agent_id: fraud_detection_agent
+    description: >
+      Deeper fraud analysis on flagged transactions. Focuses on account
+      takeover, mule behavior, unusual geography, and social engineering.
+    domain: front
+    role: specialist
+    risk_tier: medium
+    authorized_tools:
+      - get_customer_context
+      - get_transaction_context
+      - list_recent_transactions
+    authorized_transfers: []
+    reads_from:
+      - fo_monitoring_report
+    writes_to: fo_fraud_report
+    requires_prior_steps:
+      - fo_monitoring_report
+    pep_type: tool_pep
+    trust_level: low_trust
+
+  - agent_id: compliance_agent
+    description: >
+      Retrieves and applies compliance rules. Evaluates AML, KYC,
+      sanctions, and escalation requirements for the transaction.
+    domain: front
+    role: specialist
+    risk_tier: medium
+    authorized_tools:
+      - search_policies
+      - get_customer_context
+      - get_transaction_context
+    authorized_transfers: []
+    reads_from:
+      - fo_monitoring_report
+    writes_to: fo_compliance_report
+    requires_prior_steps:
+      - fo_monitoring_report
+    pep_type: tool_pep
+    trust_level: low_trust
+
+  - agent_id: decision_making_agent
+    description: >
+      Combines monitoring, fraud, and compliance outputs into a final
+      recommendation. Calls submit_manual_review when confidence is low
+      or risk is high. This is the only front-office agent that can
+      trigger a manual review escalation.
+    domain: front
+    role: specialist
+    risk_tier: high
+    authorized_tools:
+      - submit_manual_review
+    authorized_transfers: []
+    reads_from:
+      - fo_monitoring_report
+      - fo_fraud_report
+      - fo_compliance_report
+    writes_to: fo_decision_report
+    # All three upstream reports must exist before this agent acts
+    requires_prior_steps:
+      - fo_monitoring_report
+      - fo_fraud_report
+      - fo_compliance_report
+    pep_type: tool_pep
+    trust_level: trusted
+
+  - agent_id: chatbot_intent_agent
+    description: >
+      Classifies customer requests as informational (knowledge) or
+      action-requiring (service). No tool access — reasoning only.
+    domain: front
+    role: specialist
+    risk_tier: low
+    authorized_tools: []
+    authorized_transfers: []
+    reads_from: []
+    writes_to: fo_chatbot_intent
+    requires_prior_steps: []
+    pep_type: none
+    trust_level: low_trust
+
+  - agent_id: knowledge_base_agent
+    description: >
+      Answers informational customer questions using FAQ and policy search.
+      Read-only — no state changes, no financial data.
+    domain: front
+    role: specialist
+    risk_tier: low
+    authorized_tools:
+      - search_faqs
+    authorized_transfers: []
+    reads_from:
+      - fo_chatbot_intent
+    writes_to: fo_knowledge_answer
+    requires_prior_steps:
+      - fo_chatbot_intent
+    pep_type: tool_pep
+    trust_level: low_trust
+
+  - agent_id: customer_service_agent
+    description: >
+      Decides whether a request requires transaction execution or is a
+      pure service case. Prepares structured execution plans but does
+      NOT call any banking tools itself.
+    domain: front
+    role: specialist
+    risk_tier: medium
+    authorized_tools: []
+    authorized_transfers: []
+    reads_from:
+      - fo_chatbot_intent
+    writes_to: fo_service_result
+    requires_prior_steps:
+      - fo_chatbot_intent
+    pep_type: none
+    trust_level: low_trust
+
+  - agent_id: transaction_processing_agent
+    description: >
+      Executes approved customer transactions via execute_transfer.
+      This is the only agent authorized to call execute_transfer.
+      Must only act when fo_service_result.execution_required is true.
+    domain: front
+    role: specialist
+    risk_tier: critical
+    authorized_tools:
+      - execute_transfer
+    authorized_transfers: []
+    reads_from:
+      - fo_service_result
+    writes_to: fo_transaction_execution
+    # Must have a fully formed service plan before executing
+    requires_prior_steps:
+      - fo_service_result
+    pep_type: tool_pep
+    trust_level: trusted
+
+  # ── Mid Office ───────────────────────────────────────────────
+
+  - agent_id: mid_office_router
+    description: >
+      Routes internal operational work into the planning/support workflow
+      or the representative-assist workflow.
+    domain: mid
+    role: router
+    risk_tier: medium
+    authorized_tools: []
+    authorized_transfers:
+      - mid_office_planning_workflow
+      - representative_assistant_workflow
+    reads_from: []
+    writes_to: mid_office_router_result
+    requires_prior_steps: []
+    pep_type: route_pep
+    trust_level: low_trust
+
+  - agent_id: data_analysis_agent
+    description: Analyzes internal operations data and extracts workload patterns.
+    domain: mid
+    role: specialist
+    risk_tier: low
+    authorized_tools:
+      - get_operations_snapshot
+    authorized_transfers: []
+    reads_from: []
+    writes_to: mo_workload_analysis
+    requires_prior_steps: []
+    pep_type: tool_pep
+    trust_level: low_trust
+
+  - agent_id: forecasting_agent
+    description: Forecasts near-term operational demand from recent workload patterns.
+    domain: mid
+    role: specialist
+    risk_tier: low
+    authorized_tools:
+      - get_operations_snapshot
+    authorized_transfers: []
+    reads_from:
+      - mo_workload_analysis
+    writes_to: mo_forecast_report
+    requires_prior_steps:
+      - mo_workload_analysis
+    pep_type: tool_pep
+    trust_level: low_trust
+
+  - agent_id: staff_scheduling_agent
+    description: Translates forecast into staffing and allocation proposals. No tool access.
+    domain: mid
+    role: specialist
+    risk_tier: low
+    authorized_tools: []
+    authorized_transfers: []
+    reads_from:
+      - mo_forecast_report
+    writes_to: mo_schedule_draft
+    requires_prior_steps:
+      - mo_forecast_report
+    pep_type: none
+    trust_level: low_trust
+
+  - agent_id: validation_agent
+    description: >
+      Validates staffing schedules before release. The only mid-office agent
+      authorized to persist a schedule to the operational system.
+    domain: mid
+    role: specialist
+    risk_tier: medium
+    authorized_tools:
+      - persist_validated_schedule
+    authorized_transfers: []
+    reads_from:
+      - mo_schedule_draft
+    writes_to: mo_validation_report
+    requires_prior_steps:
+      - mo_schedule_draft
+    pep_type: tool_pep
+    trust_level: trusted
+
+  - agent_id: support_guidance_agent
+    description: Generates internal support guidance using operational playbooks.
+    domain: mid
+    role: specialist
+    risk_tier: low
+    authorized_tools:
+      - get_support_playbooks
+    authorized_transfers: []
+    reads_from:
+      - mo_workload_analysis
+    writes_to: mo_support_guidance
+    requires_prior_steps:
+      - mo_workload_analysis
+    pep_type: tool_pep
+    trust_level: low_trust
+
+  - agent_id: planning_summary_agent
+    description: Merges all planning workflow outputs into the final mid-office response.
+    domain: mid
+    role: merger
+    risk_tier: low
+    authorized_tools: []
+    authorized_transfers: []
+    reads_from:
+      - mo_workload_analysis
+      - mo_forecast_report
+      - mo_schedule_draft
+      - mo_validation_report
+      - mo_support_guidance
+    writes_to: mid_office_planning_result
+    requires_prior_steps:
+      - mo_workload_analysis
+      - mo_forecast_report
+      - mo_schedule_draft
+      - mo_validation_report
+      - mo_support_guidance
+    pep_type: output_pep
+    trust_level: low_trust
+
+  - agent_id: financial_data_agent
+    description: >
+      Retrieves customer-specific financial information for representative support.
+      Handles PII — customer financial profiles are sensitive data.
+    domain: mid
+    role: specialist
+    risk_tier: high
+    authorized_tools:
+      - get_customer_financial_profile
+    authorized_transfers: []
+    reads_from: []
+    writes_to: mo_customer_data_report
+    requires_prior_steps: []
+    pep_type: tool_pep
+    trust_level: low_trust
+
+  - agent_id: recommender_agent
+    description: Finds relevant product suggestions using the product catalog.
+    domain: mid
+    role: specialist
+    risk_tier: low
+    authorized_tools:
+      - search_product_catalog
+    authorized_transfers: []
+    reads_from:
+      - mo_customer_data_report
+    writes_to: mo_recommender_report
+    requires_prior_steps:
+      - mo_customer_data_report
+    pep_type: tool_pep
+    trust_level: low_trust
+
+  - agent_id: loan_agent
+    description: Supports loan process guidance using loan playbooks.
+    domain: mid
+    role: specialist
+    risk_tier: low
+    authorized_tools:
+      - search_loan_playbooks
+    authorized_transfers: []
+    reads_from:
+      - mo_customer_data_report
+    writes_to: mo_loan_report
+    requires_prior_steps:
+      - mo_customer_data_report
+    pep_type: tool_pep
+    trust_level: low_trust
+
+  - agent_id: risk_compliance_agent
+    description: >
+      Checks policy and risk constraints before recommendations are surfaced
+      to internal representatives. Gate on the representative-assist workflow.
+    domain: mid
+    role: specialist
+    risk_tier: medium
+    authorized_tools:
+      - search_policies
+    authorized_transfers: []
+    reads_from:
+      - mo_customer_data_report
+      - mo_recommender_report
+      - mo_loan_report
+    writes_to: mo_risk_compliance_report
+    requires_prior_steps:
+      - mo_customer_data_report
+    pep_type: tool_pep
+    trust_level: low_trust
+
+  - agent_id: representative_merge_agent
+    description: >
+      Merges all representative-assist specialist outputs into one CSR-facing answer.
+      Output PEP checks this output for PII before it reaches the representative.
+    domain: mid
+    role: merger
+    risk_tier: medium
+    authorized_tools: []
+    authorized_transfers: []
+    reads_from:
+      - mo_customer_data_report
+      - mo_recommender_report
+      - mo_loan_report
+      - mo_risk_compliance_report
+    writes_to: mid_office_representative_result
+    requires_prior_steps:
+      - mo_customer_data_report
+      - mo_recommender_report
+      - mo_loan_report
+      - mo_risk_compliance_report
+    pep_type: output_pep
+    trust_level: low_trust
+
+  # ── Back Office ──────────────────────────────────────────────
+
+  - agent_id: back_office_router
+    description: >
+      Routes scheduled operational processing into the EOD reconciliation
+      and reporting workflow.
+    domain: back
+    role: router
+    risk_tier: high
+    authorized_tools: []
+    authorized_transfers:
+      - back_office_eod_workflow
+    reads_from: []
+    writes_to: back_office_router_result
+    requires_prior_steps: []
+    pep_type: route_pep
+    trust_level: low_trust
+
+  - agent_id: validation_checkpoint_agent
+    description: >
+      Checks EOD readiness before the batch enters ordered processing.
+      Gate agent — downstream agents must not run if this returns ready=false.
+    domain: back
+    role: specialist
+    risk_tier: medium
+    authorized_tools:
+      - validate_eod_readiness
+    authorized_transfers: []
+    reads_from: []
+    writes_to: bo_validation_report
+    requires_prior_steps: []
+    pep_type: tool_pep
+    trust_level: low_trust
+
+  - agent_id: eod_processing_agent
+    description: >
+      Drives the ordered EOD sequence and prepares ledger posting instructions.
+      Must not run unless bo_validation_report.ready is true.
+    domain: back
+    role: specialist
+    risk_tier: high
+    authorized_tools:
+      - get_eod_batch
+    authorized_transfers: []
+    reads_from:
+      - bo_validation_report
+    writes_to: bo_processing_report
+    # Hard gate: validation must confirm readiness
+    requires_prior_steps:
+      - bo_validation_report
+    pep_type: tool_pep
+    trust_level: low_trust
+
+  - agent_id: ledger_update_agent
+    description: >
+      Applies actual ledger updates prepared during EOD processing.
+      The only agent authorized to call apply_ledger_updates — the highest
+      risk operation in the entire system.
+    domain: back
+    role: specialist
+    risk_tier: critical
+    authorized_tools:
+      - apply_ledger_updates
+    authorized_transfers: []
+    reads_from:
+      - bo_processing_report
+    writes_to: bo_ledger_update_report
+    # Must have a fully formed processing report with posting instructions
+    requires_prior_steps:
+      - bo_validation_report
+      - bo_processing_report
+    pep_type: tool_pep
+    trust_level: trusted
+
+  - agent_id: reconciliation_agent
+    description: >
+      Verifies whether ledger results and expected totals are consistent
+      after EOD processing. Detects mismatches that trigger exception handling.
+    domain: back
+    role: specialist
+    risk_tier: high
+    authorized_tools:
+      - get_reconciliation_data
+    authorized_transfers: []
+    reads_from:
+      - bo_ledger_update_report
+    writes_to: bo_reconciliation_report
+    requires_prior_steps:
+      - bo_ledger_update_report
+    pep_type: tool_pep
+    trust_level: low_trust
+
+  - agent_id: report_writing_agent
+    description: >
+      Generates and stores the final EOD report for clean batches.
+      Only activated when reconciliation passes (matched=true).
+    domain: back
+    role: specialist
+    risk_tier: medium
+    authorized_tools:
+      - store_report
+    authorized_transfers: []
+    reads_from:
+      - bo_processing_report
+      - bo_ledger_update_report
+      - bo_reconciliation_report
+    writes_to: bo_report_output
+    requires_prior_steps:
+      - bo_reconciliation_report
+    pep_type: tool_pep
+    trust_level: low_trust
+
+  - agent_id: exception_agent
+    description: >
+      Creates and summarizes an exception case when reconciliation fails.
+      Only activated when reconciliation shows a mismatch (matched=false).
+    domain: back
+    role: specialist
+    risk_tier: high
+    authorized_tools:
+      - create_exception_case
+    authorized_transfers: []
+    reads_from:
+      - bo_processing_report
+      - bo_ledger_update_report
+      - bo_reconciliation_report
+    writes_to: bo_exception_output
+    requires_prior_steps:
+      - bo_reconciliation_report
+    pep_type: tool_pep
+    trust_level: trusted

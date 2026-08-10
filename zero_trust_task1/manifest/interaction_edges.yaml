@@ -1,0 +1,1047 @@
+# ============================================================
+# Interaction Edges — ZT-IR Manifest
+# Citi Banking ADK  |  Task 1 Deliverable
+#
+# This file is the COMPLETE directed relationship graph of the system.
+# It covers four edge types:
+#
+#   agent_to_agent   — authorized control transfers between agents
+#   agent_to_tool    — agents calling their authorized tools
+#   tool_to_api      — ADK/MCP tools invoking FastAPI endpoints
+#   api_to_database  — API endpoints reading/writing database tables
+#
+# Together these four layers describe the full chain:
+#   Agent → Tool → API → Database → (Ledger)
+#
+# The PEP generator reads this file to place enforcement points
+# at every edge where pep_required=true.
+#
+# operation_class mapping:
+#   read           — GET queries with no side effects
+#   write          — non-financial state changes
+#   financial      — financial_write with monetary effect
+#   sensitive_data — operations touching PII fields
+#   critical       — risk_level 5, irreversible, ledger mutations
+# ============================================================
+
+zt_ir_version: "1.1"
+manifest_type: interaction_edges
+
+interaction_edges:
+
+  # ════════════════════════════════════════════════════════════
+  # LAYER 1: AGENT → AGENT (control flow)
+  # Enforced by: route_pep at each transfer
+  # ════════════════════════════════════════════════════════════
+
+  # ── Root routing ─────────────────────────────────────────────
+
+  - edge_id: e-root-to-fo-router
+    edge_type: agent_to_agent
+    from_id: user_proxy_agent
+    from_type: subject
+    to_id: front_office_router
+    to_type: subject
+    trigger: customer-facing request
+    required_state: []
+    risk_level: 3
+    pep_required: true
+    pep_type: route_pep
+    operation_class: write
+
+  - edge_id: e-root-to-mo-router
+    edge_type: agent_to_agent
+    from_id: user_proxy_agent
+    from_type: subject
+    to_id: mid_office_router
+    to_type: subject
+    trigger: internal operations request
+    required_state: []
+    risk_level: 2
+    pep_required: true
+    pep_type: route_pep
+    operation_class: write
+
+  - edge_id: e-root-to-bo-router
+    edge_type: agent_to_agent
+    from_id: user_proxy_agent
+    from_type: subject
+    to_id: back_office_router
+    to_type: subject
+    trigger: scheduled EOD event or ops_scheduler request
+    required_state: []
+    risk_level: 3
+    pep_required: true
+    pep_type: route_pep
+    operation_class: write
+
+  # ── Front office routing ──────────────────────────────────────
+
+  - edge_id: e-fo-router-to-tx-workflow
+    edge_type: agent_to_agent
+    from_id: front_office_router
+    from_type: subject
+    to_id: transaction_monitoring_agent
+    to_type: subject
+    trigger: transaction risk review requested
+    required_state: []
+    risk_level: 3
+    pep_required: true
+    pep_type: route_pep
+    operation_class: write
+
+  - edge_id: e-fo-router-to-chatbot-workflow
+    edge_type: agent_to_agent
+    from_id: front_office_router
+    from_type: subject
+    to_id: chatbot_intent_agent
+    to_type: subject
+    trigger: customer service inquiry
+    required_state: []
+    risk_level: 2
+    pep_required: true
+    pep_type: route_pep
+    operation_class: write
+
+  # ── Front office pipeline (transaction risk) ──────────────────
+
+  - edge_id: e-monitoring-to-fraud
+    edge_type: agent_to_agent
+    from_id: transaction_monitoring_agent
+    from_type: subject
+    to_id: fraud_detection_agent
+    to_type: subject
+    trigger: monitoring report complete
+    required_state:
+      - fo_monitoring_report
+    risk_level: 3
+    pep_required: true
+    pep_type: route_pep
+    operation_class: write
+
+  - edge_id: e-monitoring-to-compliance
+    edge_type: agent_to_agent
+    from_id: transaction_monitoring_agent
+    from_type: subject
+    to_id: compliance_agent
+    to_type: subject
+    trigger: monitoring report complete
+    required_state:
+      - fo_monitoring_report
+    risk_level: 3
+    pep_required: true
+    pep_type: route_pep
+    operation_class: write
+
+  - edge_id: e-specialist-to-decision
+    edge_type: agent_to_agent
+    from_id: fraud_detection_agent
+    from_type: subject
+    to_id: decision_making_agent
+    to_type: subject
+    trigger: all three specialist reports complete
+    required_state:
+      - fo_monitoring_report
+      - fo_fraud_report
+      - fo_compliance_report
+    risk_level: 4
+    pep_required: true
+    pep_type: route_pep
+    operation_class: write
+
+  - edge_id: e-decision-to-processing
+    edge_type: agent_to_agent
+    from_id: decision_making_agent
+    from_type: subject
+    to_id: transaction_processing_agent
+    to_type: subject
+    trigger: decision_report recommends execution
+    required_state:
+      - fo_decision_report
+      - fo_service_result
+    risk_level: 5
+    pep_required: true
+    pep_type: route_pep
+    operation_class: critical
+
+  # ── Front office pipeline (chatbot) ──────────────────────────
+
+  - edge_id: e-intent-to-knowledge
+    edge_type: agent_to_agent
+    from_id: chatbot_intent_agent
+    from_type: subject
+    to_id: knowledge_base_agent
+    to_type: subject
+    trigger: fo_chatbot_intent.intent == informational
+    required_state:
+      - fo_chatbot_intent
+    risk_level: 1
+    pep_required: true
+    pep_type: route_pep
+    operation_class: read
+
+  - edge_id: e-intent-to-service
+    edge_type: agent_to_agent
+    from_id: chatbot_intent_agent
+    from_type: subject
+    to_id: customer_service_agent
+    to_type: subject
+    trigger: fo_chatbot_intent.intent == service
+    required_state:
+      - fo_chatbot_intent
+    risk_level: 2
+    pep_required: true
+    pep_type: route_pep
+    operation_class: write
+
+  - edge_id: e-service-to-processing
+    edge_type: agent_to_agent
+    from_id: customer_service_agent
+    from_type: subject
+    to_id: transaction_processing_agent
+    to_type: subject
+    trigger: fo_service_result.execution_required == true
+    required_state:
+      - fo_service_result
+    risk_level: 5
+    pep_required: true
+    pep_type: route_pep
+    operation_class: critical
+
+  # ── Mid office routing ────────────────────────────────────────
+
+  - edge_id: e-mo-router-to-planning
+    edge_type: agent_to_agent
+    from_id: mid_office_router
+    from_type: subject
+    to_id: data_analysis_agent
+    to_type: subject
+    trigger: planning workflow requested
+    required_state: []
+    risk_level: 1
+    pep_required: true
+    pep_type: route_pep
+    operation_class: read
+
+  - edge_id: e-mo-router-to-rep-assist
+    edge_type: agent_to_agent
+    from_id: mid_office_router
+    from_type: subject
+    to_id: financial_data_agent
+    to_type: subject
+    trigger: representative-assist workflow requested
+    required_state: []
+    risk_level: 3
+    pep_required: true
+    pep_type: route_pep
+    operation_class: sensitive_data
+
+  # ── Mid office planning pipeline ──────────────────────────────
+
+  - edge_id: e-analysis-to-forecast
+    edge_type: agent_to_agent
+    from_id: data_analysis_agent
+    from_type: subject
+    to_id: forecasting_agent
+    to_type: subject
+    trigger: mo_workload_analysis complete
+    required_state:
+      - mo_workload_analysis
+    risk_level: 1
+    pep_required: true
+    pep_type: route_pep
+    operation_class: read
+
+  - edge_id: e-forecast-to-scheduling
+    edge_type: agent_to_agent
+    from_id: forecasting_agent
+    from_type: subject
+    to_id: staff_scheduling_agent
+    to_type: subject
+    trigger: mo_forecast_report complete
+    required_state:
+      - mo_forecast_report
+    risk_level: 1
+    pep_required: true
+    pep_type: route_pep
+    operation_class: write
+
+  - edge_id: e-scheduling-to-validation
+    edge_type: agent_to_agent
+    from_id: staff_scheduling_agent
+    from_type: subject
+    to_id: validation_agent
+    to_type: subject
+    trigger: mo_schedule_draft complete
+    required_state:
+      - mo_schedule_draft
+    risk_level: 2
+    pep_required: true
+    pep_type: route_pep
+    operation_class: write
+
+  # ── Mid office representative-assist pipeline ─────────────────
+
+  - edge_id: e-findata-to-recommender
+    edge_type: agent_to_agent
+    from_id: financial_data_agent
+    from_type: subject
+    to_id: recommender_agent
+    to_type: subject
+    trigger: mo_customer_data_report complete
+    required_state:
+      - mo_customer_data_report
+    risk_level: 2
+    pep_required: true
+    pep_type: route_pep
+    operation_class: sensitive_data
+
+  - edge_id: e-findata-to-loan
+    edge_type: agent_to_agent
+    from_id: financial_data_agent
+    from_type: subject
+    to_id: loan_agent
+    to_type: subject
+    trigger: mo_customer_data_report complete
+    required_state:
+      - mo_customer_data_report
+    risk_level: 2
+    pep_required: true
+    pep_type: route_pep
+    operation_class: sensitive_data
+
+  - edge_id: e-findata-to-risk-compliance
+    edge_type: agent_to_agent
+    from_id: financial_data_agent
+    from_type: subject
+    to_id: risk_compliance_agent
+    to_type: subject
+    trigger: mo_customer_data_report complete
+    required_state:
+      - mo_customer_data_report
+    risk_level: 2
+    pep_required: true
+    pep_type: route_pep
+    operation_class: sensitive_data
+
+  # ── Back office pipeline ──────────────────────────────────────
+
+  - edge_id: e-bo-router-to-validation-checkpoint
+    edge_type: agent_to_agent
+    from_id: back_office_router
+    from_type: subject
+    to_id: validation_checkpoint_agent
+    to_type: subject
+    trigger: EOD batch initiated
+    required_state: []
+    risk_level: 3
+    pep_required: true
+    pep_type: route_pep
+    operation_class: write
+
+  - edge_id: e-checkpoint-to-eod-processing
+    edge_type: agent_to_agent
+    from_id: validation_checkpoint_agent
+    from_type: subject
+    to_id: eod_processing_agent
+    to_type: subject
+    trigger: bo_validation_report.ready == true
+    required_state:
+      - bo_validation_report
+    risk_level: 4
+    pep_required: true
+    pep_type: route_pep
+    operation_class: write
+
+  - edge_id: e-eod-processing-to-ledger
+    edge_type: agent_to_agent
+    from_id: eod_processing_agent
+    from_type: subject
+    to_id: ledger_update_agent
+    to_type: subject
+    trigger: bo_processing_report.posting_instructions present
+    required_state:
+      - bo_validation_report
+      - bo_processing_report
+    risk_level: 5
+    pep_required: true
+    pep_type: route_pep
+    operation_class: critical
+
+  - edge_id: e-ledger-to-reconciliation
+    edge_type: agent_to_agent
+    from_id: ledger_update_agent
+    from_type: subject
+    to_id: reconciliation_agent
+    to_type: subject
+    trigger: bo_ledger_update_report complete
+    required_state:
+      - bo_ledger_update_report
+    risk_level: 4
+    pep_required: true
+    pep_type: route_pep
+    operation_class: write
+
+  - edge_id: e-reconciliation-to-report
+    edge_type: agent_to_agent
+    from_id: reconciliation_agent
+    from_type: subject
+    to_id: report_writing_agent
+    to_type: subject
+    trigger: bo_reconciliation_report.matched == true
+    required_state:
+      - bo_reconciliation_report
+    risk_level: 3
+    pep_required: true
+    pep_type: route_pep
+    operation_class: write
+
+  - edge_id: e-reconciliation-to-exception
+    edge_type: agent_to_agent
+    from_id: reconciliation_agent
+    from_type: subject
+    to_id: exception_agent
+    to_type: subject
+    trigger: bo_reconciliation_report.matched == false
+    required_state:
+      - bo_reconciliation_report
+    risk_level: 5
+    pep_required: true
+    pep_type: route_pep
+    operation_class: critical
+
+  # ════════════════════════════════════════════════════════════
+  # LAYER 2: AGENT → TOOL (function invocations)
+  # Enforced by: tool_pep at each tool call
+  # ════════════════════════════════════════════════════════════
+
+  # ── Front office tool calls ───────────────────────────────────
+
+  - edge_id: e-monitoring-to-get-customer-context
+    edge_type: agent_to_tool
+    from_id: transaction_monitoring_agent
+    from_type: subject
+    to_id: get_customer_context
+    to_type: tool
+    risk_level: 2
+    pep_required: true
+    pep_type: tool_pep
+    operation_class: sensitive_data
+
+  - edge_id: e-monitoring-to-get-tx-context
+    edge_type: agent_to_tool
+    from_id: transaction_monitoring_agent
+    from_type: subject
+    to_id: get_transaction_context
+    to_type: tool
+    risk_level: 2
+    pep_required: true
+    pep_type: tool_pep
+    operation_class: sensitive_data
+
+  - edge_id: e-monitoring-to-list-recent-tx
+    edge_type: agent_to_tool
+    from_id: transaction_monitoring_agent
+    from_type: subject
+    to_id: list_recent_transactions
+    to_type: tool
+    risk_level: 2
+    pep_required: true
+    pep_type: tool_pep
+    operation_class: sensitive_data
+
+  - edge_id: e-fraud-to-get-customer-context
+    edge_type: agent_to_tool
+    from_id: fraud_detection_agent
+    from_type: subject
+    to_id: get_customer_context
+    to_type: tool
+    risk_level: 2
+    pep_required: true
+    pep_type: tool_pep
+    operation_class: sensitive_data
+
+  - edge_id: e-fraud-to-get-tx-context
+    edge_type: agent_to_tool
+    from_id: fraud_detection_agent
+    from_type: subject
+    to_id: get_transaction_context
+    to_type: tool
+    risk_level: 2
+    pep_required: true
+    pep_type: tool_pep
+    operation_class: sensitive_data
+
+  - edge_id: e-fraud-to-list-recent-tx
+    edge_type: agent_to_tool
+    from_id: fraud_detection_agent
+    from_type: subject
+    to_id: list_recent_transactions
+    to_type: tool
+    risk_level: 2
+    pep_required: true
+    pep_type: tool_pep
+    operation_class: sensitive_data
+
+  - edge_id: e-compliance-to-search-policies
+    edge_type: agent_to_tool
+    from_id: compliance_agent
+    from_type: subject
+    to_id: search_policies
+    to_type: tool
+    risk_level: 1
+    pep_required: true
+    pep_type: tool_pep
+    operation_class: read
+
+  - edge_id: e-compliance-to-get-customer-context
+    edge_type: agent_to_tool
+    from_id: compliance_agent
+    from_type: subject
+    to_id: get_customer_context
+    to_type: tool
+    risk_level: 2
+    pep_required: true
+    pep_type: tool_pep
+    operation_class: sensitive_data
+
+  - edge_id: e-decision-to-submit-review
+    edge_type: agent_to_tool
+    from_id: decision_making_agent
+    from_type: subject
+    to_id: submit_manual_review
+    to_type: tool
+    risk_level: 4
+    pep_required: true
+    pep_type: tool_pep
+    operation_class: write
+
+  - edge_id: e-processing-to-execute-transfer
+    edge_type: agent_to_tool
+    from_id: transaction_processing_agent
+    from_type: subject
+    to_id: execute_transfer
+    to_type: tool
+    risk_level: 5
+    pep_required: true
+    pep_type: tool_pep
+    operation_class: critical
+
+  - edge_id: e-knowledge-to-search-faqs
+    edge_type: agent_to_tool
+    from_id: knowledge_base_agent
+    from_type: subject
+    to_id: search_faqs
+    to_type: tool
+    risk_level: 1
+    pep_required: true
+    pep_type: tool_pep
+    operation_class: read
+
+  # ── Mid office tool calls ─────────────────────────────────────
+
+  - edge_id: e-analysis-to-ops-snapshot
+    edge_type: agent_to_tool
+    from_id: data_analysis_agent
+    from_type: subject
+    to_id: get_operations_snapshot
+    to_type: tool
+    risk_level: 1
+    pep_required: true
+    pep_type: tool_pep
+    operation_class: read
+
+  - edge_id: e-forecast-to-ops-snapshot
+    edge_type: agent_to_tool
+    from_id: forecasting_agent
+    from_type: subject
+    to_id: get_operations_snapshot
+    to_type: tool
+    risk_level: 1
+    pep_required: true
+    pep_type: tool_pep
+    operation_class: read
+
+  - edge_id: e-validation-to-persist-schedule
+    edge_type: agent_to_tool
+    from_id: validation_agent
+    from_type: subject
+    to_id: persist_validated_schedule
+    to_type: tool
+    risk_level: 3
+    pep_required: true
+    pep_type: tool_pep
+    operation_class: write
+
+  - edge_id: e-findata-to-get-financial-profile
+    edge_type: agent_to_tool
+    from_id: financial_data_agent
+    from_type: subject
+    to_id: get_customer_financial_profile
+    to_type: tool
+    risk_level: 2
+    pep_required: true
+    pep_type: tool_pep
+    operation_class: sensitive_data
+
+  - edge_id: e-recommender-to-search-catalog
+    edge_type: agent_to_tool
+    from_id: recommender_agent
+    from_type: subject
+    to_id: search_product_catalog
+    to_type: tool
+    risk_level: 1
+    pep_required: true
+    pep_type: tool_pep
+    operation_class: read
+
+  - edge_id: e-loan-to-search-loan-playbooks
+    edge_type: agent_to_tool
+    from_id: loan_agent
+    from_type: subject
+    to_id: search_loan_playbooks
+    to_type: tool
+    risk_level: 1
+    pep_required: true
+    pep_type: tool_pep
+    operation_class: read
+
+  - edge_id: e-risk-compliance-to-search-policies
+    edge_type: agent_to_tool
+    from_id: risk_compliance_agent
+    from_type: subject
+    to_id: search_policies
+    to_type: tool
+    risk_level: 1
+    pep_required: true
+    pep_type: tool_pep
+    operation_class: read
+
+  # ── Back office tool calls ────────────────────────────────────
+
+  - edge_id: e-checkpoint-to-validate-eod
+    edge_type: agent_to_tool
+    from_id: validation_checkpoint_agent
+    from_type: subject
+    to_id: validate_eod_readiness
+    to_type: tool
+    risk_level: 2
+    pep_required: true
+    pep_type: tool_pep
+    operation_class: read
+
+  - edge_id: e-eod-processing-to-get-batch
+    edge_type: agent_to_tool
+    from_id: eod_processing_agent
+    from_type: subject
+    to_id: get_eod_batch
+    to_type: tool
+    risk_level: 3
+    pep_required: true
+    pep_type: tool_pep
+    operation_class: sensitive_data
+
+  - edge_id: e-ledger-to-apply-updates
+    edge_type: agent_to_tool
+    from_id: ledger_update_agent
+    from_type: subject
+    to_id: apply_ledger_updates
+    to_type: tool
+    risk_level: 5
+    pep_required: true
+    pep_type: tool_pep
+    operation_class: critical
+
+  - edge_id: e-reconciliation-to-get-recon-data
+    edge_type: agent_to_tool
+    from_id: reconciliation_agent
+    from_type: subject
+    to_id: get_reconciliation_data
+    to_type: tool
+    risk_level: 3
+    pep_required: true
+    pep_type: tool_pep
+    operation_class: sensitive_data
+
+  - edge_id: e-report-writing-to-store-report
+    edge_type: agent_to_tool
+    from_id: report_writing_agent
+    from_type: subject
+    to_id: store_report
+    to_type: tool
+    risk_level: 3
+    pep_required: true
+    pep_type: tool_pep
+    operation_class: write
+
+  - edge_id: e-exception-to-create-exception
+    edge_type: agent_to_tool
+    from_id: exception_agent
+    from_type: subject
+    to_id: create_exception_case
+    to_type: tool
+    risk_level: 4
+    pep_required: true
+    pep_type: tool_pep
+    operation_class: write
+
+  # ── MCP tool calls ────────────────────────────────────────────
+
+  - edge_id: e-monitoring-to-mcp-get-tx
+    edge_type: agent_to_tool
+    from_id: transaction_monitoring_agent
+    from_type: subject
+    to_id: get_transaction
+    to_type: tool
+    risk_level: 2
+    pep_required: true
+    pep_type: tool_pep
+    operation_class: sensitive_data
+
+  - edge_id: e-monitoring-to-mcp-run-workflow
+    edge_type: agent_to_tool
+    from_id: transaction_monitoring_agent
+    from_type: subject
+    to_id: run_fraud_and_compliance_workflow
+    to_type: tool
+    risk_level: 3
+    pep_required: true
+    pep_type: tool_pep
+    operation_class: read
+
+  - edge_id: e-decision-to-mcp-update-status
+    edge_type: agent_to_tool
+    from_id: decision_making_agent
+    from_type: subject
+    to_id: update_transaction_status
+    to_type: tool
+    risk_level: 5
+    pep_required: true
+    pep_type: tool_pep
+    operation_class: critical
+
+  - edge_id: e-checkpoint-to-mcp-trigger-eod
+    edge_type: agent_to_tool
+    from_id: validation_checkpoint_agent
+    from_type: subject
+    to_id: trigger_eod_reconciliation
+    to_type: tool
+    risk_level: 5
+    pep_required: true
+    pep_type: tool_pep
+    operation_class: critical
+
+  - edge_id: e-exception-to-mcp-resolve-ledger
+    edge_type: agent_to_tool
+    from_id: exception_agent
+    from_type: subject
+    to_id: resolve_ledger_entry
+    to_type: tool
+    risk_level: 5
+    pep_required: true
+    pep_type: tool_pep
+    operation_class: critical
+
+  # ════════════════════════════════════════════════════════════
+  # LAYER 3: TOOL → API (HTTP invocations)
+  # Enforced by: tool_pep validates before forwarding; api_pep at API gateway
+  # ════════════════════════════════════════════════════════════
+
+  - edge_id: e-tool-get-customer-ctx-to-api
+    edge_type: tool_to_api
+    from_id: get_customer_context
+    from_type: tool
+    to_id: get-customer-context
+    to_type: api
+    http_method: GET
+    risk_level: 3
+    pep_required: true
+    pep_type: api_pep
+    operation_class: sensitive_data
+
+  - edge_id: e-tool-get-financial-profile-to-api
+    edge_type: tool_to_api
+    from_id: get_customer_financial_profile
+    from_type: tool
+    to_id: get-customer-context
+    to_type: api
+    http_method: GET
+    risk_level: 3
+    pep_required: true
+    pep_type: api_pep
+    operation_class: sensitive_data
+
+  - edge_id: e-tool-get-tx-ctx-to-api
+    edge_type: tool_to_api
+    from_id: get_transaction_context
+    from_type: tool
+    to_id: get-transaction
+    to_type: api
+    http_method: GET
+    risk_level: 2
+    pep_required: true
+    pep_type: api_pep
+    operation_class: sensitive_data
+
+  - edge_id: e-tool-list-recent-tx-to-api
+    edge_type: tool_to_api
+    from_id: list_recent_transactions
+    from_type: tool
+    to_id: get-customer-transactions
+    to_type: api
+    http_method: GET
+    risk_level: 3
+    pep_required: true
+    pep_type: api_pep
+    operation_class: sensitive_data
+
+  - edge_id: e-tool-search-policies-to-api
+    edge_type: tool_to_api
+    from_id: search_policies
+    from_type: tool
+    to_id: search-policies
+    to_type: api
+    http_method: GET
+    risk_level: 1
+    pep_required: false
+    operation_class: read
+
+  - edge_id: e-tool-search-faqs-to-api
+    edge_type: tool_to_api
+    from_id: search_faqs
+    from_type: tool
+    to_id: search-policies
+    to_type: api
+    http_method: GET
+    risk_level: 1
+    pep_required: false
+    operation_class: read
+
+  - edge_id: e-tool-execute-transfer-to-api
+    edge_type: tool_to_api
+    from_id: execute_transfer
+    from_type: tool
+    to_id: execute-transfer
+    to_type: api
+    http_method: POST
+    risk_level: 5
+    pep_required: true
+    pep_type: api_pep
+    operation_class: critical
+
+  - edge_id: e-mcp-get-tx-to-api
+    edge_type: mcp_tool_to_api
+    from_id: get_transaction
+    from_type: tool
+    to_id: get-transaction
+    to_type: api
+    http_method: GET
+    risk_level: 2
+    pep_required: true
+    pep_type: api_pep
+    operation_class: sensitive_data
+
+  - edge_id: e-mcp-run-workflow-to-api
+    edge_type: mcp_tool_to_api
+    from_id: run_fraud_and_compliance_workflow
+    from_type: tool
+    to_id: evaluate-transaction
+    to_type: api
+    http_method: POST
+    risk_level: 3
+    pep_required: true
+    pep_type: api_pep
+    operation_class: read
+
+  - edge_id: e-mcp-update-status-to-api
+    edge_type: mcp_tool_to_api
+    from_id: update_transaction_status
+    from_type: tool
+    to_id: update-transaction-status
+    to_type: api
+    http_method: PATCH
+    risk_level: 5
+    pep_required: true
+    pep_type: api_pep
+    operation_class: critical
+
+  # ════════════════════════════════════════════════════════════
+  # LAYER 4: API → DATABASE (SQL queries)
+  # Enforced by: data_pep at the ORM/query layer
+  # ════════════════════════════════════════════════════════════
+
+  - edge_id: e-api-get-customer-ctx-to-db-customers
+    edge_type: api_to_database
+    from_id: get-customer-context
+    from_type: api
+    to_id: db-customers
+    to_type: database
+    db_operation: SELECT
+    risk_level: 3
+    pep_required: true
+    pep_type: data_pep
+    operation_class: sensitive_data
+
+  - edge_id: e-api-get-customer-ctx-to-db-accounts
+    edge_type: api_to_database
+    from_id: get-customer-context
+    from_type: api
+    to_id: db-accounts
+    to_type: database
+    db_operation: SELECT
+    risk_level: 3
+    pep_required: true
+    pep_type: data_pep
+    operation_class: sensitive_data
+
+  - edge_id: e-api-get-tx-to-db-transactions
+    edge_type: api_to_database
+    from_id: get-transaction
+    from_type: api
+    to_id: db-transactions
+    to_type: database
+    db_operation: SELECT
+    risk_level: 2
+    pep_required: true
+    pep_type: data_pep
+    operation_class: sensitive_data
+
+  - edge_id: e-api-get-customer-tx-to-db-transactions
+    edge_type: api_to_database
+    from_id: get-customer-transactions
+    from_type: api
+    to_id: db-transactions
+    to_type: database
+    db_operation: SELECT
+    risk_level: 3
+    pep_required: true
+    pep_type: data_pep
+    operation_class: sensitive_data
+
+  - edge_id: e-api-evaluate-tx-to-db-transactions
+    edge_type: api_to_database
+    from_id: evaluate-transaction
+    from_type: api
+    to_id: db-transactions
+    to_type: database
+    db_operation: SELECT
+    risk_level: 2
+    pep_required: true
+    pep_type: data_pep
+    operation_class: read
+
+  - edge_id: e-api-evaluate-tx-to-db-rules
+    edge_type: api_to_database
+    from_id: evaluate-transaction
+    from_type: api
+    to_id: db-rules
+    to_type: database
+    db_operation: SELECT
+    risk_level: 1
+    pep_required: false
+    operation_class: read
+
+  - edge_id: e-api-execute-transfer-to-db-transactions-write
+    edge_type: api_to_database
+    from_id: execute-transfer
+    from_type: api
+    to_id: db-transactions
+    to_type: database
+    db_operation: INSERT
+    risk_level: 5
+    pep_required: true
+    pep_type: data_pep
+    operation_class: critical
+
+  - edge_id: e-api-execute-transfer-to-db-accounts-debit
+    edge_type: api_to_database
+    from_id: execute-transfer
+    from_type: api
+    to_id: db-accounts
+    to_type: database
+    db_operation: UPDATE
+    risk_level: 5
+    pep_required: true
+    pep_type: data_pep
+    operation_class: critical
+
+  - edge_id: e-api-execute-transfer-to-db-audit
+    edge_type: api_to_database
+    from_id: execute-transfer
+    from_type: api
+    to_id: db-audit-logs
+    to_type: database
+    db_operation: INSERT
+    risk_level: 3
+    pep_required: false
+    operation_class: write
+
+  - edge_id: e-api-update-status-to-db-transactions
+    edge_type: api_to_database
+    from_id: update-transaction-status
+    from_type: api
+    to_id: db-transactions
+    to_type: database
+    db_operation: UPDATE
+    risk_level: 5
+    pep_required: true
+    pep_type: data_pep
+    operation_class: critical
+
+  - edge_id: e-api-update-status-to-db-audit
+    edge_type: api_to_database
+    from_id: update-transaction-status
+    from_type: api
+    to_id: db-audit-logs
+    to_type: database
+    db_operation: INSERT
+    risk_level: 3
+    pep_required: false
+    operation_class: write
+
+  - edge_id: e-api-search-policies-to-db-policies
+    edge_type: api_to_database
+    from_id: search-policies
+    from_type: api
+    to_id: db-policies
+    to_type: database
+    db_operation: SELECT
+    risk_level: 1
+    pep_required: false
+    operation_class: read
+
+  - edge_id: e-api-list-rules-to-db-rules
+    edge_type: api_to_database
+    from_id: list-rules
+    from_type: api
+    to_id: db-rules
+    to_type: database
+    db_operation: SELECT
+    risk_level: 1
+    pep_required: false
+    operation_class: read
+
+# ── Edge statistics ───────────────────────────────────────────
+edge_summary:
+  total_edges: 57
+  by_type:
+    agent_to_agent: 22
+    agent_to_tool: 23
+    tool_to_api: 8
+    mcp_tool_to_api: 3
+    api_to_database: 13
+  critical_edges:
+    - e-processing-to-execute-transfer
+    - e-ledger-to-apply-updates
+    - e-decision-to-mcp-update-status
+    - e-checkpoint-to-mcp-trigger-eod
+    - e-exception-to-mcp-resolve-ledger
+    - e-tool-execute-transfer-to-api
+    - e-mcp-update-status-to-api
+    - e-api-execute-transfer-to-db-transactions-write
+    - e-api-execute-transfer-to-db-accounts-debit
+    - e-api-update-status-to-db-transactions
+    - e-reconciliation-to-exception
+    - e-eod-processing-to-ledger
+    - e-decision-to-processing
+    - e-service-to-processing

@@ -1,0 +1,81 @@
+subject:
+  agent_id:       <required> string          
+  description:    <required> string
+  domain:         <required> ENUM(root, front, mid, back)
+  role:           <required> ENUM(entry_point, router, specialist, workflow, merger)
+  risk_tier:      <required> ENUM(low, medium, high, critical)
+
+  authorized_tools:     <required> list[tool_id]
+  authorized_transfers: <required> list[agent_id]
+
+  reads_from:     [optional] list[state_key]
+  writes_to:      [optional] string
+
+  requires_prior_steps: [optional] list[state_key]
+  pep_type:       <required> ENUM(route_pep, tool_pep, output_pep, none)
+  trust_level:    <required> ENUM(untrusted, low_trust, trusted)
+  
+resource:
+  tool_id:        <required> string          
+  display_name:   <required> string
+  source:         <required> ENUM(adk, mcp)
+  domain:         <required> ENUM(front, mid, back, shared)
+
+  action_type:    <required> ENUM(read, compute, state_change, financial_write, ledger_write, batch_trigger)
+  has_side_effects: <required> boolean
+  risk_level:     <required> integer
+  requires_live_decision: <required> boolean
+
+  pii_fields:     [optional] list[string]
+  compliance_tags: [optional] list[string]
+  audit_required: <required> boolean
+
+  allowed_callers: <required> list[agent_id]
+
+  idempotency_key: [optional] string
+  
+  
+  
+ workflow_edge:
+  from_agent:     <required> agent_id
+  to_agent:       <required> agent_id
+  trigger:        <required> string          # condition that causes the transfer
+  required_state: [optional] list[state_key]
+  pep_type:       <required> ENUM(route_pep)
+
+  edge_risk:      <required> ENUM(low, medium, high, critical)
+  
+  
+  
+policy_rule:
+  rule_id:        <required> string          # unique slug, kebab-case
+  description:    <required> string
+  compliance_basis: [optional] string
+  subject:        <required> string
+  resource:       <required> string
+  action:         <required> ENUM(call, read, write, transfer, output)
+  conditions:     [optional] list[string]
+  decision:       <required> ENUM(allow, deny, require_manual_review)
+  obligations:    [optional] list[string]
+
+  on_condition_fail: <required> ENUM(deny, require_manual_review, allow_with_flag)
+  priority:       <required> integer
+  
+  
+  
+identity_context:
+  required_claims:
+    session_id:     string    # UUID bound to the originating user request
+    agent_id:       string
+    user_role:      ENUM(customer, internal_rep, ops_scheduler, system, auditor)
+    workflow_state: object
+
+  optional_claims:
+    risk_context:   object
+    device_context: object
+    user_id:        string
+
+  propagation:
+    scope:    ENUM(session)
+    strategy: ENUM(downscope)
+    ttl_seconds: integer

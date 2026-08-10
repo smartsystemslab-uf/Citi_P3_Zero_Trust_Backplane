@@ -1,0 +1,223 @@
+# ============================================================
+# Database Registry — ZT-IR Manifest
+# Citi Banking ADK  |  Task 1 Deliverable
+#
+# Source of truth: citi_banking_backend/app/models.py
+# SQLAlchemy ORM models. Engine: SQLite (development).
+# Intended production target: PostgreSQL with row-level security.
+#
+# classification levels:
+#   public       — non-sensitive, no access restriction
+#   internal     — internal operational data, limited access
+#   confidential — financial data, strict access control
+#   restricted   — PII + financial data, highest access control
+#
+# allowed_api_callers: only the listed api_ids may touch this table.
+# Any other API trying to query this table defaults to DENY.
+# ============================================================
+
+zt_ir_version: "1.1"
+manifest_type: databases
+
+databases:
+
+  # ── customers ─────────────────────────────────────────────────
+  # Columns: customer_id, full_name, email, phone, address, kyc_status, risk_level
+  # Full PII record — strictest classification in the system.
+
+  - database_id: db-customers
+    display_name: Customers Table
+    db_type: relational
+    engine: SQLite (SQLAlchemy ORM)
+    table_name: customers
+    classification: restricted
+    contains_pii: true
+    contains_financial: false
+    contains_audit: false
+    allowed_operations:
+      - SELECT
+      - INSERT
+      - UPDATE
+    compliance_tags:
+      - GDPR
+      - GLBA
+      - KYC
+    risk_level: 4
+    immutable: false
+    allowed_api_callers:
+      - get-customer
+      - get-customer-context
+      - get-customer-transactions
+    pii_columns:
+      - full_name
+      - email
+      - phone
+      - address
+
+  # ── accounts ─────────────────────────────────────────────────
+  # Columns: account_id, customer_id (FK), account_type, balance, currency, status
+  # Financial data — balance is a real money amount.
+
+  - database_id: db-accounts
+    display_name: Accounts Table
+    db_type: relational
+    engine: SQLite (SQLAlchemy ORM)
+    table_name: accounts
+    classification: confidential
+    contains_pii: false
+    contains_financial: true
+    contains_audit: false
+    allowed_operations:
+      - SELECT
+      - INSERT
+      - UPDATE
+    compliance_tags:
+      - PCI-DSS
+      - SOX
+    risk_level: 4
+    immutable: false
+    allowed_api_callers:
+      - get-customer-context
+      - get-customer-transactions
+      - execute-transfer
+    financial_columns:
+      - balance
+
+  # ── policies ─────────────────────────────────────────────────
+  # Columns: policy_id, title, category, severity, content, is_active
+  # Read-only operational data. No PII, no financial data.
+
+  - database_id: db-policies
+    display_name: Policies Table
+    db_type: relational
+    engine: SQLite (SQLAlchemy ORM)
+    table_name: policies
+    classification: internal
+    contains_pii: false
+    contains_financial: false
+    contains_audit: false
+    allowed_operations:
+      - SELECT
+      - INSERT
+      - UPDATE
+    compliance_tags: []
+    risk_level: 1
+    immutable: false
+    allowed_api_callers:
+      - search-policies
+
+  # ── rules ────────────────────────────────────────────────────
+  # Columns: rule_id, name, category, field_name, operator, threshold_value, risk_score_delta
+  # Evaluation rule library used by the fraud/monitoring pipeline.
+
+  - database_id: db-rules
+    display_name: Rules Table
+    db_type: relational
+    engine: SQLite (SQLAlchemy ORM)
+    table_name: rules
+    classification: internal
+    contains_pii: false
+    contains_financial: false
+    contains_audit: false
+    allowed_operations:
+      - SELECT
+      - INSERT
+      - UPDATE
+    compliance_tags:
+      - AML
+    risk_level: 2
+    immutable: false
+    allowed_api_callers:
+      - evaluate-transaction
+      - list-rules
+
+  # ── transactions ─────────────────────────────────────────────
+  # Columns: transaction_id, from_account_id, to_account_id, amount,
+  #          currency, tx_type, status, risk_score, decision_reason
+  # Core financial record. Contains PII (account IDs) and financial data.
+
+  - database_id: db-transactions
+    display_name: Transactions Table
+    db_type: relational
+    engine: SQLite (SQLAlchemy ORM)
+    table_name: transactions
+    classification: restricted
+    contains_pii: true
+    contains_financial: true
+    contains_audit: false
+    allowed_operations:
+      - SELECT
+      - INSERT
+      - UPDATE
+    compliance_tags:
+      - PCI-DSS
+      - AML
+      - SOX
+    risk_level: 5
+    immutable: false
+    allowed_api_callers:
+      - get-transaction
+      - get-customer-transactions
+      - evaluate-transaction
+      - execute-transfer
+      - update-transaction-status
+    pii_columns:
+      - from_account_id
+      - to_account_id
+    financial_columns:
+      - amount
+
+  # ── audit_logs ───────────────────────────────────────────────
+  # Columns: event_type, actor, payload (+ created_at implied)
+  # Append-only compliance log. Immutable — no UPDATE or DELETE permitted.
+  # Written by every risk-level 4–5 API operation.
+
+  - database_id: db-audit-logs
+    display_name: Audit Logs Table
+    db_type: relational
+    engine: SQLite (SQLAlchemy ORM)
+    table_name: audit_logs
+    classification: restricted
+    contains_pii: true
+    contains_financial: true
+    contains_audit: true
+    allowed_operations:
+      - SELECT
+      - INSERT
+    compliance_tags:
+      - SOX
+      - PCI-DSS
+      - AML
+      - GDPR
+    risk_level: 3
+    immutable: true
+    allowed_api_callers:
+      - execute-transfer
+      - update-transaction-status
+    note: >
+      audit_logs is append-only. The immutable flag means the data-plane
+      enforcement must reject any UPDATE or DELETE against this table,
+      regardless of the caller's identity. The PEP generator must emit
+      a data_pep rule for this table that hard-blocks UPDATE/DELETE.
+
+# ── Classification summary ────────────────────────────────────
+classification_summary:
+  restricted:
+    - db-customers
+    - db-transactions
+    - db-audit-logs
+  confidential:
+    - db-accounts
+  internal:
+    - db-policies
+    - db-rules
+  immutable:
+    - db-audit-logs
+  contains_financial:
+    - db-accounts
+    - db-transactions
+    - db-audit-logs
+  contains_pii:
+    - db-customers
+    - db-transactions
+    - db-audit-logs
