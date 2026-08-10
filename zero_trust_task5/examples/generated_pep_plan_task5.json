@@ -1,0 +1,56 @@
+{
+  "interface_version": "1.0",
+  "peps": [
+    {
+      "pep_id": "tool-pep-transfer",
+      "pep_type": "tool_pep",
+      "resource_id": "banking_api.transfer",
+      "action_id": "execute",
+      "risk": "critical",
+      "critical": true,
+      "adapter": "generated_python_middleware",
+      "task5": {
+        "interface_version": "1.0",
+        "pep_id": "tool-pep-transfer",
+        "resource_id": "banking_api.transfer",
+        "action_id": "execute",
+        "permit_required": true,
+        "request_hash_required": true,
+        "sender_constraint_required": true,
+        "pdp_timeout_mode": "VALID_MATCHING_LEASE_ONLY",
+        "max_uses": 1,
+        "critical": true,
+        "fail_closed": true,
+        "clear_cache_on_restart": true
+      }
+    },
+    {
+      "pep_id": "data-pep-history",
+      "pep_type": "data_pep",
+      "resource_id": "transaction_history",
+      "action_id": "read",
+      "risk": "medium",
+      "critical": false,
+      "adapter": "generated_data_wrapper",
+      "task5": {
+        "interface_version": "1.0",
+        "pep_id": "data-pep-history",
+        "resource_id": "transaction_history",
+        "action_id": "read",
+        "permit_required": true,
+        "request_hash_required": true,
+        "sender_constraint_required": true,
+        "pdp_timeout_mode": "VALID_MATCHING_LEASE_ONLY",
+        "max_uses": 3,
+        "critical": false,
+        "fail_closed": true,
+        "clear_cache_on_restart": true
+      }
+    }
+  ],
+  "task5_contract": {
+    "interface_version": "1.0",
+    "authorization_artifact": "signed_permit_lease",
+    "stable_id_source": "unified_interface"
+  }
+}

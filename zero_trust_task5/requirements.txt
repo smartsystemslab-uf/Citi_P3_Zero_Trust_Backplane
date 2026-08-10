@@ -1,0 +1,4 @@
+cryptography>=41
+pydantic>=2.6
+fastapi>=0.110
+pytest>=8

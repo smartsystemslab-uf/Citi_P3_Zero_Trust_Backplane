@@ -1,0 +1,35 @@
+{
+  "interface_version": "1.0",
+  "request_id": "request-transfer-001",
+  "subject": "transaction_agent",
+  "resource": "banking_api.transfer",
+  "action": "execute",
+  "parameters": {
+    "from_account": "A",
+    "to_account": "B",
+    "amount": 100,
+    "currency": "USD"
+  },
+  "context": {
+    "workflow_id": "wf-transfer-001",
+    "audience": "banking-api",
+    "endpoint": "/v1/transfers",
+    "risk": "high",
+    "critical": true,
+    "idempotency_key": "idem-transfer-001"
+  },
+  "evidence": {
+    "risk": {
+      "assertion_id": "risk-001",
+      "issuer": "risk-service",
+      "issuer_version": "model-v1",
+      "score": 410
+    },
+    "workflow": {
+      "assertion_id": "workflow-001",
+      "issuer": "workflow-orchestrator",
+      "issuer_version": "rules-v1",
+      "step": "execute_transfer"
+    }
+  }
+}

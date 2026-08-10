@@ -1,0 +1,14 @@
+{
+  "interface_version": "1.0",
+  "normal_ttl_seconds": 60,
+  "critical_ttl_seconds": 15,
+  "normal_max_uses": 3,
+  "critical_max_uses": 1,
+  "maximum_clock_skew_seconds": 2,
+  "pdp_timeout_mode": "VALID_MATCHING_LEASE_ONLY",
+  "clear_cache_on_pep_restart": true,
+  "critical_operations_fail_closed": true,
+  "sender_constraint_required": true,
+  "context_binding_required": true,
+  "critical_idempotency_required": true
+}

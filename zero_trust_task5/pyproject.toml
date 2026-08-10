@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "zero-trust-task5"
+version = "0.1.0"
+description = "Permit Lease, cache safety, revocation, and PDP timeout handling for the Zero Trust Backplane"
+requires-python = ">=3.10"
+dependencies = [
+  "cryptography>=41",
+  "pydantic>=2.6",
+  "fastapi>=0.110",
+]
+
+[project.optional-dependencies]
+test = ["pytest>=8"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+addopts = "-q"

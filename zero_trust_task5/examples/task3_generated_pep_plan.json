@@ -1,0 +1,23 @@
+{
+  "interface_version": "1.0",
+  "peps": [
+    {
+      "pep_id": "tool-pep-transfer",
+      "pep_type": "tool_pep",
+      "resource_id": "banking_api.transfer",
+      "action_id": "execute",
+      "risk": "critical",
+      "critical": true,
+      "adapter": "generated_python_middleware"
+    },
+    {
+      "pep_id": "data-pep-history",
+      "pep_type": "data_pep",
+      "resource_id": "transaction_history",
+      "action_id": "read",
+      "risk": "medium",
+      "critical": false,
+      "adapter": "generated_data_wrapper"
+    }
+  ]
+}
