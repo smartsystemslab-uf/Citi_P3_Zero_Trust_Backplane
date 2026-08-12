@@ -1,0 +1,159 @@
+{
+  "edge_registry_checks": [
+    {
+      "action_present": true,
+      "candidate_policy_ids": [
+        "policy.tool.transfer_pending_review",
+        "policy.tool.transfer_approved"
+      ],
+      "edge_id": "edge.customer_transaction.execute_transfer",
+      "expected_if_no_policy": "DENY (Task 4 default-deny)",
+      "identity_present": true,
+      "identity_runtime_matches": true,
+      "placement_id": "pep.customer_transaction.execute_transfer",
+      "resource_present": true,
+      "resource_runtime_matches": true
+    },
+    {
+      "action_present": true,
+      "candidate_policy_ids": [],
+      "edge_id": "edge.customer_transaction.get_context",
+      "expected_if_no_policy": "DENY (Task 4 default-deny)",
+      "identity_present": true,
+      "identity_runtime_matches": true,
+      "placement_id": "pep.customer_transaction.get_context",
+      "resource_present": true,
+      "resource_runtime_matches": true
+    },
+    {
+      "action_present": true,
+      "candidate_policy_ids": [],
+      "edge_id": "edge.eod_processing.create_exception",
+      "expected_if_no_policy": "DENY (Task 4 default-deny)",
+      "identity_present": true,
+      "identity_runtime_matches": true,
+      "placement_id": "pep.eod_processing.create_exception",
+      "resource_present": true,
+      "resource_runtime_matches": true
+    },
+    {
+      "action_present": true,
+      "candidate_policy_ids": [
+        "policy.back_office.eod_read_batches"
+      ],
+      "edge_id": "edge.eod_processing.get_batches",
+      "expected_if_no_policy": "DENY (Task 4 default-deny)",
+      "identity_present": true,
+      "identity_runtime_matches": true,
+      "placement_id": "pep.eod_processing.get_batches",
+      "resource_present": true,
+      "resource_runtime_matches": true
+    },
+    {
+      "action_present": true,
+      "candidate_policy_ids": [
+        "policy.ledger.eod_pending_review",
+        "policy.ledger.eod_approved_update"
+      ],
+      "edge_id": "edge.eod_processing.ledger_update",
+      "expected_if_no_policy": "DENY (Task 4 default-deny)",
+      "identity_present": true,
+      "identity_runtime_matches": true,
+      "placement_id": "pep.eod_processing.ledger_update",
+      "resource_present": true,
+      "resource_runtime_matches": true
+    },
+    {
+      "action_present": true,
+      "candidate_policy_ids": [],
+      "edge_id": "edge.eod_processing.reconcile",
+      "expected_if_no_policy": "DENY (Task 4 default-deny)",
+      "identity_present": true,
+      "identity_runtime_matches": true,
+      "placement_id": "pep.eod_processing.reconcile",
+      "resource_present": true,
+      "resource_runtime_matches": true
+    },
+    {
+      "action_present": true,
+      "candidate_policy_ids": [],
+      "edge_id": "edge.eod_processing.store_report",
+      "expected_if_no_policy": "DENY (Task 4 default-deny)",
+      "identity_present": true,
+      "identity_runtime_matches": true,
+      "placement_id": "pep.eod_processing.store_report",
+      "resource_present": true,
+      "resource_runtime_matches": true
+    },
+    {
+      "action_present": true,
+      "candidate_policy_ids": [],
+      "edge_id": "edge.eod_processing.write_report",
+      "expected_if_no_policy": "DENY (Task 4 default-deny)",
+      "identity_present": true,
+      "identity_runtime_matches": true,
+      "placement_id": "pep.eod_processing.write_report",
+      "resource_present": true,
+      "resource_runtime_matches": true
+    },
+    {
+      "action_present": true,
+      "candidate_policy_ids": [
+        "policy.front_office.fraud_read_transaction_history"
+      ],
+      "edge_id": "edge.fraud_review.read_history",
+      "expected_if_no_policy": "DENY (Task 4 default-deny)",
+      "identity_present": true,
+      "identity_runtime_matches": true,
+      "placement_id": "pep.fraud_review.read_history",
+      "resource_present": true,
+      "resource_runtime_matches": true
+    },
+    {
+      "action_present": true,
+      "candidate_policy_ids": [
+        "policy.tool.knowledge_search"
+      ],
+      "edge_id": "edge.fraud_review.search_policies",
+      "expected_if_no_policy": "DENY (Task 4 default-deny)",
+      "identity_present": true,
+      "identity_runtime_matches": true,
+      "placement_id": "pep.fraud_review.search_policies",
+      "resource_present": true,
+      "resource_runtime_matches": true
+    }
+  ],
+  "schema_checks": [
+    {
+      "match": true,
+      "schema": "pdp_request.schema.json",
+      "task3_sha256": "278141caf37b5acaa8fbd28ec3de5fe0a03f02ab99d0efff6e0e3222419fe54f",
+      "task4_sha256": "278141caf37b5acaa8fbd28ec3de5fe0a03f02ab99d0efff6e0e3222419fe54f"
+    },
+    {
+      "match": true,
+      "schema": "pdp_response.schema.json",
+      "task3_sha256": "cf54a4d638af1d18b9eada878e9602f20319422e4d23976098b1a8bc9fe9ba23",
+      "task4_sha256": "cf54a4d638af1d18b9eada878e9602f20319422e4d23976098b1a8bc9fe9ba23"
+    },
+    {
+      "match": true,
+      "schema": "audit_event.schema.json",
+      "task3_sha256": "2fec1d9f20e03b2b287e162a394ffba23728761af9dd1558ec360eeec4eaa045",
+      "task4_sha256": "2fec1d9f20e03b2b287e162a394ffba23728761af9dd1558ec360eeec4eaa045"
+    },
+    {
+      "match": true,
+      "schema": "zt_manifest.schema.json",
+      "task3_sha256": "c1320c857381d400500e67b5d21f1280cc3ce1371f42133db8ccbe3e3e39caef",
+      "task4_sha256": "c1320c857381d400500e67b5d21f1280cc3ce1371f42133db8ccbe3e3e39caef"
+    }
+  ],
+  "summary": {
+    "all_pep_requests_resolve_in_task4_registry": true,
+    "compatible": true,
+    "interface_schemas_match": true,
+    "note": "Compatibility means Task 4 accepts the canonical request contract and can return a policy decision. Edges without a candidate allow policy are intentionally denied by Task 4 default-deny."
+  },
+  "task4_package": "task4_compatibility_view"
+}

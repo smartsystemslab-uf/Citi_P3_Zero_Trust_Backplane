@@ -70,6 +70,14 @@ class Task3PEPAdapter:
         authorization = self.authorize(request, session_id=session_id)
         if not authorization.allowed:
             raise PEPDenied(authorization.reason)
+
+        obligations = []
+        if authorization.validation is not None:
+            obligations = list(authorization.validation.obligations or [])
+        elif authorization.decision is not None:
+            obligations = list(authorization.decision.obligations or [])
+        self._check_pre_obligations(obligations, request)
+
         self.idempotency_guard.reserve(
             request.idempotency_key,
             request.request_hash(),
@@ -81,7 +89,60 @@ class Task3PEPAdapter:
             self.idempotency_guard.abort(request.idempotency_key)
             raise
         self.idempotency_guard.commit(request.idempotency_key)
-        return result
+        return self._apply_post_obligations(result, obligations)
+
+    @staticmethod
+    def _obligation_type(obligation: Any) -> str:
+        if isinstance(obligation, Mapping):
+            return str(obligation.get("type") or "")
+        return str(getattr(obligation, "type", "") or "")
+
+    @staticmethod
+    def _obligation_parameters(obligation: Any) -> Mapping[str, Any]:
+        if isinstance(obligation, Mapping):
+            raw = obligation.get("parameters") or {}
+        else:
+            raw = getattr(obligation, "parameters", {}) or {}
+        return raw if isinstance(raw, Mapping) else {}
+
+    @classmethod
+    def _check_pre_obligations(
+        cls, obligations: list[Any], request: UnifiedAuthorizationRequest
+    ) -> None:
+        """Keep Task 4 pre-execution obligations effective through Task 5."""
+        for obligation in obligations:
+            kind = cls._obligation_type(obligation)
+            if kind == "require_idempotency_key" and not request.idempotency_key:
+                raise PEPDenied("required idempotency_key obligation is unsatisfied")
+            if kind == "require_change_ticket":
+                ticket = request.parameters.get("change_ticket") or request.context.get("change_ticket")
+                if not ticket:
+                    raise PEPDenied("required change_ticket obligation is unsatisfied")
+
+    @classmethod
+    def _apply_post_obligations(cls, value: T, obligations: list[Any]) -> T:
+        """Apply Task 4 response-side obligations such as data masking."""
+        masked_fields: set[str] = set()
+        for obligation in obligations:
+            if cls._obligation_type(obligation) == "data_masking":
+                raw_fields = cls._obligation_parameters(obligation).get("fields") or []
+                masked_fields.update(str(item) for item in raw_fields)
+        if not masked_fields:
+            return value
+
+        def mask(item: Any) -> Any:
+            if isinstance(item, dict):
+                return {
+                    key: ("***MASKED***" if key in masked_fields else mask(child))
+                    for key, child in item.items()
+                }
+            if isinstance(item, list):
+                return [mask(child) for child in item]
+            if isinstance(item, tuple):
+                return tuple(mask(child) for child in item)
+            return item
+
+        return mask(value)
 
     def protect(self, request_builder: Callable[..., Mapping[str, Any]]):
         """Decorator hook that generated Task 3 Python wrappers can emit."""

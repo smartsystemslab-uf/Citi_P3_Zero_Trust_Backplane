@@ -1,0 +1,91 @@
+zt_ir_version: '1.0'
+manifest_type: databases_draft
+databases:
+- database_id: transactions
+  display_name: transactions table
+  db_type: relational
+  engine: SQLite
+  table_name: transactions
+  classification: confidential
+  contains_pii: false
+  contains_financial: true
+  contains_audit: false
+  allowed_operations:
+  - SELECT
+  - INSERT
+  - UPDATE
+  - DELETE
+  allowed_api_callers: []
+  compliance_tags: []
+  risk_level: 3
+  immutable: false
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_backend\app\models.py:1
+- database_id: eod_batches
+  display_name: eod_batches table
+  db_type: relational
+  engine: SQLite
+  table_name: eod_batches
+  classification: internal
+  contains_pii: false
+  contains_financial: false
+  contains_audit: false
+  allowed_operations:
+  - SELECT
+  - INSERT
+  - UPDATE
+  - DELETE
+  allowed_api_callers: []
+  compliance_tags: []
+  risk_level: 3
+  immutable: false
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_backend\app\models.py:5
+- database_id: ledger_entries
+  display_name: ledger_entries table
+  db_type: relational
+  engine: SQLite
+  table_name: ledger_entries
+  classification: internal
+  contains_pii: false
+  contains_financial: false
+  contains_audit: false
+  allowed_operations:
+  - SELECT
+  - INSERT
+  - UPDATE
+  - DELETE
+  allowed_api_callers: []
+  compliance_tags: []
+  risk_level: 3
+  immutable: false
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_backend\app\models.py:9
+- database_id: reports
+  display_name: reports table
+  db_type: relational
+  engine: SQLite
+  table_name: reports
+  classification: internal
+  contains_pii: false
+  contains_financial: false
+  contains_audit: false
+  allowed_operations:
+  - SELECT
+  - INSERT
+  - UPDATE
+  - DELETE
+  allowed_api_callers: []
+  compliance_tags: []
+  risk_level: 3
+  immutable: false
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_backend\app\models.py:13

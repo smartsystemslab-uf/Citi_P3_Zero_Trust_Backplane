@@ -1,0 +1,5 @@
+PyYAML<7.0,>=6.0
+jsonschema<5.0,>=4.22
+
+[test]
+pytest<10.0,>=8.0

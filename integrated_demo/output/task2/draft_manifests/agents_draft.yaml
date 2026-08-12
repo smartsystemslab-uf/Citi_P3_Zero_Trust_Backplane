@@ -1,0 +1,91 @@
+zt_ir_version: '1.0'
+manifest_type: agents_draft
+agents:
+- agent_id: eod_processing_agent
+  description: Coordinate end-of-day processing.
+  domain: back
+  role: specialist
+  risk_tier: medium
+  authorized_tools:
+  - get_eod_batch
+  - apply_ledger_updates
+  - store_report
+  authorized_transfers: []
+  reads_from: []
+  writes_to: []
+  requires_prior_steps: []
+  pep_type: tool_pep
+  trust_level: low_trust
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_adk\bank_adk\agents\back_office.py:2
+- agent_id: report_writing_agent
+  description: Write end-of-day reports.
+  domain: back
+  role: specialist
+  risk_tier: medium
+  authorized_tools:
+  - store_report
+  authorized_transfers: []
+  reads_from: []
+  writes_to: []
+  requires_prior_steps: []
+  pep_type: tool_pep
+  trust_level: low_trust
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_adk\bank_adk\agents\back_office.py:8
+- agent_id: fraud_detection_agent
+  description: Review suspicious transactions.
+  domain: front
+  role: specialist
+  risk_tier: medium
+  authorized_tools:
+  - get_transaction_context
+  - search_policies
+  authorized_transfers: []
+  reads_from: []
+  writes_to: []
+  requires_prior_steps: []
+  pep_type: tool_pep
+  trust_level: low_trust
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_adk\bank_adk\agents\front_office.py:2
+- agent_id: transaction_processing_agent
+  description: Execute approved customer transactions.
+  domain: front
+  role: specialist
+  risk_tier: medium
+  authorized_tools:
+  - execute_transfer
+  authorized_transfers: []
+  reads_from: []
+  writes_to: []
+  requires_prior_steps: []
+  pep_type: tool_pep
+  trust_level: low_trust
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_adk\bank_adk\agents\front_office.py:8
+- agent_id: compliance_agent
+  description: Retrieve policy guidance.
+  domain: front
+  role: specialist
+  risk_tier: medium
+  authorized_tools:
+  - search_policies
+  authorized_transfers: []
+  reads_from: []
+  writes_to: []
+  requires_prior_steps: []
+  pep_type: tool_pep
+  trust_level: low_trust
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_adk\bank_adk\agents\front_office.py:14

@@ -82,9 +82,17 @@ def get_string(node: ast.AST) -> Optional[str]:
     return None
 
 
-def extract_string_list(node: ast.AST) -> List[str]:
-    if isinstance(node, ast.List) or isinstance(node, ast.Tuple):
+def extract_string_list(node: Any) -> List[str]:
+    """Return string/name values from AST containers or decoded Python lists.
+
+    keyword_value() already decodes list/tuple literals through node_value().
+    Accepting both forms prevents tools=[...] and sub_agents=[...] from being
+    dropped during Task 2 scanning.
+    """
+    if isinstance(node, (ast.List, ast.Tuple)):
         return [v for v in (node_value(item) for item in node.elts) if isinstance(v, str)]
+    if isinstance(node, (list, tuple)):
+        return [str(v) for v in node if isinstance(v, str)]
     return []
 
 
@@ -193,7 +201,7 @@ class ToolScanner(ast.NodeVisitor):
     def visit_FunctionDef(self, node: ast.FunctionDef) -> Any:
         """Inspect function definitions and treat ADK or MCP functions as tools."""
         is_mcp = any(decorator_name(dec) == "tool" for dec in node.decorator_list)
-        in_tools_dir = "bank_adk/tools" in str(self.source_path)
+        in_tools_dir = "bank_adk/tools" in self.source_path.as_posix()
         if is_mcp or in_tools_dir:
             payload = self._build_tool(node, is_mcp)
             self.tools.append(DraftEntity(payload, str(self.source_path), node.lineno))
@@ -255,14 +263,22 @@ class ToolScanner(ast.NodeVisitor):
         return "shared"
 
     def _infer_action_type(self, tool_id: str, source: str) -> str:
-        """Infer action type from tool naming conventions."""
-        if tool_id.startswith("get_") or tool_id.startswith("list_") or tool_id.startswith("search_"):
+        """Infer action type from Citi tool naming conventions."""
+        lowered = tool_id.lower()
+        if lowered.startswith(("get_", "list_", "search_", "read_")):
             return "read"
-        if tool_id.startswith("evaluate_") or tool_id.startswith("propose_"):
+        if lowered.startswith(("evaluate_", "propose_", "calculate_", "forecast_")):
             return "compute"
-        if tool_id.startswith("execute_") or tool_id.startswith("apply_") or tool_id.startswith("resolve_"):
-            return "financial_write" if "transfer" in tool_id or "ledger" in tool_id else "state_change"
-        if tool_id.startswith("submit_") or tool_id.startswith("create_") or tool_id.startswith("trigger_"):
+        financial_terms = ("transfer", "ledger")
+        mutation_terms = ("execute", "apply", "resolve", "update", "write", "post")
+        if any(term in lowered for term in financial_terms) and any(term in lowered for term in mutation_terms):
+            return "financial_write"
+        if lowered.startswith((
+            "execute_", "apply_", "resolve_", "update_", "write_", "store_",
+            "submit_", "create_", "trigger_"
+        )):
+            return "state_change"
+        if lowered.endswith(("_update", "_write")):
             return "state_change"
         return "compute"
 

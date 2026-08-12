@@ -1,0 +1,135 @@
+[
+  {
+    "action": "read",
+    "decision": "ALLOW",
+    "details": {
+      "state": "ACTIVE_LEASE"
+    },
+    "event_type": "RUNTIME_AUTHORIZATION",
+    "permit_id": "b1d3c3da-c65f-4d95-a7e9-f1bf9d2278df",
+    "policy_version": "c5f7d018c019208e",
+    "previous_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+    "reason": "VALID_PERMIT_LEASE",
+    "record_hash": "e9263999282e595aa03beebf34571c4ef9d23e5479068183de0e706ddce1925c",
+    "request_id": "23acb767-d7c8-4b7e-a663-f590e8f6bc20",
+    "resource": "resource.front_office.transaction_history",
+    "source": "PDP",
+    "subject": "agent.front_office.fraud",
+    "timestamp": "2026-08-12T17:46:57.199554+00:00",
+    "workflow_id": "workflow.front_office.fraud_review"
+  },
+  {
+    "action": "read",
+    "decision": "ALLOW",
+    "details": {
+      "state": "ACTIVE_LEASE"
+    },
+    "event_type": "RUNTIME_AUTHORIZATION",
+    "permit_id": "b1d3c3da-c65f-4d95-a7e9-f1bf9d2278df",
+    "policy_version": "c5f7d018c019208e",
+    "previous_hash": "e9263999282e595aa03beebf34571c4ef9d23e5479068183de0e706ddce1925c",
+    "reason": "PDP_TIMEOUT_VALID_CACHED_LEASE",
+    "record_hash": "b80989badfe6b2bc63a14cd77c4b92628b51ffdd4ce786b761e24552e8ed5f29",
+    "request_id": "fraud-retry-002",
+    "resource": "resource.front_office.transaction_history",
+    "source": "CACHE",
+    "subject": "agent.front_office.fraud",
+    "timestamp": "2026-08-12T17:46:57.200551+00:00",
+    "workflow_id": "workflow.front_office.fraud_review"
+  },
+  {
+    "action": "read",
+    "decision": "DENY",
+    "details": {
+      "state": "DENIED"
+    },
+    "event_type": "RUNTIME_AUTHORIZATION",
+    "permit_id": null,
+    "policy_version": null,
+    "previous_hash": "b80989badfe6b2bc63a14cd77c4b92628b51ffdd4ce786b761e24552e8ed5f29",
+    "reason": "PDP_TIMEOUT_NO_VALID_LEASE",
+    "record_hash": "d119471ad15f609ecc496b467672c4a0e2b664ea896111fab0d277add48cb897",
+    "request_id": "fraud-modified-003",
+    "resource": "resource.front_office.transaction_history",
+    "source": "CACHE",
+    "subject": "agent.front_office.fraud",
+    "timestamp": "2026-08-12T17:46:57.201557+00:00",
+    "workflow_id": "workflow.front_office.fraud_review"
+  },
+  {
+    "action": "read",
+    "decision": "DENY",
+    "details": {
+      "state": "DENIED"
+    },
+    "event_type": "RUNTIME_AUTHORIZATION",
+    "permit_id": null,
+    "policy_version": null,
+    "previous_hash": "d119471ad15f609ecc496b467672c4a0e2b664ea896111fab0d277add48cb897",
+    "reason": "PDP_TIMEOUT_NO_VALID_LEASE",
+    "record_hash": "b944562967e6834ad298b35b2c03a7d522f6209a945c61b0cf6964edbd684089",
+    "request_id": "fraud-retry-002",
+    "resource": "resource.front_office.transaction_history",
+    "source": "CACHE",
+    "subject": "agent.front_office.fraud",
+    "timestamp": "2026-08-12T17:46:57.201557+00:00",
+    "workflow_id": "workflow.front_office.fraud_review"
+  },
+  {
+    "action": "update",
+    "decision": "DENY",
+    "details": {
+      "state": "DENIED"
+    },
+    "event_type": "RUNTIME_AUTHORIZATION",
+    "permit_id": null,
+    "policy_version": "c5f7d018c019208e",
+    "previous_hash": "b944562967e6834ad298b35b2c03a7d522f6209a945c61b0cf6964edbd684089",
+    "reason": "TASK4_MANUAL_REVIEW",
+    "record_hash": "f0a9bc369e0752c396055be550cfda4147c0f017d24b1e1d85d97f088715d176",
+    "request_id": "49fb1e8f-2ea6-4cc9-bdb4-fe19d3d76b66",
+    "resource": "resource.back_office.ledger",
+    "source": "PDP",
+    "subject": "agent.back_office.eod",
+    "timestamp": "2026-08-12T17:46:57.219554+00:00",
+    "workflow_id": "workflow.back_office.eod_processing"
+  },
+  {
+    "action": "update",
+    "decision": "ALLOW",
+    "details": {
+      "state": "ACTIVE_LEASE"
+    },
+    "event_type": "RUNTIME_AUTHORIZATION",
+    "permit_id": "ee46b378-f79f-424f-b92f-c51540ddbf00",
+    "policy_version": "c5f7d018c019208e",
+    "previous_hash": "f0a9bc369e0752c396055be550cfda4147c0f017d24b1e1d85d97f088715d176",
+    "reason": "VALID_PERMIT_LEASE",
+    "record_hash": "b582ce94f9776555abb719e937ff799296d396d7da54ef8c094c6e72a810ca75",
+    "request_id": "448f922e-fe26-4089-b940-0f9ed4b83812",
+    "resource": "resource.back_office.ledger",
+    "source": "PDP",
+    "subject": "agent.back_office.eod",
+    "timestamp": "2026-08-12T17:46:57.242557+00:00",
+    "workflow_id": "workflow.back_office.eod_processing"
+  },
+  {
+    "action": "update",
+    "decision": "DENY",
+    "details": {
+      "state": "DENIED"
+    },
+    "event_type": "RUNTIME_AUTHORIZATION",
+    "permit_id": null,
+    "policy_version": null,
+    "previous_hash": "b582ce94f9776555abb719e937ff799296d396d7da54ef8c094c6e72a810ca75",
+    "reason": "PDP_TIMEOUT_INVALID_LEASE:Single-use or bounded-use Permit Lease was replayed",
+    "record_hash": "6c1c4a97ae172183c1275e9f3828bda307fb1feaac3d66dae58c1e39d370ab6a",
+    "request_id": "ledger-retry-009",
+    "resource": "resource.back_office.ledger",
+    "source": "CACHE",
+    "subject": "agent.back_office.eod",
+    "timestamp": "2026-08-12T17:46:57.243555+00:00",
+    "workflow_id": "workflow.back_office.eod_processing"
+  }
+]

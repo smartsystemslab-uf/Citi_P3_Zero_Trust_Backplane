@@ -1,0 +1,87 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://zero-trust-backplane.example/schema/permit_lease.schema.json",
+  "title": "Permit Lease",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "permit_id",
+    "subject_id",
+    "resource_id",
+    "action",
+    "request_hash",
+    "workflow_instance_id",
+    "issued_at",
+    "expires_at",
+    "policy_version",
+    "identity_version",
+    "risk_version",
+    "max_uses",
+    "obligations",
+    "signature_algorithm",
+    "signature"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "permit_id": {
+      "type": "string"
+    },
+    "subject_id": {
+      "type": "string"
+    },
+    "resource_id": {
+      "type": "string"
+    },
+    "action": {
+      "type": "string"
+    },
+    "request_hash": {
+      "type": "string"
+    },
+    "workflow_instance_id": {
+      "type": "string"
+    },
+    "issued_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "policy_version": {
+      "type": "string"
+    },
+    "identity_version": {
+      "type": "string"
+    },
+    "risk_version": {
+      "type": "string"
+    },
+    "max_uses": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "obligations": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "signature_algorithm": {
+      "type": "string"
+    },
+    "key_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "signature": {
+      "type": "string"
+    }
+  }
+}

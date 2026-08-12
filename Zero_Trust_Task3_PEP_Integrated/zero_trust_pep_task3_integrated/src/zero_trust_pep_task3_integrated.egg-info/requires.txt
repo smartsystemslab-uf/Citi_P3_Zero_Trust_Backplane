@@ -1,0 +1,11 @@
+pydantic<3.0,>=2.8
+PyYAML<7.0,>=6.0
+jsonschema<5.0,>=4.23
+httpx<1.0,>=0.27
+
+[fastapi]
+fastapi<1.0,>=0.115
+
+[test]
+pytest<10.0,>=8.0
+fastapi<1.0,>=0.115

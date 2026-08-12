@@ -1,0 +1,32 @@
+discovered_agents: 5
+discovered_tools: 7
+discovered_apis: 5
+discovered_databases: 4
+discovered_edges: 18
+coverage_percent: null
+details:
+  agents:
+  - eod_processing_agent
+  - report_writing_agent
+  - fraud_detection_agent
+  - transaction_processing_agent
+  - compliance_agent
+  tools:
+  - get_eod_batch
+  - apply_ledger_updates
+  - store_report
+  - get_transaction_context
+  - execute_transfer
+  - search_policies
+  - create_exception_case
+  apis:
+  - get_transaction
+  - banking_transfer
+  - get_eod_batch
+  - ledger_update
+  - store_report
+  databases:
+  - transactions
+  - eod_batches
+  - ledger_entries
+  - reports

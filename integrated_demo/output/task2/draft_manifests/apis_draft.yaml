@@ -1,0 +1,123 @@
+zt_ir_version: '1.0'
+manifest_type: apis_draft
+apis:
+- api_id: get_transaction
+  display_name: Read one transaction.
+  service: citi_banking_backend
+  base_url: http://localhost:8000
+  path: /transactions/{transaction_id}
+  method: GET
+  domain: front
+  action_type: read
+  has_side_effects: false
+  risk_level: 2
+  requires_auth: true
+  audit_required: false
+  reads_tables:
+  - transactions
+  writes_tables: []
+  pii_fields: []
+  compliance_tags: []
+  idempotency_key: null
+  operation_class: read
+  allowed_callers: []
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_backend\app\main.py:2
+- api_id: banking_transfer
+  display_name: Execute transfer.
+  service: citi_banking_backend
+  base_url: http://localhost:8000
+  path: /banking-api/transfer
+  method: POST
+  domain: front
+  action_type: financial_write
+  has_side_effects: true
+  risk_level: 4
+  requires_auth: true
+  audit_required: true
+  reads_tables: []
+  writes_tables:
+  - unknown
+  pii_fields: []
+  compliance_tags: []
+  idempotency_key: null
+  operation_class: financial
+  allowed_callers: []
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_backend\app\main.py:8
+- api_id: get_eod_batch
+  display_name: Read one EOD batch.
+  service: citi_banking_backend
+  base_url: http://localhost:8000
+  path: /back-office/eod/{batch_id}
+  method: GET
+  domain: back
+  action_type: read
+  has_side_effects: false
+  risk_level: 2
+  requires_auth: true
+  audit_required: false
+  reads_tables:
+  - eod_batches
+  writes_tables: []
+  pii_fields: []
+  compliance_tags: []
+  idempotency_key: null
+  operation_class: read
+  allowed_callers: []
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_backend\app\main.py:16
+- api_id: ledger_update
+  display_name: Apply ledger update.
+  service: citi_banking_backend
+  base_url: http://localhost:8000
+  path: /back-office/ledger/update
+  method: POST
+  domain: back
+  action_type: state_change
+  has_side_effects: true
+  risk_level: 2
+  requires_auth: true
+  audit_required: true
+  reads_tables: []
+  writes_tables:
+  - unknown
+  pii_fields: []
+  compliance_tags: []
+  idempotency_key: null
+  operation_class: write
+  allowed_callers: []
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_backend\app\main.py:22
+- api_id: store_report
+  display_name: Store a report.
+  service: citi_banking_backend
+  base_url: http://localhost:8000
+  path: /back-office/reports
+  method: POST
+  domain: back
+  action_type: state_change
+  has_side_effects: true
+  risk_level: 2
+  requires_auth: true
+  audit_required: true
+  reads_tables: []
+  writes_tables:
+  - unknown
+  pii_fields: []
+  compliance_tags: []
+  idempotency_key: null
+  operation_class: write
+  allowed_callers: []
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_backend\app\main.py:30

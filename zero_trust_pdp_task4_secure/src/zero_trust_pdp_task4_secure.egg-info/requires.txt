@@ -1,0 +1,10 @@
+fastapi<1.0,>=0.115
+uvicorn<1.0,>=0.30
+pydantic<3.0,>=2.8
+PyYAML<7.0,>=6.0
+httpx<1.0,>=0.27
+cryptography<48,>=43
+jsonschema<5.0,>=4.23
+
+[test]
+pytest<10.0,>=8.0

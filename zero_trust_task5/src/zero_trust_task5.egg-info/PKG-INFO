@@ -1,0 +1,10 @@
+Metadata-Version: 2.4
+Name: zero-trust-task5
+Version: 0.1.0
+Summary: Permit Lease, cache safety, revocation, and PDP timeout handling for the Zero Trust Backplane
+Requires-Python: >=3.10
+Requires-Dist: cryptography>=41
+Requires-Dist: pydantic>=2.6
+Requires-Dist: fastapi>=0.110
+Provides-Extra: test
+Requires-Dist: pytest>=8; extra == "test"

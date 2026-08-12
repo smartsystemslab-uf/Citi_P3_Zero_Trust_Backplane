@@ -1,0 +1,14 @@
+Metadata-Version: 2.4
+Name: zero-trust-pdp-task4-secure
+Version: 1.0.0
+Summary: Security-hardened Zero Trust Backplane Task 4 PDP using interface standard v1.0 unchanged
+Requires-Python: >=3.11
+Requires-Dist: fastapi<1.0,>=0.115
+Requires-Dist: uvicorn<1.0,>=0.30
+Requires-Dist: pydantic<3.0,>=2.8
+Requires-Dist: PyYAML<7.0,>=6.0
+Requires-Dist: httpx<1.0,>=0.27
+Requires-Dist: cryptography<48,>=43
+Requires-Dist: jsonschema<5.0,>=4.23
+Provides-Extra: test
+Requires-Dist: pytest<10.0,>=8.0; extra == "test"

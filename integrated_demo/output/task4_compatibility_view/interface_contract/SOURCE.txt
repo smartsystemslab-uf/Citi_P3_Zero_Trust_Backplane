@@ -1,0 +1,4 @@
+Source package: zero_trust_backplane_interface_standard(1).zip
+SHA-256: e29dc35d488310166eb380caa788092906b2e2e558faab889864c7e68248af7e
+Copied artifacts: schemas/*.json and generated/citi_project_task4_config/*.yaml
+The schema copies are verified by SCHEMA_SHA256.json and tests.

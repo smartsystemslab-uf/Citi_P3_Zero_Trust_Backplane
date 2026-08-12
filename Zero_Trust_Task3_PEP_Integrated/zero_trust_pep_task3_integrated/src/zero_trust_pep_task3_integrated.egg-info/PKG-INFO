@@ -1,0 +1,14 @@
+Metadata-Version: 2.4
+Name: zero-trust-pep-task3-integrated
+Version: 1.0.0
+Summary: Task 3 PEP placement and code generation integrated with the unified interface and Task 4 PDP
+Requires-Python: >=3.11
+Requires-Dist: pydantic<3.0,>=2.8
+Requires-Dist: PyYAML<7.0,>=6.0
+Requires-Dist: jsonschema<5.0,>=4.23
+Requires-Dist: httpx<1.0,>=0.27
+Provides-Extra: fastapi
+Requires-Dist: fastapi<1.0,>=0.115; extra == "fastapi"
+Provides-Extra: test
+Requires-Dist: pytest<10.0,>=8.0; extra == "test"
+Requires-Dist: fastapi<1.0,>=0.115; extra == "test"

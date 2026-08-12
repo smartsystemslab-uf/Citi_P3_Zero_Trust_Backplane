@@ -1,0 +1,98 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://zero-trust-backplane.example/schema/pdp_response.schema.json",
+  "title": "PDP Authorization Response",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "decision_id",
+    "request_id",
+    "trace_id",
+    "decision",
+    "reason",
+    "policy_version",
+    "obligations",
+    "decided_at",
+    "cache_control"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "decision_id": {
+      "type": "string"
+    },
+    "request_id": {
+      "type": "string"
+    },
+    "trace_id": {
+      "type": "string"
+    },
+    "decision": {
+      "type": "string",
+      "enum": [
+        "ALLOW",
+        "DENY",
+        "MANUAL_REVIEW",
+        "ALLOW_WITH_OBLIGATIONS",
+        "REAUTHENTICATE"
+      ]
+    },
+    "reason": {
+      "type": "string"
+    },
+    "policy_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "matched_policy_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "policy_version": {
+      "type": "string"
+    },
+    "obligations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "type",
+          "parameters"
+        ],
+        "properties": {
+          "type": {
+            "type": "string"
+          },
+          "parameters": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    "decided_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "cache_control": {
+      "type": "string",
+      "enum": [
+        "NO_STORE",
+        "PERMIT_LEASE"
+      ]
+    },
+    "permit_lease": {
+      "type": [
+        "object",
+        "null"
+      ]
+    }
+  }
+}

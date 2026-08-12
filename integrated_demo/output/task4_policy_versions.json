@@ -1,0 +1,7 @@
+{
+  "bundle.back_office": "1.0.0",
+  "bundle.front_office": "1.0.0",
+  "bundle.ledger_access": "1.0.0",
+  "bundle.mid_office": "1.0.0",
+  "bundle.tool_access": "1.0.0"
+}

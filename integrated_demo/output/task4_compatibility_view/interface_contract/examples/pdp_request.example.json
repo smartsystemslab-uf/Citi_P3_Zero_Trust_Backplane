@@ -1,0 +1,26 @@
+{
+  "schema_version": "1.0",
+  "request_id": "req-001",
+  "trace_id": "trace-001",
+  "subject": {
+    "canonical_id": "agent.front_office.fraud",
+    "runtime_id": "fraud_agent",
+    "identity_evidence": {"verification": "prototype_registry"}
+  },
+  "resource": {
+    "canonical_id": "resource.front_office.transaction_history",
+    "runtime_id": "transaction_history"
+  },
+  "action": "read",
+  "context": {
+    "workflow_id": "workflow.front_office.fraud_review",
+    "workflow_instance_id": "wf-001",
+    "risk": "medium",
+    "timestamp": "2026-07-26T00:00:00Z",
+    "environment": "prototype",
+    "auth_strength": 1,
+    "human_approval": {}
+  },
+  "parameters": {},
+  "request_hash": null
+}

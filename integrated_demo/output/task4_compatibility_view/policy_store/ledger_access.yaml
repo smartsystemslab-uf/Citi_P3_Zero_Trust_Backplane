@@ -1,0 +1,52 @@
+apiVersion: ztb/v1alpha1
+kind: PolicyBundle
+metadata:
+  id: bundle.ledger_access
+  version: 1.0.0
+  domain: back_office
+  status: provisional
+policies:
+  - id: policy.ledger.report_deny_update
+    description: Explicitly deny report-agent ledger writes.
+    priority: 600
+    effect: DENY
+    match:
+      subjects: [agent.back_office.report]
+      resources: [resource.back_office.ledger]
+      actions: [update]
+    obligations: []
+    enabled: true
+
+  - id: policy.ledger.eod_pending_review
+    description: EOD ledger update remains blocked until signed approval and an independent authorization are present.
+    priority: 300
+    effect: MANUAL_REVIEW
+    match:
+      subjects: [agent.back_office.eod]
+      resources: [resource.back_office.ledger]
+      actions: [update]
+      workflows: [workflow.back_office.eod_processing]
+    obligations: []
+    enabled: true
+
+  - id: policy.ledger.eod_approved_update
+    description: EOD ledger update may proceed only with signed human approval and independent authorization bound to the request hash.
+    priority: 360
+    effect: ALLOW_WITH_OBLIGATIONS
+    match:
+      subjects: [agent.back_office.eod]
+      resources: [resource.back_office.ledger]
+      actions: [update]
+      workflows: [workflow.back_office.eod_processing]
+      approval_valid: true
+      secondary_authorization_valid: true
+    obligations:
+      - type: enhanced_logging
+        parameters: {reason: critical_ledger_write}
+      - type: require_idempotency_key
+        parameters: {}
+      - type: require_change_ticket
+        parameters: {}
+      - type: independent_resource_audit
+        parameters: {}
+    enabled: true

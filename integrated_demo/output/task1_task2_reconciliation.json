@@ -1,0 +1,57 @@
+{
+  "checks": [
+    {
+      "canonical_id": "agent.front_office.fraud",
+      "previous_runtime_id": "fraud_agent",
+      "status": "verified",
+      "task1_id": "fraud_detection_agent",
+      "task2_runtime_id": "fraud_detection_agent",
+      "type": "subject"
+    },
+    {
+      "canonical_id": "agent.front_office.transaction_processing",
+      "previous_runtime_id": "transaction_processing_agent",
+      "status": "verified",
+      "task1_id": "transaction_processing_agent",
+      "task2_runtime_id": "transaction_processing_agent",
+      "type": "subject"
+    },
+    {
+      "canonical_id": "agent.back_office.eod",
+      "previous_runtime_id": "eod_agent",
+      "status": "verified",
+      "task1_id": "eod_processing_agent",
+      "task2_runtime_id": "eod_processing_agent",
+      "type": "subject"
+    },
+    {
+      "canonical_id": "interface.mcp.execute_transfer",
+      "previous_runtime_id": "execute_transfer",
+      "status": "verified",
+      "task1_id": "execute_transfer",
+      "task2_runtime_id": "execute_transfer",
+      "type": "interface"
+    },
+    {
+      "canonical_id": "interface.mcp.ledger_update",
+      "previous_runtime_id": "ledger_update",
+      "status": "verified",
+      "task1_id": "apply_ledger_updates",
+      "task2_runtime_id": "apply_ledger_updates",
+      "type": "interface"
+    },
+    {
+      "canonical_id": "resource.front_office.transaction_history",
+      "previous_runtime_id": "transaction_history",
+      "status": "verified",
+      "task1_table": "transactions",
+      "task2_runtime_id": "transactions",
+      "type": "resource"
+    }
+  ],
+  "environment": "prototype",
+  "generated_at": "2026-08-12T17:46:55.347879Z",
+  "note": "Canonical IDs remain unchanged. Task 2 only verifies/updates runtime bindings; Task 3/4/5 consume the canonical unified interface.",
+  "status": "PASS",
+  "verified_count": 6
+}

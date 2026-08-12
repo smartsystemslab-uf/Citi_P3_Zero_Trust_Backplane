@@ -1,0 +1,23 @@
+# Demo reconciliation map between the legacy Task 1 inventory names and the
+# canonical unified-interface IDs consumed by Task 3/4/5.
+subjects:
+  agent.front_office.fraud:
+    discovered_runtime_id: fraud_detection_agent
+    task1_id: fraud_detection_agent
+  agent.front_office.transaction_processing:
+    discovered_runtime_id: transaction_processing_agent
+    task1_id: transaction_processing_agent
+  agent.back_office.eod:
+    discovered_runtime_id: eod_processing_agent
+    task1_id: eod_processing_agent
+interfaces:
+  interface.mcp.execute_transfer:
+    discovered_runtime_id: execute_transfer
+    task1_id: execute_transfer
+  interface.mcp.ledger_update:
+    discovered_runtime_id: apply_ledger_updates
+    task1_id: apply_ledger_updates
+resources:
+  resource.front_office.transaction_history:
+    discovered_runtime_id: transactions
+    task1_table_name: transactions
