@@ -1,12 +1,12 @@
 {
   "all_passed": true,
   "artifacts": {
-    "reconciled_manifest": "C:\\Users\\wangzhaoqi\\Desktop\\Citi_P3_Zero_Trust_Backplane\\integrated_demo\\output\\reconciled_manifest.yaml",
-    "task2": "C:\\Users\\wangzhaoqi\\Desktop\\Citi_P3_Zero_Trust_Backplane\\integrated_demo\\output\\task2\\draft_manifests",
-    "task3_generated": "C:\\Users\\wangzhaoqi\\Desktop\\Citi_P3_Zero_Trust_Backplane\\integrated_demo\\output\\task3_generated",
-    "task4_audit": "C:\\Users\\wangzhaoqi\\Desktop\\Citi_P3_Zero_Trust_Backplane\\integrated_demo\\output\\task4_decision_log.jsonl",
-    "task4_config": "C:\\Users\\wangzhaoqi\\Desktop\\Citi_P3_Zero_Trust_Backplane\\integrated_demo\\output\\task4_config",
-    "task5_audit": "C:\\Users\\wangzhaoqi\\Desktop\\Citi_P3_Zero_Trust_Backplane\\integrated_demo\\output\\task5_audit.json"
+    "reconciled_manifest": "D:\\Lab\\Citi_P3_Zero_Trust_Backplane\\integrated_demo\\output\\reconciled_manifest.yaml",
+    "task2": "D:\\Lab\\Citi_P3_Zero_Trust_Backplane\\integrated_demo\\output\\task2\\draft_manifests",
+    "task3_generated": "D:\\Lab\\Citi_P3_Zero_Trust_Backplane\\integrated_demo\\output\\task3_generated",
+    "task4_audit": "D:\\Lab\\Citi_P3_Zero_Trust_Backplane\\integrated_demo\\output\\task4_decision_log.jsonl",
+    "task4_config": "D:\\Lab\\Citi_P3_Zero_Trust_Backplane\\integrated_demo\\output\\task4_config",
+    "task5_audit": "D:\\Lab\\Citi_P3_Zero_Trust_Backplane\\integrated_demo\\output\\task5_audit.json"
   },
   "results": [
     {
@@ -40,7 +40,7 @@
     {
       "passed": true,
       "placement_id": "pep.fraud_review.read_history",
-      "result": "{\n  \"transaction_id\": \"TXN-1001\",\n  \"customer_id\": \"CUST-001\",\n  \"source_account\": \"CHK-001\",\n  \"destination_account\": \"EXT-998\",\n  \"amount\": 9200.0,\n  \"currency\": \"USD\",\n  \"channel\": \"mobile_app\",\n  \"txn_type\": \"wire_transfer\",\n  \"merchant_or_counterparty\": \"New Counterparty Alpha Exports\",\n  \"status\": \"pending_review\",\n  \"metadata_json\": {\n    \"geo\": \"Romania\",\n    \"device_change\": true,\n    \"velocity_24h\": 3,\n    \"note\": \"Customer initiated after midnight local time\"\n  },\n  \"created_at\": \"2026-08-12T18:49:14.546966+00:00\"\n}",
+      "result": "{\n  \"transaction_id\": \"TXN-1001\",\n  \"customer_id\": \"CUST-001\",\n  \"source_account\": \"CHK-001\",\n  \"destination_account\": \"EXT-998\",\n  \"amount\": 9200.0,\n  \"currency\": \"USD\",\n  \"channel\": \"mobile_app\",\n  \"txn_type\": \"wire_transfer\",\n  \"merchant_or_counterparty\": \"New Counterparty Alpha Exports\",\n  \"status\": \"pending_review\",\n  \"metadata_json\": {\n    \"geo\": \"Romania\",\n    \"device_change\": true,\n    \"velocity_24h\": 3,\n    \"note\": \"Customer initiated after midnight local time\"\n  },\n  \"created_at\": \"2026-08-12T22:37:30.479618+00:00\"\n}",
       "scenario": "real_front_office_tool",
       "tool_id": "get_transaction_context"
     },
@@ -54,9 +54,38 @@
     {
       "passed": true,
       "placement_id": "pep.eod_processing.get_batches",
-      "result": "{\n  \"batch_id\": \"EOD-2026-04-21-CLEAN\",\n  \"business_date\": \"2026-04-21\",\n  \"expected_total\": 18250.55,\n  \"ledger_posted_total\": 18250.55,\n  \"ready_flag\": 1,\n  \"status\": \"ready\",\n  \"notes_json\": {\n    \"expected_items\": 43,\n    \"source_system\": \"core_banking_system\"\n  }\n}",
+      "result": "{\n  \"batch_id\": \"EOD-2026-04-21-CLEAN\",\n  \"business_date\": \"2026-04-21\",\n  \"expected_total\": 18250.55,\n  \"ledger_posted_total\": 18250.55,\n  \"ready_flag\": 1,\n  \"status\": \"ledger_updated\",\n  \"notes_json\": {\n    \"expected_items\": 43,\n    \"source_system\": \"core_banking_system\"\n  }\n}",
       "scenario": "real_back_office_tool",
       "tool_id": "get_eod_batch"
+    },
+    {
+      "passed": true,
+      "placement_id": "pep.customer_transaction.execute_transfer",
+      "result": {
+        "amount": 1.25,
+        "destination_account": "EXT-998",
+        "destination_balance_after": 2.5,
+        "memo": "Zero Trust protected integration demo",
+        "source_account": "CHK-002",
+        "source_balance_after": 9617.63,
+        "status": "posted",
+        "timestamp": "2026-08-12T22:49:01.578459+00:00",
+        "transaction_id": "TXN-0A5E0BFE8F"
+      },
+      "scenario": "real_write_front_office_transfer",
+      "tool_id": "execute_transfer"
+    },
+    {
+      "passed": true,
+      "placement_id": "pep.ledger_update.apply_ledger_updates",
+      "result": {
+        "batch_id": "EOD-2026-04-21-CLEAN",
+        "posting_instructions": "Apply verified EOD posting instructions for the protected integration demo.",
+        "status": "ledger_updated",
+        "timestamp": "2026-08-12T22:49:01.592742+00:00"
+      },
+      "scenario": "real_write_back_office_ledger_update",
+      "tool_id": "apply_ledger_updates"
     },
     {
       "passed": true,

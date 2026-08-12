@@ -1,0 +1,2 @@
+[console_scripts]
+zt-interface = zt_interface.cli:main

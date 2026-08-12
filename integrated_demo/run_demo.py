@@ -6,6 +6,8 @@ import os
 import shutil
 import subprocess
 import sys
+import urllib.error
+import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -55,6 +57,37 @@ def banner(text: str) -> None:
 
 def load_json(path: Path) -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
+
+
+def decode_tool_result(value: Any) -> Any:
+    """Decode JSON strings returned by the original Citi ADK tools."""
+    if not isinstance(value, str):
+        return value
+    text = value.strip()
+    if not text:
+        return value
+    try:
+        return json.loads(text)
+    except Exception:
+        return value
+
+
+def require_backend_health(base_url: str) -> dict[str, Any]:
+    """Fail clearly before a real transfer if the Citi FastAPI backend is not running."""
+    url = base_url.rstrip("/") + "/health"
+    try:
+        with urllib.request.urlopen(url, timeout=3.0) as response:
+            body = response.read().decode("utf-8")
+            data = json.loads(body) if body else {}
+    except (urllib.error.URLError, TimeoutError, OSError, json.JSONDecodeError) as exc:
+        raise RuntimeError(
+            "Real write execution requires the Citi P3 FastAPI backend. "
+            f"Health check failed at {url}: {exc}. "
+            "Start citi_banking_backend first, then rerun the Backplane."
+        ) from exc
+    if str(data.get("status", "")).lower() != "ok":
+        raise RuntimeError(f"Citi backend health check returned unexpected payload: {data}")
+    return data
 
 
 def selected_placement(plan: dict[str, Any], placement_id: str) -> dict[str, Any]:
@@ -178,6 +211,15 @@ def run(args: argparse.Namespace) -> int:
 
     banking_repo = Path(args.banking_repo).resolve()
 
+    if args.execute_real_writes:
+        os.environ["BANKING_USE_EXTERNAL_API"] = "true"
+        os.environ["BANKING_BACKEND_BASE_URL"] = args.banking_backend_url.rstrip("/")
+        health = require_backend_health(args.banking_backend_url)
+        print(
+            "Citi P3 backend preflight: OK -> "
+            f"{args.banking_backend_url.rstrip('/')} ({health.get('service', 'banking backend')})"
+        )
+
     banner("TASK 1 — Requirements / system model + unified interface")
     task1_agents = load_yaml(PROJECT_ROOT / "zero_trust_task1" / "manifest" / "agents.yaml")["agents"]
     task1_tools = load_yaml(PROJECT_ROOT / "zero_trust_task1" / "manifest" / "tools.yaml")["tools"]
@@ -224,7 +266,7 @@ def run(args: argparse.Namespace) -> int:
         )
 
     scanner_merge_report = None
-    if args.scanner_graph or args.execute_real_tools:
+    if args.scanner_graph or args.execute_real_tools or args.execute_real_writes:
         banner("TASK 2 -> Unified Interface — Merge the real discovered testbed graph")
         manifest, scanner_merge_report = merge_task2_graph_into_unified(
             manifest,
@@ -517,6 +559,63 @@ def run(args: argparse.Namespace) -> int:
                     "error": str(exc),
                 })
 
+    if args.execute_real_writes:
+        banner("REAL WRITE OPERATIONS — Protected transfer + protected ledger update")
+        real_write_inputs = load_yaml(Path(args.real_write_inputs).resolve())
+        testbed_runtime = TestbedToolRuntime(banking_repo, task2_output)
+
+        for name in ("front_office_transfer", "back_office_ledger_update"):
+            cfg = dict(real_write_inputs.get(name) or {})
+            placement_id = str(cfg.get("placement_id") or "")
+            tool_id = str(cfg.get("tool_id") or "")
+            parameters = dict(cfg.get("parameters") or {})
+            context = dict(cfg.get("context") or {})
+            scenario_name = f"real_write_{name}"
+            try:
+                placement = selected_placement(plan_json, placement_id)
+                pep = build_pep(placement)
+                request = task5_request_from_placement(
+                    placement,
+                    parameters=parameters,
+                    context=context,
+                    idempotency_key=parameters.get("idempotency_key"),
+                )
+                raw_value = pep.execute(
+                    request,
+                    lambda tid=tool_id, params=parameters: testbed_runtime.invoke(tid, params),
+                )
+                value = decode_tool_result(raw_value)
+
+                if name == "front_office_transfer":
+                    passed = (
+                        isinstance(value, dict)
+                        and bool(value.get("transaction_id"))
+                        and value.get("status") not in {None, "backend_error"}
+                    )
+                else:
+                    passed = isinstance(value, dict) and value.get("status") == "ledger_updated"
+
+                print(
+                    f"{name}: REAL WRITE {tool_id} -> "
+                    f"{'ALLOW + EXECUTED' if passed else 'EXECUTED BUT UNEXPECTED RESULT'} -> {value}"
+                )
+                results.append({
+                    "scenario": scenario_name,
+                    "passed": passed,
+                    "tool_id": tool_id,
+                    "placement_id": placement_id,
+                    "result": value,
+                })
+            except (KeyError, TestbedToolError, PEPDenied, ConnectionError, RuntimeError) as exc:
+                print(f"{name}: REAL WRITE {tool_id} -> FAIL -> {exc}")
+                results.append({
+                    "scenario": scenario_name,
+                    "passed": False,
+                    "tool_id": tool_id,
+                    "placement_id": placement_id,
+                    "error": str(exc),
+                })
+
     audit_path = output / "task5_audit.json"
     audit_path.write_text(
         json.dumps(components.audit_log.events(), indent=2, sort_keys=True), encoding="utf-8"
@@ -586,6 +685,24 @@ def parse_args() -> argparse.Namespace:
         "--testbed-inputs",
         default=str(HERE / "testbed_inputs.yaml"),
         help="YAML file containing safe test IDs/parameters for real three-office tool execution.",
+    )
+    parser.add_argument(
+        "--execute-real-writes",
+        action="store_true",
+        help=(
+            "Execute the real protected Front Office transfer and Back Office ledger-update tools. "
+            "The Citi FastAPI backend must already be running for execute_transfer."
+        ),
+    )
+    parser.add_argument(
+        "--real-write-inputs",
+        default=str(HERE / "real_write_inputs.yaml"),
+        help="YAML file containing synthetic write-operation parameters for the protected real-write demo.",
+    )
+    parser.add_argument(
+        "--banking-backend-url",
+        default=os.getenv("BANKING_BACKEND_BASE_URL", "http://127.0.0.1:8000"),
+        help="Citi P3 FastAPI backend base URL used by the real transfer tool.",
     )
     parser.add_argument("--clean", action="store_true", help="Delete the output directory before running")
     return parser.parse_args()

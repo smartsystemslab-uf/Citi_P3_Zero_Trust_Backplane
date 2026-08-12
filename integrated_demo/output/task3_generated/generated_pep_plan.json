@@ -481,26 +481,26 @@
       {
         "match": true,
         "schema": "pdp_request.schema.json",
-        "task3_sha256": "278141caf37b5acaa8fbd28ec3de5fe0a03f02ab99d0efff6e0e3222419fe54f",
-        "task4_sha256": "278141caf37b5acaa8fbd28ec3de5fe0a03f02ab99d0efff6e0e3222419fe54f"
+        "task3_sha256": "ed9d384d87c9f044d472bf3d17a3e504836ff7e1e3ea544c3ab08f104f52b44f",
+        "task4_sha256": "ed9d384d87c9f044d472bf3d17a3e504836ff7e1e3ea544c3ab08f104f52b44f"
       },
       {
         "match": true,
         "schema": "pdp_response.schema.json",
-        "task3_sha256": "cf54a4d638af1d18b9eada878e9602f20319422e4d23976098b1a8bc9fe9ba23",
-        "task4_sha256": "cf54a4d638af1d18b9eada878e9602f20319422e4d23976098b1a8bc9fe9ba23"
+        "task3_sha256": "edc99dc2a25540f5b1b94d68ea6047f523d1069c129ff7649e0af64f4d4ccc5e",
+        "task4_sha256": "edc99dc2a25540f5b1b94d68ea6047f523d1069c129ff7649e0af64f4d4ccc5e"
       },
       {
         "match": true,
         "schema": "audit_event.schema.json",
-        "task3_sha256": "2fec1d9f20e03b2b287e162a394ffba23728761af9dd1558ec360eeec4eaa045",
-        "task4_sha256": "2fec1d9f20e03b2b287e162a394ffba23728761af9dd1558ec360eeec4eaa045"
+        "task3_sha256": "5ea224317deee3a11d21cc8bb7774c4396269a1e562bb55b333cc6f4c7a37ce5",
+        "task4_sha256": "5ea224317deee3a11d21cc8bb7774c4396269a1e562bb55b333cc6f4c7a37ce5"
       },
       {
         "match": true,
         "schema": "zt_manifest.schema.json",
-        "task3_sha256": "c1320c857381d400500e67b5d21f1280cc3ce1371f42133db8ccbe3e3e39caef",
-        "task4_sha256": "c1320c857381d400500e67b5d21f1280cc3ce1371f42133db8ccbe3e3e39caef"
+        "task3_sha256": "411bd7e7be49eb20c01786a1fdebbf51c108ab09b87fe1bda7fbe899022bd957",
+        "task4_sha256": "411bd7e7be49eb20c01786a1fdebbf51c108ab09b87fe1bda7fbe899022bd957"
       }
     ],
     "summary": {
@@ -617,7 +617,7 @@
       "severity": "information"
     }
   ],
-  "generated_at": "2026-08-12T18:49:12.198351Z",
+  "generated_at": "2026-08-12T22:49:00.446210Z",
   "logical_peps": [
     {
       "action": "execute",

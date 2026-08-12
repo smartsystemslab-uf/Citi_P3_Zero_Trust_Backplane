@@ -1,0 +1,34 @@
+# Synthetic write operations for the real Citi P3 testbed.
+# These are executed only when --execute-real-writes is supplied.
+# Front Office goes through the real FastAPI backend; Back Office uses the
+# original ADK repository used by apply_ledger_updates().
+
+front_office_transfer:
+  placement_id: pep.customer_transaction.execute_transfer
+  tool_id: execute_transfer
+  parameters:
+    source_account: CHK-002
+    destination_account: EXT-998
+    amount: 1.25
+    memo: Zero Trust protected integration demo
+    customer_id: CUST-002
+    idempotency_key: zt-real-transfer-001
+  context:
+    workflow_instance_id: real-transfer-001
+    risk_score: 100
+    with_human_approval: true
+    with_secondary_authorization: true
+
+back_office_ledger_update:
+  placement_id: pep.ledger_update.apply_ledger_updates
+  tool_id: apply_ledger_updates
+  parameters:
+    batch_id: EOD-2026-04-21-CLEAN
+    posting_instructions: Apply verified EOD posting instructions for the protected integration demo.
+    idempotency_key: zt-real-ledger-001
+    change_ticket: CHG-ZT-DEMO-001
+  context:
+    workflow_instance_id: real-eod-write-001
+    risk_score: 900
+    with_human_approval: true
+    with_secondary_authorization: true

@@ -5,7 +5,7 @@ metadata:
   manifest_version: 1.0.0-alpha.1
   environment: prototype
   created_at: '2026-07-26T00:00:00Z'
-  updated_at: '2026-08-12T18:49:11.216702Z'
+  updated_at: '2026-08-12T22:48:59.931085Z'
   owner: zero_trust_backplane_team
   source_revision: task1+task2-runtime-graph-reconciled
   description: Project-wide baseline containing current provisional architecture and
@@ -4251,7 +4251,7 @@ spec:
       task2_from_id: validation_checkpoint_agent
       task2_to_id: validate_eod_readiness
       task2_operation_class: read
-      banking_repo: C:\Users\wangzhaoqi\Desktop\Citi_P3
+      banking_repo: D:\Lab\Citi_P3
   - id: edge.scanner.scan_edge_002_eod_processing_agent_get_eod_batch
     caller_id: agent.back_office.eod
     target_id: resource.back_office.eod_batches
@@ -4289,7 +4289,7 @@ spec:
       task2_from_id: eod_processing_agent
       task2_to_id: get_eod_batch
       task2_operation_class: read
-      banking_repo: C:\Users\wangzhaoqi\Desktop\Citi_P3
+      banking_repo: D:\Lab\Citi_P3
   - id: edge.scanner.scan_edge_003_ledger_update_agent_apply_ledger_updates
     caller_id: agent.back_office.ledger_update
     target_id: resource.back_office.ledger
@@ -4327,7 +4327,7 @@ spec:
       task2_from_id: ledger_update_agent
       task2_to_id: apply_ledger_updates
       task2_operation_class: write
-      banking_repo: C:\Users\wangzhaoqi\Desktop\Citi_P3
+      banking_repo: D:\Lab\Citi_P3
   - id: edge.scanner.scan_edge_004_reconciliation_agent_get_reconciliation_data
     caller_id: agent.back_office.reconciliation
     target_id: resource.back_office.tool_get_reconciliation_data
@@ -4365,7 +4365,7 @@ spec:
       task2_from_id: reconciliation_agent
       task2_to_id: get_reconciliation_data
       task2_operation_class: read
-      banking_repo: C:\Users\wangzhaoqi\Desktop\Citi_P3
+      banking_repo: D:\Lab\Citi_P3
   - id: edge.scanner.scan_edge_005_report_writing_agent_store_report
     caller_id: agent.back_office.report_writing_agent
     target_id: resource.back_office.tool_store_report
@@ -4403,7 +4403,7 @@ spec:
       task2_from_id: report_writing_agent
       task2_to_id: store_report
       task2_operation_class: read
-      banking_repo: C:\Users\wangzhaoqi\Desktop\Citi_P3
+      banking_repo: D:\Lab\Citi_P3
   - id: edge.scanner.scan_edge_006_exception_agent_create_exception_case
     caller_id: agent.back_office.exception
     target_id: resource.back_office.tool_create_exception_case
@@ -4441,7 +4441,7 @@ spec:
       task2_from_id: exception_agent
       task2_to_id: create_exception_case
       task2_operation_class: read
-      banking_repo: C:\Users\wangzhaoqi\Desktop\Citi_P3
+      banking_repo: D:\Lab\Citi_P3
   - id: edge.scanner.scan_edge_007_transaction_monitoring_agent_get_customer_context
     caller_id: agent.front_office.transaction_monitoring
     target_id: resource.front_office.tool_get_customer_context
@@ -4479,7 +4479,7 @@ spec:
       task2_from_id: transaction_monitoring_agent
       task2_to_id: get_customer_context
       task2_operation_class: read
-      banking_repo: C:\Users\wangzhaoqi\Desktop\Citi_P3
+      banking_repo: D:\Lab\Citi_P3
   - id: edge.scanner.scan_edge_008_transaction_monitoring_agent_get_transaction_context
     caller_id: agent.front_office.transaction_monitoring
     target_id: resource.front_office.tool_get_transaction_context
@@ -4517,7 +4517,7 @@ spec:
       task2_from_id: transaction_monitoring_agent
       task2_to_id: get_transaction_context
       task2_operation_class: read
-      banking_repo: C:\Users\wangzhaoqi\Desktop\Citi_P3
+      banking_repo: D:\Lab\Citi_P3
   - id: edge.scanner.scan_edge_009_transaction_monitoring_agent_list_recent_transactions
     caller_id: agent.front_office.transaction_monitoring
     target_id: resource.front_office.tool_list_recent_transactions
@@ -4555,7 +4555,7 @@ spec:
       task2_from_id: transaction_monitoring_agent
       task2_to_id: list_recent_transactions
       task2_operation_class: read
-      banking_repo: C:\Users\wangzhaoqi\Desktop\Citi_P3
+      banking_repo: D:\Lab\Citi_P3
   - id: edge.scanner.scan_edge_010_fraud_detection_agent_get_customer_context
     caller_id: agent.front_office.fraud
     target_id: resource.front_office.tool_get_customer_context
@@ -4593,7 +4593,7 @@ spec:
       task2_from_id: fraud_detection_agent
       task2_to_id: get_customer_context
       task2_operation_class: read
-      banking_repo: C:\Users\wangzhaoqi\Desktop\Citi_P3
+      banking_repo: D:\Lab\Citi_P3
   - id: edge.scanner.scan_edge_011_fraud_detection_agent_get_transaction_context
     caller_id: agent.front_office.fraud
     target_id: resource.front_office.transaction_history
@@ -4631,7 +4631,7 @@ spec:
       task2_from_id: fraud_detection_agent
       task2_to_id: get_transaction_context
       task2_operation_class: read
-      banking_repo: C:\Users\wangzhaoqi\Desktop\Citi_P3
+      banking_repo: D:\Lab\Citi_P3
   - id: edge.scanner.scan_edge_012_fraud_detection_agent_list_recent_transactions
     caller_id: agent.front_office.fraud
     target_id: resource.front_office.tool_list_recent_transactions
@@ -4669,7 +4669,7 @@ spec:
       task2_from_id: fraud_detection_agent
       task2_to_id: list_recent_transactions
       task2_operation_class: read
-      banking_repo: C:\Users\wangzhaoqi\Desktop\Citi_P3
+      banking_repo: D:\Lab\Citi_P3
   - id: edge.scanner.scan_edge_013_compliance_agent_search_policies
     caller_id: agent.front_office.compliance
     target_id: resource.front_office.policy_knowledge_base
@@ -4707,7 +4707,7 @@ spec:
       task2_from_id: compliance_agent
       task2_to_id: search_policies
       task2_operation_class: read
-      banking_repo: C:\Users\wangzhaoqi\Desktop\Citi_P3
+      banking_repo: D:\Lab\Citi_P3
   - id: edge.scanner.scan_edge_014_compliance_agent_get_customer_context
     caller_id: agent.front_office.compliance
     target_id: resource.front_office.tool_get_customer_context
@@ -4745,7 +4745,7 @@ spec:
       task2_from_id: compliance_agent
       task2_to_id: get_customer_context
       task2_operation_class: read
-      banking_repo: C:\Users\wangzhaoqi\Desktop\Citi_P3
+      banking_repo: D:\Lab\Citi_P3
   - id: edge.scanner.scan_edge_015_compliance_agent_get_transaction_context
     caller_id: agent.front_office.compliance
     target_id: resource.front_office.tool_get_transaction_context
@@ -4783,7 +4783,7 @@ spec:
       task2_from_id: compliance_agent
       task2_to_id: get_transaction_context
       task2_operation_class: read
-      banking_repo: C:\Users\wangzhaoqi\Desktop\Citi_P3
+      banking_repo: D:\Lab\Citi_P3
   - id: edge.scanner.scan_edge_016_decision_making_agent_submit_manual_review
     caller_id: agent.front_office.decision_making_agent
     target_id: resource.front_office.tool_submit_manual_review
@@ -4821,7 +4821,7 @@ spec:
       task2_from_id: decision_making_agent
       task2_to_id: submit_manual_review
       task2_operation_class: read
-      banking_repo: C:\Users\wangzhaoqi\Desktop\Citi_P3
+      banking_repo: D:\Lab\Citi_P3
   - id: edge.scanner.scan_edge_017_knowledge_base_agent_search_faqs
     caller_id: agent.front_office.knowledge_base
     target_id: resource.shared.tool_search_faqs
@@ -4859,7 +4859,7 @@ spec:
       task2_from_id: knowledge_base_agent
       task2_to_id: search_faqs
       task2_operation_class: read
-      banking_repo: C:\Users\wangzhaoqi\Desktop\Citi_P3
+      banking_repo: D:\Lab\Citi_P3
   - id: edge.scanner.scan_edge_018_transaction_processing_agent_execute_transfer
     caller_id: agent.front_office.transaction_processing
     target_id: resource.front_office.banking_transfer
@@ -4897,7 +4897,7 @@ spec:
       task2_from_id: transaction_processing_agent
       task2_to_id: execute_transfer
       task2_operation_class: write
-      banking_repo: C:\Users\wangzhaoqi\Desktop\Citi_P3
+      banking_repo: D:\Lab\Citi_P3
   - id: edge.scanner.scan_edge_019_data_analysis_agent_get_operations_snapshot
     caller_id: agent.mid_office.data_analysis
     target_id: resource.mid_office.internal_operations_data
@@ -4935,7 +4935,7 @@ spec:
       task2_from_id: data_analysis_agent
       task2_to_id: get_operations_snapshot
       task2_operation_class: read
-      banking_repo: C:\Users\wangzhaoqi\Desktop\Citi_P3
+      banking_repo: D:\Lab\Citi_P3
   - id: edge.scanner.scan_edge_020_forecasting_agent_get_operations_snapshot
     caller_id: agent.mid_office.forecasting
     target_id: resource.mid_office.tool_get_operations_snapshot
@@ -4973,7 +4973,7 @@ spec:
       task2_from_id: forecasting_agent
       task2_to_id: get_operations_snapshot
       task2_operation_class: read
-      banking_repo: C:\Users\wangzhaoqi\Desktop\Citi_P3
+      banking_repo: D:\Lab\Citi_P3
   - id: edge.scanner.scan_edge_021_validation_agent_persist_validated_schedule
     caller_id: agent.mid_office.validation
     target_id: resource.mid_office.tool_persist_validated_schedule
@@ -5011,7 +5011,7 @@ spec:
       task2_from_id: validation_agent
       task2_to_id: persist_validated_schedule
       task2_operation_class: read
-      banking_repo: C:\Users\wangzhaoqi\Desktop\Citi_P3
+      banking_repo: D:\Lab\Citi_P3
   - id: edge.scanner.scan_edge_022_support_guidance_agent_get_support_playbooks
     caller_id: agent.mid_office.support_guidance
     target_id: resource.mid_office.tool_get_support_playbooks
@@ -5049,7 +5049,7 @@ spec:
       task2_from_id: support_guidance_agent
       task2_to_id: get_support_playbooks
       task2_operation_class: read
-      banking_repo: C:\Users\wangzhaoqi\Desktop\Citi_P3
+      banking_repo: D:\Lab\Citi_P3
   - id: edge.scanner.scan_edge_023_financial_data_agent_get_customer_financial_profile
     caller_id: agent.mid_office.financial_data
     target_id: resource.mid_office.financial_customer_data
@@ -5087,7 +5087,7 @@ spec:
       task2_from_id: financial_data_agent
       task2_to_id: get_customer_financial_profile
       task2_operation_class: read
-      banking_repo: C:\Users\wangzhaoqi\Desktop\Citi_P3
+      banking_repo: D:\Lab\Citi_P3
   - id: edge.scanner.scan_edge_024_recommender_agent_search_product_catalog
     caller_id: agent.mid_office.recommender
     target_id: resource.mid_office.tool_search_product_catalog
@@ -5125,7 +5125,7 @@ spec:
       task2_from_id: recommender_agent
       task2_to_id: search_product_catalog
       task2_operation_class: read
-      banking_repo: C:\Users\wangzhaoqi\Desktop\Citi_P3
+      banking_repo: D:\Lab\Citi_P3
   - id: edge.scanner.scan_edge_025_loan_agent_search_loan_playbooks
     caller_id: agent.mid_office.loan
     target_id: resource.mid_office.tool_search_loan_playbooks
@@ -5163,7 +5163,7 @@ spec:
       task2_from_id: loan_agent
       task2_to_id: search_loan_playbooks
       task2_operation_class: read
-      banking_repo: C:\Users\wangzhaoqi\Desktop\Citi_P3
+      banking_repo: D:\Lab\Citi_P3
   - id: edge.scanner.scan_edge_026_risk_compliance_agent_search_policies
     caller_id: agent.mid_office.risk_compliance
     target_id: resource.shared.tool_search_policies
@@ -5201,7 +5201,7 @@ spec:
       task2_from_id: risk_compliance_agent
       task2_to_id: search_policies
       task2_operation_class: read
-      banking_repo: C:\Users\wangzhaoqi\Desktop\Citi_P3
+      banking_repo: D:\Lab\Citi_P3
   - id: edge.scanner.scan_edge_027_create_customer_unknown
     caller_id: service.front_office.create_customer
     target_id: resource.shared.database_unknown_database
@@ -5239,7 +5239,7 @@ spec:
       task2_from_id: create_customer
       task2_to_id: unknown
       task2_operation_class: write
-      banking_repo: C:\Users\wangzhaoqi\Desktop\Citi_P3
+      banking_repo: D:\Lab\Citi_P3
   - id: edge.scanner.scan_edge_028_create_account_unknown
     caller_id: service.shared.create_account
     target_id: resource.shared.database_unknown_database
@@ -5277,7 +5277,7 @@ spec:
       task2_from_id: create_account
       task2_to_id: unknown
       task2_operation_class: write
-      banking_repo: C:\Users\wangzhaoqi\Desktop\Citi_P3
+      banking_repo: D:\Lab\Citi_P3
   - id: edge.scanner.scan_edge_029_create_policy_unknown
     caller_id: service.shared.create_policy
     target_id: resource.shared.database_unknown_database
@@ -5315,7 +5315,7 @@ spec:
       task2_from_id: create_policy
       task2_to_id: unknown
       task2_operation_class: write
-      banking_repo: C:\Users\wangzhaoqi\Desktop\Citi_P3
+      banking_repo: D:\Lab\Citi_P3
   - id: edge.scanner.scan_edge_030_create_rule_unknown
     caller_id: service.shared.create_rule
     target_id: resource.shared.database_unknown_database
@@ -5353,7 +5353,7 @@ spec:
       task2_from_id: create_rule
       task2_to_id: unknown
       task2_operation_class: write
-      banking_repo: C:\Users\wangzhaoqi\Desktop\Citi_P3
+      banking_repo: D:\Lab\Citi_P3
   - id: edge.scanner.scan_edge_031_update_transaction_status_unknown
     caller_id: service.front_office.update_transaction_status
     target_id: resource.shared.database_unknown_database
@@ -5391,7 +5391,7 @@ spec:
       task2_from_id: update_transaction_status
       task2_to_id: unknown
       task2_operation_class: write
-      banking_repo: C:\Users\wangzhaoqi\Desktop\Citi_P3
+      banking_repo: D:\Lab\Citi_P3
   - id: edge.scanner.scan_edge_032_mid_office_router_representative_assistant_workflow
     caller_id: agent.mid_office.mid_office_router
     target_id: resource.shared.other_representative_assistant_workflow
@@ -5429,7 +5429,7 @@ spec:
       task2_from_id: mid_office_router
       task2_to_id: representative_assistant_workflow
       task2_operation_class: read
-      banking_repo: C:\Users\wangzhaoqi\Desktop\Citi_P3
+      banking_repo: D:\Lab\Citi_P3
   - id: edge.scanner.scan_edge_033_mid_office_planning_parallel_validation_agent
     caller_id: agent.shared.mid_office_planning_parallel
     target_id: resource.mid_office.other_validation_agent
@@ -5467,7 +5467,7 @@ spec:
       task2_from_id: mid_office_planning_parallel
       task2_to_id: validation_agent
       task2_operation_class: read
-      banking_repo: C:\Users\wangzhaoqi\Desktop\Citi_P3
+      banking_repo: D:\Lab\Citi_P3
   - id: edge.scanner.scan_edge_034_mid_office_planning_parallel_support_guidance_agent
     caller_id: agent.shared.mid_office_planning_parallel
     target_id: resource.mid_office.other_support_guidance_agent
@@ -5505,7 +5505,7 @@ spec:
       task2_from_id: mid_office_planning_parallel
       task2_to_id: support_guidance_agent
       task2_operation_class: read
-      banking_repo: C:\Users\wangzhaoqi\Desktop\Citi_P3
+      banking_repo: D:\Lab\Citi_P3
   - id: edge.scanner.scan_edge_035_mid_office_planning_workflow_data_analysis_agent
     caller_id: agent.shared.mid_office_planning_workflow
     target_id: resource.mid_office.other_data_analysis_agent
@@ -5543,7 +5543,7 @@ spec:
       task2_from_id: mid_office_planning_workflow
       task2_to_id: data_analysis_agent
       task2_operation_class: read
-      banking_repo: C:\Users\wangzhaoqi\Desktop\Citi_P3
+      banking_repo: D:\Lab\Citi_P3
   - id: edge.scanner.scan_edge_036_mid_office_planning_workflow_forecasting_agent
     caller_id: agent.shared.mid_office_planning_workflow
     target_id: resource.mid_office.other_forecasting_agent
@@ -5581,7 +5581,7 @@ spec:
       task2_from_id: mid_office_planning_workflow
       task2_to_id: forecasting_agent
       task2_operation_class: read
-      banking_repo: C:\Users\wangzhaoqi\Desktop\Citi_P3
+      banking_repo: D:\Lab\Citi_P3
   - id: edge.scanner.scan_edge_037_mid_office_planning_workflow_staff_scheduling_agent
     caller_id: agent.shared.mid_office_planning_workflow
     target_id: resource.mid_office.other_staff_scheduling_agent
@@ -5619,7 +5619,7 @@ spec:
       task2_from_id: mid_office_planning_workflow
       task2_to_id: staff_scheduling_agent
       task2_operation_class: read
-      banking_repo: C:\Users\wangzhaoqi\Desktop\Citi_P3
+      banking_repo: D:\Lab\Citi_P3
   - id: edge.scanner.scan_edge_038_mid_office_planning_workflow_planning_summary_agent
     caller_id: agent.shared.mid_office_planning_workflow
     target_id: resource.mid_office.other_planning_summary_agent
@@ -5657,7 +5657,7 @@ spec:
       task2_from_id: mid_office_planning_workflow
       task2_to_id: planning_summary_agent
       task2_operation_class: read
-      banking_repo: C:\Users\wangzhaoqi\Desktop\Citi_P3
+      banking_repo: D:\Lab\Citi_P3
   - id: edge.scanner.scan_edge_039_representative_assist_parallel_financial_data_agent
     caller_id: agent.shared.representative_assist_parallel
     target_id: resource.mid_office.other_financial_data_agent
@@ -5695,7 +5695,7 @@ spec:
       task2_from_id: representative_assist_parallel
       task2_to_id: financial_data_agent
       task2_operation_class: read
-      banking_repo: C:\Users\wangzhaoqi\Desktop\Citi_P3
+      banking_repo: D:\Lab\Citi_P3
   - id: edge.scanner.scan_edge_040_representative_assist_parallel_recommender_agent
     caller_id: agent.shared.representative_assist_parallel
     target_id: resource.mid_office.other_recommender_agent
@@ -5733,7 +5733,7 @@ spec:
       task2_from_id: representative_assist_parallel
       task2_to_id: recommender_agent
       task2_operation_class: read
-      banking_repo: C:\Users\wangzhaoqi\Desktop\Citi_P3
+      banking_repo: D:\Lab\Citi_P3
   - id: edge.scanner.scan_edge_041_representative_assist_parallel_loan_agent
     caller_id: agent.shared.representative_assist_parallel
     target_id: resource.mid_office.other_loan_agent
@@ -5771,7 +5771,7 @@ spec:
       task2_from_id: representative_assist_parallel
       task2_to_id: loan_agent
       task2_operation_class: read
-      banking_repo: C:\Users\wangzhaoqi\Desktop\Citi_P3
+      banking_repo: D:\Lab\Citi_P3
   - id: edge.scanner.scan_edge_042_representative_assist_parallel_risk_compliance_agent
     caller_id: agent.shared.representative_assist_parallel
     target_id: resource.mid_office.other_risk_compliance_agent
@@ -5809,7 +5809,7 @@ spec:
       task2_from_id: representative_assist_parallel
       task2_to_id: risk_compliance_agent
       task2_operation_class: read
-      banking_repo: C:\Users\wangzhaoqi\Desktop\Citi_P3
+      banking_repo: D:\Lab\Citi_P3
   trust_boundaries:
   - id: boundary.agent.mcp
     from_zone: agent_runtime
