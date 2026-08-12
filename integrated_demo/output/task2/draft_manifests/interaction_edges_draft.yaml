@@ -3,6 +3,30 @@ manifest_type: interaction_edges_draft
 interaction_edges:
 - edge_id: edge_001
   edge_type: agent_to_tool
+  from_id: validation_checkpoint_agent
+  from_type: subject
+  to_id: validate_eod_readiness
+  to_type: tool
+  action: call_tool
+  data_type: service
+  risk_level: 3
+  side_effects: false
+  authentication_method: in_process
+  trust_boundary: internal
+  workflow_context: eod
+  pep_required: true
+  pep_type: tool_pep
+  trigger: null
+  required_state: []
+  http_method: null
+  db_operation: null
+  operation_class: read
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: task2_scanner
+- edge_id: edge_002
+  edge_type: agent_to_tool
   from_id: eod_processing_agent
   from_type: subject
   to_id: get_eod_batch
@@ -25,9 +49,9 @@ interaction_edges:
   source:
     provided_by: task2_scanner
     reference: task2_scanner
-- edge_id: edge_002
+- edge_id: edge_003
   edge_type: agent_to_tool
-  from_id: eod_processing_agent
+  from_id: ledger_update_agent
   from_type: subject
   to_id: apply_ledger_updates
   to_type: tool
@@ -37,7 +61,7 @@ interaction_edges:
   side_effects: true
   authentication_method: in_process
   trust_boundary: internal
-  workflow_context: eod
+  workflow_context: ledger
   pep_required: true
   pep_type: tool_pep
   trigger: null
@@ -49,19 +73,19 @@ interaction_edges:
   source:
     provided_by: task2_scanner
     reference: task2_scanner
-- edge_id: edge_003
+- edge_id: edge_004
   edge_type: agent_to_tool
-  from_id: eod_processing_agent
+  from_id: reconciliation_agent
   from_type: subject
-  to_id: store_report
+  to_id: get_reconciliation_data
   to_type: tool
   action: call_tool
-  data_type: service
+  data_type: operational
   risk_level: 3
   side_effects: false
   authentication_method: in_process
   trust_boundary: internal
-  workflow_context: eod
+  workflow_context: workflow_back
   pep_required: true
   pep_type: tool_pep
   trigger: null
@@ -73,7 +97,7 @@ interaction_edges:
   source:
     provided_by: task2_scanner
     reference: task2_scanner
-- edge_id: edge_004
+- edge_id: edge_005
   edge_type: agent_to_tool
   from_id: report_writing_agent
   from_type: subject
@@ -97,7 +121,127 @@ interaction_edges:
   source:
     provided_by: task2_scanner
     reference: task2_scanner
-- edge_id: edge_005
+- edge_id: edge_006
+  edge_type: agent_to_tool
+  from_id: exception_agent
+  from_type: subject
+  to_id: create_exception_case
+  to_type: tool
+  action: call_tool
+  data_type: service
+  risk_level: 3
+  side_effects: false
+  authentication_method: in_process
+  trust_boundary: internal
+  workflow_context: workflow_back
+  pep_required: true
+  pep_type: tool_pep
+  trigger: null
+  required_state: []
+  http_method: null
+  db_operation: null
+  operation_class: read
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: task2_scanner
+- edge_id: edge_007
+  edge_type: agent_to_tool
+  from_id: transaction_monitoring_agent
+  from_type: subject
+  to_id: get_customer_context
+  to_type: tool
+  action: call_tool
+  data_type: operational
+  risk_level: 3
+  side_effects: false
+  authentication_method: in_process
+  trust_boundary: internal
+  workflow_context: transaction
+  pep_required: true
+  pep_type: tool_pep
+  trigger: null
+  required_state: []
+  http_method: null
+  db_operation: null
+  operation_class: read
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: task2_scanner
+- edge_id: edge_008
+  edge_type: agent_to_tool
+  from_id: transaction_monitoring_agent
+  from_type: subject
+  to_id: get_transaction_context
+  to_type: tool
+  action: call_tool
+  data_type: operational
+  risk_level: 3
+  side_effects: false
+  authentication_method: in_process
+  trust_boundary: internal
+  workflow_context: transaction
+  pep_required: true
+  pep_type: tool_pep
+  trigger: null
+  required_state: []
+  http_method: null
+  db_operation: null
+  operation_class: read
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: task2_scanner
+- edge_id: edge_009
+  edge_type: agent_to_tool
+  from_id: transaction_monitoring_agent
+  from_type: subject
+  to_id: list_recent_transactions
+  to_type: tool
+  action: call_tool
+  data_type: operational
+  risk_level: 3
+  side_effects: false
+  authentication_method: in_process
+  trust_boundary: internal
+  workflow_context: transaction
+  pep_required: true
+  pep_type: tool_pep
+  trigger: null
+  required_state: []
+  http_method: null
+  db_operation: null
+  operation_class: read
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: task2_scanner
+- edge_id: edge_010
+  edge_type: agent_to_tool
+  from_id: fraud_detection_agent
+  from_type: subject
+  to_id: get_customer_context
+  to_type: tool
+  action: call_tool
+  data_type: operational
+  risk_level: 3
+  side_effects: false
+  authentication_method: in_process
+  trust_boundary: internal
+  workflow_context: fraud
+  pep_required: true
+  pep_type: tool_pep
+  trigger: null
+  required_state: []
+  http_method: null
+  db_operation: null
+  operation_class: read
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: task2_scanner
+- edge_id: edge_011
   edge_type: agent_to_tool
   from_id: fraud_detection_agent
   from_type: subject
@@ -121,11 +265,11 @@ interaction_edges:
   source:
     provided_by: task2_scanner
     reference: task2_scanner
-- edge_id: edge_006
+- edge_id: edge_012
   edge_type: agent_to_tool
   from_id: fraud_detection_agent
   from_type: subject
-  to_id: search_policies
+  to_id: list_recent_transactions
   to_type: tool
   action: call_tool
   data_type: operational
@@ -145,31 +289,7 @@ interaction_edges:
   source:
     provided_by: task2_scanner
     reference: task2_scanner
-- edge_id: edge_007
-  edge_type: agent_to_tool
-  from_id: transaction_processing_agent
-  from_type: subject
-  to_id: execute_transfer
-  to_type: tool
-  action: call_tool
-  data_type: financial
-  risk_level: 3
-  side_effects: true
-  authentication_method: in_process
-  trust_boundary: internal
-  workflow_context: transaction
-  pep_required: true
-  pep_type: tool_pep
-  trigger: null
-  required_state: []
-  http_method: null
-  db_operation: null
-  operation_class: write
-  status: provisional
-  source:
-    provided_by: task2_scanner
-    reference: task2_scanner
-- edge_id: edge_008
+- edge_id: edge_013
   edge_type: agent_to_tool
   from_id: compliance_agent
   from_type: subject
@@ -193,225 +313,321 @@ interaction_edges:
   source:
     provided_by: task2_scanner
     reference: task2_scanner
-- edge_id: edge_009
-  edge_type: tool_to_api
-  from_id: get_eod_batch
-  from_type: tool
-  to_id: get_eod_batch
-  to_type: api
-  action: invoke_api
-  data_type: service
-  risk_level: 3
-  side_effects: false
-  authentication_method: api_token
-  trust_boundary: service_mesh
-  workflow_context: eod
-  pep_required: true
-  pep_type: api_pep
-  trigger: null
-  required_state: []
-  http_method: GET
-  db_operation: null
-  operation_class: read
-  status: provisional
-  source:
-    provided_by: task2_scanner
-    reference: task2_scanner
-- edge_id: edge_010
-  edge_type: tool_to_api
-  from_id: apply_ledger_updates
-  from_type: tool
-  to_id: ledger_update
-  to_type: api
-  action: invoke_api
-  data_type: service
-  risk_level: 3
-  side_effects: false
-  authentication_method: api_token
-  trust_boundary: service_mesh
-  workflow_context: ledger
-  pep_required: true
-  pep_type: api_pep
-  trigger: null
-  required_state: []
-  http_method: POST
-  db_operation: null
-  operation_class: read
-  status: provisional
-  source:
-    provided_by: task2_scanner
-    reference: task2_scanner
-- edge_id: edge_011
-  edge_type: tool_to_api
-  from_id: store_report
-  from_type: tool
-  to_id: store_report
-  to_type: api
-  action: invoke_api
-  data_type: service
-  risk_level: 3
-  side_effects: false
-  authentication_method: api_token
-  trust_boundary: service_mesh
-  workflow_context: shared
-  pep_required: true
-  pep_type: api_pep
-  trigger: null
-  required_state: []
-  http_method: POST
-  db_operation: null
-  operation_class: read
-  status: provisional
-  source:
-    provided_by: task2_scanner
-    reference: task2_scanner
-- edge_id: edge_012
-  edge_type: tool_to_api
-  from_id: get_transaction_context
-  from_type: tool
-  to_id: get_transaction
-  to_type: api
-  action: invoke_api
-  data_type: financial
-  risk_level: 3
-  side_effects: false
-  authentication_method: api_token
-  trust_boundary: service_mesh
-  workflow_context: transaction
-  pep_required: true
-  pep_type: api_pep
-  trigger: null
-  required_state: []
-  http_method: GET
-  db_operation: null
-  operation_class: read
-  status: provisional
-  source:
-    provided_by: task2_scanner
-    reference: task2_scanner
-- edge_id: edge_013
-  edge_type: tool_to_api
-  from_id: execute_transfer
-  from_type: tool
-  to_id: banking_transfer
-  to_type: api
-  action: invoke_api
-  data_type: financial
-  risk_level: 3
-  side_effects: false
-  authentication_method: api_token
-  trust_boundary: service_mesh
-  workflow_context: shared
-  pep_required: true
-  pep_type: api_pep
-  trigger: null
-  required_state: []
-  http_method: POST
-  db_operation: null
-  operation_class: read
-  status: provisional
-  source:
-    provided_by: task2_scanner
-    reference: task2_scanner
 - edge_id: edge_014
-  edge_type: api_to_database
-  from_id: get_transaction
-  from_type: api
-  to_id: transactions
-  to_type: database
-  action: db_select
-  data_type: financial
+  edge_type: agent_to_tool
+  from_id: compliance_agent
+  from_type: subject
+  to_id: get_customer_context
+  to_type: tool
+  action: call_tool
+  data_type: operational
   risk_level: 3
   side_effects: false
-  authentication_method: service_account
-  trust_boundary: database
-  workflow_context: transaction
+  authentication_method: in_process
+  trust_boundary: internal
+  workflow_context: workflow_front
   pep_required: true
-  pep_type: data_pep
+  pep_type: tool_pep
   trigger: null
   required_state: []
-  http_method: GET
-  db_operation: SELECT
+  http_method: null
+  db_operation: null
   operation_class: read
   status: provisional
   source:
     provided_by: task2_scanner
     reference: task2_scanner
 - edge_id: edge_015
-  edge_type: api_to_database
-  from_id: banking_transfer
-  from_type: api
-  to_id: unknown
-  to_type: database
-  action: db_insert
-  data_type: unknown
-  risk_level: 4
-  side_effects: true
-  authentication_method: service_account
-  trust_boundary: database
-  workflow_context: shared
+  edge_type: agent_to_tool
+  from_id: compliance_agent
+  from_type: subject
+  to_id: get_transaction_context
+  to_type: tool
+  action: call_tool
+  data_type: operational
+  risk_level: 3
+  side_effects: false
+  authentication_method: in_process
+  trust_boundary: internal
+  workflow_context: transaction
   pep_required: true
-  pep_type: data_pep
+  pep_type: tool_pep
   trigger: null
   required_state: []
-  http_method: POST
-  db_operation: INSERT
-  operation_class: write
+  http_method: null
+  db_operation: null
+  operation_class: read
   status: provisional
   source:
     provided_by: task2_scanner
     reference: task2_scanner
 - edge_id: edge_016
-  edge_type: api_to_database
-  from_id: get_eod_batch
-  from_type: api
-  to_id: eod_batches
-  to_type: database
-  action: db_select
-  data_type: internal
+  edge_type: agent_to_tool
+  from_id: decision_making_agent
+  from_type: subject
+  to_id: submit_manual_review
+  to_type: tool
+  action: call_tool
+  data_type: service
   risk_level: 3
   side_effects: false
-  authentication_method: service_account
-  trust_boundary: database
-  workflow_context: eod
+  authentication_method: in_process
+  trust_boundary: internal
+  workflow_context: workflow_front
   pep_required: true
-  pep_type: data_pep
+  pep_type: tool_pep
   trigger: null
   required_state: []
-  http_method: GET
-  db_operation: SELECT
+  http_method: null
+  db_operation: null
   operation_class: read
   status: provisional
   source:
     provided_by: task2_scanner
     reference: task2_scanner
 - edge_id: edge_017
-  edge_type: api_to_database
-  from_id: ledger_update
-  from_type: api
-  to_id: unknown
-  to_type: database
-  action: db_insert
-  data_type: unknown
-  risk_level: 4
-  side_effects: true
-  authentication_method: service_account
-  trust_boundary: database
-  workflow_context: ledger
+  edge_type: agent_to_tool
+  from_id: knowledge_base_agent
+  from_type: subject
+  to_id: search_faqs
+  to_type: tool
+  action: call_tool
+  data_type: operational
+  risk_level: 3
+  side_effects: false
+  authentication_method: in_process
+  trust_boundary: internal
+  workflow_context: workflow_front
   pep_required: true
-  pep_type: data_pep
+  pep_type: tool_pep
   trigger: null
   required_state: []
-  http_method: POST
-  db_operation: INSERT
-  operation_class: write
+  http_method: null
+  db_operation: null
+  operation_class: read
   status: provisional
   source:
     provided_by: task2_scanner
     reference: task2_scanner
 - edge_id: edge_018
+  edge_type: agent_to_tool
+  from_id: transaction_processing_agent
+  from_type: subject
+  to_id: execute_transfer
+  to_type: tool
+  action: call_tool
+  data_type: financial
+  risk_level: 3
+  side_effects: true
+  authentication_method: in_process
+  trust_boundary: internal
+  workflow_context: transaction
+  pep_required: true
+  pep_type: tool_pep
+  trigger: null
+  required_state: []
+  http_method: null
+  db_operation: null
+  operation_class: write
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: task2_scanner
+- edge_id: edge_019
+  edge_type: agent_to_tool
+  from_id: data_analysis_agent
+  from_type: subject
+  to_id: get_operations_snapshot
+  to_type: tool
+  action: call_tool
+  data_type: operational
+  risk_level: 3
+  side_effects: false
+  authentication_method: in_process
+  trust_boundary: internal
+  workflow_context: workflow_mid
+  pep_required: true
+  pep_type: tool_pep
+  trigger: null
+  required_state: []
+  http_method: null
+  db_operation: null
+  operation_class: read
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: task2_scanner
+- edge_id: edge_020
+  edge_type: agent_to_tool
+  from_id: forecasting_agent
+  from_type: subject
+  to_id: get_operations_snapshot
+  to_type: tool
+  action: call_tool
+  data_type: operational
+  risk_level: 3
+  side_effects: false
+  authentication_method: in_process
+  trust_boundary: internal
+  workflow_context: forecast
+  pep_required: true
+  pep_type: tool_pep
+  trigger: null
+  required_state: []
+  http_method: null
+  db_operation: null
+  operation_class: read
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: task2_scanner
+- edge_id: edge_021
+  edge_type: agent_to_tool
+  from_id: validation_agent
+  from_type: subject
+  to_id: persist_validated_schedule
+  to_type: tool
+  action: call_tool
+  data_type: service
+  risk_level: 3
+  side_effects: false
+  authentication_method: in_process
+  trust_boundary: internal
+  workflow_context: workflow_mid
+  pep_required: true
+  pep_type: tool_pep
+  trigger: null
+  required_state: []
+  http_method: null
+  db_operation: null
+  operation_class: read
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: task2_scanner
+- edge_id: edge_022
+  edge_type: agent_to_tool
+  from_id: support_guidance_agent
+  from_type: subject
+  to_id: get_support_playbooks
+  to_type: tool
+  action: call_tool
+  data_type: operational
+  risk_level: 3
+  side_effects: false
+  authentication_method: in_process
+  trust_boundary: internal
+  workflow_context: support
+  pep_required: true
+  pep_type: tool_pep
+  trigger: null
+  required_state: []
+  http_method: null
+  db_operation: null
+  operation_class: read
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: task2_scanner
+- edge_id: edge_023
+  edge_type: agent_to_tool
+  from_id: financial_data_agent
+  from_type: subject
+  to_id: get_customer_financial_profile
+  to_type: tool
+  action: call_tool
+  data_type: operational
+  risk_level: 3
+  side_effects: false
+  authentication_method: in_process
+  trust_boundary: internal
+  workflow_context: workflow_mid
+  pep_required: true
+  pep_type: tool_pep
+  trigger: null
+  required_state: []
+  http_method: null
+  db_operation: null
+  operation_class: read
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: task2_scanner
+- edge_id: edge_024
+  edge_type: agent_to_tool
+  from_id: recommender_agent
+  from_type: subject
+  to_id: search_product_catalog
+  to_type: tool
+  action: call_tool
+  data_type: operational
+  risk_level: 3
+  side_effects: false
+  authentication_method: in_process
+  trust_boundary: internal
+  workflow_context: workflow_mid
+  pep_required: true
+  pep_type: tool_pep
+  trigger: null
+  required_state: []
+  http_method: null
+  db_operation: null
+  operation_class: read
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: task2_scanner
+- edge_id: edge_025
+  edge_type: agent_to_tool
+  from_id: loan_agent
+  from_type: subject
+  to_id: search_loan_playbooks
+  to_type: tool
+  action: call_tool
+  data_type: operational
+  risk_level: 3
+  side_effects: false
+  authentication_method: in_process
+  trust_boundary: internal
+  workflow_context: workflow_mid
+  pep_required: true
+  pep_type: tool_pep
+  trigger: null
+  required_state: []
+  http_method: null
+  db_operation: null
+  operation_class: read
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: task2_scanner
+- edge_id: edge_026
+  edge_type: agent_to_tool
+  from_id: risk_compliance_agent
+  from_type: subject
+  to_id: search_policies
+  to_type: tool
+  action: call_tool
+  data_type: operational
+  risk_level: 3
+  side_effects: false
+  authentication_method: in_process
+  trust_boundary: internal
+  workflow_context: workflow_mid
+  pep_required: true
+  pep_type: tool_pep
+  trigger: null
+  required_state: []
+  http_method: null
+  db_operation: null
+  operation_class: read
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: task2_scanner
+- edge_id: edge_027
   edge_type: api_to_database
-  from_id: store_report
+  from_id: create_customer
   from_type: api
   to_id: unknown
   to_type: database
@@ -429,6 +645,366 @@ interaction_edges:
   http_method: POST
   db_operation: INSERT
   operation_class: write
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: task2_scanner
+- edge_id: edge_028
+  edge_type: api_to_database
+  from_id: create_account
+  from_type: api
+  to_id: unknown
+  to_type: database
+  action: db_insert
+  data_type: unknown
+  risk_level: 4
+  side_effects: true
+  authentication_method: service_account
+  trust_boundary: database
+  workflow_context: shared
+  pep_required: true
+  pep_type: data_pep
+  trigger: null
+  required_state: []
+  http_method: POST
+  db_operation: INSERT
+  operation_class: write
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: task2_scanner
+- edge_id: edge_029
+  edge_type: api_to_database
+  from_id: create_policy
+  from_type: api
+  to_id: unknown
+  to_type: database
+  action: db_insert
+  data_type: unknown
+  risk_level: 4
+  side_effects: true
+  authentication_method: service_account
+  trust_boundary: database
+  workflow_context: shared
+  pep_required: true
+  pep_type: data_pep
+  trigger: null
+  required_state: []
+  http_method: POST
+  db_operation: INSERT
+  operation_class: write
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: task2_scanner
+- edge_id: edge_030
+  edge_type: api_to_database
+  from_id: create_rule
+  from_type: api
+  to_id: unknown
+  to_type: database
+  action: db_insert
+  data_type: unknown
+  risk_level: 4
+  side_effects: true
+  authentication_method: service_account
+  trust_boundary: database
+  workflow_context: shared
+  pep_required: true
+  pep_type: data_pep
+  trigger: null
+  required_state: []
+  http_method: POST
+  db_operation: INSERT
+  operation_class: write
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: task2_scanner
+- edge_id: edge_031
+  edge_type: api_to_database
+  from_id: update_transaction_status
+  from_type: api
+  to_id: unknown
+  to_type: database
+  action: db_insert
+  data_type: unknown
+  risk_level: 4
+  side_effects: true
+  authentication_method: service_account
+  trust_boundary: database
+  workflow_context: transaction
+  pep_required: true
+  pep_type: data_pep
+  trigger: null
+  required_state: []
+  http_method: PATCH
+  db_operation: INSERT
+  operation_class: write
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: task2_scanner
+- edge_id: edge_032
+  edge_type: agent_to_agent
+  from_id: mid_office_router
+  from_type: subject
+  to_id: representative_assistant_workflow
+  to_type: subject
+  action: transfer_control
+  data_type: workflow_control
+  risk_level: 3
+  side_effects: false
+  authentication_method: internal
+  trust_boundary: internal
+  workflow_context: mid_office
+  pep_required: true
+  pep_type: route_pep
+  trigger: null
+  required_state: []
+  http_method: null
+  db_operation: null
+  operation_class: read
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: task2_scanner
+- edge_id: edge_033
+  edge_type: agent_to_agent
+  from_id: mid_office_planning_parallel
+  from_type: subject
+  to_id: validation_agent
+  to_type: subject
+  action: transfer_control
+  data_type: workflow_control
+  risk_level: 3
+  side_effects: false
+  authentication_method: internal
+  trust_boundary: internal
+  workflow_context: mid_office
+  pep_required: true
+  pep_type: route_pep
+  trigger: null
+  required_state: []
+  http_method: null
+  db_operation: null
+  operation_class: read
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: task2_scanner
+- edge_id: edge_034
+  edge_type: agent_to_agent
+  from_id: mid_office_planning_parallel
+  from_type: subject
+  to_id: support_guidance_agent
+  to_type: subject
+  action: transfer_control
+  data_type: workflow_control
+  risk_level: 3
+  side_effects: false
+  authentication_method: internal
+  trust_boundary: internal
+  workflow_context: mid_office
+  pep_required: true
+  pep_type: route_pep
+  trigger: null
+  required_state: []
+  http_method: null
+  db_operation: null
+  operation_class: read
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: task2_scanner
+- edge_id: edge_035
+  edge_type: agent_to_agent
+  from_id: mid_office_planning_workflow
+  from_type: subject
+  to_id: data_analysis_agent
+  to_type: subject
+  action: transfer_control
+  data_type: workflow_control
+  risk_level: 3
+  side_effects: false
+  authentication_method: internal
+  trust_boundary: internal
+  workflow_context: mid_office
+  pep_required: true
+  pep_type: route_pep
+  trigger: null
+  required_state: []
+  http_method: null
+  db_operation: null
+  operation_class: read
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: task2_scanner
+- edge_id: edge_036
+  edge_type: agent_to_agent
+  from_id: mid_office_planning_workflow
+  from_type: subject
+  to_id: forecasting_agent
+  to_type: subject
+  action: transfer_control
+  data_type: workflow_control
+  risk_level: 3
+  side_effects: false
+  authentication_method: internal
+  trust_boundary: internal
+  workflow_context: mid_office
+  pep_required: true
+  pep_type: route_pep
+  trigger: null
+  required_state: []
+  http_method: null
+  db_operation: null
+  operation_class: read
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: task2_scanner
+- edge_id: edge_037
+  edge_type: agent_to_agent
+  from_id: mid_office_planning_workflow
+  from_type: subject
+  to_id: staff_scheduling_agent
+  to_type: subject
+  action: transfer_control
+  data_type: workflow_control
+  risk_level: 3
+  side_effects: false
+  authentication_method: internal
+  trust_boundary: internal
+  workflow_context: mid_office
+  pep_required: true
+  pep_type: route_pep
+  trigger: null
+  required_state: []
+  http_method: null
+  db_operation: null
+  operation_class: read
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: task2_scanner
+- edge_id: edge_038
+  edge_type: agent_to_agent
+  from_id: mid_office_planning_workflow
+  from_type: subject
+  to_id: planning_summary_agent
+  to_type: subject
+  action: transfer_control
+  data_type: workflow_control
+  risk_level: 3
+  side_effects: false
+  authentication_method: internal
+  trust_boundary: internal
+  workflow_context: mid_office
+  pep_required: true
+  pep_type: route_pep
+  trigger: null
+  required_state: []
+  http_method: null
+  db_operation: null
+  operation_class: read
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: task2_scanner
+- edge_id: edge_039
+  edge_type: agent_to_agent
+  from_id: representative_assist_parallel
+  from_type: subject
+  to_id: financial_data_agent
+  to_type: subject
+  action: transfer_control
+  data_type: workflow_control
+  risk_level: 3
+  side_effects: false
+  authentication_method: internal
+  trust_boundary: internal
+  workflow_context: workflow_shared
+  pep_required: true
+  pep_type: route_pep
+  trigger: null
+  required_state: []
+  http_method: null
+  db_operation: null
+  operation_class: read
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: task2_scanner
+- edge_id: edge_040
+  edge_type: agent_to_agent
+  from_id: representative_assist_parallel
+  from_type: subject
+  to_id: recommender_agent
+  to_type: subject
+  action: transfer_control
+  data_type: workflow_control
+  risk_level: 3
+  side_effects: false
+  authentication_method: internal
+  trust_boundary: internal
+  workflow_context: workflow_shared
+  pep_required: true
+  pep_type: route_pep
+  trigger: null
+  required_state: []
+  http_method: null
+  db_operation: null
+  operation_class: read
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: task2_scanner
+- edge_id: edge_041
+  edge_type: agent_to_agent
+  from_id: representative_assist_parallel
+  from_type: subject
+  to_id: loan_agent
+  to_type: subject
+  action: transfer_control
+  data_type: workflow_control
+  risk_level: 3
+  side_effects: false
+  authentication_method: internal
+  trust_boundary: internal
+  workflow_context: workflow_shared
+  pep_required: true
+  pep_type: route_pep
+  trigger: null
+  required_state: []
+  http_method: null
+  db_operation: null
+  operation_class: read
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: task2_scanner
+- edge_id: edge_042
+  edge_type: agent_to_agent
+  from_id: representative_assist_parallel
+  from_type: subject
+  to_id: risk_compliance_agent
+  to_type: subject
+  action: transfer_control
+  data_type: workflow_control
+  risk_level: 3
+  side_effects: false
+  authentication_method: internal
+  trust_boundary: internal
+  workflow_context: workflow_shared
+  pep_required: true
+  pep_type: route_pep
+  trigger: null
+  required_state: []
+  http_method: null
+  db_operation: null
+  operation_class: read
   status: provisional
   source:
     provided_by: task2_scanner

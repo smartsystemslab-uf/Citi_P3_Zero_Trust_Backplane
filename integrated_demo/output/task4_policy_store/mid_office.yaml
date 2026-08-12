@@ -1,0 +1,51 @@
+apiVersion: ztb/v1alpha1
+kind: PolicyBundle
+metadata:
+  id: bundle.mid_office
+  version: 1.0.0
+  domain: mid_office
+  status: provisional
+policies:
+  - id: policy.mid_office.operations_read
+    description: Data-analysis role may read internal operations data.
+    priority: 170
+    effect: ALLOW
+    match:
+      subject_roles: [operations_analyst]
+      resources: [resource.mid_office.internal_operations_data]
+      actions: [read]
+    obligations: []
+    enabled: true
+
+  - id: policy.mid_office.financial_data_read
+    description: Financial-data agent may read masked financial data with verified stronger authentication.
+    priority: 210
+    effect: ALLOW_WITH_OBLIGATIONS
+    match:
+      subjects: [agent.mid_office.financial_data]
+      resources: [resource.mid_office.financial_customer_data]
+      actions: [read]
+      auth_strength_gte: 2
+      max_risk: medium
+    obligations:
+      - type: data_masking
+        parameters: {fields: [full_account_number, ssn]}
+      - type: enhanced_logging
+        parameters: {reason: financial_customer_data}
+    enabled: true
+
+  - id: policy.mid_office.support_guidance_business_hours
+    description: Support-guidance agent may read operations data only during server-verified weekday business hours.
+    priority: 180
+    effect: ALLOW
+    match:
+      subjects: [agent.mid_office.support_guidance]
+      resources: [resource.mid_office.internal_operations_data]
+      actions: [read]
+      time_windows:
+        - timezone: America/New_York
+          days: [MON, TUE, WED, THU, FRI]
+          start: "08:00"
+          end: "18:00"
+    obligations: []
+    enabled: true

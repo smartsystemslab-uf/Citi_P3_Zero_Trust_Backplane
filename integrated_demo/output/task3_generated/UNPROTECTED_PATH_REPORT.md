@@ -3,7 +3,27 @@
 Blocking findings: **0**
 
 ## INFORMATION: scanner_coverage_gap
+- Target: `resource.back_office.exception_case`
+- Blocks M3: `false`
+- Detail: Sensitive resource exists in the inventory but no interaction edge reaches it. Task 3 cannot prove or place path-specific enforcement until Task 2 discovers the path.
+
+## INFORMATION: scanner_coverage_gap
+- Target: `resource.back_office.final_report`
+- Blocks M3: `false`
+- Detail: Sensitive resource exists in the inventory but no interaction edge reaches it. Task 3 cannot prove or place path-specific enforcement until Task 2 discovers the path.
+
+## INFORMATION: scanner_coverage_gap
 - Target: `resource.back_office.ledger_snapshot`
+- Blocks M3: `false`
+- Detail: Sensitive resource exists in the inventory but no interaction edge reaches it. Task 3 cannot prove or place path-specific enforcement until Task 2 discovers the path.
+
+## INFORMATION: scanner_coverage_gap
+- Target: `resource.back_office.reconciliation_results`
+- Blocks M3: `false`
+- Detail: Sensitive resource exists in the inventory but no interaction edge reaches it. Task 3 cannot prove or place path-specific enforcement until Task 2 discovers the path.
+
+## INFORMATION: scanner_coverage_gap
+- Target: `resource.front_office.customer_context`
 - Blocks M3: `false`
 - Detail: Sensitive resource exists in the inventory but no interaction edge reaches it. Task 3 cannot prove or place path-specific enforcement until Task 2 discovers the path.
 
@@ -14,11 +34,6 @@ Blocking findings: **0**
 
 ## INFORMATION: scanner_coverage_gap
 - Target: `resource.front_office.transaction_decision`
-- Blocks M3: `false`
-- Detail: Sensitive resource exists in the inventory but no interaction edge reaches it. Task 3 cannot prove or place path-specific enforcement until Task 2 discovers the path.
-
-## INFORMATION: scanner_coverage_gap
-- Target: `resource.mid_office.financial_customer_data`
 - Blocks M3: `false`
 - Detail: Sensitive resource exists in the inventory but no interaction edge reaches it. Task 3 cannot prove or place path-specific enforcement until Task 2 discovers the path.
 

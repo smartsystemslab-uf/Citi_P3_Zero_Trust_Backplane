@@ -243,6 +243,270 @@ interfaces:
   response_schema_ref: null
   timeout_ms: 5000
   status: placeholder
+- canonical_id: interface.python_function.validate_eod_readiness
+  type: python_function
+  runtime:
+    runtime_id: validate_eod_readiness
+    endpoint: null
+    function_name: validate_eod_readiness
+    service_name: null
+    namespace: null
+    secret_refs: []
+    extensions: {}
+  authentication:
+    method: placeholder
+    issuer: null
+    audience: null
+    subject_claim: null
+    credential_ref: null
+    jwks_uri: null
+    extensions: {}
+  request_schema_ref: null
+  response_schema_ref: null
+  timeout_ms: 5000
+  status: provisional
+- canonical_id: interface.python_function.get_reconciliation_data
+  type: python_function
+  runtime:
+    runtime_id: get_reconciliation_data
+    endpoint: null
+    function_name: get_reconciliation_data
+    service_name: null
+    namespace: null
+    secret_refs: []
+    extensions: {}
+  authentication:
+    method: placeholder
+    issuer: null
+    audience: null
+    subject_claim: null
+    credential_ref: null
+    jwks_uri: null
+    extensions: {}
+  request_schema_ref: null
+  response_schema_ref: null
+  timeout_ms: 5000
+  status: provisional
+- canonical_id: interface.python_function.get_transaction_context
+  type: python_function
+  runtime:
+    runtime_id: get_transaction_context
+    endpoint: null
+    function_name: get_transaction_context
+    service_name: null
+    namespace: null
+    secret_refs: []
+    extensions: {}
+  authentication:
+    method: placeholder
+    issuer: null
+    audience: null
+    subject_claim: null
+    credential_ref: null
+    jwks_uri: null
+    extensions: {}
+  request_schema_ref: null
+  response_schema_ref: null
+  timeout_ms: 5000
+  status: provisional
+- canonical_id: interface.python_function.list_recent_transactions
+  type: python_function
+  runtime:
+    runtime_id: list_recent_transactions
+    endpoint: null
+    function_name: list_recent_transactions
+    service_name: null
+    namespace: null
+    secret_refs: []
+    extensions: {}
+  authentication:
+    method: placeholder
+    issuer: null
+    audience: null
+    subject_claim: null
+    credential_ref: null
+    jwks_uri: null
+    extensions: {}
+  request_schema_ref: null
+  response_schema_ref: null
+  timeout_ms: 5000
+  status: provisional
+- canonical_id: interface.python_function.submit_manual_review
+  type: python_function
+  runtime:
+    runtime_id: submit_manual_review
+    endpoint: null
+    function_name: submit_manual_review
+    service_name: null
+    namespace: null
+    secret_refs: []
+    extensions: {}
+  authentication:
+    method: placeholder
+    issuer: null
+    audience: null
+    subject_claim: null
+    credential_ref: null
+    jwks_uri: null
+    extensions: {}
+  request_schema_ref: null
+  response_schema_ref: null
+  timeout_ms: 5000
+  status: provisional
+- canonical_id: interface.python_function.search_faqs
+  type: python_function
+  runtime:
+    runtime_id: search_faqs
+    endpoint: null
+    function_name: search_faqs
+    service_name: null
+    namespace: null
+    secret_refs: []
+    extensions: {}
+  authentication:
+    method: placeholder
+    issuer: null
+    audience: null
+    subject_claim: null
+    credential_ref: null
+    jwks_uri: null
+    extensions: {}
+  request_schema_ref: null
+  response_schema_ref: null
+  timeout_ms: 5000
+  status: provisional
+- canonical_id: interface.python_function.get_operations_snapshot
+  type: python_function
+  runtime:
+    runtime_id: get_operations_snapshot
+    endpoint: null
+    function_name: get_operations_snapshot
+    service_name: null
+    namespace: null
+    secret_refs: []
+    extensions: {}
+  authentication:
+    method: placeholder
+    issuer: null
+    audience: null
+    subject_claim: null
+    credential_ref: null
+    jwks_uri: null
+    extensions: {}
+  request_schema_ref: null
+  response_schema_ref: null
+  timeout_ms: 5000
+  status: provisional
+- canonical_id: interface.python_function.persist_validated_schedule
+  type: python_function
+  runtime:
+    runtime_id: persist_validated_schedule
+    endpoint: null
+    function_name: persist_validated_schedule
+    service_name: null
+    namespace: null
+    secret_refs: []
+    extensions: {}
+  authentication:
+    method: placeholder
+    issuer: null
+    audience: null
+    subject_claim: null
+    credential_ref: null
+    jwks_uri: null
+    extensions: {}
+  request_schema_ref: null
+  response_schema_ref: null
+  timeout_ms: 5000
+  status: provisional
+- canonical_id: interface.python_function.get_support_playbooks
+  type: python_function
+  runtime:
+    runtime_id: get_support_playbooks
+    endpoint: null
+    function_name: get_support_playbooks
+    service_name: null
+    namespace: null
+    secret_refs: []
+    extensions: {}
+  authentication:
+    method: placeholder
+    issuer: null
+    audience: null
+    subject_claim: null
+    credential_ref: null
+    jwks_uri: null
+    extensions: {}
+  request_schema_ref: null
+  response_schema_ref: null
+  timeout_ms: 5000
+  status: provisional
+- canonical_id: interface.python_function.get_customer_financial_profile
+  type: python_function
+  runtime:
+    runtime_id: get_customer_financial_profile
+    endpoint: null
+    function_name: get_customer_financial_profile
+    service_name: null
+    namespace: null
+    secret_refs: []
+    extensions: {}
+  authentication:
+    method: placeholder
+    issuer: null
+    audience: null
+    subject_claim: null
+    credential_ref: null
+    jwks_uri: null
+    extensions: {}
+  request_schema_ref: null
+  response_schema_ref: null
+  timeout_ms: 5000
+  status: provisional
+- canonical_id: interface.python_function.search_product_catalog
+  type: python_function
+  runtime:
+    runtime_id: search_product_catalog
+    endpoint: null
+    function_name: search_product_catalog
+    service_name: null
+    namespace: null
+    secret_refs: []
+    extensions: {}
+  authentication:
+    method: placeholder
+    issuer: null
+    audience: null
+    subject_claim: null
+    credential_ref: null
+    jwks_uri: null
+    extensions: {}
+  request_schema_ref: null
+  response_schema_ref: null
+  timeout_ms: 5000
+  status: provisional
+- canonical_id: interface.python_function.search_loan_playbooks
+  type: python_function
+  runtime:
+    runtime_id: search_loan_playbooks
+    endpoint: null
+    function_name: search_loan_playbooks
+    service_name: null
+    namespace: null
+    secret_refs: []
+    extensions: {}
+  authentication:
+    method: placeholder
+    issuer: null
+    audience: null
+    subject_claim: null
+    credential_ref: null
+    jwks_uri: null
+    extensions: {}
+  request_schema_ref: null
+  response_schema_ref: null
+  timeout_ms: 5000
+  status: provisional
 audit:
   schema_ref: schemas/audit_event.schema.json
   sink_interface_id: null

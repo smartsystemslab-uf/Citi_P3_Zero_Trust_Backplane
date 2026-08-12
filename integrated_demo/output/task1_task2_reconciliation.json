@@ -50,7 +50,7 @@
     }
   ],
   "environment": "prototype",
-  "generated_at": "2026-08-12T17:46:55.347879Z",
+  "generated_at": "2026-08-12T18:49:11.216702Z",
   "note": "Canonical IDs remain unchanged. Task 2 only verifies/updates runtime bindings; Task 3/4/5 consume the canonical unified interface.",
   "status": "PASS",
   "verified_count": 6

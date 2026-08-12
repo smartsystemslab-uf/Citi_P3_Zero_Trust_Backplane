@@ -1,20 +1,42 @@
 zt_ir_version: '1.0'
 manifest_type: apis_draft
 apis:
-- api_id: get_transaction
-  display_name: Read one transaction.
+- api_id: startup_event
+  display_name: Auto-discovered API endpoint startup_event
   service: citi_banking_backend
   base_url: http://localhost:8000
-  path: /transactions/{transaction_id}
+  path: /startup
+  method: ON_EVENT
+  domain: shared
+  action_type: state_change
+  has_side_effects: true
+  risk_level: 2
+  requires_auth: true
+  audit_required: true
+  reads_tables: []
+  writes_tables: []
+  pii_fields: []
+  compliance_tags: []
+  idempotency_key: null
+  operation_class: write
+  allowed_callers: []
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_backend\app\main.py:21
+- api_id: health
+  display_name: Auto-discovered API endpoint health
+  service: citi_banking_backend
+  base_url: http://localhost:8000
+  path: /health
   method: GET
-  domain: front
+  domain: shared
   action_type: read
   has_side_effects: false
   risk_level: 2
   requires_auth: true
   audit_required: false
-  reads_tables:
-  - transactions
+  reads_tables: []
   writes_tables: []
   pii_fields: []
   compliance_tags: []
@@ -24,9 +46,195 @@ apis:
   status: provisional
   source:
     provided_by: task2_scanner
-    reference: citi_banking_backend\app\main.py:2
-- api_id: banking_transfer
-  display_name: Execute transfer.
+    reference: citi_banking_backend\app\main.py:25
+- api_id: create_customer
+  display_name: Auto-discovered API endpoint create_customer
+  service: citi_banking_backend
+  base_url: http://localhost:8000
+  path: /customers
+  method: POST
+  domain: front
+  action_type: state_change
+  has_side_effects: true
+  risk_level: 2
+  requires_auth: true
+  audit_required: true
+  reads_tables: []
+  writes_tables:
+  - unknown
+  pii_fields: []
+  compliance_tags: []
+  idempotency_key: null
+  operation_class: write
+  allowed_callers: []
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_backend\app\main.py:77
+- api_id: get_customer
+  display_name: Auto-discovered API endpoint get_customer
+  service: citi_banking_backend
+  base_url: http://localhost:8000
+  path: /customers/{customer_id}
+  method: GET
+  domain: front
+  action_type: read
+  has_side_effects: false
+  risk_level: 2
+  requires_auth: true
+  audit_required: false
+  reads_tables: []
+  writes_tables: []
+  pii_fields: []
+  compliance_tags: []
+  idempotency_key: null
+  operation_class: read
+  allowed_callers: []
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_backend\app\main.py:88
+- api_id: list_customer_accounts
+  display_name: Auto-discovered API endpoint list_customer_accounts
+  service: citi_banking_backend
+  base_url: http://localhost:8000
+  path: /customers/{customer_id}/accounts
+  method: GET
+  domain: front
+  action_type: read
+  has_side_effects: false
+  risk_level: 2
+  requires_auth: true
+  audit_required: false
+  reads_tables: []
+  writes_tables: []
+  pii_fields: []
+  compliance_tags: []
+  idempotency_key: null
+  operation_class: read
+  allowed_callers: []
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_backend\app\main.py:95
+- api_id: get_customer_context
+  display_name: Auto-discovered API endpoint get_customer_context
+  service: citi_banking_backend
+  base_url: http://localhost:8000
+  path: /customers/{customer_id}/context
+  method: GET
+  domain: front
+  action_type: read
+  has_side_effects: false
+  risk_level: 2
+  requires_auth: true
+  audit_required: false
+  reads_tables: []
+  writes_tables: []
+  pii_fields: []
+  compliance_tags: []
+  idempotency_key: null
+  operation_class: read
+  allowed_callers: []
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_backend\app\main.py:100
+- api_id: list_customer_transactions
+  display_name: Auto-discovered API endpoint list_customer_transactions
+  service: citi_banking_backend
+  base_url: http://localhost:8000
+  path: /customers/{customer_id}/transactions
+  method: GET
+  domain: front
+  action_type: read
+  has_side_effects: false
+  risk_level: 2
+  requires_auth: true
+  audit_required: false
+  reads_tables: []
+  writes_tables: []
+  pii_fields: []
+  compliance_tags: []
+  idempotency_key: null
+  operation_class: read
+  allowed_callers: []
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_backend\app\main.py:108
+- api_id: create_account
+  display_name: Auto-discovered API endpoint create_account
+  service: citi_banking_backend
+  base_url: http://localhost:8000
+  path: /accounts
+  method: POST
+  domain: shared
+  action_type: state_change
+  has_side_effects: true
+  risk_level: 2
+  requires_auth: true
+  audit_required: true
+  reads_tables: []
+  writes_tables:
+  - unknown
+  pii_fields: []
+  compliance_tags: []
+  idempotency_key: null
+  operation_class: write
+  allowed_callers: []
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_backend\app\main.py:122
+- api_id: get_account
+  display_name: Auto-discovered API endpoint get_account
+  service: citi_banking_backend
+  base_url: http://localhost:8000
+  path: /accounts/{account_id}
+  method: GET
+  domain: shared
+  action_type: read
+  has_side_effects: false
+  risk_level: 2
+  requires_auth: true
+  audit_required: false
+  reads_tables: []
+  writes_tables: []
+  pii_fields: []
+  compliance_tags: []
+  idempotency_key: null
+  operation_class: read
+  allowed_callers: []
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_backend\app\main.py:136
+- api_id: monitoring_evaluate_transaction
+  display_name: Auto-discovered API endpoint monitoring_evaluate_transaction
+  service: citi_banking_backend
+  base_url: http://localhost:8000
+  path: /monitoring/evaluate_transaction
+  method: POST
+  domain: mid
+  action_type: state_change
+  has_side_effects: true
+  risk_level: 2
+  requires_auth: true
+  audit_required: true
+  reads_tables: []
+  writes_tables: []
+  pii_fields: []
+  compliance_tags: []
+  idempotency_key: null
+  operation_class: write
+  allowed_callers: []
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_backend\app\main.py:143
+- api_id: banking_api_transfer
+  display_name: Auto-discovered API endpoint banking_api_transfer
   service: citi_banking_backend
   base_url: http://localhost:8000
   path: /banking-api/transfer
@@ -38,8 +246,7 @@ apis:
   requires_auth: true
   audit_required: true
   reads_tables: []
-  writes_tables:
-  - unknown
+  writes_tables: []
   pii_fields: []
   compliance_tags: []
   idempotency_key: null
@@ -48,21 +255,20 @@ apis:
   status: provisional
   source:
     provided_by: task2_scanner
-    reference: citi_banking_backend\app\main.py:8
-- api_id: get_eod_batch
-  display_name: Read one EOD batch.
+    reference: citi_banking_backend\app\main.py:147
+- api_id: get_transaction
+  display_name: Auto-discovered API endpoint get_transaction
   service: citi_banking_backend
   base_url: http://localhost:8000
-  path: /back-office/eod/{batch_id}
+  path: /transactions/{transaction_id}
   method: GET
-  domain: back
+  domain: front
   action_type: read
   has_side_effects: false
   risk_level: 2
   requires_auth: true
   audit_required: false
-  reads_tables:
-  - eod_batches
+  reads_tables: []
   writes_tables: []
   pii_fields: []
   compliance_tags: []
@@ -72,14 +278,37 @@ apis:
   status: provisional
   source:
     provided_by: task2_scanner
-    reference: citi_banking_backend\app\main.py:16
-- api_id: ledger_update
-  display_name: Apply ledger update.
+    reference: citi_banking_backend\app\main.py:161
+- api_id: list_transactions
+  display_name: Auto-discovered API endpoint list_transactions
   service: citi_banking_backend
   base_url: http://localhost:8000
-  path: /back-office/ledger/update
+  path: /transactions
+  method: GET
+  domain: front
+  action_type: read
+  has_side_effects: false
+  risk_level: 2
+  requires_auth: true
+  audit_required: false
+  reads_tables: []
+  writes_tables: []
+  pii_fields: []
+  compliance_tags: []
+  idempotency_key: null
+  operation_class: read
+  allowed_callers: []
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_backend\app\main.py:168
+- api_id: create_policy
+  display_name: Auto-discovered API endpoint create_policy
+  service: citi_banking_backend
+  base_url: http://localhost:8000
+  path: /policies
   method: POST
-  domain: back
+  domain: shared
   action_type: state_change
   has_side_effects: true
   risk_level: 2
@@ -96,14 +325,60 @@ apis:
   status: provisional
   source:
     provided_by: task2_scanner
-    reference: citi_banking_backend\app\main.py:22
-- api_id: store_report
-  display_name: Store a report.
+    reference: citi_banking_backend\app\main.py:172
+- api_id: list_policies
+  display_name: Auto-discovered API endpoint list_policies
   service: citi_banking_backend
   base_url: http://localhost:8000
-  path: /back-office/reports
+  path: /policies
+  method: GET
+  domain: shared
+  action_type: read
+  has_side_effects: false
+  risk_level: 2
+  requires_auth: true
+  audit_required: false
+  reads_tables: []
+  writes_tables: []
+  pii_fields: []
+  compliance_tags: []
+  idempotency_key: null
+  operation_class: read
+  allowed_callers: []
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_backend\app\main.py:183
+- api_id: search_policies
+  display_name: Auto-discovered API endpoint search_policies
+  service: citi_banking_backend
+  base_url: http://localhost:8000
+  path: /policies/search
+  method: GET
+  domain: shared
+  action_type: read
+  has_side_effects: false
+  risk_level: 2
+  requires_auth: true
+  audit_required: false
+  reads_tables: []
+  writes_tables: []
+  pii_fields: []
+  compliance_tags: []
+  idempotency_key: null
+  operation_class: read
+  allowed_callers: []
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_backend\app\main.py:192
+- api_id: create_rule
+  display_name: Auto-discovered API endpoint create_rule
+  service: citi_banking_backend
+  base_url: http://localhost:8000
+  path: /rules
   method: POST
-  domain: back
+  domain: shared
   action_type: state_change
   has_side_effects: true
   risk_level: 2
@@ -120,4 +395,51 @@ apis:
   status: provisional
   source:
     provided_by: task2_scanner
-    reference: citi_banking_backend\app\main.py:30
+    reference: citi_banking_backend\app\main.py:216
+- api_id: list_rules
+  display_name: Auto-discovered API endpoint list_rules
+  service: citi_banking_backend
+  base_url: http://localhost:8000
+  path: /rules
+  method: GET
+  domain: shared
+  action_type: read
+  has_side_effects: false
+  risk_level: 2
+  requires_auth: true
+  audit_required: false
+  reads_tables: []
+  writes_tables: []
+  pii_fields: []
+  compliance_tags: []
+  idempotency_key: null
+  operation_class: read
+  allowed_callers: []
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_backend\app\main.py:227
+- api_id: update_transaction_status
+  display_name: Auto-discovered API endpoint update_transaction_status
+  service: citi_banking_backend
+  base_url: http://localhost:8000
+  path: /transactions/{transaction_id}/status
+  method: PATCH
+  domain: front
+  action_type: state_change
+  has_side_effects: true
+  risk_level: 2
+  requires_auth: true
+  audit_required: true
+  reads_tables: []
+  writes_tables:
+  - unknown
+  pii_fields: []
+  compliance_tags: []
+  idempotency_key: null
+  operation_class: write
+  allowed_callers: []
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_backend\app\main.py:237

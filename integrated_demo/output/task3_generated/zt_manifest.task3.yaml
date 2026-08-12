@@ -5,9 +5,9 @@ metadata:
   manifest_version: 1.0.0-alpha.1
   environment: prototype
   created_at: '2026-07-26T00:00:00Z'
-  updated_at: '2026-08-12T17:46:55.347879Z'
+  updated_at: '2026-08-12T18:49:11.216702Z'
   owner: zero_trust_backplane_team
-  source_revision: task1+task2-demo-reconciled
+  source_revision: task1+task2-runtime-graph-reconciled
   description: Project-wide baseline containing current provisional architecture and
     explicit Citi replacement gaps.
 spec:
@@ -907,6 +907,396 @@ spec:
         secret_refs: []
         extensions: {}
     attributes: {}
+  - id: agent.back_office.validation_checkpoint_agent
+    type: agent
+    roles:
+    - specialist
+    domain: back_office
+    enabled: true
+    metadata:
+      display_name: validation_checkpoint_agent
+      description: Task 2 discovered subject validation_checkpoint_agent.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: citi_banking_adk\bank_adk\agents\back_office.py:9
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: validation_checkpoint_agent
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    attributes:
+      scanner_source_type: subject
+  - id: agent.back_office.ledger_update
+    type: agent
+    roles:
+    - specialist
+    domain: back_office
+    enabled: true
+    metadata:
+      display_name: ledger_update_agent
+      description: Task 2 discovered subject ledger_update_agent.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: citi_banking_adk\bank_adk\agents\back_office.py:17
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: ledger_update_agent
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    attributes:
+      scanner_source_type: subject
+  - id: agent.back_office.report_writing_agent
+    type: agent
+    roles:
+    - specialist
+    domain: back_office
+    enabled: true
+    metadata:
+      display_name: report_writing_agent
+      description: Task 2 discovered subject report_writing_agent.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: citi_banking_adk\bank_adk\agents\back_office.py:25
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: report_writing_agent
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    attributes:
+      scanner_source_type: subject
+  - id: agent.front_office.decision_making_agent
+    type: agent
+    roles:
+    - specialist
+    domain: front_office
+    enabled: true
+    metadata:
+      display_name: decision_making_agent
+      description: Task 2 discovered subject decision_making_agent.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: citi_banking_adk\bank_adk\agents\front_office.py:37
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: decision_making_agent
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    attributes:
+      scanner_source_type: subject
+  - id: service.front_office.create_customer
+    type: service
+    roles:
+    - scanner_discovered
+    domain: front_office
+    enabled: true
+    metadata:
+      display_name: create_customer
+      description: Task 2 discovered subject create_customer.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: citi_banking_backend\app\main.py:77
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: create_customer
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    attributes:
+      scanner_source_type: api
+  - id: service.shared.create_account
+    type: service
+    roles:
+    - scanner_discovered
+    domain: shared
+    enabled: true
+    metadata:
+      display_name: create_account
+      description: Task 2 discovered subject create_account.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: citi_banking_backend\app\main.py:122
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: create_account
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    attributes:
+      scanner_source_type: api
+  - id: service.shared.create_policy
+    type: service
+    roles:
+    - scanner_discovered
+    domain: shared
+    enabled: true
+    metadata:
+      display_name: create_policy
+      description: Task 2 discovered subject create_policy.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: citi_banking_backend\app\main.py:172
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: create_policy
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    attributes:
+      scanner_source_type: api
+  - id: service.shared.create_rule
+    type: service
+    roles:
+    - scanner_discovered
+    domain: shared
+    enabled: true
+    metadata:
+      display_name: create_rule
+      description: Task 2 discovered subject create_rule.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: citi_banking_backend\app\main.py:216
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: create_rule
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    attributes:
+      scanner_source_type: api
+  - id: service.front_office.update_transaction_status
+    type: service
+    roles:
+    - scanner_discovered
+    domain: front_office
+    enabled: true
+    metadata:
+      display_name: update_transaction_status
+      description: Task 2 discovered subject update_transaction_status.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: citi_banking_backend\app\main.py:237
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: update_transaction_status
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    attributes:
+      scanner_source_type: api
+  - id: agent.mid_office.mid_office_router
+    type: agent
+    roles:
+    - router
+    domain: mid_office
+    enabled: true
+    metadata:
+      display_name: mid_office_router
+      description: Task 2 discovered subject mid_office_router.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: citi_banking_adk\bank_adk\agents\mid_office.py:76
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: mid_office_router
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    attributes:
+      scanner_source_type: subject
+  - id: agent.shared.mid_office_planning_parallel
+    type: agent
+    roles:
+    - workflow
+    domain: shared
+    enabled: true
+    metadata:
+      display_name: mid_office_planning_parallel
+      description: Task 2 discovered subject mid_office_planning_parallel.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: citi_banking_adk\bank_adk\agents\workflow_agents.py:223
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: mid_office_planning_parallel
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    attributes:
+      scanner_source_type: subject
+  - id: agent.shared.mid_office_planning_workflow
+    type: agent
+    roles:
+    - workflow
+    domain: shared
+    enabled: true
+    metadata:
+      display_name: mid_office_planning_workflow
+      description: Task 2 discovered subject mid_office_planning_workflow.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: citi_banking_adk\bank_adk\agents\workflow_agents.py:228
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: mid_office_planning_workflow
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    attributes:
+      scanner_source_type: subject
+  - id: agent.shared.representative_assist_parallel
+    type: agent
+    roles:
+    - workflow
+    domain: shared
+    enabled: true
+    metadata:
+      display_name: representative_assist_parallel
+      description: Task 2 discovered subject representative_assist_parallel.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: citi_banking_adk\bank_adk\agents\workflow_agents.py:248
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: representative_assist_parallel
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    attributes:
+      scanner_source_type: subject
   resources:
   - id: resource.front_office.transaction_history
     type: data
@@ -1758,6 +2148,951 @@ spec:
         secret_refs: []
         extensions: {}
     attributes: {}
+  - id: resource.back_office.tool_validate_eod_readiness
+    type: tool
+    domain: back_office
+    classification: confidential
+    actions:
+    - name: read
+      side_effect: false
+      criticality: high
+      requires_human_approval: false
+      idempotent: true
+      parameter_schema_ref: null
+    metadata:
+      display_name: validate_eod_readiness
+      description: Task 2 discovered tool resource validate_eod_readiness.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: citi_banking_adk\bank_adk\tools\back_office_tools.py:4
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: validate_eod_readiness
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    attributes:
+      scanner_target_type: tool
+  - id: resource.back_office.tool_get_reconciliation_data
+    type: tool
+    domain: back_office
+    classification: confidential
+    actions:
+    - name: read
+      side_effect: false
+      criticality: high
+      requires_human_approval: false
+      idempotent: true
+      parameter_schema_ref: null
+    metadata:
+      display_name: get_reconciliation_data
+      description: Task 2 discovered tool resource get_reconciliation_data.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: citi_banking_adk\bank_adk\tools\back_office_tools.py:19
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: get_reconciliation_data
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    attributes:
+      scanner_target_type: tool
+  - id: resource.back_office.tool_store_report
+    type: tool
+    domain: back_office
+    classification: confidential
+    actions:
+    - name: read
+      side_effect: false
+      criticality: high
+      requires_human_approval: false
+      idempotent: true
+      parameter_schema_ref: null
+    metadata:
+      display_name: store_report
+      description: Task 2 discovered tool resource store_report.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: citi_banking_adk\bank_adk\tools\back_office_tools.py:30
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: store_report
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    attributes:
+      scanner_target_type: tool
+  - id: resource.back_office.tool_create_exception_case
+    type: tool
+    domain: back_office
+    classification: confidential
+    actions:
+    - name: read
+      side_effect: false
+      criticality: high
+      requires_human_approval: false
+      idempotent: true
+      parameter_schema_ref: null
+    metadata:
+      display_name: create_exception_case
+      description: Task 2 discovered tool resource create_exception_case.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: citi_banking_adk\bank_adk\tools\back_office_tools.py:26
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: create_exception_case
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    attributes:
+      scanner_target_type: tool
+  - id: resource.front_office.tool_get_customer_context
+    type: tool
+    domain: front_office
+    classification: confidential
+    actions:
+    - name: read
+      side_effect: false
+      criticality: high
+      requires_human_approval: false
+      idempotent: true
+      parameter_schema_ref: null
+    metadata:
+      display_name: get_customer_context
+      description: Task 2 discovered tool resource get_customer_context.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: citi_banking_adk\bank_adk\tools\customer_tools.py:8
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: get_customer_context
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    attributes:
+      scanner_target_type: tool
+  - id: resource.front_office.tool_get_transaction_context
+    type: tool
+    domain: front_office
+    classification: confidential
+    actions:
+    - name: read
+      side_effect: false
+      criticality: high
+      requires_human_approval: false
+      idempotent: true
+      parameter_schema_ref: null
+    metadata:
+      display_name: get_transaction_context
+      description: Task 2 discovered tool resource get_transaction_context.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: citi_banking_adk\bank_adk\tools\customer_tools.py:23
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: get_transaction_context
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    attributes:
+      scanner_target_type: tool
+  - id: resource.front_office.tool_list_recent_transactions
+    type: tool
+    domain: front_office
+    classification: confidential
+    actions:
+    - name: read
+      side_effect: false
+      criticality: high
+      requires_human_approval: false
+      idempotent: true
+      parameter_schema_ref: null
+    metadata:
+      display_name: list_recent_transactions
+      description: Task 2 discovered tool resource list_recent_transactions.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: citi_banking_adk\bank_adk\tools\customer_tools.py:37
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: list_recent_transactions
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    attributes:
+      scanner_target_type: tool
+  - id: resource.front_office.tool_submit_manual_review
+    type: tool
+    domain: front_office
+    classification: confidential
+    actions:
+    - name: read
+      side_effect: false
+      criticality: high
+      requires_human_approval: false
+      idempotent: true
+      parameter_schema_ref: null
+    metadata:
+      display_name: submit_manual_review
+      description: Task 2 discovered tool resource submit_manual_review.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: citi_banking_adk\bank_adk\tools\customer_tools.py:50
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: submit_manual_review
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    attributes:
+      scanner_target_type: tool
+  - id: resource.shared.tool_search_faqs
+    type: tool
+    domain: shared
+    classification: confidential
+    actions:
+    - name: search
+      side_effect: false
+      criticality: high
+      requires_human_approval: false
+      idempotent: true
+      parameter_schema_ref: null
+    metadata:
+      display_name: search_faqs
+      description: Task 2 discovered tool resource search_faqs.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: citi_banking_adk\bank_adk\tools\knowledge_tools.py:24
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: search_faqs
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    attributes:
+      scanner_target_type: tool
+  - id: resource.mid_office.tool_get_operations_snapshot
+    type: tool
+    domain: mid_office
+    classification: confidential
+    actions:
+    - name: read
+      side_effect: false
+      criticality: high
+      requires_human_approval: false
+      idempotent: true
+      parameter_schema_ref: null
+    metadata:
+      display_name: get_operations_snapshot
+      description: Task 2 discovered tool resource get_operations_snapshot.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: citi_banking_adk\bank_adk\tools\ops_tools.py:10
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: get_operations_snapshot
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    attributes:
+      scanner_target_type: tool
+  - id: resource.mid_office.tool_persist_validated_schedule
+    type: tool
+    domain: mid_office
+    classification: confidential
+    actions:
+    - name: read
+      side_effect: false
+      criticality: high
+      requires_human_approval: false
+      idempotent: true
+      parameter_schema_ref: null
+    metadata:
+      display_name: persist_validated_schedule
+      description: Task 2 discovered tool resource persist_validated_schedule.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: citi_banking_adk\bank_adk\tools\ops_tools.py:17
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: persist_validated_schedule
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    attributes:
+      scanner_target_type: tool
+  - id: resource.mid_office.tool_get_support_playbooks
+    type: tool
+    domain: mid_office
+    classification: confidential
+    actions:
+    - name: read
+      side_effect: false
+      criticality: high
+      requires_human_approval: false
+      idempotent: true
+      parameter_schema_ref: null
+    metadata:
+      display_name: get_support_playbooks
+      description: Task 2 discovered tool resource get_support_playbooks.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: citi_banking_adk\bank_adk\tools\ops_tools.py:21
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: get_support_playbooks
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    attributes:
+      scanner_target_type: tool
+  - id: resource.mid_office.tool_search_product_catalog
+    type: tool
+    domain: mid_office
+    classification: confidential
+    actions:
+    - name: search
+      side_effect: false
+      criticality: high
+      requires_human_approval: false
+      idempotent: true
+      parameter_schema_ref: null
+    metadata:
+      display_name: search_product_catalog
+      description: Task 2 discovered tool resource search_product_catalog.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: citi_banking_adk\bank_adk\tools\csr_tools.py:28
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: search_product_catalog
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    attributes:
+      scanner_target_type: tool
+  - id: resource.mid_office.tool_search_loan_playbooks
+    type: tool
+    domain: mid_office
+    classification: confidential
+    actions:
+    - name: search
+      side_effect: false
+      criticality: high
+      requires_human_approval: false
+      idempotent: true
+      parameter_schema_ref: null
+    metadata:
+      display_name: search_loan_playbooks
+      description: Task 2 discovered tool resource search_loan_playbooks.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: citi_banking_adk\bank_adk\tools\csr_tools.py:33
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: search_loan_playbooks
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    attributes:
+      scanner_target_type: tool
+  - id: resource.shared.tool_search_policies
+    type: tool
+    domain: shared
+    classification: confidential
+    actions:
+    - name: search
+      side_effect: false
+      criticality: high
+      requires_human_approval: false
+      idempotent: true
+      parameter_schema_ref: null
+    metadata:
+      display_name: search_policies
+      description: Task 2 discovered tool resource search_policies.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: citi_banking_adk\bank_adk\tools\knowledge_tools.py:13
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: search_policies
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    attributes:
+      scanner_target_type: tool
+  - id: resource.shared.database_unknown_database
+    type: database
+    domain: shared
+    classification: internal
+    actions:
+    - name: update
+      side_effect: true
+      criticality: critical
+      requires_human_approval: true
+      idempotent: false
+      parameter_schema_ref: null
+    metadata:
+      display_name: unknown
+      description: Task 2 discovered database resource unknown.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: Task 2 scanner
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: unknown
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    attributes:
+      scanner_target_type: database
+  - id: resource.shared.other_representative_assistant_workflow
+    type: other
+    domain: shared
+    classification: confidential
+    actions:
+    - name: read
+      side_effect: false
+      criticality: high
+      requires_human_approval: false
+      idempotent: true
+      parameter_schema_ref: null
+    metadata:
+      display_name: representative_assistant_workflow
+      description: Task 2 discovered subject resource representative_assistant_workflow.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: citi_banking_adk\bank_adk\agents\workflow_agents.py:258
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: representative_assistant_workflow
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    attributes:
+      scanner_target_type: subject
+  - id: resource.mid_office.other_validation_agent
+    type: other
+    domain: mid_office
+    classification: confidential
+    actions:
+    - name: read
+      side_effect: false
+      criticality: high
+      requires_human_approval: false
+      idempotent: true
+      parameter_schema_ref: null
+    metadata:
+      display_name: validation_agent
+      description: Task 2 discovered subject resource validation_agent.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: citi_banking_adk\bank_adk\agents\mid_office.py:26
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: validation_agent
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    attributes:
+      scanner_target_type: subject
+  - id: resource.mid_office.other_support_guidance_agent
+    type: other
+    domain: mid_office
+    classification: confidential
+    actions:
+    - name: read
+      side_effect: false
+      criticality: high
+      requires_human_approval: false
+      idempotent: true
+      parameter_schema_ref: null
+    metadata:
+      display_name: support_guidance_agent
+      description: Task 2 discovered subject resource support_guidance_agent.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: citi_banking_adk\bank_adk\agents\mid_office.py:31
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: support_guidance_agent
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    attributes:
+      scanner_target_type: subject
+  - id: resource.mid_office.other_data_analysis_agent
+    type: other
+    domain: mid_office
+    classification: confidential
+    actions:
+    - name: read
+      side_effect: false
+      criticality: high
+      requires_human_approval: false
+      idempotent: true
+      parameter_schema_ref: null
+    metadata:
+      display_name: data_analysis_agent
+      description: Task 2 discovered subject resource data_analysis_agent.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: citi_banking_adk\bank_adk\agents\mid_office.py:11
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: data_analysis_agent
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    attributes:
+      scanner_target_type: subject
+  - id: resource.mid_office.other_forecasting_agent
+    type: other
+    domain: mid_office
+    classification: confidential
+    actions:
+    - name: read
+      side_effect: false
+      criticality: high
+      requires_human_approval: false
+      idempotent: true
+      parameter_schema_ref: null
+    metadata:
+      display_name: forecasting_agent
+      description: Task 2 discovered subject resource forecasting_agent.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: citi_banking_adk\bank_adk\agents\mid_office.py:16
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: forecasting_agent
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    attributes:
+      scanner_target_type: subject
+  - id: resource.mid_office.other_staff_scheduling_agent
+    type: other
+    domain: mid_office
+    classification: confidential
+    actions:
+    - name: read
+      side_effect: false
+      criticality: high
+      requires_human_approval: false
+      idempotent: true
+      parameter_schema_ref: null
+    metadata:
+      display_name: staff_scheduling_agent
+      description: Task 2 discovered subject resource staff_scheduling_agent.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: citi_banking_adk\bank_adk\agents\mid_office.py:21
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: staff_scheduling_agent
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    attributes:
+      scanner_target_type: subject
+  - id: resource.mid_office.other_planning_summary_agent
+    type: other
+    domain: mid_office
+    classification: confidential
+    actions:
+    - name: read
+      side_effect: false
+      criticality: high
+      requires_human_approval: false
+      idempotent: true
+      parameter_schema_ref: null
+    metadata:
+      display_name: planning_summary_agent
+      description: Task 2 discovered subject resource planning_summary_agent.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: citi_banking_adk\bank_adk\agents\mid_office.py:36
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: planning_summary_agent
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    attributes:
+      scanner_target_type: subject
+  - id: resource.mid_office.other_financial_data_agent
+    type: other
+    domain: mid_office
+    classification: confidential
+    actions:
+    - name: read
+      side_effect: false
+      criticality: high
+      requires_human_approval: false
+      idempotent: true
+      parameter_schema_ref: null
+    metadata:
+      display_name: financial_data_agent
+      description: Task 2 discovered subject resource financial_data_agent.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: citi_banking_adk\bank_adk\agents\mid_office.py:49
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: financial_data_agent
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    attributes:
+      scanner_target_type: subject
+  - id: resource.mid_office.other_recommender_agent
+    type: other
+    domain: mid_office
+    classification: confidential
+    actions:
+    - name: read
+      side_effect: false
+      criticality: high
+      requires_human_approval: false
+      idempotent: true
+      parameter_schema_ref: null
+    metadata:
+      display_name: recommender_agent
+      description: Task 2 discovered subject resource recommender_agent.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: citi_banking_adk\bank_adk\agents\mid_office.py:53
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: recommender_agent
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    attributes:
+      scanner_target_type: subject
+  - id: resource.mid_office.other_loan_agent
+    type: other
+    domain: mid_office
+    classification: confidential
+    actions:
+    - name: read
+      side_effect: false
+      criticality: high
+      requires_human_approval: false
+      idempotent: true
+      parameter_schema_ref: null
+    metadata:
+      display_name: loan_agent
+      description: Task 2 discovered subject resource loan_agent.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: citi_banking_adk\bank_adk\agents\mid_office.py:57
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: loan_agent
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    attributes:
+      scanner_target_type: subject
+  - id: resource.mid_office.other_risk_compliance_agent
+    type: other
+    domain: mid_office
+    classification: confidential
+    actions:
+    - name: read
+      side_effect: false
+      criticality: high
+      requires_human_approval: false
+      idempotent: true
+      parameter_schema_ref: null
+    metadata:
+      display_name: risk_compliance_agent
+      description: Task 2 discovered subject resource risk_compliance_agent.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: citi_banking_adk\bank_adk\agents\mid_office.py:61
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: risk_compliance_agent
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    attributes:
+      scanner_target_type: subject
   interfaces:
   - id: interface.http.pdp_authorize
     type: http
@@ -2265,6 +3600,474 @@ spec:
     retry_policy:
       max_attempts: 1
     extensions: {}
+  - id: interface.python_function.validate_eod_readiness
+    type: python_function
+    metadata:
+      display_name: validate_eod_readiness
+      description: Task 2 discovered tool interface validate_eod_readiness.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: citi_banking_adk\bank_adk\tools\back_office_tools.py:4
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: validate_eod_readiness
+        endpoint: null
+        function_name: validate_eod_readiness
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    authentication:
+      method: placeholder
+      issuer: null
+      audience: null
+      subject_claim: null
+      credential_ref: null
+      jwks_uri: null
+      extensions: {}
+    request_schema_ref: null
+    response_schema_ref: null
+    timeout_ms: 5000
+    retry_policy:
+      max_attempts: 1
+    extensions:
+      scanner_discovered: true
+  - id: interface.python_function.get_reconciliation_data
+    type: python_function
+    metadata:
+      display_name: get_reconciliation_data
+      description: Task 2 discovered tool interface get_reconciliation_data.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: citi_banking_adk\bank_adk\tools\back_office_tools.py:19
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: get_reconciliation_data
+        endpoint: null
+        function_name: get_reconciliation_data
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    authentication:
+      method: placeholder
+      issuer: null
+      audience: null
+      subject_claim: null
+      credential_ref: null
+      jwks_uri: null
+      extensions: {}
+    request_schema_ref: null
+    response_schema_ref: null
+    timeout_ms: 5000
+    retry_policy:
+      max_attempts: 1
+    extensions:
+      scanner_discovered: true
+  - id: interface.python_function.get_transaction_context
+    type: python_function
+    metadata:
+      display_name: get_transaction_context
+      description: Task 2 discovered tool interface get_transaction_context.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: citi_banking_adk\bank_adk\tools\customer_tools.py:23
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: get_transaction_context
+        endpoint: null
+        function_name: get_transaction_context
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    authentication:
+      method: placeholder
+      issuer: null
+      audience: null
+      subject_claim: null
+      credential_ref: null
+      jwks_uri: null
+      extensions: {}
+    request_schema_ref: null
+    response_schema_ref: null
+    timeout_ms: 5000
+    retry_policy:
+      max_attempts: 1
+    extensions:
+      scanner_discovered: true
+  - id: interface.python_function.list_recent_transactions
+    type: python_function
+    metadata:
+      display_name: list_recent_transactions
+      description: Task 2 discovered tool interface list_recent_transactions.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: citi_banking_adk\bank_adk\tools\customer_tools.py:37
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: list_recent_transactions
+        endpoint: null
+        function_name: list_recent_transactions
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    authentication:
+      method: placeholder
+      issuer: null
+      audience: null
+      subject_claim: null
+      credential_ref: null
+      jwks_uri: null
+      extensions: {}
+    request_schema_ref: null
+    response_schema_ref: null
+    timeout_ms: 5000
+    retry_policy:
+      max_attempts: 1
+    extensions:
+      scanner_discovered: true
+  - id: interface.python_function.submit_manual_review
+    type: python_function
+    metadata:
+      display_name: submit_manual_review
+      description: Task 2 discovered tool interface submit_manual_review.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: citi_banking_adk\bank_adk\tools\customer_tools.py:50
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: submit_manual_review
+        endpoint: null
+        function_name: submit_manual_review
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    authentication:
+      method: placeholder
+      issuer: null
+      audience: null
+      subject_claim: null
+      credential_ref: null
+      jwks_uri: null
+      extensions: {}
+    request_schema_ref: null
+    response_schema_ref: null
+    timeout_ms: 5000
+    retry_policy:
+      max_attempts: 1
+    extensions:
+      scanner_discovered: true
+  - id: interface.python_function.search_faqs
+    type: python_function
+    metadata:
+      display_name: search_faqs
+      description: Task 2 discovered tool interface search_faqs.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: citi_banking_adk\bank_adk\tools\knowledge_tools.py:24
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: search_faqs
+        endpoint: null
+        function_name: search_faqs
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    authentication:
+      method: placeholder
+      issuer: null
+      audience: null
+      subject_claim: null
+      credential_ref: null
+      jwks_uri: null
+      extensions: {}
+    request_schema_ref: null
+    response_schema_ref: null
+    timeout_ms: 5000
+    retry_policy:
+      max_attempts: 1
+    extensions:
+      scanner_discovered: true
+  - id: interface.python_function.get_operations_snapshot
+    type: python_function
+    metadata:
+      display_name: get_operations_snapshot
+      description: Task 2 discovered tool interface get_operations_snapshot.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: citi_banking_adk\bank_adk\tools\ops_tools.py:10
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: get_operations_snapshot
+        endpoint: null
+        function_name: get_operations_snapshot
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    authentication:
+      method: placeholder
+      issuer: null
+      audience: null
+      subject_claim: null
+      credential_ref: null
+      jwks_uri: null
+      extensions: {}
+    request_schema_ref: null
+    response_schema_ref: null
+    timeout_ms: 5000
+    retry_policy:
+      max_attempts: 1
+    extensions:
+      scanner_discovered: true
+  - id: interface.python_function.persist_validated_schedule
+    type: python_function
+    metadata:
+      display_name: persist_validated_schedule
+      description: Task 2 discovered tool interface persist_validated_schedule.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: citi_banking_adk\bank_adk\tools\ops_tools.py:17
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: persist_validated_schedule
+        endpoint: null
+        function_name: persist_validated_schedule
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    authentication:
+      method: placeholder
+      issuer: null
+      audience: null
+      subject_claim: null
+      credential_ref: null
+      jwks_uri: null
+      extensions: {}
+    request_schema_ref: null
+    response_schema_ref: null
+    timeout_ms: 5000
+    retry_policy:
+      max_attempts: 1
+    extensions:
+      scanner_discovered: true
+  - id: interface.python_function.get_support_playbooks
+    type: python_function
+    metadata:
+      display_name: get_support_playbooks
+      description: Task 2 discovered tool interface get_support_playbooks.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: citi_banking_adk\bank_adk\tools\ops_tools.py:21
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: get_support_playbooks
+        endpoint: null
+        function_name: get_support_playbooks
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    authentication:
+      method: placeholder
+      issuer: null
+      audience: null
+      subject_claim: null
+      credential_ref: null
+      jwks_uri: null
+      extensions: {}
+    request_schema_ref: null
+    response_schema_ref: null
+    timeout_ms: 5000
+    retry_policy:
+      max_attempts: 1
+    extensions:
+      scanner_discovered: true
+  - id: interface.python_function.get_customer_financial_profile
+    type: python_function
+    metadata:
+      display_name: get_customer_financial_profile
+      description: Task 2 discovered tool interface get_customer_financial_profile.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: citi_banking_adk\bank_adk\tools\csr_tools.py:14
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: get_customer_financial_profile
+        endpoint: null
+        function_name: get_customer_financial_profile
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    authentication:
+      method: placeholder
+      issuer: null
+      audience: null
+      subject_claim: null
+      credential_ref: null
+      jwks_uri: null
+      extensions: {}
+    request_schema_ref: null
+    response_schema_ref: null
+    timeout_ms: 5000
+    retry_policy:
+      max_attempts: 1
+    extensions:
+      scanner_discovered: true
+  - id: interface.python_function.search_product_catalog
+    type: python_function
+    metadata:
+      display_name: search_product_catalog
+      description: Task 2 discovered tool interface search_product_catalog.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: citi_banking_adk\bank_adk\tools\csr_tools.py:28
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: search_product_catalog
+        endpoint: null
+        function_name: search_product_catalog
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    authentication:
+      method: placeholder
+      issuer: null
+      audience: null
+      subject_claim: null
+      credential_ref: null
+      jwks_uri: null
+      extensions: {}
+    request_schema_ref: null
+    response_schema_ref: null
+    timeout_ms: 5000
+    retry_policy:
+      max_attempts: 1
+    extensions:
+      scanner_discovered: true
+  - id: interface.python_function.search_loan_playbooks
+    type: python_function
+    metadata:
+      display_name: search_loan_playbooks
+      description: Task 2 discovered tool interface search_loan_playbooks.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: citi_banking_adk\bank_adk\tools\csr_tools.py:33
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: search_loan_playbooks
+        endpoint: null
+        function_name: search_loan_playbooks
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    authentication:
+      method: placeholder
+      issuer: null
+      audience: null
+      subject_claim: null
+      credential_ref: null
+      jwks_uri: null
+      extensions: {}
+    request_schema_ref: null
+    response_schema_ref: null
+    timeout_ms: 5000
+    retry_policy:
+      max_attempts: 1
+    extensions:
+      scanner_discovered: true
   workflows:
   - id: workflow.front_office.customer_transaction
     domain: front_office
@@ -2411,37 +4214,653 @@ spec:
       conditions: {}
     attributes: {}
   interactions:
-  - id: edge.customer_transaction.get_context
-    caller_id: agent.front_office.customer_service
-    target_id: resource.front_office.customer_context
-    resource_id: resource.front_office.customer_context
+  - id: edge.scanner.scan_edge_001_validation_checkpoint_agent_validate_eod_readiness
+    caller_id: agent.back_office.validation_checkpoint_agent
+    target_id: resource.back_office.tool_validate_eod_readiness
+    resource_id: resource.back_office.tool_validate_eod_readiness
     action: read
-    workflow_id: workflow.front_office.customer_transaction
-    interface_id: interface.mcp.get_customer_context
+    workflow_id: null
+    interface_id: interface.python_function.validate_eod_readiness
+    trust_boundary_id: null
+    risk: high
+    data_types:
+    - service
+    side_effect: false
+    pep:
+      required: true
+      type: tool
+      mode: enforce
+      placement_id: pep.scanner.scan_edge_001_validation_checkpoint_agent_validate_eod_readiness
+      fail_mode: closed
+    metadata:
+      display_name: Scanner Edge validation_checkpoint_agent -> validate_eod_readiness
+      description: Task 2 discovered agent_to_tool edge.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: task2_scanner
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    attributes:
+      task2_edge_id: edge_001
+      task2_edge_type: agent_to_tool
+      task2_from_id: validation_checkpoint_agent
+      task2_to_id: validate_eod_readiness
+      task2_operation_class: read
+      banking_repo: C:\Users\wangzhaoqi\Desktop\Citi_P3
+  - id: edge.scanner.scan_edge_002_eod_processing_agent_get_eod_batch
+    caller_id: agent.back_office.eod
+    target_id: resource.back_office.eod_batches
+    resource_id: resource.back_office.eod_batches
+    action: read
+    workflow_id: workflow.back_office.eod_processing
+    interface_id: interface.mcp.get_eod_batches
     trust_boundary_id: boundary.agent.mcp
-    risk: medium
-    data_types: []
+    risk: high
+    data_types:
+    - operational
     side_effect: false
     pep:
       required: true
       type: mcp
       mode: enforce
-      placement_id: pep.customer_transaction.get_context
+      placement_id: pep.eod_processing.get_batches
       fail_mode: closed
     metadata:
-      display_name: Edge Customer_Transaction Get_Context
-      description: Protected interaction edge.
+      display_name: Scanner Edge eod_processing_agent -> get_eod_batch
+      description: Task 2 discovered agent_to_tool edge.
       status: provisional
       source:
-        provided_by: project_architecture
-        reference: Banking Architecture and current Task 4 prototype
+        provided_by: task2_scanner
+        reference: task2_scanner
         verified_at: null
-        notes: ''
+        notes: Scanner-derived record merged by integrated_demo only.
       owner: null
-      tags: []
+      tags:
+      - task2_discovered
       extensions: {}
-    attributes: {}
-  - id: edge.customer_transaction.execute_transfer
+    attributes:
+      task2_edge_id: edge_002
+      task2_edge_type: agent_to_tool
+      task2_from_id: eod_processing_agent
+      task2_to_id: get_eod_batch
+      task2_operation_class: read
+      banking_repo: C:\Users\wangzhaoqi\Desktop\Citi_P3
+  - id: edge.scanner.scan_edge_003_ledger_update_agent_apply_ledger_updates
+    caller_id: agent.back_office.ledger_update
+    target_id: resource.back_office.ledger
+    resource_id: resource.back_office.ledger
+    action: update
+    workflow_id: workflow.back_office.eod_processing
+    interface_id: interface.mcp.ledger_update
+    trust_boundary_id: boundary.agent.mcp
+    risk: high
+    data_types:
+    - financial
+    side_effect: true
+    pep:
+      required: true
+      type: mcp
+      mode: enforce
+      placement_id: pep.ledger_update.apply_ledger_updates
+      fail_mode: closed
+    metadata:
+      display_name: Scanner Edge ledger_update_agent -> apply_ledger_updates
+      description: Task 2 discovered agent_to_tool edge.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: task2_scanner
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    attributes:
+      task2_edge_id: edge_003
+      task2_edge_type: agent_to_tool
+      task2_from_id: ledger_update_agent
+      task2_to_id: apply_ledger_updates
+      task2_operation_class: write
+      banking_repo: C:\Users\wangzhaoqi\Desktop\Citi_P3
+  - id: edge.scanner.scan_edge_004_reconciliation_agent_get_reconciliation_data
+    caller_id: agent.back_office.reconciliation
+    target_id: resource.back_office.tool_get_reconciliation_data
+    resource_id: resource.back_office.tool_get_reconciliation_data
+    action: read
+    workflow_id: null
+    interface_id: interface.python_function.get_reconciliation_data
+    trust_boundary_id: null
+    risk: high
+    data_types:
+    - operational
+    side_effect: false
+    pep:
+      required: true
+      type: tool
+      mode: enforce
+      placement_id: pep.scanner.scan_edge_004_reconciliation_agent_get_reconciliation_data
+      fail_mode: closed
+    metadata:
+      display_name: Scanner Edge reconciliation_agent -> get_reconciliation_data
+      description: Task 2 discovered agent_to_tool edge.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: task2_scanner
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    attributes:
+      task2_edge_id: edge_004
+      task2_edge_type: agent_to_tool
+      task2_from_id: reconciliation_agent
+      task2_to_id: get_reconciliation_data
+      task2_operation_class: read
+      banking_repo: C:\Users\wangzhaoqi\Desktop\Citi_P3
+  - id: edge.scanner.scan_edge_005_report_writing_agent_store_report
+    caller_id: agent.back_office.report_writing_agent
+    target_id: resource.back_office.tool_store_report
+    resource_id: resource.back_office.tool_store_report
+    action: read
+    workflow_id: null
+    interface_id: interface.mcp.store_report
+    trust_boundary_id: boundary.agent.mcp
+    risk: high
+    data_types:
+    - service
+    side_effect: false
+    pep:
+      required: true
+      type: mcp
+      mode: enforce
+      placement_id: pep.scanner.scan_edge_005_report_writing_agent_store_report
+      fail_mode: closed
+    metadata:
+      display_name: Scanner Edge report_writing_agent -> store_report
+      description: Task 2 discovered agent_to_tool edge.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: task2_scanner
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    attributes:
+      task2_edge_id: edge_005
+      task2_edge_type: agent_to_tool
+      task2_from_id: report_writing_agent
+      task2_to_id: store_report
+      task2_operation_class: read
+      banking_repo: C:\Users\wangzhaoqi\Desktop\Citi_P3
+  - id: edge.scanner.scan_edge_006_exception_agent_create_exception_case
+    caller_id: agent.back_office.exception
+    target_id: resource.back_office.tool_create_exception_case
+    resource_id: resource.back_office.tool_create_exception_case
+    action: read
+    workflow_id: null
+    interface_id: interface.mcp.create_exception_case
+    trust_boundary_id: boundary.agent.mcp
+    risk: high
+    data_types:
+    - service
+    side_effect: false
+    pep:
+      required: true
+      type: mcp
+      mode: enforce
+      placement_id: pep.scanner.scan_edge_006_exception_agent_create_exception_case
+      fail_mode: closed
+    metadata:
+      display_name: Scanner Edge exception_agent -> create_exception_case
+      description: Task 2 discovered agent_to_tool edge.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: task2_scanner
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    attributes:
+      task2_edge_id: edge_006
+      task2_edge_type: agent_to_tool
+      task2_from_id: exception_agent
+      task2_to_id: create_exception_case
+      task2_operation_class: read
+      banking_repo: C:\Users\wangzhaoqi\Desktop\Citi_P3
+  - id: edge.scanner.scan_edge_007_transaction_monitoring_agent_get_customer_context
+    caller_id: agent.front_office.transaction_monitoring
+    target_id: resource.front_office.tool_get_customer_context
+    resource_id: resource.front_office.tool_get_customer_context
+    action: read
+    workflow_id: null
+    interface_id: interface.mcp.get_customer_context
+    trust_boundary_id: boundary.agent.mcp
+    risk: high
+    data_types:
+    - operational
+    side_effect: false
+    pep:
+      required: true
+      type: mcp
+      mode: enforce
+      placement_id: pep.scanner.scan_edge_007_transaction_monitoring_agent_get_customer_context
+      fail_mode: closed
+    metadata:
+      display_name: Scanner Edge transaction_monitoring_agent -> get_customer_context
+      description: Task 2 discovered agent_to_tool edge.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: task2_scanner
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    attributes:
+      task2_edge_id: edge_007
+      task2_edge_type: agent_to_tool
+      task2_from_id: transaction_monitoring_agent
+      task2_to_id: get_customer_context
+      task2_operation_class: read
+      banking_repo: C:\Users\wangzhaoqi\Desktop\Citi_P3
+  - id: edge.scanner.scan_edge_008_transaction_monitoring_agent_get_transaction_context
+    caller_id: agent.front_office.transaction_monitoring
+    target_id: resource.front_office.tool_get_transaction_context
+    resource_id: resource.front_office.tool_get_transaction_context
+    action: read
+    workflow_id: null
+    interface_id: interface.python_function.get_transaction_context
+    trust_boundary_id: null
+    risk: high
+    data_types:
+    - operational
+    side_effect: false
+    pep:
+      required: true
+      type: tool
+      mode: enforce
+      placement_id: pep.scanner.scan_edge_008_transaction_monitoring_agent_get_transaction_context
+      fail_mode: closed
+    metadata:
+      display_name: Scanner Edge transaction_monitoring_agent -> get_transaction_context
+      description: Task 2 discovered agent_to_tool edge.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: task2_scanner
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    attributes:
+      task2_edge_id: edge_008
+      task2_edge_type: agent_to_tool
+      task2_from_id: transaction_monitoring_agent
+      task2_to_id: get_transaction_context
+      task2_operation_class: read
+      banking_repo: C:\Users\wangzhaoqi\Desktop\Citi_P3
+  - id: edge.scanner.scan_edge_009_transaction_monitoring_agent_list_recent_transactions
+    caller_id: agent.front_office.transaction_monitoring
+    target_id: resource.front_office.tool_list_recent_transactions
+    resource_id: resource.front_office.tool_list_recent_transactions
+    action: read
+    workflow_id: null
+    interface_id: interface.python_function.list_recent_transactions
+    trust_boundary_id: null
+    risk: high
+    data_types:
+    - operational
+    side_effect: false
+    pep:
+      required: true
+      type: tool
+      mode: enforce
+      placement_id: pep.scanner.scan_edge_009_transaction_monitoring_agent_list_recent_transactions
+      fail_mode: closed
+    metadata:
+      display_name: Scanner Edge transaction_monitoring_agent -> list_recent_transactions
+      description: Task 2 discovered agent_to_tool edge.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: task2_scanner
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    attributes:
+      task2_edge_id: edge_009
+      task2_edge_type: agent_to_tool
+      task2_from_id: transaction_monitoring_agent
+      task2_to_id: list_recent_transactions
+      task2_operation_class: read
+      banking_repo: C:\Users\wangzhaoqi\Desktop\Citi_P3
+  - id: edge.scanner.scan_edge_010_fraud_detection_agent_get_customer_context
+    caller_id: agent.front_office.fraud
+    target_id: resource.front_office.tool_get_customer_context
+    resource_id: resource.front_office.tool_get_customer_context
+    action: read
+    workflow_id: null
+    interface_id: interface.mcp.get_customer_context
+    trust_boundary_id: boundary.agent.mcp
+    risk: high
+    data_types:
+    - operational
+    side_effect: false
+    pep:
+      required: true
+      type: mcp
+      mode: enforce
+      placement_id: pep.scanner.scan_edge_010_fraud_detection_agent_get_customer_context
+      fail_mode: closed
+    metadata:
+      display_name: Scanner Edge fraud_detection_agent -> get_customer_context
+      description: Task 2 discovered agent_to_tool edge.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: task2_scanner
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    attributes:
+      task2_edge_id: edge_010
+      task2_edge_type: agent_to_tool
+      task2_from_id: fraud_detection_agent
+      task2_to_id: get_customer_context
+      task2_operation_class: read
+      banking_repo: C:\Users\wangzhaoqi\Desktop\Citi_P3
+  - id: edge.scanner.scan_edge_011_fraud_detection_agent_get_transaction_context
+    caller_id: agent.front_office.fraud
+    target_id: resource.front_office.transaction_history
+    resource_id: resource.front_office.transaction_history
+    action: read
+    workflow_id: workflow.front_office.fraud_review
+    interface_id: interface.python_function.get_transaction_context
+    trust_boundary_id: null
+    risk: high
+    data_types:
+    - operational
+    side_effect: false
+    pep:
+      required: true
+      type: tool
+      mode: enforce
+      placement_id: pep.fraud_review.read_history
+      fail_mode: closed
+    metadata:
+      display_name: Scanner Edge fraud_detection_agent -> get_transaction_context
+      description: Task 2 discovered agent_to_tool edge.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: task2_scanner
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    attributes:
+      task2_edge_id: edge_011
+      task2_edge_type: agent_to_tool
+      task2_from_id: fraud_detection_agent
+      task2_to_id: get_transaction_context
+      task2_operation_class: read
+      banking_repo: C:\Users\wangzhaoqi\Desktop\Citi_P3
+  - id: edge.scanner.scan_edge_012_fraud_detection_agent_list_recent_transactions
+    caller_id: agent.front_office.fraud
+    target_id: resource.front_office.tool_list_recent_transactions
+    resource_id: resource.front_office.tool_list_recent_transactions
+    action: read
+    workflow_id: null
+    interface_id: interface.python_function.list_recent_transactions
+    trust_boundary_id: null
+    risk: high
+    data_types:
+    - operational
+    side_effect: false
+    pep:
+      required: true
+      type: tool
+      mode: enforce
+      placement_id: pep.scanner.scan_edge_012_fraud_detection_agent_list_recent_transactions
+      fail_mode: closed
+    metadata:
+      display_name: Scanner Edge fraud_detection_agent -> list_recent_transactions
+      description: Task 2 discovered agent_to_tool edge.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: task2_scanner
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    attributes:
+      task2_edge_id: edge_012
+      task2_edge_type: agent_to_tool
+      task2_from_id: fraud_detection_agent
+      task2_to_id: list_recent_transactions
+      task2_operation_class: read
+      banking_repo: C:\Users\wangzhaoqi\Desktop\Citi_P3
+  - id: edge.scanner.scan_edge_013_compliance_agent_search_policies
+    caller_id: agent.front_office.compliance
+    target_id: resource.front_office.policy_knowledge_base
+    resource_id: resource.front_office.policy_knowledge_base
+    action: search
+    workflow_id: workflow.front_office.fraud_review
+    interface_id: interface.mcp.search_policies
+    trust_boundary_id: boundary.agent.mcp
+    risk: high
+    data_types:
+    - operational
+    side_effect: false
+    pep:
+      required: true
+      type: mcp
+      mode: enforce
+      placement_id: pep.fraud_review.policy_search
+      fail_mode: closed
+    metadata:
+      display_name: Scanner Edge compliance_agent -> search_policies
+      description: Task 2 discovered agent_to_tool edge.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: task2_scanner
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    attributes:
+      task2_edge_id: edge_013
+      task2_edge_type: agent_to_tool
+      task2_from_id: compliance_agent
+      task2_to_id: search_policies
+      task2_operation_class: read
+      banking_repo: C:\Users\wangzhaoqi\Desktop\Citi_P3
+  - id: edge.scanner.scan_edge_014_compliance_agent_get_customer_context
+    caller_id: agent.front_office.compliance
+    target_id: resource.front_office.tool_get_customer_context
+    resource_id: resource.front_office.tool_get_customer_context
+    action: read
+    workflow_id: null
+    interface_id: interface.mcp.get_customer_context
+    trust_boundary_id: boundary.agent.mcp
+    risk: high
+    data_types:
+    - operational
+    side_effect: false
+    pep:
+      required: true
+      type: mcp
+      mode: enforce
+      placement_id: pep.scanner.scan_edge_014_compliance_agent_get_customer_context
+      fail_mode: closed
+    metadata:
+      display_name: Scanner Edge compliance_agent -> get_customer_context
+      description: Task 2 discovered agent_to_tool edge.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: task2_scanner
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    attributes:
+      task2_edge_id: edge_014
+      task2_edge_type: agent_to_tool
+      task2_from_id: compliance_agent
+      task2_to_id: get_customer_context
+      task2_operation_class: read
+      banking_repo: C:\Users\wangzhaoqi\Desktop\Citi_P3
+  - id: edge.scanner.scan_edge_015_compliance_agent_get_transaction_context
+    caller_id: agent.front_office.compliance
+    target_id: resource.front_office.tool_get_transaction_context
+    resource_id: resource.front_office.tool_get_transaction_context
+    action: read
+    workflow_id: null
+    interface_id: interface.python_function.get_transaction_context
+    trust_boundary_id: null
+    risk: high
+    data_types:
+    - operational
+    side_effect: false
+    pep:
+      required: true
+      type: tool
+      mode: enforce
+      placement_id: pep.scanner.scan_edge_015_compliance_agent_get_transaction_context
+      fail_mode: closed
+    metadata:
+      display_name: Scanner Edge compliance_agent -> get_transaction_context
+      description: Task 2 discovered agent_to_tool edge.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: task2_scanner
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    attributes:
+      task2_edge_id: edge_015
+      task2_edge_type: agent_to_tool
+      task2_from_id: compliance_agent
+      task2_to_id: get_transaction_context
+      task2_operation_class: read
+      banking_repo: C:\Users\wangzhaoqi\Desktop\Citi_P3
+  - id: edge.scanner.scan_edge_016_decision_making_agent_submit_manual_review
+    caller_id: agent.front_office.decision_making_agent
+    target_id: resource.front_office.tool_submit_manual_review
+    resource_id: resource.front_office.tool_submit_manual_review
+    action: read
+    workflow_id: null
+    interface_id: interface.python_function.submit_manual_review
+    trust_boundary_id: null
+    risk: high
+    data_types:
+    - service
+    side_effect: false
+    pep:
+      required: true
+      type: tool
+      mode: enforce
+      placement_id: pep.scanner.scan_edge_016_decision_making_agent_submit_manual_review
+      fail_mode: closed
+    metadata:
+      display_name: Scanner Edge decision_making_agent -> submit_manual_review
+      description: Task 2 discovered agent_to_tool edge.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: task2_scanner
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    attributes:
+      task2_edge_id: edge_016
+      task2_edge_type: agent_to_tool
+      task2_from_id: decision_making_agent
+      task2_to_id: submit_manual_review
+      task2_operation_class: read
+      banking_repo: C:\Users\wangzhaoqi\Desktop\Citi_P3
+  - id: edge.scanner.scan_edge_017_knowledge_base_agent_search_faqs
+    caller_id: agent.front_office.knowledge_base
+    target_id: resource.shared.tool_search_faqs
+    resource_id: resource.shared.tool_search_faqs
+    action: search
+    workflow_id: null
+    interface_id: interface.python_function.search_faqs
+    trust_boundary_id: null
+    risk: high
+    data_types:
+    - operational
+    side_effect: false
+    pep:
+      required: true
+      type: tool
+      mode: enforce
+      placement_id: pep.scanner.scan_edge_017_knowledge_base_agent_search_faqs
+      fail_mode: closed
+    metadata:
+      display_name: Scanner Edge knowledge_base_agent -> search_faqs
+      description: Task 2 discovered agent_to_tool edge.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: task2_scanner
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    attributes:
+      task2_edge_id: edge_017
+      task2_edge_type: agent_to_tool
+      task2_from_id: knowledge_base_agent
+      task2_to_id: search_faqs
+      task2_operation_class: read
+      banking_repo: C:\Users\wangzhaoqi\Desktop\Citi_P3
+  - id: edge.scanner.scan_edge_018_transaction_processing_agent_execute_transfer
     caller_id: agent.front_office.transaction_processing
     target_id: resource.front_office.banking_transfer
     resource_id: resource.front_office.banking_transfer
@@ -2449,8 +4868,9 @@ spec:
     workflow_id: workflow.front_office.customer_transaction
     interface_id: interface.mcp.execute_transfer
     trust_boundary_id: boundary.agent.mcp
-    risk: critical
-    data_types: []
+    risk: high
+    data_types:
+    - financial
     side_effect: true
     pep:
       required: true
@@ -2459,258 +4879,937 @@ spec:
       placement_id: pep.customer_transaction.execute_transfer
       fail_mode: closed
     metadata:
-      display_name: Edge Customer_Transaction Execute_Transfer
-      description: Protected interaction edge.
+      display_name: Scanner Edge transaction_processing_agent -> execute_transfer
+      description: Task 2 discovered agent_to_tool edge.
       status: provisional
       source:
-        provided_by: project_architecture
-        reference: Banking Architecture and current Task 4 prototype
+        provided_by: task2_scanner
+        reference: task2_scanner
         verified_at: null
-        notes: ''
+        notes: Scanner-derived record merged by integrated_demo only.
       owner: null
-      tags: []
+      tags:
+      - task2_discovered
       extensions: {}
-    attributes: {}
-  - id: edge.fraud_review.read_history
-    caller_id: agent.front_office.fraud
-    target_id: resource.front_office.transaction_history
-    resource_id: resource.front_office.transaction_history
+    attributes:
+      task2_edge_id: edge_018
+      task2_edge_type: agent_to_tool
+      task2_from_id: transaction_processing_agent
+      task2_to_id: execute_transfer
+      task2_operation_class: write
+      banking_repo: C:\Users\wangzhaoqi\Desktop\Citi_P3
+  - id: edge.scanner.scan_edge_019_data_analysis_agent_get_operations_snapshot
+    caller_id: agent.mid_office.data_analysis
+    target_id: resource.mid_office.internal_operations_data
+    resource_id: resource.mid_office.internal_operations_data
     action: read
-    workflow_id: workflow.front_office.fraud_review
-    interface_id: null
-    trust_boundary_id: boundary.agent.data
-    risk: medium
-    data_types: []
+    workflow_id: null
+    interface_id: interface.python_function.get_operations_snapshot
+    trust_boundary_id: null
+    risk: high
+    data_types:
+    - operational
     side_effect: false
     pep:
       required: true
-      type: data
+      type: tool
       mode: enforce
-      placement_id: pep.fraud_review.read_history
+      placement_id: pep.mid_office.operations.read_snapshot
       fail_mode: closed
     metadata:
-      display_name: Edge Fraud_Review Read_History
-      description: Protected interaction edge.
+      display_name: Scanner Edge data_analysis_agent -> get_operations_snapshot
+      description: Task 2 discovered agent_to_tool edge.
       status: provisional
       source:
-        provided_by: project_architecture
-        reference: Banking Architecture and current Task 4 prototype
+        provided_by: task2_scanner
+        reference: task2_scanner
         verified_at: null
-        notes: ''
+        notes: Scanner-derived record merged by integrated_demo only.
       owner: null
-      tags: []
+      tags:
+      - task2_discovered
       extensions: {}
-    attributes: {}
-  - id: edge.fraud_review.search_policies
-    caller_id: agent.front_office.compliance
-    target_id: resource.front_office.policy_knowledge_base
-    resource_id: resource.front_office.policy_knowledge_base
+    attributes:
+      task2_edge_id: edge_019
+      task2_edge_type: agent_to_tool
+      task2_from_id: data_analysis_agent
+      task2_to_id: get_operations_snapshot
+      task2_operation_class: read
+      banking_repo: C:\Users\wangzhaoqi\Desktop\Citi_P3
+  - id: edge.scanner.scan_edge_020_forecasting_agent_get_operations_snapshot
+    caller_id: agent.mid_office.forecasting
+    target_id: resource.mid_office.tool_get_operations_snapshot
+    resource_id: resource.mid_office.tool_get_operations_snapshot
+    action: read
+    workflow_id: null
+    interface_id: interface.python_function.get_operations_snapshot
+    trust_boundary_id: null
+    risk: high
+    data_types:
+    - operational
+    side_effect: false
+    pep:
+      required: true
+      type: tool
+      mode: enforce
+      placement_id: pep.scanner.scan_edge_020_forecasting_agent_get_operations_snapshot
+      fail_mode: closed
+    metadata:
+      display_name: Scanner Edge forecasting_agent -> get_operations_snapshot
+      description: Task 2 discovered agent_to_tool edge.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: task2_scanner
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    attributes:
+      task2_edge_id: edge_020
+      task2_edge_type: agent_to_tool
+      task2_from_id: forecasting_agent
+      task2_to_id: get_operations_snapshot
+      task2_operation_class: read
+      banking_repo: C:\Users\wangzhaoqi\Desktop\Citi_P3
+  - id: edge.scanner.scan_edge_021_validation_agent_persist_validated_schedule
+    caller_id: agent.mid_office.validation
+    target_id: resource.mid_office.tool_persist_validated_schedule
+    resource_id: resource.mid_office.tool_persist_validated_schedule
+    action: read
+    workflow_id: null
+    interface_id: interface.python_function.persist_validated_schedule
+    trust_boundary_id: null
+    risk: high
+    data_types:
+    - service
+    side_effect: false
+    pep:
+      required: true
+      type: tool
+      mode: enforce
+      placement_id: pep.scanner.scan_edge_021_validation_agent_persist_validated_schedule
+      fail_mode: closed
+    metadata:
+      display_name: Scanner Edge validation_agent -> persist_validated_schedule
+      description: Task 2 discovered agent_to_tool edge.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: task2_scanner
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    attributes:
+      task2_edge_id: edge_021
+      task2_edge_type: agent_to_tool
+      task2_from_id: validation_agent
+      task2_to_id: persist_validated_schedule
+      task2_operation_class: read
+      banking_repo: C:\Users\wangzhaoqi\Desktop\Citi_P3
+  - id: edge.scanner.scan_edge_022_support_guidance_agent_get_support_playbooks
+    caller_id: agent.mid_office.support_guidance
+    target_id: resource.mid_office.tool_get_support_playbooks
+    resource_id: resource.mid_office.tool_get_support_playbooks
+    action: read
+    workflow_id: null
+    interface_id: interface.python_function.get_support_playbooks
+    trust_boundary_id: null
+    risk: high
+    data_types:
+    - operational
+    side_effect: false
+    pep:
+      required: true
+      type: tool
+      mode: enforce
+      placement_id: pep.scanner.scan_edge_022_support_guidance_agent_get_support_playbooks
+      fail_mode: closed
+    metadata:
+      display_name: Scanner Edge support_guidance_agent -> get_support_playbooks
+      description: Task 2 discovered agent_to_tool edge.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: task2_scanner
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    attributes:
+      task2_edge_id: edge_022
+      task2_edge_type: agent_to_tool
+      task2_from_id: support_guidance_agent
+      task2_to_id: get_support_playbooks
+      task2_operation_class: read
+      banking_repo: C:\Users\wangzhaoqi\Desktop\Citi_P3
+  - id: edge.scanner.scan_edge_023_financial_data_agent_get_customer_financial_profile
+    caller_id: agent.mid_office.financial_data
+    target_id: resource.mid_office.financial_customer_data
+    resource_id: resource.mid_office.financial_customer_data
+    action: read
+    workflow_id: null
+    interface_id: interface.python_function.get_customer_financial_profile
+    trust_boundary_id: null
+    risk: high
+    data_types:
+    - operational
+    side_effect: false
+    pep:
+      required: true
+      type: tool
+      mode: enforce
+      placement_id: pep.mid_office.financial_data.read_profile
+      fail_mode: closed
+    metadata:
+      display_name: Scanner Edge financial_data_agent -> get_customer_financial_profile
+      description: Task 2 discovered agent_to_tool edge.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: task2_scanner
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    attributes:
+      task2_edge_id: edge_023
+      task2_edge_type: agent_to_tool
+      task2_from_id: financial_data_agent
+      task2_to_id: get_customer_financial_profile
+      task2_operation_class: read
+      banking_repo: C:\Users\wangzhaoqi\Desktop\Citi_P3
+  - id: edge.scanner.scan_edge_024_recommender_agent_search_product_catalog
+    caller_id: agent.mid_office.recommender
+    target_id: resource.mid_office.tool_search_product_catalog
+    resource_id: resource.mid_office.tool_search_product_catalog
     action: search
-    workflow_id: workflow.front_office.fraud_review
+    workflow_id: null
+    interface_id: interface.python_function.search_product_catalog
+    trust_boundary_id: null
+    risk: high
+    data_types:
+    - operational
+    side_effect: false
+    pep:
+      required: true
+      type: tool
+      mode: enforce
+      placement_id: pep.scanner.scan_edge_024_recommender_agent_search_product_catalog
+      fail_mode: closed
+    metadata:
+      display_name: Scanner Edge recommender_agent -> search_product_catalog
+      description: Task 2 discovered agent_to_tool edge.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: task2_scanner
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    attributes:
+      task2_edge_id: edge_024
+      task2_edge_type: agent_to_tool
+      task2_from_id: recommender_agent
+      task2_to_id: search_product_catalog
+      task2_operation_class: read
+      banking_repo: C:\Users\wangzhaoqi\Desktop\Citi_P3
+  - id: edge.scanner.scan_edge_025_loan_agent_search_loan_playbooks
+    caller_id: agent.mid_office.loan
+    target_id: resource.mid_office.tool_search_loan_playbooks
+    resource_id: resource.mid_office.tool_search_loan_playbooks
+    action: search
+    workflow_id: null
+    interface_id: interface.python_function.search_loan_playbooks
+    trust_boundary_id: null
+    risk: high
+    data_types:
+    - operational
+    side_effect: false
+    pep:
+      required: true
+      type: tool
+      mode: enforce
+      placement_id: pep.scanner.scan_edge_025_loan_agent_search_loan_playbooks
+      fail_mode: closed
+    metadata:
+      display_name: Scanner Edge loan_agent -> search_loan_playbooks
+      description: Task 2 discovered agent_to_tool edge.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: task2_scanner
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    attributes:
+      task2_edge_id: edge_025
+      task2_edge_type: agent_to_tool
+      task2_from_id: loan_agent
+      task2_to_id: search_loan_playbooks
+      task2_operation_class: read
+      banking_repo: C:\Users\wangzhaoqi\Desktop\Citi_P3
+  - id: edge.scanner.scan_edge_026_risk_compliance_agent_search_policies
+    caller_id: agent.mid_office.risk_compliance
+    target_id: resource.shared.tool_search_policies
+    resource_id: resource.shared.tool_search_policies
+    action: search
+    workflow_id: null
     interface_id: interface.mcp.search_policies
     trust_boundary_id: boundary.agent.mcp
-    risk: medium
-    data_types: []
-    side_effect: false
-    pep:
-      required: true
-      type: mcp
-      mode: enforce
-      placement_id: pep.fraud_review.search_policies
-      fail_mode: closed
-    metadata:
-      display_name: Edge Fraud_Review Search_Policies
-      description: Protected interaction edge.
-      status: provisional
-      source:
-        provided_by: project_architecture
-        reference: Banking Architecture and current Task 4 prototype
-        verified_at: null
-        notes: ''
-      owner: null
-      tags: []
-      extensions: {}
-    attributes: {}
-  - id: edge.eod_processing.get_batches
-    caller_id: agent.back_office.eod
-    target_id: resource.back_office.eod_batches
-    resource_id: resource.back_office.eod_batches
-    action: read
-    workflow_id: workflow.back_office.eod_processing
-    interface_id: interface.mcp.get_eod_batches
-    trust_boundary_id: boundary.event.agent
     risk: high
-    data_types: []
+    data_types:
+    - operational
     side_effect: false
-    pep:
-      required: true
-      type: event
-      mode: enforce
-      placement_id: pep.eod_processing.get_batches
-      fail_mode: closed
-    metadata:
-      display_name: Edge Eod_Processing Get_Batches
-      description: Protected interaction edge.
-      status: provisional
-      source:
-        provided_by: project_architecture
-        reference: Banking Architecture and current Task 4 prototype
-        verified_at: null
-        notes: ''
-      owner: null
-      tags: []
-      extensions: {}
-    attributes: {}
-  - id: edge.eod_processing.ledger_update
-    caller_id: agent.back_office.eod
-    target_id: resource.back_office.ledger
-    resource_id: resource.back_office.ledger
-    action: update
-    workflow_id: workflow.back_office.eod_processing
-    interface_id: interface.mcp.ledger_update
-    trust_boundary_id: boundary.agent.mcp
-    risk: critical
-    data_types: []
-    side_effect: true
     pep:
       required: true
       type: mcp
       mode: enforce
-      placement_id: pep.eod_processing.ledger_update
+      placement_id: pep.scanner.scan_edge_026_risk_compliance_agent_search_policies
       fail_mode: closed
     metadata:
-      display_name: Edge Eod_Processing Ledger_Update
-      description: Protected interaction edge.
+      display_name: Scanner Edge risk_compliance_agent -> search_policies
+      description: Task 2 discovered agent_to_tool edge.
       status: provisional
       source:
-        provided_by: project_architecture
-        reference: Banking Architecture and current Task 4 prototype
+        provided_by: task2_scanner
+        reference: task2_scanner
         verified_at: null
-        notes: ''
+        notes: Scanner-derived record merged by integrated_demo only.
       owner: null
-      tags: []
+      tags:
+      - task2_discovered
       extensions: {}
-    attributes: {}
-  - id: edge.eod_processing.reconcile
-    caller_id: agent.back_office.reconciliation
-    target_id: resource.back_office.reconciliation_results
-    resource_id: resource.back_office.reconciliation_results
-    action: create
-    workflow_id: workflow.back_office.eod_processing
+    attributes:
+      task2_edge_id: edge_026
+      task2_edge_type: agent_to_tool
+      task2_from_id: risk_compliance_agent
+      task2_to_id: search_policies
+      task2_operation_class: read
+      banking_repo: C:\Users\wangzhaoqi\Desktop\Citi_P3
+  - id: edge.scanner.scan_edge_027_create_customer_unknown
+    caller_id: service.front_office.create_customer
+    target_id: resource.shared.database_unknown_database
+    resource_id: resource.shared.database_unknown_database
+    action: update
+    workflow_id: null
     interface_id: null
     trust_boundary_id: boundary.agent.data
-    risk: high
-    data_types: []
+    risk: critical
+    data_types:
+    - unknown
     side_effect: true
     pep:
       required: true
       type: data
       mode: enforce
-      placement_id: pep.eod_processing.reconcile
+      placement_id: pep.scanner.scan_edge_027_create_customer_unknown
       fail_mode: closed
     metadata:
-      display_name: Edge Eod_Processing Reconcile
-      description: Protected interaction edge.
+      display_name: Scanner Edge create_customer -> unknown
+      description: Task 2 discovered api_to_database edge.
       status: provisional
       source:
-        provided_by: project_architecture
-        reference: Banking Architecture and current Task 4 prototype
+        provided_by: task2_scanner
+        reference: task2_scanner
         verified_at: null
-        notes: ''
+        notes: Scanner-derived record merged by integrated_demo only.
       owner: null
-      tags: []
+      tags:
+      - task2_discovered
       extensions: {}
-    attributes: {}
-  - id: edge.eod_processing.write_report
-    caller_id: agent.back_office.report
-    target_id: resource.back_office.final_report
-    resource_id: resource.back_office.final_report
-    action: create
-    workflow_id: workflow.back_office.eod_processing
-    interface_id: interface.mcp.write_final_report
-    trust_boundary_id: boundary.agent.mcp
-    risk: medium
-    data_types: []
+    attributes:
+      task2_edge_id: edge_027
+      task2_edge_type: api_to_database
+      task2_from_id: create_customer
+      task2_to_id: unknown
+      task2_operation_class: write
+      banking_repo: C:\Users\wangzhaoqi\Desktop\Citi_P3
+  - id: edge.scanner.scan_edge_028_create_account_unknown
+    caller_id: service.shared.create_account
+    target_id: resource.shared.database_unknown_database
+    resource_id: resource.shared.database_unknown_database
+    action: update
+    workflow_id: null
+    interface_id: null
+    trust_boundary_id: boundary.agent.data
+    risk: critical
+    data_types:
+    - unknown
     side_effect: true
     pep:
       required: true
-      type: mcp
+      type: data
       mode: enforce
-      placement_id: pep.eod_processing.write_report
+      placement_id: pep.scanner.scan_edge_028_create_account_unknown
       fail_mode: closed
     metadata:
-      display_name: Edge Eod_Processing Write_Report
-      description: Protected interaction edge.
+      display_name: Scanner Edge create_account -> unknown
+      description: Task 2 discovered api_to_database edge.
       status: provisional
       source:
-        provided_by: project_architecture
-        reference: Banking Architecture and current Task 4 prototype
+        provided_by: task2_scanner
+        reference: task2_scanner
         verified_at: null
-        notes: ''
+        notes: Scanner-derived record merged by integrated_demo only.
       owner: null
-      tags: []
+      tags:
+      - task2_discovered
       extensions: {}
-    attributes: {}
-  - id: edge.eod_processing.store_report
-    caller_id: agent.back_office.report
-    target_id: resource.back_office.final_report
-    resource_id: resource.back_office.final_report
-    action: store
-    workflow_id: workflow.back_office.eod_processing
-    interface_id: interface.mcp.store_report
-    trust_boundary_id: boundary.agent.mcp
+    attributes:
+      task2_edge_id: edge_028
+      task2_edge_type: api_to_database
+      task2_from_id: create_account
+      task2_to_id: unknown
+      task2_operation_class: write
+      banking_repo: C:\Users\wangzhaoqi\Desktop\Citi_P3
+  - id: edge.scanner.scan_edge_029_create_policy_unknown
+    caller_id: service.shared.create_policy
+    target_id: resource.shared.database_unknown_database
+    resource_id: resource.shared.database_unknown_database
+    action: update
+    workflow_id: null
+    interface_id: null
+    trust_boundary_id: boundary.agent.data
+    risk: critical
+    data_types:
+    - unknown
+    side_effect: true
+    pep:
+      required: true
+      type: data
+      mode: enforce
+      placement_id: pep.scanner.scan_edge_029_create_policy_unknown
+      fail_mode: closed
+    metadata:
+      display_name: Scanner Edge create_policy -> unknown
+      description: Task 2 discovered api_to_database edge.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: task2_scanner
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    attributes:
+      task2_edge_id: edge_029
+      task2_edge_type: api_to_database
+      task2_from_id: create_policy
+      task2_to_id: unknown
+      task2_operation_class: write
+      banking_repo: C:\Users\wangzhaoqi\Desktop\Citi_P3
+  - id: edge.scanner.scan_edge_030_create_rule_unknown
+    caller_id: service.shared.create_rule
+    target_id: resource.shared.database_unknown_database
+    resource_id: resource.shared.database_unknown_database
+    action: update
+    workflow_id: null
+    interface_id: null
+    trust_boundary_id: boundary.agent.data
+    risk: critical
+    data_types:
+    - unknown
+    side_effect: true
+    pep:
+      required: true
+      type: data
+      mode: enforce
+      placement_id: pep.scanner.scan_edge_030_create_rule_unknown
+      fail_mode: closed
+    metadata:
+      display_name: Scanner Edge create_rule -> unknown
+      description: Task 2 discovered api_to_database edge.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: task2_scanner
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    attributes:
+      task2_edge_id: edge_030
+      task2_edge_type: api_to_database
+      task2_from_id: create_rule
+      task2_to_id: unknown
+      task2_operation_class: write
+      banking_repo: C:\Users\wangzhaoqi\Desktop\Citi_P3
+  - id: edge.scanner.scan_edge_031_update_transaction_status_unknown
+    caller_id: service.front_office.update_transaction_status
+    target_id: resource.shared.database_unknown_database
+    resource_id: resource.shared.database_unknown_database
+    action: update
+    workflow_id: null
+    interface_id: null
+    trust_boundary_id: boundary.agent.data
+    risk: critical
+    data_types:
+    - unknown
+    side_effect: true
+    pep:
+      required: true
+      type: data
+      mode: enforce
+      placement_id: pep.scanner.scan_edge_031_update_transaction_status_unknown
+      fail_mode: closed
+    metadata:
+      display_name: Scanner Edge update_transaction_status -> unknown
+      description: Task 2 discovered api_to_database edge.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: task2_scanner
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    attributes:
+      task2_edge_id: edge_031
+      task2_edge_type: api_to_database
+      task2_from_id: update_transaction_status
+      task2_to_id: unknown
+      task2_operation_class: write
+      banking_repo: C:\Users\wangzhaoqi\Desktop\Citi_P3
+  - id: edge.scanner.scan_edge_032_mid_office_router_representative_assistant_workflow
+    caller_id: agent.mid_office.mid_office_router
+    target_id: resource.shared.other_representative_assistant_workflow
+    resource_id: resource.shared.other_representative_assistant_workflow
+    action: read
+    workflow_id: null
+    interface_id: null
+    trust_boundary_id: boundary.agent.agent
     risk: high
-    data_types: []
-    side_effect: true
+    data_types:
+    - workflow_control
+    side_effect: false
     pep:
       required: true
-      type: mcp
+      type: agent_route
       mode: enforce
-      placement_id: pep.eod_processing.store_report
+      placement_id: pep.scanner.scan_edge_032_mid_office_router_representative_assistant_workflow
       fail_mode: closed
     metadata:
-      display_name: Edge Eod_Processing Store_Report
-      description: Protected interaction edge.
+      display_name: Scanner Edge mid_office_router -> representative_assistant_workflow
+      description: Task 2 discovered agent_to_agent edge.
       status: provisional
       source:
-        provided_by: project_architecture
-        reference: Banking Architecture and current Task 4 prototype
+        provided_by: task2_scanner
+        reference: task2_scanner
         verified_at: null
-        notes: ''
+        notes: Scanner-derived record merged by integrated_demo only.
       owner: null
-      tags: []
+      tags:
+      - task2_discovered
       extensions: {}
-    attributes: {}
-  - id: edge.eod_processing.create_exception
-    caller_id: agent.back_office.exception
-    target_id: resource.back_office.exception_case
-    resource_id: resource.back_office.exception_case
-    action: create
-    workflow_id: workflow.back_office.eod_processing
-    interface_id: interface.mcp.create_exception_case
-    trust_boundary_id: boundary.agent.mcp
+    attributes:
+      task2_edge_id: edge_032
+      task2_edge_type: agent_to_agent
+      task2_from_id: mid_office_router
+      task2_to_id: representative_assistant_workflow
+      task2_operation_class: read
+      banking_repo: C:\Users\wangzhaoqi\Desktop\Citi_P3
+  - id: edge.scanner.scan_edge_033_mid_office_planning_parallel_validation_agent
+    caller_id: agent.shared.mid_office_planning_parallel
+    target_id: resource.mid_office.other_validation_agent
+    resource_id: resource.mid_office.other_validation_agent
+    action: read
+    workflow_id: null
+    interface_id: null
+    trust_boundary_id: boundary.agent.agent
     risk: high
-    data_types: []
-    side_effect: true
+    data_types:
+    - workflow_control
+    side_effect: false
     pep:
       required: true
-      type: mcp
+      type: agent_route
       mode: enforce
-      placement_id: pep.eod_processing.create_exception
+      placement_id: pep.scanner.scan_edge_033_mid_office_planning_parallel_validation_agent
       fail_mode: closed
     metadata:
-      display_name: Edge Eod_Processing Create_Exception
-      description: Protected interaction edge.
+      display_name: Scanner Edge mid_office_planning_parallel -> validation_agent
+      description: Task 2 discovered agent_to_agent edge.
       status: provisional
       source:
-        provided_by: project_architecture
-        reference: Banking Architecture and current Task 4 prototype
+        provided_by: task2_scanner
+        reference: task2_scanner
         verified_at: null
-        notes: ''
+        notes: Scanner-derived record merged by integrated_demo only.
       owner: null
-      tags: []
+      tags:
+      - task2_discovered
       extensions: {}
-    attributes: {}
+    attributes:
+      task2_edge_id: edge_033
+      task2_edge_type: agent_to_agent
+      task2_from_id: mid_office_planning_parallel
+      task2_to_id: validation_agent
+      task2_operation_class: read
+      banking_repo: C:\Users\wangzhaoqi\Desktop\Citi_P3
+  - id: edge.scanner.scan_edge_034_mid_office_planning_parallel_support_guidance_agent
+    caller_id: agent.shared.mid_office_planning_parallel
+    target_id: resource.mid_office.other_support_guidance_agent
+    resource_id: resource.mid_office.other_support_guidance_agent
+    action: read
+    workflow_id: null
+    interface_id: null
+    trust_boundary_id: boundary.agent.agent
+    risk: high
+    data_types:
+    - workflow_control
+    side_effect: false
+    pep:
+      required: true
+      type: agent_route
+      mode: enforce
+      placement_id: pep.scanner.scan_edge_034_mid_office_planning_parallel_support_guidance_agent
+      fail_mode: closed
+    metadata:
+      display_name: Scanner Edge mid_office_planning_parallel -> support_guidance_agent
+      description: Task 2 discovered agent_to_agent edge.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: task2_scanner
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    attributes:
+      task2_edge_id: edge_034
+      task2_edge_type: agent_to_agent
+      task2_from_id: mid_office_planning_parallel
+      task2_to_id: support_guidance_agent
+      task2_operation_class: read
+      banking_repo: C:\Users\wangzhaoqi\Desktop\Citi_P3
+  - id: edge.scanner.scan_edge_035_mid_office_planning_workflow_data_analysis_agent
+    caller_id: agent.shared.mid_office_planning_workflow
+    target_id: resource.mid_office.other_data_analysis_agent
+    resource_id: resource.mid_office.other_data_analysis_agent
+    action: read
+    workflow_id: null
+    interface_id: null
+    trust_boundary_id: boundary.agent.agent
+    risk: high
+    data_types:
+    - workflow_control
+    side_effect: false
+    pep:
+      required: true
+      type: agent_route
+      mode: enforce
+      placement_id: pep.scanner.scan_edge_035_mid_office_planning_workflow_data_analysis_agent
+      fail_mode: closed
+    metadata:
+      display_name: Scanner Edge mid_office_planning_workflow -> data_analysis_agent
+      description: Task 2 discovered agent_to_agent edge.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: task2_scanner
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    attributes:
+      task2_edge_id: edge_035
+      task2_edge_type: agent_to_agent
+      task2_from_id: mid_office_planning_workflow
+      task2_to_id: data_analysis_agent
+      task2_operation_class: read
+      banking_repo: C:\Users\wangzhaoqi\Desktop\Citi_P3
+  - id: edge.scanner.scan_edge_036_mid_office_planning_workflow_forecasting_agent
+    caller_id: agent.shared.mid_office_planning_workflow
+    target_id: resource.mid_office.other_forecasting_agent
+    resource_id: resource.mid_office.other_forecasting_agent
+    action: read
+    workflow_id: null
+    interface_id: null
+    trust_boundary_id: boundary.agent.agent
+    risk: high
+    data_types:
+    - workflow_control
+    side_effect: false
+    pep:
+      required: true
+      type: agent_route
+      mode: enforce
+      placement_id: pep.scanner.scan_edge_036_mid_office_planning_workflow_forecasting_agent
+      fail_mode: closed
+    metadata:
+      display_name: Scanner Edge mid_office_planning_workflow -> forecasting_agent
+      description: Task 2 discovered agent_to_agent edge.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: task2_scanner
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    attributes:
+      task2_edge_id: edge_036
+      task2_edge_type: agent_to_agent
+      task2_from_id: mid_office_planning_workflow
+      task2_to_id: forecasting_agent
+      task2_operation_class: read
+      banking_repo: C:\Users\wangzhaoqi\Desktop\Citi_P3
+  - id: edge.scanner.scan_edge_037_mid_office_planning_workflow_staff_scheduling_agent
+    caller_id: agent.shared.mid_office_planning_workflow
+    target_id: resource.mid_office.other_staff_scheduling_agent
+    resource_id: resource.mid_office.other_staff_scheduling_agent
+    action: read
+    workflow_id: null
+    interface_id: null
+    trust_boundary_id: boundary.agent.agent
+    risk: high
+    data_types:
+    - workflow_control
+    side_effect: false
+    pep:
+      required: true
+      type: agent_route
+      mode: enforce
+      placement_id: pep.scanner.scan_edge_037_mid_office_planning_workflow_staff_scheduling_agent
+      fail_mode: closed
+    metadata:
+      display_name: Scanner Edge mid_office_planning_workflow -> staff_scheduling_agent
+      description: Task 2 discovered agent_to_agent edge.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: task2_scanner
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    attributes:
+      task2_edge_id: edge_037
+      task2_edge_type: agent_to_agent
+      task2_from_id: mid_office_planning_workflow
+      task2_to_id: staff_scheduling_agent
+      task2_operation_class: read
+      banking_repo: C:\Users\wangzhaoqi\Desktop\Citi_P3
+  - id: edge.scanner.scan_edge_038_mid_office_planning_workflow_planning_summary_agent
+    caller_id: agent.shared.mid_office_planning_workflow
+    target_id: resource.mid_office.other_planning_summary_agent
+    resource_id: resource.mid_office.other_planning_summary_agent
+    action: read
+    workflow_id: null
+    interface_id: null
+    trust_boundary_id: boundary.agent.agent
+    risk: high
+    data_types:
+    - workflow_control
+    side_effect: false
+    pep:
+      required: true
+      type: agent_route
+      mode: enforce
+      placement_id: pep.scanner.scan_edge_038_mid_office_planning_workflow_planning_summary_agent
+      fail_mode: closed
+    metadata:
+      display_name: Scanner Edge mid_office_planning_workflow -> planning_summary_agent
+      description: Task 2 discovered agent_to_agent edge.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: task2_scanner
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    attributes:
+      task2_edge_id: edge_038
+      task2_edge_type: agent_to_agent
+      task2_from_id: mid_office_planning_workflow
+      task2_to_id: planning_summary_agent
+      task2_operation_class: read
+      banking_repo: C:\Users\wangzhaoqi\Desktop\Citi_P3
+  - id: edge.scanner.scan_edge_039_representative_assist_parallel_financial_data_agent
+    caller_id: agent.shared.representative_assist_parallel
+    target_id: resource.mid_office.other_financial_data_agent
+    resource_id: resource.mid_office.other_financial_data_agent
+    action: read
+    workflow_id: null
+    interface_id: null
+    trust_boundary_id: boundary.agent.agent
+    risk: high
+    data_types:
+    - workflow_control
+    side_effect: false
+    pep:
+      required: true
+      type: agent_route
+      mode: enforce
+      placement_id: pep.scanner.scan_edge_039_representative_assist_parallel_financial_data_agent
+      fail_mode: closed
+    metadata:
+      display_name: Scanner Edge representative_assist_parallel -> financial_data_agent
+      description: Task 2 discovered agent_to_agent edge.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: task2_scanner
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    attributes:
+      task2_edge_id: edge_039
+      task2_edge_type: agent_to_agent
+      task2_from_id: representative_assist_parallel
+      task2_to_id: financial_data_agent
+      task2_operation_class: read
+      banking_repo: C:\Users\wangzhaoqi\Desktop\Citi_P3
+  - id: edge.scanner.scan_edge_040_representative_assist_parallel_recommender_agent
+    caller_id: agent.shared.representative_assist_parallel
+    target_id: resource.mid_office.other_recommender_agent
+    resource_id: resource.mid_office.other_recommender_agent
+    action: read
+    workflow_id: null
+    interface_id: null
+    trust_boundary_id: boundary.agent.agent
+    risk: high
+    data_types:
+    - workflow_control
+    side_effect: false
+    pep:
+      required: true
+      type: agent_route
+      mode: enforce
+      placement_id: pep.scanner.scan_edge_040_representative_assist_parallel_recommender_agent
+      fail_mode: closed
+    metadata:
+      display_name: Scanner Edge representative_assist_parallel -> recommender_agent
+      description: Task 2 discovered agent_to_agent edge.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: task2_scanner
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    attributes:
+      task2_edge_id: edge_040
+      task2_edge_type: agent_to_agent
+      task2_from_id: representative_assist_parallel
+      task2_to_id: recommender_agent
+      task2_operation_class: read
+      banking_repo: C:\Users\wangzhaoqi\Desktop\Citi_P3
+  - id: edge.scanner.scan_edge_041_representative_assist_parallel_loan_agent
+    caller_id: agent.shared.representative_assist_parallel
+    target_id: resource.mid_office.other_loan_agent
+    resource_id: resource.mid_office.other_loan_agent
+    action: read
+    workflow_id: null
+    interface_id: null
+    trust_boundary_id: boundary.agent.agent
+    risk: high
+    data_types:
+    - workflow_control
+    side_effect: false
+    pep:
+      required: true
+      type: agent_route
+      mode: enforce
+      placement_id: pep.scanner.scan_edge_041_representative_assist_parallel_loan_agent
+      fail_mode: closed
+    metadata:
+      display_name: Scanner Edge representative_assist_parallel -> loan_agent
+      description: Task 2 discovered agent_to_agent edge.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: task2_scanner
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    attributes:
+      task2_edge_id: edge_041
+      task2_edge_type: agent_to_agent
+      task2_from_id: representative_assist_parallel
+      task2_to_id: loan_agent
+      task2_operation_class: read
+      banking_repo: C:\Users\wangzhaoqi\Desktop\Citi_P3
+  - id: edge.scanner.scan_edge_042_representative_assist_parallel_risk_compliance_agent
+    caller_id: agent.shared.representative_assist_parallel
+    target_id: resource.mid_office.other_risk_compliance_agent
+    resource_id: resource.mid_office.other_risk_compliance_agent
+    action: read
+    workflow_id: null
+    interface_id: null
+    trust_boundary_id: boundary.agent.agent
+    risk: high
+    data_types:
+    - workflow_control
+    side_effect: false
+    pep:
+      required: true
+      type: agent_route
+      mode: enforce
+      placement_id: pep.scanner.scan_edge_042_representative_assist_parallel_risk_compliance_agent
+      fail_mode: closed
+    metadata:
+      display_name: Scanner Edge representative_assist_parallel -> risk_compliance_agent
+      description: Task 2 discovered agent_to_agent edge.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: task2_scanner
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    attributes:
+      task2_edge_id: edge_042
+      task2_edge_type: agent_to_agent
+      task2_from_id: representative_assist_parallel
+      task2_to_id: risk_compliance_agent
+      task2_operation_class: read
+      banking_repo: C:\Users\wangzhaoqi\Desktop\Citi_P3
   trust_boundaries:
   - id: boundary.agent.mcp
     from_zone: agent_runtime
@@ -2774,6 +5873,23 @@ spec:
         notes: ''
       owner: null
       tags: []
+      extensions: {}
+    attributes: {}
+  - id: boundary.agent.agent
+    from_zone: agent_runtime
+    to_zone: agent_runtime
+    metadata:
+      display_name: Agent-to-Agent Boundary
+      description: Task 2 discovered agent routing boundary.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: Task 2 scanner
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
       extensions: {}
     attributes: {}
   policy_bundles:

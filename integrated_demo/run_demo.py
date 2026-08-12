@@ -6,6 +6,7 @@ import os
 import shutil
 import subprocess
 import sys
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -32,6 +33,8 @@ for path in (
 
 from native_task4_bridge import NativeTask4InProcessBridge
 from reconcile import reconcile_task1_task2_to_unified
+from scanner_merge import merge_task2_graph_into_unified
+from testbed_runtime import TestbedToolError, TestbedToolRuntime
 from zt_interface.compiler import compile_task4
 from zt_interface.loader import load_yaml
 from zt_interface.validator import validate_manifest as validate_unified_manifest
@@ -42,6 +45,8 @@ from zt_pep.placement import build_pep_plan
 from zt_task5.models import UnifiedAuthorizationRequest
 from zt_task5.service import build_task5_components, register_generated_pep
 from zt_task5.task3_adapter import PEPDenied, Task3PEPAdapter
+from zt_backplane.canonical import sha256_hex
+from zt_backplane.crypto import load_private_key, sign_mapping
 
 
 def banner(text: str) -> None:
@@ -108,6 +113,63 @@ def prepare_task4_compatibility_view(output: Path, config_dir: Path) -> Path:
     return view
 
 
+def prepare_real_testbed_policy_store(output: Path, manifest: dict[str, Any]) -> Path:
+    """Stage signed Task 4 policies for runtime identities discovered from the real testbed.
+
+    Task 4 source policy files remain untouched. The integrated demo copies the policy
+    store into its output directory and updates only the EOD ledger-write subject when
+    the real ledger_update_agent identity is present in the reconciled manifest.
+    """
+    policy_dir = output / "task4_policy_store"
+    if policy_dir.exists():
+        shutil.rmtree(policy_dir)
+    shutil.copytree(TASK4_ROOT / "policy_store", policy_dir)
+
+    subject_ids = {item["id"] for item in manifest["spec"].get("subjects", [])}
+    ledger_subject = "agent.back_office.ledger_update"
+    if ledger_subject not in subject_ids:
+        return policy_dir
+
+    ledger_path = policy_dir / "ledger_access.yaml"
+    raw = yaml.safe_load(ledger_path.read_text(encoding="utf-8")) or {}
+    changed = False
+    for policy in raw.get("policies", []):
+        match = policy.get("match", {})
+        if (
+            "resource.back_office.ledger" in match.get("resources", [])
+            and "update" in match.get("actions", [])
+            and "agent.back_office.eod" in match.get("subjects", [])
+        ):
+            match["subjects"] = [ledger_subject]
+            policy["description"] = policy.get("description", "").replace(
+                "EOD ledger update", "Ledger-update agent operation in the EOD workflow"
+            )
+            changed = True
+
+    if not changed:
+        return policy_dir
+
+    ledger_path.write_text(yaml.safe_dump(raw, sort_keys=False), encoding="utf-8")
+    policy_key = load_private_key(TASK4_ROOT / "security" / "dev_keys" / "policy_private.pem")
+    sidecar = {
+        "schema_version": "1.0",
+        "issuer": "policy.prototype",
+        "key_id": "policy-1",
+        "algorithm": "Ed25519",
+        "signed_at": datetime.now(timezone.utc).isoformat(),
+        "bundle_digest": sha256_hex(raw),
+        "signature": sign_mapping(policy_key, raw),
+    }
+    ledger_path.with_suffix(".sig.json").write_text(
+        json.dumps(sidecar, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
+    print(
+        "Task 4 runtime policy binding: agent.back_office.ledger_update "
+        "(ledger_update_agent) may request the EOD ledger-update policy."
+    )
+    return policy_dir
+
+
 def run(args: argparse.Namespace) -> int:
     output = Path(args.output).resolve()
     if output.exists() and args.clean:
@@ -161,6 +223,31 @@ def run(args: argparse.Namespace) -> int:
             f"{item['task2_runtime_id']}"
         )
 
+    scanner_merge_report = None
+    if args.scanner_graph or args.execute_real_tools:
+        banner("TASK 2 -> Unified Interface — Merge the real discovered testbed graph")
+        manifest, scanner_merge_report = merge_task2_graph_into_unified(
+            manifest,
+            task2_output,
+            banking_repo=banking_repo,
+        )
+        errors = validate_unified_manifest(manifest)
+        if errors:
+            raise RuntimeError("scanner-derived unified manifest invalid: " + "; ".join(errors[:8]))
+        reconciled_manifest.write_text(
+            yaml.safe_dump(manifest, sort_keys=False, allow_unicode=True),
+            encoding="utf-8",
+        )
+        scanner_report_path = output / "task2_scanner_graph_merge.json"
+        scanner_report_path.write_text(
+            json.dumps(scanner_merge_report, indent=2, sort_keys=True), encoding="utf-8"
+        )
+        print(json.dumps(scanner_merge_report, indent=2))
+        print(
+            "Task 3 will now consume Task 2's discovered interaction graph "
+            f"({scanner_merge_report['scanner_edges_merged']} merged edges), not the 10-edge baseline fixture."
+        )
+
     banner("TASK 3 — Generate PEP placement plan and adapters")
     task3_schema = TASK3_ROOT / "interface_contract" / "schemas" / "zt_manifest.schema.json"
     task3_errors = validate_task3_manifest(manifest, task3_schema)
@@ -184,6 +271,8 @@ def run(args: argparse.Namespace) -> int:
     banner("TASK 4 — Start real in-process signed PDP")
     os.environ["ZT_IDENTITY_FILE"] = str(task4_config / "identities.yaml")
     os.environ["ZT_RESOURCE_FILE"] = str(task4_config / "resources.yaml")
+    runtime_policy_dir = prepare_real_testbed_policy_store(output, manifest)
+    os.environ["ZT_POLICY_DIR"] = str(runtime_policy_dir)
     os.environ["ZT_AUDIT_LOG"] = str(output / "task4_decision_log.jsonl")
     os.environ["ZT_POLICY_VERSION_STORE"] = str(output / "task4_policy_versions.json")
 
@@ -216,7 +305,30 @@ def run(args: argparse.Namespace) -> int:
     )
     plan_json = load_json(task3_generated / "generated_pep_plan.json")
     fraud_placement = selected_placement(plan_json, "pep.fraud_review.read_history")
-    ledger_placement = selected_placement(plan_json, "pep.eod_processing.ledger_update")
+
+    # The baseline fixture models EOD -> ledger as a direct protected operation.
+    # The real three-office testbed may insert a dedicated ledger_update_agent, so
+    # that exact legacy placement ID is not guaranteed to exist in the scanner graph.
+    # Do not spoof/alias that agent just to satisfy the old policy. Instead, use the
+    # already policy-covered transfer path for the generic Task 5 critical-write tests.
+    try:
+        critical_placement = selected_placement(plan_json, "pep.ledger_update.apply_ledger_updates")
+        critical_demo_kind = "ledger"
+        print(
+            "Task 5 critical-write fixture: using real testbed identity "
+            "ledger_update_agent -> apply_ledger_updates."
+        )
+    except KeyError:
+        try:
+            critical_placement = selected_placement(plan_json, "pep.eod_processing.ledger_update")
+            critical_demo_kind = "ledger"
+        except KeyError:
+            critical_placement = selected_placement(plan_json, "pep.customer_transaction.execute_transfer")
+            critical_demo_kind = "transfer"
+            print(
+                "Task 5 critical-write fixture: no ledger-write placement was discovered; "
+                "using the policy-covered execute_transfer path instead."
+            )
 
     pep_keys: dict[str, Ed25519PrivateKey] = {}
 
@@ -239,7 +351,7 @@ def run(args: argparse.Namespace) -> int:
         )
 
     fraud_pep = build_pep(fraud_placement)
-    ledger_pep = build_pep(ledger_placement)
+    critical_pep = build_pep(critical_placement)
 
     results: list[dict[str, Any]] = []
 
@@ -288,20 +400,40 @@ def run(args: argparse.Namespace) -> int:
     results.append({"scenario": "restart_clears_cache", "passed": not after_restart.allowed})
     fraud_pep.task4_call = original_call
 
-    # Scenario E: critical ledger update is blocked without signed approvals.
-    ledger_request_no_approval = task5_request_from_placement(
-        ledger_placement,
-        parameters={
+    # Scenario E: a critical financial write is blocked without signed approvals.
+    if critical_demo_kind == "ledger":
+        critical_parameters = {
             "batch_id": "batch-77",
-            "idempotency_key": "idem-ledger-77",
+            "idempotency_key": "idem-critical-77",
             "change_ticket": "CHG-77",
-        },
-        context={"workflow_instance_id": "eod-demo-001", "risk_score": 900},
-        idempotency_key="idem-ledger-77",
+        }
+        approved_parameters = {
+            "batch_id": "batch-78",
+            "idempotency_key": "idem-critical-78",
+            "change_ticket": "CHG-78",
+        }
+        workflow_prefix = "eod-demo"
+    else:
+        critical_parameters = {
+            "from_account": "acct-demo-a",
+            "to_account": "acct-demo-b",
+            "amount": 100.0,
+            "currency": "USD",
+            "idempotency_key": "idem-critical-77",
+        }
+        approved_parameters = dict(critical_parameters)
+        approved_parameters["idempotency_key"] = "idem-critical-78"
+        workflow_prefix = "transfer-demo"
+
+    critical_request_no_approval = task5_request_from_placement(
+        critical_placement,
+        parameters=critical_parameters,
+        context={"workflow_instance_id": f"{workflow_prefix}-001", "risk_score": 900},
+        idempotency_key="idem-critical-77",
     )
-    no_approval = ledger_pep.authorize(ledger_request_no_approval)
+    no_approval = critical_pep.authorize(critical_request_no_approval)
     print(
-        f"E. Ledger update without approvals: {no_approval.state.value}; "
+        f"E. Critical {critical_demo_kind} write without approvals: {no_approval.state.value}; "
         f"Task 4 decision={no_approval.decision.decision.value if no_approval.decision else 'n/a'}"
     )
     results.append(
@@ -314,34 +446,76 @@ def run(args: argparse.Namespace) -> int:
     )
 
     # Scenario F: signed approval + independent authorization + obligations -> allowed once.
-    ledger_request = task5_request_from_placement(
-        ledger_placement,
-        parameters={
-            "batch_id": "batch-78",
-            "idempotency_key": "idem-ledger-78",
-            "change_ticket": "CHG-78",
-        },
+    critical_request = task5_request_from_placement(
+        critical_placement,
+        parameters=approved_parameters,
         context={
-            "workflow_instance_id": "eod-demo-002",
+            "workflow_instance_id": f"{workflow_prefix}-002",
             "risk_score": 900,
             "with_human_approval": True,
             "with_secondary_authorization": True,
         },
-        idempotency_key="idem-ledger-78",
+        idempotency_key="idem-critical-78",
     )
-    ledger_result = ledger_pep.execute(ledger_request, lambda: {"ledger": "updated", "batch_id": "batch-78"})
-    print("F. Ledger update with approvals: ALLOW ->", ledger_result)
-    results.append({"scenario": "critical_approved_update", "passed": ledger_result["ledger"] == "updated"})
+    critical_result = critical_pep.execute(
+        critical_request,
+        lambda: {"status": "executed", "operation": critical_demo_kind},
+    )
+    print(f"F. Critical {critical_demo_kind} write with approvals: ALLOW ->", critical_result)
+    results.append({"scenario": "critical_approved_update", "passed": critical_result["status"] == "executed"})
 
     # Scenario G: critical leases are single-use, so they cannot rescue a later PDP outage.
-    ledger_pep.task4_call = timeout
-    critical_retry = ledger_request.model_copy(update={"request_id": "ledger-retry-009"})
-    critical_timeout = ledger_pep.authorize(critical_retry)
+    critical_pep.task4_call = timeout
+    critical_retry = critical_request.model_copy(update={"request_id": "critical-retry-009"})
+    critical_timeout = critical_pep.authorize(critical_retry)
     print(
         f"G. Critical retry with PDP down: {critical_timeout.state.value} "
         f"({critical_timeout.reason})"
     )
     results.append({"scenario": "critical_single_use_fail_closed", "passed": not critical_timeout.allowed})
+
+    if args.execute_real_tools:
+        banner("REAL THREE-OFFICE TESTBED — Execute original tools behind generated PEPs")
+        inputs_path = Path(args.testbed_inputs).resolve()
+        real_inputs = load_yaml(inputs_path)
+        testbed_runtime = TestbedToolRuntime(banking_repo, task2_output)
+        for office in ("front_office", "mid_office", "back_office"):
+            cfg = dict(real_inputs.get(office) or {})
+            placement_id = str(cfg.get("placement_id") or "")
+            tool_id = str(cfg.get("tool_id") or "")
+            parameters = dict(cfg.get("parameters") or {})
+            context = dict(cfg.get("context") or {})
+            scenario_name = f"real_{office}_tool"
+            try:
+                placement = selected_placement(plan_json, placement_id)
+                pep = build_pep(placement)
+                request = task5_request_from_placement(
+                    placement,
+                    parameters=parameters,
+                    context=context,
+                    idempotency_key=parameters.get("idempotency_key"),
+                )
+                value = pep.execute(
+                    request,
+                    lambda tid=tool_id, params=parameters: testbed_runtime.invoke(tid, params),
+                )
+                print(f"{office}: REAL TOOL {tool_id} -> ALLOW -> {value}")
+                results.append({
+                    "scenario": scenario_name,
+                    "passed": True,
+                    "tool_id": tool_id,
+                    "placement_id": placement_id,
+                    "result": value,
+                })
+            except (KeyError, TestbedToolError, PEPDenied, ConnectionError) as exc:
+                print(f"{office}: REAL TOOL {tool_id} -> FAIL -> {exc}")
+                results.append({
+                    "scenario": scenario_name,
+                    "passed": False,
+                    "tool_id": tool_id,
+                    "placement_id": placement_id,
+                    "error": str(exc),
+                })
 
     audit_path = output / "task5_audit.json"
     audit_path.write_text(
@@ -358,6 +532,7 @@ def run(args: argparse.Namespace) -> int:
         "task3_task4_compatible": plan.compatibility["summary"]["compatible"],
         "task4_policy_version": task4_runtime.engine.bundle.version,
         "task5_audit_valid": audit_valid,
+        "scanner_graph_merge": scanner_merge_report,
         "artifacts": {
             "task2": str(task2_output),
             "reconciled_manifest": str(reconciled_manifest),
@@ -390,6 +565,27 @@ def parse_args() -> argparse.Namespace:
         "--output",
         default=str(HERE / "output"),
         help="Directory for generated demo artifacts.",
+    )
+    parser.add_argument(
+        "--scanner-graph",
+        action="store_true",
+        help=(
+            "Replace the 10-edge baseline interaction fixture with Task 2's actually discovered "
+            "testbed graph before Task 3 PEP placement."
+        ),
+    )
+    parser.add_argument(
+        "--execute-real-tools",
+        action="store_true",
+        help=(
+            "After authorization, invoke the original Front/Mid/Back Office Python tools discovered "
+            "by Task 2. This implies --scanner-graph behavior and may require the banking backend to be running."
+        ),
+    )
+    parser.add_argument(
+        "--testbed-inputs",
+        default=str(HERE / "testbed_inputs.yaml"),
+        help="YAML file containing safe test IDs/parameters for real three-office tool execution.",
     )
     parser.add_argument("--clean", action="store_true", help="Delete the output directory before running")
     return parser.parse_args()

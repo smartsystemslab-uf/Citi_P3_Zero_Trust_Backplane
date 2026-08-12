@@ -1,0 +1,63 @@
+apiVersion: ztb/v1alpha1
+kind: PolicyBundle
+metadata:
+  id: bundle.front_office
+  version: 1.0.0
+  domain: front_office
+  status: provisional
+policies:
+  - id: policy.front_office.fraud_read_transaction_history
+    description: Fraud agent may read transaction history only in the verified fraud-review workflow.
+    priority: 220
+    effect: ALLOW_WITH_OBLIGATIONS
+    match:
+      subjects: [agent.front_office.fraud]
+      resources: [resource.front_office.transaction_history]
+      actions: [read]
+      workflows: [workflow.front_office.fraud_review]
+      risk_levels: [low, medium, high]
+    obligations:
+      - type: enhanced_logging
+        parameters: {reason: fraud_data_access}
+      - type: data_masking
+        parameters: {fields: [full_account_number, ssn]}
+    enabled: true
+
+  - id: policy.front_office.fraud_deny_transfer
+    description: Fraud-analysis agents must never execute banking transfers.
+    priority: 500
+    effect: DENY
+    match:
+      subjects: [agent.front_office.fraud]
+      resources: [resource.front_office.banking_transfer]
+      actions: [execute, cancel]
+    obligations: []
+    enabled: true
+
+  - id: policy.front_office.customer_profile_reauthenticate
+    description: Weakly authenticated customer-service access requires step-up authentication.
+    priority: 240
+    effect: REAUTHENTICATE
+    match:
+      subjects: [agent.front_office.customer_service]
+      resources: [resource.front_office.customer_profile]
+      actions: [read]
+      auth_strength_lte: 1
+    obligations: []
+    enabled: true
+
+  - id: policy.front_office.customer_profile_read
+    description: Strongly authenticated customer-service agent may read masked customer profile data.
+    priority: 230
+    effect: ALLOW_WITH_OBLIGATIONS
+    match:
+      subjects: [agent.front_office.customer_service]
+      resources: [resource.front_office.customer_profile]
+      actions: [read]
+      auth_strength_gte: 2
+    obligations:
+      - type: data_masking
+        parameters: {fields: [ssn, full_account_number]}
+      - type: enhanced_logging
+        parameters: {reason: restricted_customer_profile}
+    enabled: true

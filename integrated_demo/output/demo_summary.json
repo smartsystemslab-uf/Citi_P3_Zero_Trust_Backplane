@@ -39,29 +39,69 @@
     },
     {
       "passed": true,
+      "placement_id": "pep.fraud_review.read_history",
+      "result": "{\n  \"transaction_id\": \"TXN-1001\",\n  \"customer_id\": \"CUST-001\",\n  \"source_account\": \"CHK-001\",\n  \"destination_account\": \"EXT-998\",\n  \"amount\": 9200.0,\n  \"currency\": \"USD\",\n  \"channel\": \"mobile_app\",\n  \"txn_type\": \"wire_transfer\",\n  \"merchant_or_counterparty\": \"New Counterparty Alpha Exports\",\n  \"status\": \"pending_review\",\n  \"metadata_json\": {\n    \"geo\": \"Romania\",\n    \"device_change\": true,\n    \"velocity_24h\": 3,\n    \"note\": \"Customer initiated after midnight local time\"\n  },\n  \"created_at\": \"2026-08-12T18:49:14.546966+00:00\"\n}",
+      "scenario": "real_front_office_tool",
+      "tool_id": "get_transaction_context"
+    },
+    {
+      "passed": true,
+      "placement_id": "pep.mid_office.financial_data.read_profile",
+      "result": "{\n  \"customer_id\": \"CUST-001\",\n  \"full_name\": \"Ava Patel\",\n  \"risk_tier\": \"medium\",\n  \"kyc_status\": \"verified\",\n  \"occupation\": \"Physician\",\n  \"home_country\": \"US\",\n  \"notes_json\": {\n    \"typical_txn_band\": \"50-3500\",\n    \"usual_channels\": [\n      \"mobile_app\",\n      \"web\"\n    ],\n    \"known_payees\": [\n      \"Landlord Co\",\n      \"North Star Brokerage\"\n    ],\n    \"behavior_notes\": [\n      \"Rarely sends wires above 5000 USD\",\n      \"Usually transacts from Florida or New York\"\n    ]\n  },\n  \"accounts\": [\n    {\n      \"account_id\": \"CHK-001\",\n      \"account_type\": \"checking\",\n      \"currency\": \"USD\",\n      \"balance\": 41850.37,\n      \"status\": \"active\"\n    },\n    {\n      \"account_id\": \"SVG-001\",\n      \"account_type\": \"savings\",\n      \"currency\": \"USD\",\n      \"balance\": 128500.0,\n      \"status\": \"active\"\n    }\n  ]\n}",
+      "scenario": "real_mid_office_tool",
+      "tool_id": "get_customer_financial_profile"
+    },
+    {
+      "passed": true,
+      "placement_id": "pep.eod_processing.get_batches",
+      "result": "{\n  \"batch_id\": \"EOD-2026-04-21-CLEAN\",\n  \"business_date\": \"2026-04-21\",\n  \"expected_total\": 18250.55,\n  \"ledger_posted_total\": 18250.55,\n  \"ready_flag\": 1,\n  \"status\": \"ready\",\n  \"notes_json\": {\n    \"expected_items\": 43,\n    \"source_system\": \"core_banking_system\"\n  }\n}",
+      "scenario": "real_back_office_tool",
+      "tool_id": "get_eod_batch"
+    },
+    {
+      "passed": true,
       "scenario": "audit_chain_valid"
     }
   ],
+  "scanner_graph_merge": {
+    "created": {
+      "interactions": 42,
+      "interfaces": 12,
+      "resources": 27,
+      "subjects": 13
+    },
+    "ignored_private_helper_edges": 0,
+    "note": "Task 3 interactions now come from Task 2's discovered testbed graph; canonical policy resources are reused for known Citi operations.",
+    "scanner_agents": 33,
+    "scanner_apis": 19,
+    "scanner_databases": 6,
+    "scanner_edges_input": 42,
+    "scanner_edges_merged": 42,
+    "scanner_tools": 20
+  },
   "task3_coverage": {
     "coverage_claim_scope": "Known interaction edges in the unified manifest only",
-    "deduplicated_component_savings": 7,
-    "interaction_edges_total": 10,
+    "deduplicated_component_savings": 38,
+    "interaction_edges_total": 42,
     "known_direct_bypass_paths": 0,
-    "logical_pep_count": 10,
-    "physical_pep_count": 3,
-    "protected_sensitive_edges": 10,
-    "sensitive_interaction_edges": 10,
+    "logical_pep_count": 42,
+    "physical_pep_count": 4,
+    "protected_sensitive_edges": 42,
+    "sensitive_interaction_edges": 42,
     "sensitive_inventory_resources_without_discovered_edges": [
+      "resource.back_office.exception_case",
+      "resource.back_office.final_report",
       "resource.back_office.ledger_snapshot",
+      "resource.back_office.reconciliation_results",
+      "resource.front_office.customer_context",
       "resource.front_office.customer_profile",
       "resource.front_office.transaction_decision",
-      "resource.mid_office.financial_customer_data",
       "resource.mid_office.loan_workflow",
       "resource.mid_office.schedule_draft"
     ],
     "sensitive_path_coverage_percent": 100.0
   },
   "task3_task4_compatible": true,
-  "task4_policy_version": "c5f7d018c019208e",
+  "task4_policy_version": "7461ad675cfec5be",
   "task5_audit_valid": true
 }

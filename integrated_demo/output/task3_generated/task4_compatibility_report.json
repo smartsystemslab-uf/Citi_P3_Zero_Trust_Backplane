@@ -6,7 +6,7 @@
         "policy.tool.transfer_pending_review",
         "policy.tool.transfer_approved"
       ],
-      "edge_id": "edge.customer_transaction.execute_transfer",
+      "edge_id": "edge.scanner.scan_edge_018_transaction_processing_agent_execute_transfer",
       "expected_if_no_policy": "DENY (Task 4 default-deny)",
       "identity_present": true,
       "identity_runtime_matches": true,
@@ -16,32 +16,10 @@
     },
     {
       "action_present": true,
-      "candidate_policy_ids": [],
-      "edge_id": "edge.customer_transaction.get_context",
-      "expected_if_no_policy": "DENY (Task 4 default-deny)",
-      "identity_present": true,
-      "identity_runtime_matches": true,
-      "placement_id": "pep.customer_transaction.get_context",
-      "resource_present": true,
-      "resource_runtime_matches": true
-    },
-    {
-      "action_present": true,
-      "candidate_policy_ids": [],
-      "edge_id": "edge.eod_processing.create_exception",
-      "expected_if_no_policy": "DENY (Task 4 default-deny)",
-      "identity_present": true,
-      "identity_runtime_matches": true,
-      "placement_id": "pep.eod_processing.create_exception",
-      "resource_present": true,
-      "resource_runtime_matches": true
-    },
-    {
-      "action_present": true,
       "candidate_policy_ids": [
         "policy.back_office.eod_read_batches"
       ],
-      "edge_id": "edge.eod_processing.get_batches",
+      "edge_id": "edge.scanner.scan_edge_002_eod_processing_agent_get_eod_batch",
       "expected_if_no_policy": "DENY (Task 4 default-deny)",
       "identity_present": true,
       "identity_runtime_matches": true,
@@ -52,47 +30,13 @@
     {
       "action_present": true,
       "candidate_policy_ids": [
-        "policy.ledger.eod_pending_review",
-        "policy.ledger.eod_approved_update"
+        "policy.tool.knowledge_search"
       ],
-      "edge_id": "edge.eod_processing.ledger_update",
+      "edge_id": "edge.scanner.scan_edge_013_compliance_agent_search_policies",
       "expected_if_no_policy": "DENY (Task 4 default-deny)",
       "identity_present": true,
       "identity_runtime_matches": true,
-      "placement_id": "pep.eod_processing.ledger_update",
-      "resource_present": true,
-      "resource_runtime_matches": true
-    },
-    {
-      "action_present": true,
-      "candidate_policy_ids": [],
-      "edge_id": "edge.eod_processing.reconcile",
-      "expected_if_no_policy": "DENY (Task 4 default-deny)",
-      "identity_present": true,
-      "identity_runtime_matches": true,
-      "placement_id": "pep.eod_processing.reconcile",
-      "resource_present": true,
-      "resource_runtime_matches": true
-    },
-    {
-      "action_present": true,
-      "candidate_policy_ids": [],
-      "edge_id": "edge.eod_processing.store_report",
-      "expected_if_no_policy": "DENY (Task 4 default-deny)",
-      "identity_present": true,
-      "identity_runtime_matches": true,
-      "placement_id": "pep.eod_processing.store_report",
-      "resource_present": true,
-      "resource_runtime_matches": true
-    },
-    {
-      "action_present": true,
-      "candidate_policy_ids": [],
-      "edge_id": "edge.eod_processing.write_report",
-      "expected_if_no_policy": "DENY (Task 4 default-deny)",
-      "identity_present": true,
-      "identity_runtime_matches": true,
-      "placement_id": "pep.eod_processing.write_report",
+      "placement_id": "pep.fraud_review.policy_search",
       "resource_present": true,
       "resource_runtime_matches": true
     },
@@ -101,7 +45,7 @@
       "candidate_policy_ids": [
         "policy.front_office.fraud_read_transaction_history"
       ],
-      "edge_id": "edge.fraud_review.read_history",
+      "edge_id": "edge.scanner.scan_edge_011_fraud_detection_agent_get_transaction_context",
       "expected_if_no_policy": "DENY (Task 4 default-deny)",
       "identity_present": true,
       "identity_runtime_matches": true,
@@ -111,14 +55,423 @@
     },
     {
       "action_present": true,
-      "candidate_policy_ids": [
-        "policy.tool.knowledge_search"
-      ],
-      "edge_id": "edge.fraud_review.search_policies",
+      "candidate_policy_ids": [],
+      "edge_id": "edge.scanner.scan_edge_003_ledger_update_agent_apply_ledger_updates",
       "expected_if_no_policy": "DENY (Task 4 default-deny)",
       "identity_present": true,
       "identity_runtime_matches": true,
-      "placement_id": "pep.fraud_review.search_policies",
+      "placement_id": "pep.ledger_update.apply_ledger_updates",
+      "resource_present": true,
+      "resource_runtime_matches": true
+    },
+    {
+      "action_present": true,
+      "candidate_policy_ids": [
+        "policy.mid_office.financial_data_read"
+      ],
+      "edge_id": "edge.scanner.scan_edge_023_financial_data_agent_get_customer_financial_profile",
+      "expected_if_no_policy": "DENY (Task 4 default-deny)",
+      "identity_present": true,
+      "identity_runtime_matches": true,
+      "placement_id": "pep.mid_office.financial_data.read_profile",
+      "resource_present": true,
+      "resource_runtime_matches": true
+    },
+    {
+      "action_present": true,
+      "candidate_policy_ids": [
+        "policy.mid_office.operations_read"
+      ],
+      "edge_id": "edge.scanner.scan_edge_019_data_analysis_agent_get_operations_snapshot",
+      "expected_if_no_policy": "DENY (Task 4 default-deny)",
+      "identity_present": true,
+      "identity_runtime_matches": true,
+      "placement_id": "pep.mid_office.operations.read_snapshot",
+      "resource_present": true,
+      "resource_runtime_matches": true
+    },
+    {
+      "action_present": true,
+      "candidate_policy_ids": [],
+      "edge_id": "edge.scanner.scan_edge_001_validation_checkpoint_agent_validate_eod_readiness",
+      "expected_if_no_policy": "DENY (Task 4 default-deny)",
+      "identity_present": true,
+      "identity_runtime_matches": true,
+      "placement_id": "pep.scanner.scan_edge_001_validation_checkpoint_agent_validate_eod_readiness",
+      "resource_present": true,
+      "resource_runtime_matches": true
+    },
+    {
+      "action_present": true,
+      "candidate_policy_ids": [],
+      "edge_id": "edge.scanner.scan_edge_004_reconciliation_agent_get_reconciliation_data",
+      "expected_if_no_policy": "DENY (Task 4 default-deny)",
+      "identity_present": true,
+      "identity_runtime_matches": true,
+      "placement_id": "pep.scanner.scan_edge_004_reconciliation_agent_get_reconciliation_data",
+      "resource_present": true,
+      "resource_runtime_matches": true
+    },
+    {
+      "action_present": true,
+      "candidate_policy_ids": [],
+      "edge_id": "edge.scanner.scan_edge_005_report_writing_agent_store_report",
+      "expected_if_no_policy": "DENY (Task 4 default-deny)",
+      "identity_present": true,
+      "identity_runtime_matches": true,
+      "placement_id": "pep.scanner.scan_edge_005_report_writing_agent_store_report",
+      "resource_present": true,
+      "resource_runtime_matches": true
+    },
+    {
+      "action_present": true,
+      "candidate_policy_ids": [],
+      "edge_id": "edge.scanner.scan_edge_006_exception_agent_create_exception_case",
+      "expected_if_no_policy": "DENY (Task 4 default-deny)",
+      "identity_present": true,
+      "identity_runtime_matches": true,
+      "placement_id": "pep.scanner.scan_edge_006_exception_agent_create_exception_case",
+      "resource_present": true,
+      "resource_runtime_matches": true
+    },
+    {
+      "action_present": true,
+      "candidate_policy_ids": [],
+      "edge_id": "edge.scanner.scan_edge_007_transaction_monitoring_agent_get_customer_context",
+      "expected_if_no_policy": "DENY (Task 4 default-deny)",
+      "identity_present": true,
+      "identity_runtime_matches": true,
+      "placement_id": "pep.scanner.scan_edge_007_transaction_monitoring_agent_get_customer_context",
+      "resource_present": true,
+      "resource_runtime_matches": true
+    },
+    {
+      "action_present": true,
+      "candidate_policy_ids": [],
+      "edge_id": "edge.scanner.scan_edge_008_transaction_monitoring_agent_get_transaction_context",
+      "expected_if_no_policy": "DENY (Task 4 default-deny)",
+      "identity_present": true,
+      "identity_runtime_matches": true,
+      "placement_id": "pep.scanner.scan_edge_008_transaction_monitoring_agent_get_transaction_context",
+      "resource_present": true,
+      "resource_runtime_matches": true
+    },
+    {
+      "action_present": true,
+      "candidate_policy_ids": [],
+      "edge_id": "edge.scanner.scan_edge_009_transaction_monitoring_agent_list_recent_transactions",
+      "expected_if_no_policy": "DENY (Task 4 default-deny)",
+      "identity_present": true,
+      "identity_runtime_matches": true,
+      "placement_id": "pep.scanner.scan_edge_009_transaction_monitoring_agent_list_recent_transactions",
+      "resource_present": true,
+      "resource_runtime_matches": true
+    },
+    {
+      "action_present": true,
+      "candidate_policy_ids": [],
+      "edge_id": "edge.scanner.scan_edge_010_fraud_detection_agent_get_customer_context",
+      "expected_if_no_policy": "DENY (Task 4 default-deny)",
+      "identity_present": true,
+      "identity_runtime_matches": true,
+      "placement_id": "pep.scanner.scan_edge_010_fraud_detection_agent_get_customer_context",
+      "resource_present": true,
+      "resource_runtime_matches": true
+    },
+    {
+      "action_present": true,
+      "candidate_policy_ids": [],
+      "edge_id": "edge.scanner.scan_edge_012_fraud_detection_agent_list_recent_transactions",
+      "expected_if_no_policy": "DENY (Task 4 default-deny)",
+      "identity_present": true,
+      "identity_runtime_matches": true,
+      "placement_id": "pep.scanner.scan_edge_012_fraud_detection_agent_list_recent_transactions",
+      "resource_present": true,
+      "resource_runtime_matches": true
+    },
+    {
+      "action_present": true,
+      "candidate_policy_ids": [],
+      "edge_id": "edge.scanner.scan_edge_014_compliance_agent_get_customer_context",
+      "expected_if_no_policy": "DENY (Task 4 default-deny)",
+      "identity_present": true,
+      "identity_runtime_matches": true,
+      "placement_id": "pep.scanner.scan_edge_014_compliance_agent_get_customer_context",
+      "resource_present": true,
+      "resource_runtime_matches": true
+    },
+    {
+      "action_present": true,
+      "candidate_policy_ids": [],
+      "edge_id": "edge.scanner.scan_edge_015_compliance_agent_get_transaction_context",
+      "expected_if_no_policy": "DENY (Task 4 default-deny)",
+      "identity_present": true,
+      "identity_runtime_matches": true,
+      "placement_id": "pep.scanner.scan_edge_015_compliance_agent_get_transaction_context",
+      "resource_present": true,
+      "resource_runtime_matches": true
+    },
+    {
+      "action_present": true,
+      "candidate_policy_ids": [],
+      "edge_id": "edge.scanner.scan_edge_016_decision_making_agent_submit_manual_review",
+      "expected_if_no_policy": "DENY (Task 4 default-deny)",
+      "identity_present": true,
+      "identity_runtime_matches": true,
+      "placement_id": "pep.scanner.scan_edge_016_decision_making_agent_submit_manual_review",
+      "resource_present": true,
+      "resource_runtime_matches": true
+    },
+    {
+      "action_present": true,
+      "candidate_policy_ids": [],
+      "edge_id": "edge.scanner.scan_edge_017_knowledge_base_agent_search_faqs",
+      "expected_if_no_policy": "DENY (Task 4 default-deny)",
+      "identity_present": true,
+      "identity_runtime_matches": true,
+      "placement_id": "pep.scanner.scan_edge_017_knowledge_base_agent_search_faqs",
+      "resource_present": true,
+      "resource_runtime_matches": true
+    },
+    {
+      "action_present": true,
+      "candidate_policy_ids": [],
+      "edge_id": "edge.scanner.scan_edge_020_forecasting_agent_get_operations_snapshot",
+      "expected_if_no_policy": "DENY (Task 4 default-deny)",
+      "identity_present": true,
+      "identity_runtime_matches": true,
+      "placement_id": "pep.scanner.scan_edge_020_forecasting_agent_get_operations_snapshot",
+      "resource_present": true,
+      "resource_runtime_matches": true
+    },
+    {
+      "action_present": true,
+      "candidate_policy_ids": [],
+      "edge_id": "edge.scanner.scan_edge_021_validation_agent_persist_validated_schedule",
+      "expected_if_no_policy": "DENY (Task 4 default-deny)",
+      "identity_present": true,
+      "identity_runtime_matches": true,
+      "placement_id": "pep.scanner.scan_edge_021_validation_agent_persist_validated_schedule",
+      "resource_present": true,
+      "resource_runtime_matches": true
+    },
+    {
+      "action_present": true,
+      "candidate_policy_ids": [],
+      "edge_id": "edge.scanner.scan_edge_022_support_guidance_agent_get_support_playbooks",
+      "expected_if_no_policy": "DENY (Task 4 default-deny)",
+      "identity_present": true,
+      "identity_runtime_matches": true,
+      "placement_id": "pep.scanner.scan_edge_022_support_guidance_agent_get_support_playbooks",
+      "resource_present": true,
+      "resource_runtime_matches": true
+    },
+    {
+      "action_present": true,
+      "candidate_policy_ids": [],
+      "edge_id": "edge.scanner.scan_edge_024_recommender_agent_search_product_catalog",
+      "expected_if_no_policy": "DENY (Task 4 default-deny)",
+      "identity_present": true,
+      "identity_runtime_matches": true,
+      "placement_id": "pep.scanner.scan_edge_024_recommender_agent_search_product_catalog",
+      "resource_present": true,
+      "resource_runtime_matches": true
+    },
+    {
+      "action_present": true,
+      "candidate_policy_ids": [],
+      "edge_id": "edge.scanner.scan_edge_025_loan_agent_search_loan_playbooks",
+      "expected_if_no_policy": "DENY (Task 4 default-deny)",
+      "identity_present": true,
+      "identity_runtime_matches": true,
+      "placement_id": "pep.scanner.scan_edge_025_loan_agent_search_loan_playbooks",
+      "resource_present": true,
+      "resource_runtime_matches": true
+    },
+    {
+      "action_present": true,
+      "candidate_policy_ids": [],
+      "edge_id": "edge.scanner.scan_edge_026_risk_compliance_agent_search_policies",
+      "expected_if_no_policy": "DENY (Task 4 default-deny)",
+      "identity_present": true,
+      "identity_runtime_matches": true,
+      "placement_id": "pep.scanner.scan_edge_026_risk_compliance_agent_search_policies",
+      "resource_present": true,
+      "resource_runtime_matches": true
+    },
+    {
+      "action_present": true,
+      "candidate_policy_ids": [],
+      "edge_id": "edge.scanner.scan_edge_027_create_customer_unknown",
+      "expected_if_no_policy": "DENY (Task 4 default-deny)",
+      "identity_present": true,
+      "identity_runtime_matches": true,
+      "placement_id": "pep.scanner.scan_edge_027_create_customer_unknown",
+      "resource_present": true,
+      "resource_runtime_matches": true
+    },
+    {
+      "action_present": true,
+      "candidate_policy_ids": [],
+      "edge_id": "edge.scanner.scan_edge_028_create_account_unknown",
+      "expected_if_no_policy": "DENY (Task 4 default-deny)",
+      "identity_present": true,
+      "identity_runtime_matches": true,
+      "placement_id": "pep.scanner.scan_edge_028_create_account_unknown",
+      "resource_present": true,
+      "resource_runtime_matches": true
+    },
+    {
+      "action_present": true,
+      "candidate_policy_ids": [],
+      "edge_id": "edge.scanner.scan_edge_029_create_policy_unknown",
+      "expected_if_no_policy": "DENY (Task 4 default-deny)",
+      "identity_present": true,
+      "identity_runtime_matches": true,
+      "placement_id": "pep.scanner.scan_edge_029_create_policy_unknown",
+      "resource_present": true,
+      "resource_runtime_matches": true
+    },
+    {
+      "action_present": true,
+      "candidate_policy_ids": [],
+      "edge_id": "edge.scanner.scan_edge_030_create_rule_unknown",
+      "expected_if_no_policy": "DENY (Task 4 default-deny)",
+      "identity_present": true,
+      "identity_runtime_matches": true,
+      "placement_id": "pep.scanner.scan_edge_030_create_rule_unknown",
+      "resource_present": true,
+      "resource_runtime_matches": true
+    },
+    {
+      "action_present": true,
+      "candidate_policy_ids": [],
+      "edge_id": "edge.scanner.scan_edge_031_update_transaction_status_unknown",
+      "expected_if_no_policy": "DENY (Task 4 default-deny)",
+      "identity_present": true,
+      "identity_runtime_matches": true,
+      "placement_id": "pep.scanner.scan_edge_031_update_transaction_status_unknown",
+      "resource_present": true,
+      "resource_runtime_matches": true
+    },
+    {
+      "action_present": true,
+      "candidate_policy_ids": [],
+      "edge_id": "edge.scanner.scan_edge_032_mid_office_router_representative_assistant_workflow",
+      "expected_if_no_policy": "DENY (Task 4 default-deny)",
+      "identity_present": true,
+      "identity_runtime_matches": true,
+      "placement_id": "pep.scanner.scan_edge_032_mid_office_router_representative_assistant_workflow",
+      "resource_present": true,
+      "resource_runtime_matches": true
+    },
+    {
+      "action_present": true,
+      "candidate_policy_ids": [],
+      "edge_id": "edge.scanner.scan_edge_033_mid_office_planning_parallel_validation_agent",
+      "expected_if_no_policy": "DENY (Task 4 default-deny)",
+      "identity_present": true,
+      "identity_runtime_matches": true,
+      "placement_id": "pep.scanner.scan_edge_033_mid_office_planning_parallel_validation_agent",
+      "resource_present": true,
+      "resource_runtime_matches": true
+    },
+    {
+      "action_present": true,
+      "candidate_policy_ids": [],
+      "edge_id": "edge.scanner.scan_edge_034_mid_office_planning_parallel_support_guidance_agent",
+      "expected_if_no_policy": "DENY (Task 4 default-deny)",
+      "identity_present": true,
+      "identity_runtime_matches": true,
+      "placement_id": "pep.scanner.scan_edge_034_mid_office_planning_parallel_support_guidance_agent",
+      "resource_present": true,
+      "resource_runtime_matches": true
+    },
+    {
+      "action_present": true,
+      "candidate_policy_ids": [],
+      "edge_id": "edge.scanner.scan_edge_035_mid_office_planning_workflow_data_analysis_agent",
+      "expected_if_no_policy": "DENY (Task 4 default-deny)",
+      "identity_present": true,
+      "identity_runtime_matches": true,
+      "placement_id": "pep.scanner.scan_edge_035_mid_office_planning_workflow_data_analysis_agent",
+      "resource_present": true,
+      "resource_runtime_matches": true
+    },
+    {
+      "action_present": true,
+      "candidate_policy_ids": [],
+      "edge_id": "edge.scanner.scan_edge_036_mid_office_planning_workflow_forecasting_agent",
+      "expected_if_no_policy": "DENY (Task 4 default-deny)",
+      "identity_present": true,
+      "identity_runtime_matches": true,
+      "placement_id": "pep.scanner.scan_edge_036_mid_office_planning_workflow_forecasting_agent",
+      "resource_present": true,
+      "resource_runtime_matches": true
+    },
+    {
+      "action_present": true,
+      "candidate_policy_ids": [],
+      "edge_id": "edge.scanner.scan_edge_037_mid_office_planning_workflow_staff_scheduling_agent",
+      "expected_if_no_policy": "DENY (Task 4 default-deny)",
+      "identity_present": true,
+      "identity_runtime_matches": true,
+      "placement_id": "pep.scanner.scan_edge_037_mid_office_planning_workflow_staff_scheduling_agent",
+      "resource_present": true,
+      "resource_runtime_matches": true
+    },
+    {
+      "action_present": true,
+      "candidate_policy_ids": [],
+      "edge_id": "edge.scanner.scan_edge_038_mid_office_planning_workflow_planning_summary_agent",
+      "expected_if_no_policy": "DENY (Task 4 default-deny)",
+      "identity_present": true,
+      "identity_runtime_matches": true,
+      "placement_id": "pep.scanner.scan_edge_038_mid_office_planning_workflow_planning_summary_agent",
+      "resource_present": true,
+      "resource_runtime_matches": true
+    },
+    {
+      "action_present": true,
+      "candidate_policy_ids": [],
+      "edge_id": "edge.scanner.scan_edge_039_representative_assist_parallel_financial_data_agent",
+      "expected_if_no_policy": "DENY (Task 4 default-deny)",
+      "identity_present": true,
+      "identity_runtime_matches": true,
+      "placement_id": "pep.scanner.scan_edge_039_representative_assist_parallel_financial_data_agent",
+      "resource_present": true,
+      "resource_runtime_matches": true
+    },
+    {
+      "action_present": true,
+      "candidate_policy_ids": [],
+      "edge_id": "edge.scanner.scan_edge_040_representative_assist_parallel_recommender_agent",
+      "expected_if_no_policy": "DENY (Task 4 default-deny)",
+      "identity_present": true,
+      "identity_runtime_matches": true,
+      "placement_id": "pep.scanner.scan_edge_040_representative_assist_parallel_recommender_agent",
+      "resource_present": true,
+      "resource_runtime_matches": true
+    },
+    {
+      "action_present": true,
+      "candidate_policy_ids": [],
+      "edge_id": "edge.scanner.scan_edge_041_representative_assist_parallel_loan_agent",
+      "expected_if_no_policy": "DENY (Task 4 default-deny)",
+      "identity_present": true,
+      "identity_runtime_matches": true,
+      "placement_id": "pep.scanner.scan_edge_041_representative_assist_parallel_loan_agent",
+      "resource_present": true,
+      "resource_runtime_matches": true
+    },
+    {
+      "action_present": true,
+      "candidate_policy_ids": [],
+      "edge_id": "edge.scanner.scan_edge_042_representative_assist_parallel_risk_compliance_agent",
+      "expected_if_no_policy": "DENY (Task 4 default-deny)",
+      "identity_present": true,
+      "identity_runtime_matches": true,
+      "placement_id": "pep.scanner.scan_edge_042_representative_assist_parallel_risk_compliance_agent",
       "resource_present": true,
       "resource_runtime_matches": true
     }

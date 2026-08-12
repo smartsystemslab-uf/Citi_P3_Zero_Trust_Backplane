@@ -1,0 +1,46 @@
+apiVersion: ztb/v1alpha1
+kind: PolicyBundle
+metadata:
+  id: bundle.back_office
+  version: 1.0.0
+  domain: back_office
+  status: provisional
+policies:
+  - id: policy.back_office.report_read_reconciliation
+    description: Report agent may read reconciliation results in the verified EOD workflow.
+    priority: 220
+    effect: ALLOW_WITH_OBLIGATIONS
+    match:
+      subjects: [agent.back_office.report]
+      resources: [resource.back_office.reconciliation_results]
+      actions: [read]
+      workflows: [workflow.back_office.eod_processing]
+    obligations:
+      - type: enhanced_logging
+        parameters: {reason: reconciliation_report_access}
+    enabled: true
+
+  - id: policy.back_office.report_deny_ledger_update
+    description: Report agent must never modify the ledger.
+    priority: 500
+    effect: DENY
+    match:
+      subjects: [agent.back_office.report]
+      resources: [resource.back_office.ledger]
+      actions: [update]
+    obligations: []
+    enabled: true
+
+  - id: policy.back_office.eod_read_batches
+    description: EOD agent may read EOD batches in the verified EOD workflow.
+    priority: 200
+    effect: ALLOW_WITH_OBLIGATIONS
+    match:
+      subjects: [agent.back_office.eod]
+      resources: [resource.back_office.eod_batches]
+      actions: [read]
+      workflows: [workflow.back_office.eod_processing]
+    obligations:
+      - type: enhanced_logging
+        parameters: {reason: eod_batch_access}
+    enabled: true

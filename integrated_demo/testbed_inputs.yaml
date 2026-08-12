@@ -1,0 +1,29 @@
+# Read-only IDs taken from the real Citi_P3 ADK repository seed data.
+# These tools use bank_adk/.runtime/banking.db, which the integration runtime
+# now initializes the same way as the normal Citi testbed bootstrap path.
+front_office:
+  placement_id: pep.fraud_review.read_history
+  tool_id: get_transaction_context
+  parameters:
+    transaction_id: TXN-1001
+  context:
+    workflow_instance_id: fraud-real-001
+    risk_score: 350
+
+mid_office:
+  placement_id: pep.mid_office.financial_data.read_profile
+  tool_id: get_customer_financial_profile
+  parameters:
+    customer_id: CUST-001
+  context:
+    workflow_instance_id: mid-real-001
+    risk_score: 350
+
+back_office:
+  placement_id: pep.eod_processing.get_batches
+  tool_id: get_eod_batch
+  parameters:
+    batch_id: EOD-2026-04-21-CLEAN
+  context:
+    workflow_instance_id: eod-real-001
+    risk_score: 350

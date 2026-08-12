@@ -215,3 +215,133 @@ identities:
   enabled: true
   attributes:
     manifest_status: confirmed
+- id: validation_checkpoint_agent
+  canonical_id: agent.back_office.validation_checkpoint_agent
+  type: agent
+  roles:
+  - specialist
+  domain: back_office
+  enabled: true
+  attributes:
+    manifest_status: provisional
+    scanner_source_type: subject
+- id: ledger_update_agent
+  canonical_id: agent.back_office.ledger_update
+  type: agent
+  roles:
+  - specialist
+  domain: back_office
+  enabled: true
+  attributes:
+    manifest_status: provisional
+    scanner_source_type: subject
+- id: report_writing_agent
+  canonical_id: agent.back_office.report_writing_agent
+  type: agent
+  roles:
+  - specialist
+  domain: back_office
+  enabled: true
+  attributes:
+    manifest_status: provisional
+    scanner_source_type: subject
+- id: decision_making_agent
+  canonical_id: agent.front_office.decision_making_agent
+  type: agent
+  roles:
+  - specialist
+  domain: front_office
+  enabled: true
+  attributes:
+    manifest_status: provisional
+    scanner_source_type: subject
+- id: create_customer
+  canonical_id: service.front_office.create_customer
+  type: service
+  roles:
+  - scanner_discovered
+  domain: front_office
+  enabled: true
+  attributes:
+    manifest_status: provisional
+    scanner_source_type: api
+- id: create_account
+  canonical_id: service.shared.create_account
+  type: service
+  roles:
+  - scanner_discovered
+  domain: shared
+  enabled: true
+  attributes:
+    manifest_status: provisional
+    scanner_source_type: api
+- id: create_policy
+  canonical_id: service.shared.create_policy
+  type: service
+  roles:
+  - scanner_discovered
+  domain: shared
+  enabled: true
+  attributes:
+    manifest_status: provisional
+    scanner_source_type: api
+- id: create_rule
+  canonical_id: service.shared.create_rule
+  type: service
+  roles:
+  - scanner_discovered
+  domain: shared
+  enabled: true
+  attributes:
+    manifest_status: provisional
+    scanner_source_type: api
+- id: update_transaction_status
+  canonical_id: service.front_office.update_transaction_status
+  type: service
+  roles:
+  - scanner_discovered
+  domain: front_office
+  enabled: true
+  attributes:
+    manifest_status: provisional
+    scanner_source_type: api
+- id: mid_office_router
+  canonical_id: agent.mid_office.mid_office_router
+  type: agent
+  roles:
+  - router
+  domain: mid_office
+  enabled: true
+  attributes:
+    manifest_status: provisional
+    scanner_source_type: subject
+- id: mid_office_planning_parallel
+  canonical_id: agent.shared.mid_office_planning_parallel
+  type: agent
+  roles:
+  - workflow
+  domain: shared
+  enabled: true
+  attributes:
+    manifest_status: provisional
+    scanner_source_type: subject
+- id: mid_office_planning_workflow
+  canonical_id: agent.shared.mid_office_planning_workflow
+  type: agent
+  roles:
+  - workflow
+  domain: shared
+  enabled: true
+  attributes:
+    manifest_status: provisional
+    scanner_source_type: subject
+- id: representative_assist_parallel
+  canonical_id: agent.shared.representative_assist_parallel
+  type: agent
+  roles:
+  - workflow
+  domain: shared
+  enabled: true
+  attributes:
+    manifest_status: provisional
+    scanner_source_type: subject
