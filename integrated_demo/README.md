@@ -1,79 +1,178 @@
-# Integrated Zero Trust Backplane Demo — Tasks 1–5
+# Integrated Zero Trust Backplane Demo — Tasks 1–5 + Real Citi Testbed
 
-This demo makes the currently implemented Zero Trust Backplane tasks run as one pipeline instead of as isolated packages.
+This runner connects the currently implemented Zero Trust Backplane modules into one executable pipeline and can optionally protect the original Citi Front Office, Mid Office, and Back Office tools.
 
-## What runs together
+For the complete architecture, design rationale, sensitivity rules, troubleshooting guide, and repository-wide instructions, see the repository root `README.md`.
 
-1. **Task 1** — loads the legacy Citi ZT-IR inventory and validates the unified interface baseline.
-2. **Task 2** — scans a banking repository with the AST scanner and generates draft agent/tool/API/database/edge manifests.
-3. **Task 1 + Task 2 reconciliation** — verifies selected runtime names against both sources and updates only the unified runtime bindings. Canonical IDs stay stable.
-4. **Task 3** — consumes the reconciled manifest, generates logical/physical PEP placements and adapter code, and checks the post-sync Task 4 registry contract.
-5. **Task 4** — runs the real security-hardened PDP in-process, including signed requests, signed policy bundles, verified context, replay protection, and signed decisions.
-6. **Task 5** — verifies the native Task 4 decision, issues a signed Permit Lease, binds it to the Task 3 PEP sender, enforces obligations, handles PDP timeout, rejects modified requests, clears cache on PEP restart, and fails closed for critical single-use permits.
+---
 
-## Run
+## Pipeline
 
-Use Python 3.11+ and install the four Python packages first:
-
-```bash
-python -m pip install -e interface_standard \
-  -e Zero_Trust_Task3_PEP_Integrated/zero_trust_pep_task3_integrated \
-  -e zero_trust_pdp_task4_secure \
-  -e zero_trust_task5
+```text
+Task 1 system model / Unified Interface
+    -> Task 2 source scanner
+    -> runtime reconciliation
+    -> optional real scanner-graph merge
+    -> Task 3 PEP generation
+    -> Task 4 signed PDP
+    -> Task 5 Permit Lease
+    -> optional real Citi tools / writes
 ```
 
-From the repository root:
+---
 
-```bash
+## Requirements
+
+Use Python 3.11+.
+
+Install from the Backplane root:
+
+```powershell
+python -m pip install -e interface_standard -e Zero_Trust_Task3_PEP_Integrated/zero_trust_pep_task3_integrated -e zero_trust_pdp_task4_secure -e zero_trust_task5
+```
+
+---
+
+## Mode 1 — Basic self-test
+
+```powershell
 python integrated_demo/run_demo.py --clean
 ```
 
-The ZIP does not contain the full Citi banking-agent implementation, so the default command scans `integrated_demo/sample_banking_system`, a small static-analysis fixture whose names mirror the Task 1 inventory. To scan a real checkout instead:
+---
 
-```bash
-python integrated_demo/run_demo.py --clean --banking-repo /path/to/citi-banking-system
+## Mode 2 — Real Citi scanner graph
+
+```powershell
+python integrated_demo/run_demo.py --clean `
+  --banking-repo "D:\Lab\Citi_P3" `
+  --scanner-graph
 ```
 
-The real repository must expose the paths currently expected by Task 2:
+This replaces the small baseline interaction fixture with the graph actually discovered by Task 2 before Task 3 PEP placement.
 
-- `citi_banking_adk/bank_adk/agents/*.py`
-- `citi_banking_adk/bank_adk/tools/*.py`
-- `citi_banking_mcp_server/mcp_server.py`
-- `citi_banking_backend/app/main.py`
-- `citi_banking_backend/app/models.py`
+---
 
-## Demo scenarios
+## Mode 3 — Real three-office read tools
 
-The runner demonstrates:
+```powershell
+python integrated_demo/run_demo.py --clean `
+  --banking-repo "D:\Lab\Citi_P3" `
+  --scanner-graph `
+  --execute-real-tools
+```
 
-- fraud-agent read is allowed and Task 4's masking obligation is still applied after Task 5 is inserted;
-- an exact noncritical request may use a bounded valid Permit Lease during a simulated PDP timeout;
-- a modified request cannot reuse that cached authorization;
-- a PEP restart clears local authorization cache and disables timeout fallback;
-- a critical ledger write without signed approvals returns `MANUAL_REVIEW` and is blocked;
-- the same ledger write with signed human approval, independent authorization, idempotency key, and change ticket is allowed;
-- that critical Permit Lease is single-use and therefore cannot be reused when the PDP later times out;
-- the Task 5 hash-chained audit log verifies successfully.
+Default read fixtures are defined in:
 
-## Important integration detail: Task 4 hash vs Task 5 hash
+```text
+integrated_demo/testbed_inputs.yaml
+```
 
-Task 4 and Task 5 intentionally bind slightly different canonical request representations. `native_task4_bridge.py` handles this without weakening verification:
+Current protected real read tools:
 
-1. Task 4's original request and response are verified using Task 4's own request hash and decision signature.
-2. The bridge checks that subject, resource, action, workflow, and parameters are semantically identical to the Task 5 request.
-3. Only after that succeeds is the decision normalized to Task 5's operation hash for Permit Lease issuance.
+```text
+Front Office: get_transaction_context
+Mid Office:   get_customer_financial_profile
+Back Office:  get_eod_batch
+```
 
-So the demo never trusts a Task 5 hash as a substitute for verifying Task 4's native signed request.
+---
 
-## Output
+## Mode 4 — Real protected writes
 
-`integrated_demo/output/` contains:
+Start the Citi FastAPI backend first:
 
-- Task 2 draft manifests and coverage report;
-- Task 1/2 reconciliation report;
-- reconciled unified manifest;
-- Task 3 generated PEP plan/adapters/coverage reports;
-- compiled Task 4 identity/resource/interface configuration;
-- Task 4 decision audit log;
-- Task 5 hash-chained audit log;
-- `demo_summary.json` with pass/fail results for every scenario.
+```powershell
+cd D:\Lab\Citi_P3\citi_banking_backend
+python -m pip install -r requirements.txt
+python scripts\init_db.py
+python -m uvicorn app.main:app --host 127.0.0.1 --port 8000
+```
+
+Then, in another PowerShell:
+
+```powershell
+cd D:\Lab\Citi_P3_Zero_Trust_Backplane
+.\.venv\Scripts\Activate.ps1
+
+python integrated_demo/run_demo.py --clean `
+  --banking-repo "D:\Lab\Citi_P3" `
+  --scanner-graph `
+  --execute-real-tools `
+  --execute-real-writes
+```
+
+Current protected real writes:
+
+```text
+transaction_processing_agent -> execute_transfer
+ledger_update_agent           -> apply_ledger_updates
+```
+
+Write fixtures are defined in:
+
+```text
+integrated_demo/real_write_inputs.yaml
+```
+
+---
+
+## What `--clean` does
+
+`--clean` removes generated Backplane demo artifacts under `integrated_demo/output/` before the run.
+
+It does not reset the Citi banking database.
+
+---
+
+## Important Output
+
+A successful real-testbed run should show stages such as:
+
+```text
+Task 2 discovered real agents/tools/APIs/databases/edges
+Reconciled runtime bindings
+scanner_edges_merged
+Task 3 sensitive/protected edge counts
+Task 3 / Task 4 registry compatibility: True
+Task 4 PDP healthy
+Task 5 security scenarios
+REAL TOOL ... -> ALLOW
+REAL WRITE ... -> ALLOW + EXECUTED
+Task 5 hash-chained audit valid: True
+ALL TASKS 1-5 INTEGRATED: PASS
+```
+
+---
+
+## Output Artifacts
+
+```text
+integrated_demo/output/
+├── task2/
+├── task1_task2_reconciliation.json
+├── reconciled_manifest.yaml
+├── task3_generated/
+├── task4_decision_log.jsonl
+├── task4_policy_versions.json
+├── task5_audit.json
+└── demo_summary.json
+```
+
+---
+
+## Current Coverage Interpretation
+
+Task 3 reports coverage over the sensitive interaction edges currently represented in the merged manifest.
+
+For example:
+
+```text
+42 sensitive edges
+42 protected edges
+100% coverage
+```
+
+means 100% of the **currently discovered and merged sensitive graph** is protected. It does not make a claim about a path the scanner did not discover.
+
+Sensitivity is currently determined by rule-based attributes such as risk, trust-boundary crossing, side effects, data classification, and action criticality.
