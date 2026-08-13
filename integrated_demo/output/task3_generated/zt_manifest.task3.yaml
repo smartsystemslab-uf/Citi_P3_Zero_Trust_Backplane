@@ -5,7 +5,7 @@ metadata:
   manifest_version: 1.0.0-alpha.1
   environment: prototype
   created_at: '2026-07-26T00:00:00Z'
-  updated_at: '2026-08-12T22:48:59.931085Z'
+  updated_at: '2026-08-13T13:43:00.555421Z'
   owner: zero_trust_backplane_team
   source_revision: task1+task2-runtime-graph-reconciled
   description: Project-wide baseline containing current provisional architecture and

@@ -64,13 +64,13 @@
       "result": {
         "amount": 1.25,
         "destination_account": "EXT-998",
-        "destination_balance_after": 2.5,
+        "destination_balance_after": 10.0,
         "memo": "Zero Trust protected integration demo",
         "source_account": "CHK-002",
-        "source_balance_after": 9617.63,
+        "source_balance_after": 9610.13,
         "status": "posted",
-        "timestamp": "2026-08-12T22:49:01.578459+00:00",
-        "transaction_id": "TXN-0A5E0BFE8F"
+        "timestamp": "2026-08-13T13:43:02.222277+00:00",
+        "transaction_id": "TXN-EB53A289DE"
       },
       "scenario": "real_write_front_office_transfer",
       "tool_id": "execute_transfer"
@@ -82,7 +82,7 @@
         "batch_id": "EOD-2026-04-21-CLEAN",
         "posting_instructions": "Apply verified EOD posting instructions for the protected integration demo.",
         "status": "ledger_updated",
-        "timestamp": "2026-08-12T22:49:01.592742+00:00"
+        "timestamp": "2026-08-13T13:43:02.237298+00:00"
       },
       "scenario": "real_write_back_office_ledger_update",
       "tool_id": "apply_ledger_updates"
