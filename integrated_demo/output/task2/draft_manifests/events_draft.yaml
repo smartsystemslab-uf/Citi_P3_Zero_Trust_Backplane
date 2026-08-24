@@ -1,0 +1,27 @@
+zt_ir_version: '1.0'
+manifest_type: events_draft
+events:
+- event_id: event.startup
+  event_name: startup
+  handler: startup_event
+  trigger_type: on_event
+  domain: shared
+  target_agents:
+  - citi_banking_adk
+  risk_level: 2
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_backend\app\main.py:26
+- event_id: event.trigger_eod_reconciliation
+  event_name: trigger_eod_reconciliation
+  handler: trigger_eod_reconciliation
+  trigger_type: function_trigger
+  domain: shared
+  target_agents:
+  - citi_banking_adk
+  risk_level: 3
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_backend\app\main.py:306

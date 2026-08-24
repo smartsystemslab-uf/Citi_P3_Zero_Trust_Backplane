@@ -60,63 +60,34 @@
     },
     {
       "passed": true,
-      "placement_id": "pep.customer_transaction.execute_transfer",
-      "result": {
-        "amount": 1.25,
-        "destination_account": "EXT-998",
-        "destination_balance_after": 10.0,
-        "memo": "Zero Trust protected integration demo",
-        "source_account": "CHK-002",
-        "source_balance_after": 9610.13,
-        "status": "posted",
-        "timestamp": "2026-08-13T13:43:02.222277+00:00",
-        "transaction_id": "TXN-EB53A289DE"
-      },
-      "scenario": "real_write_front_office_transfer",
-      "tool_id": "execute_transfer"
-    },
-    {
-      "passed": true,
-      "placement_id": "pep.ledger_update.apply_ledger_updates",
-      "result": {
-        "batch_id": "EOD-2026-04-21-CLEAN",
-        "posting_instructions": "Apply verified EOD posting instructions for the protected integration demo.",
-        "status": "ledger_updated",
-        "timestamp": "2026-08-13T13:43:02.237298+00:00"
-      },
-      "scenario": "real_write_back_office_ledger_update",
-      "tool_id": "apply_ledger_updates"
-    },
-    {
-      "passed": true,
       "scenario": "audit_chain_valid"
     }
   ],
   "scanner_graph_merge": {
     "created": {
-      "interactions": 42,
-      "interfaces": 12,
-      "resources": 27,
-      "subjects": 13
+      "interactions": 95,
+      "interfaces": 21,
+      "resources": 61,
+      "subjects": 36
     },
     "ignored_private_helper_edges": 0,
     "note": "Task 3 interactions now come from Task 2's discovered testbed graph; canonical policy resources are reused for known Citi operations.",
-    "scanner_agents": 33,
-    "scanner_apis": 19,
+    "scanner_agents": 36,
+    "scanner_apis": 24,
     "scanner_databases": 6,
-    "scanner_edges_input": 42,
-    "scanner_edges_merged": 42,
-    "scanner_tools": 20
+    "scanner_edges_input": 95,
+    "scanner_edges_merged": 95,
+    "scanner_tools": 29
   },
   "task3_coverage": {
     "coverage_claim_scope": "Known interaction edges in the unified manifest only",
-    "deduplicated_component_savings": 38,
-    "interaction_edges_total": 42,
+    "deduplicated_component_savings": 86,
+    "interaction_edges_total": 95,
     "known_direct_bypass_paths": 0,
-    "logical_pep_count": 42,
-    "physical_pep_count": 4,
-    "protected_sensitive_edges": 42,
-    "sensitive_interaction_edges": 42,
+    "logical_pep_count": 95,
+    "physical_pep_count": 9,
+    "protected_sensitive_edges": 95,
+    "sensitive_interaction_edges": 95,
     "sensitive_inventory_resources_without_discovered_edges": [
       "resource.back_office.exception_case",
       "resource.back_office.final_report",

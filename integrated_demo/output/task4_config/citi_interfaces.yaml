@@ -507,6 +507,204 @@ interfaces:
   response_schema_ref: null
   timeout_ms: 5000
   status: provisional
+- canonical_id: interface.http.get_transaction
+  type: http
+  runtime:
+    runtime_id: get_transaction
+    endpoint: /transactions/{transaction_id}
+    function_name: null
+    service_name: null
+    namespace: null
+    secret_refs: []
+    extensions: {}
+  authentication:
+    method: placeholder
+    issuer: null
+    audience: null
+    subject_claim: null
+    credential_ref: null
+    jwks_uri: null
+    extensions: {}
+  request_schema_ref: null
+  response_schema_ref: null
+  timeout_ms: 5000
+  status: provisional
+- canonical_id: interface.http.monitoring_evaluate_transaction
+  type: http
+  runtime:
+    runtime_id: monitoring_evaluate_transaction
+    endpoint: /monitoring/evaluate_transaction
+    function_name: null
+    service_name: null
+    namespace: null
+    secret_refs: []
+    extensions: {}
+  authentication:
+    method: placeholder
+    issuer: null
+    audience: null
+    subject_claim: null
+    credential_ref: null
+    jwks_uri: null
+    extensions: {}
+  request_schema_ref: null
+  response_schema_ref: null
+  timeout_ms: 5000
+  status: provisional
+- canonical_id: interface.http.update_transaction_status
+  type: http
+  runtime:
+    runtime_id: update_transaction_status
+    endpoint: /transactions/{transaction_id}/status
+    function_name: null
+    service_name: null
+    namespace: null
+    secret_refs: []
+    extensions: {}
+  authentication:
+    method: placeholder
+    issuer: null
+    audience: null
+    subject_claim: null
+    credential_ref: null
+    jwks_uri: null
+    extensions: {}
+  request_schema_ref: null
+  response_schema_ref: null
+  timeout_ms: 5000
+  status: provisional
+- canonical_id: interface.http.get_branch_workload
+  type: http
+  runtime:
+    runtime_id: get_branch_workload
+    endpoint: /mid-office/workload/{branch_id}
+    function_name: null
+    service_name: null
+    namespace: null
+    secret_refs: []
+    extensions: {}
+  authentication:
+    method: placeholder
+    issuer: null
+    audience: null
+    subject_claim: null
+    credential_ref: null
+    jwks_uri: null
+    extensions: {}
+  request_schema_ref: null
+  response_schema_ref: null
+  timeout_ms: 5000
+  status: provisional
+- canonical_id: interface.http.propose_staffing_adjustment
+  type: http
+  runtime:
+    runtime_id: propose_staffing_adjustment
+    endpoint: /mid-office/rebalance
+    function_name: null
+    service_name: null
+    namespace: null
+    secret_refs: []
+    extensions: {}
+  authentication:
+    method: placeholder
+    issuer: null
+    audience: null
+    subject_claim: null
+    credential_ref: null
+    jwks_uri: null
+    extensions: {}
+  request_schema_ref: null
+  response_schema_ref: null
+  timeout_ms: 5000
+  status: provisional
+- canonical_id: interface.http.get_customer_product_affinity
+  type: http
+  runtime:
+    runtime_id: get_customer_product_affinity
+    endpoint: /mid-office/affinity/{customer_id}
+    function_name: null
+    service_name: null
+    namespace: null
+    secret_refs: []
+    extensions: {}
+  authentication:
+    method: placeholder
+    issuer: null
+    audience: null
+    subject_claim: null
+    credential_ref: null
+    jwks_uri: null
+    extensions: {}
+  request_schema_ref: null
+  response_schema_ref: null
+  timeout_ms: 5000
+  status: provisional
+- canonical_id: interface.http.trigger_eod_reconciliation
+  type: http
+  runtime:
+    runtime_id: trigger_eod_reconciliation
+    endpoint: /back-office/reconcile
+    function_name: null
+    service_name: null
+    namespace: null
+    secret_refs: []
+    extensions: {}
+  authentication:
+    method: placeholder
+    issuer: null
+    audience: null
+    subject_claim: null
+    credential_ref: null
+    jwks_uri: null
+    extensions: {}
+  request_schema_ref: null
+  response_schema_ref: null
+  timeout_ms: 5000
+  status: provisional
+- canonical_id: interface.http.get_reconciliation_mismatches
+  type: http
+  runtime:
+    runtime_id: get_reconciliation_mismatches
+    endpoint: /back-office/mismatches/{report_id}
+    function_name: null
+    service_name: null
+    namespace: null
+    secret_refs: []
+    extensions: {}
+  authentication:
+    method: placeholder
+    issuer: null
+    audience: null
+    subject_claim: null
+    credential_ref: null
+    jwks_uri: null
+    extensions: {}
+  request_schema_ref: null
+  response_schema_ref: null
+  timeout_ms: 5000
+  status: provisional
+- canonical_id: interface.http.resolve_ledger_entry
+  type: http
+  runtime:
+    runtime_id: resolve_ledger_entry
+    endpoint: /back-office/resolve/{transaction_id}
+    function_name: null
+    service_name: null
+    namespace: null
+    secret_refs: []
+    extensions: {}
+  authentication:
+    method: placeholder
+    issuer: null
+    audience: null
+    subject_claim: null
+    credential_ref: null
+    jwks_uri: null
+    extensions: {}
+  request_schema_ref: null
+  response_schema_ref: null
+  timeout_ms: 5000
+  status: provisional
 audit:
   schema_ref: schemas/audit_event.schema.json
   sink_interface_id: null

@@ -8,7 +8,7 @@
 ## Policy coverage note
 
 Registry compatibility does not imply every interaction is allowed. Task 4 remains default-deny.
-Known generated edges without a candidate explicit policy: **36**.
+Known generated edges without a candidate explicit policy: **89**.
 These edges will return DENY until Task 4 policy bundles are extended.
 
 - `edge.scanner.scan_edge_003_ledger_update_agent_apply_ledger_updates` → default DENY
@@ -31,19 +31,72 @@ These edges will return DENY until Task 4 policy bundles are extended.
 - `edge.scanner.scan_edge_024_recommender_agent_search_product_catalog` → default DENY
 - `edge.scanner.scan_edge_025_loan_agent_search_loan_playbooks` → default DENY
 - `edge.scanner.scan_edge_026_risk_compliance_agent_search_policies` → default DENY
-- `edge.scanner.scan_edge_027_create_customer_unknown` → default DENY
-- `edge.scanner.scan_edge_028_create_account_unknown` → default DENY
-- `edge.scanner.scan_edge_029_create_policy_unknown` → default DENY
-- `edge.scanner.scan_edge_030_create_rule_unknown` → default DENY
-- `edge.scanner.scan_edge_031_update_transaction_status_unknown` → default DENY
-- `edge.scanner.scan_edge_032_mid_office_router_representative_assistant_workflow` → default DENY
-- `edge.scanner.scan_edge_033_mid_office_planning_parallel_validation_agent` → default DENY
-- `edge.scanner.scan_edge_034_mid_office_planning_parallel_support_guidance_agent` → default DENY
-- `edge.scanner.scan_edge_035_mid_office_planning_workflow_data_analysis_agent` → default DENY
-- `edge.scanner.scan_edge_036_mid_office_planning_workflow_forecasting_agent` → default DENY
-- `edge.scanner.scan_edge_037_mid_office_planning_workflow_staff_scheduling_agent` → default DENY
-- `edge.scanner.scan_edge_038_mid_office_planning_workflow_planning_summary_agent` → default DENY
-- `edge.scanner.scan_edge_039_representative_assist_parallel_financial_data_agent` → default DENY
-- `edge.scanner.scan_edge_040_representative_assist_parallel_recommender_agent` → default DENY
-- `edge.scanner.scan_edge_041_representative_assist_parallel_loan_agent` → default DENY
-- `edge.scanner.scan_edge_042_representative_assist_parallel_risk_compliance_agent` → default DENY
+- `edge.scanner.scan_edge_027_get_transaction_get_transaction` → default DENY
+- `edge.scanner.scan_edge_028_run_fraud_and_compliance_workflow_monitoring_evaluate_transaction` → default DENY
+- `edge.scanner.scan_edge_029_update_transaction_status_update_transaction_status` → default DENY
+- `edge.scanner.scan_edge_030_get_branch_workload_get_branch_workload` → default DENY
+- `edge.scanner.scan_edge_031_propose_staffing_adjustment_propose_staffing_adjustment` → default DENY
+- `edge.scanner.scan_edge_032_get_customer_product_affinity_get_customer_product_affinity` → default DENY
+- `edge.scanner.scan_edge_033_trigger_eod_reconciliation_trigger_eod_reconciliation` → default DENY
+- `edge.scanner.scan_edge_034_get_reconciliation_mismatches_get_reconciliation_mismatches` → default DENY
+- `edge.scanner.scan_edge_035_resolve_ledger_entry_resolve_ledger_entry` → default DENY
+- `edge.scanner.scan_edge_036_create_customer_customers` → default DENY
+- `edge.scanner.scan_edge_037_create_customer_customers` → default DENY
+- `edge.scanner.scan_edge_038_get_customer_customers` → default DENY
+- `edge.scanner.scan_edge_039_list_customer_accounts_accounts` → default DENY
+- `edge.scanner.scan_edge_040_get_customer_context_customers` → default DENY
+- `edge.scanner.scan_edge_041_list_customer_transactions_accounts` → default DENY
+- `edge.scanner.scan_edge_042_list_customer_transactions_transactions` → default DENY
+- `edge.scanner.scan_edge_043_create_account_customers` → default DENY
+- `edge.scanner.scan_edge_044_create_account_accounts` → default DENY
+- `edge.scanner.scan_edge_045_create_account_accounts` → default DENY
+- `edge.scanner.scan_edge_046_get_account_accounts` → default DENY
+- `edge.scanner.scan_edge_047_get_transaction_transactions` → default DENY
+- `edge.scanner.scan_edge_048_list_transactions_transactions` → default DENY
+- `edge.scanner.scan_edge_049_create_policy_policies` → default DENY
+- `edge.scanner.scan_edge_050_create_policy_policies` → default DENY
+- `edge.scanner.scan_edge_051_list_policies_policies` → default DENY
+- `edge.scanner.scan_edge_052_search_policies_policies` → default DENY
+- `edge.scanner.scan_edge_053_create_rule_rules` → default DENY
+- `edge.scanner.scan_edge_054_create_rule_rules` → default DENY
+- `edge.scanner.scan_edge_055_list_rules_rules` → default DENY
+- `edge.scanner.scan_edge_056_update_transaction_status_transactions` → default DENY
+- `edge.scanner.scan_edge_057_get_customer_product_affinity_customers` → default DENY
+- `edge.scanner.scan_edge_058_get_customer_product_affinity_accounts` → default DENY
+- `edge.scanner.scan_edge_059_trigger_eod_reconciliation_transactions` → default DENY
+- `edge.scanner.scan_edge_060_trigger_eod_reconciliation_audit_logs` → default DENY
+- `edge.scanner.scan_edge_061_get_reconciliation_mismatches_audit_logs` → default DENY
+- `edge.scanner.scan_edge_062_resolve_ledger_entry_transactions` → default DENY
+- `edge.scanner.scan_edge_063_resolve_ledger_entry_audit_logs` → default DENY
+- `edge.scanner.scan_edge_064_back_office_eod_workflow_validation_checkpoint_agent` → default DENY
+- `edge.scanner.scan_edge_065_back_office_eod_workflow_eod_processing_agent` → default DENY
+- `edge.scanner.scan_edge_066_back_office_eod_workflow_ledger_update_agent` → default DENY
+- `edge.scanner.scan_edge_067_back_office_eod_workflow_reconciliation_agent` → default DENY
+- `edge.scanner.scan_edge_068_back_office_eod_workflow_report_writing_agent` → default DENY
+- `edge.scanner.scan_edge_069_back_office_eod_workflow_exception_agent` → default DENY
+- `edge.scanner.scan_edge_070_back_office_router_back_office_eod_workflow` → default DENY
+- `edge.scanner.scan_edge_071_front_office_transaction_workflow_transaction_monitoring_agent` → default DENY
+- `edge.scanner.scan_edge_072_front_office_transaction_workflow_fraud_detection_agent` → default DENY
+- `edge.scanner.scan_edge_073_front_office_transaction_workflow_compliance_agent` → default DENY
+- `edge.scanner.scan_edge_074_front_office_transaction_workflow_decision_making_agent` → default DENY
+- `edge.scanner.scan_edge_075_customer_service_chatbot_workflow_chatbot_intent_agent` → default DENY
+- `edge.scanner.scan_edge_076_customer_service_chatbot_workflow_knowledge_base_agent` → default DENY
+- `edge.scanner.scan_edge_077_customer_service_chatbot_workflow_customer_service_agent` → default DENY
+- `edge.scanner.scan_edge_078_customer_service_chatbot_workflow_transaction_processing_agent` → default DENY
+- `edge.scanner.scan_edge_079_front_office_router_front_office_transaction_workflow` → default DENY
+- `edge.scanner.scan_edge_080_front_office_router_customer_service_chatbot_workflow` → default DENY
+- `edge.scanner.scan_edge_081_mid_office_router_mid_office_planning_workflow` → default DENY
+- `edge.scanner.scan_edge_082_mid_office_router_representative_assistant_workflow` → default DENY
+- `edge.scanner.scan_edge_083_mid_office_planning_parallel_validation_agent` → default DENY
+- `edge.scanner.scan_edge_084_mid_office_planning_parallel_support_guidance_agent` → default DENY
+- `edge.scanner.scan_edge_085_mid_office_planning_workflow_data_analysis_agent` → default DENY
+- `edge.scanner.scan_edge_086_mid_office_planning_workflow_forecasting_agent` → default DENY
+- `edge.scanner.scan_edge_087_mid_office_planning_workflow_staff_scheduling_agent` → default DENY
+- `edge.scanner.scan_edge_088_mid_office_planning_workflow_mid_office_planning_parallel` → default DENY
+- `edge.scanner.scan_edge_089_mid_office_planning_workflow_planning_summary_agent` → default DENY
+- `edge.scanner.scan_edge_090_representative_assist_parallel_financial_data_agent` → default DENY
+- `edge.scanner.scan_edge_091_representative_assist_parallel_recommender_agent` → default DENY
+- `edge.scanner.scan_edge_092_representative_assist_parallel_loan_agent` → default DENY
+- `edge.scanner.scan_edge_093_representative_assist_parallel_risk_compliance_agent` → default DENY
+- `edge.scanner.scan_edge_094_representative_assistant_workflow_representative_assist_parallel` → default DENY
+- `edge.scanner.scan_edge_095_representative_assistant_workflow_representative_merge_agent` → default DENY

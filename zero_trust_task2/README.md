@@ -434,6 +434,32 @@ python zero_trust_task2/zt_scan.py \
   --exclude-dir artifacts
 ```
 
+
+### Runtime-only source filtering
+
+By default, Task 2 scans the runtime architecture and excludes conventional test/build sources such as `tests/`, `test_*.py`, `*_test.py`, `.venv/`, `build/`, and `dist/`. This prevents test fixtures and helper code from being mistaken for production agents, tools, or interfaces.
+
+To intentionally include test sources while validating the scanner itself, add:
+
+```powershell
+--include-tests
+```
+
+### Tool collection aliases and dynamic tools
+
+The scanner resolves static collection aliases such as:
+
+```python
+agent_tools = [tool_a, tool_b]
+agent = LlmAgent(name="worker", tools=agent_tools)
+```
+
+into the real tool identities. Runtime-generated collections such as `agent_tools.append(wrapper)` are recognized as dynamic tool sources and are not misreported as a literal tool named `agent_tools` or `wrapper`.
+
+### False-positive suppression
+
+Database inference distinguishes ORM model arguments from scalar identifiers. For example, `db.get(BranchWorkload, branch_id)` records `BranchWorkload` as the model and does not report `branch_id` as a missing table. HTTP/tool discovery also ignores test-only sources by default.
+
 ## Strict unresolved mode
 
 Normal mode always writes the scan results and returns successfully even when unresolved interfaces exist.
@@ -479,6 +505,7 @@ Run:
 
 ```bash
 python -m pytest -q zero_trust_task2/tests
+# Expected for this version: 10 passed
 ```
 
 The tests cover:

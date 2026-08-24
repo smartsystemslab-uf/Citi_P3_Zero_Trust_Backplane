@@ -255,18 +255,168 @@ identities:
   attributes:
     manifest_status: provisional
     scanner_source_type: subject
-- id: create_customer
-  canonical_id: service.front_office.create_customer
+- id: get_transaction
+  canonical_id: service.shared.get_transaction
   type: service
   roles:
   - scanner_discovered
-  domain: front_office
+  domain: shared
+  enabled: true
+  attributes:
+    manifest_status: provisional
+    scanner_source_type: tool
+- id: run_fraud_and_compliance_workflow
+  canonical_id: service.shared.run_fraud_and_compliance_workflow
+  type: service
+  roles:
+  - scanner_discovered
+  domain: shared
+  enabled: true
+  attributes:
+    manifest_status: provisional
+    scanner_source_type: tool
+- id: update_transaction_status
+  canonical_id: service.shared.update_transaction_status
+  type: service
+  roles:
+  - scanner_discovered
+  domain: shared
+  enabled: true
+  attributes:
+    manifest_status: provisional
+    scanner_source_type: tool
+- id: get_branch_workload
+  canonical_id: service.shared.get_branch_workload
+  type: service
+  roles:
+  - scanner_discovered
+  domain: shared
+  enabled: true
+  attributes:
+    manifest_status: provisional
+    scanner_source_type: tool
+- id: propose_staffing_adjustment
+  canonical_id: service.shared.propose_staffing_adjustment
+  type: service
+  roles:
+  - scanner_discovered
+  domain: shared
+  enabled: true
+  attributes:
+    manifest_status: provisional
+    scanner_source_type: tool
+- id: get_customer_product_affinity
+  canonical_id: service.shared.get_customer_product_affinity
+  type: service
+  roles:
+  - scanner_discovered
+  domain: shared
+  enabled: true
+  attributes:
+    manifest_status: provisional
+    scanner_source_type: tool
+- id: trigger_eod_reconciliation
+  canonical_id: service.shared.trigger_eod_reconciliation
+  type: service
+  roles:
+  - scanner_discovered
+  domain: shared
+  enabled: true
+  attributes:
+    manifest_status: provisional
+    scanner_source_type: tool
+- id: get_reconciliation_mismatches
+  canonical_id: service.shared.get_reconciliation_mismatches
+  type: service
+  roles:
+  - scanner_discovered
+  domain: shared
+  enabled: true
+  attributes:
+    manifest_status: provisional
+    scanner_source_type: tool
+- id: resolve_ledger_entry
+  canonical_id: service.shared.resolve_ledger_entry
+  type: service
+  roles:
+  - scanner_discovered
+  domain: shared
+  enabled: true
+  attributes:
+    manifest_status: provisional
+    scanner_source_type: tool
+- id: create_customer
+  canonical_id: service.shared.create_customer
+  type: service
+  roles:
+  - scanner_discovered
+  domain: shared
+  enabled: true
+  attributes:
+    manifest_status: provisional
+    scanner_source_type: api
+- id: get_customer
+  canonical_id: service.shared.get_customer
+  type: service
+  roles:
+  - scanner_discovered
+  domain: shared
+  enabled: true
+  attributes:
+    manifest_status: provisional
+    scanner_source_type: api
+- id: list_customer_accounts
+  canonical_id: service.shared.list_customer_accounts
+  type: service
+  roles:
+  - scanner_discovered
+  domain: shared
+  enabled: true
+  attributes:
+    manifest_status: provisional
+    scanner_source_type: api
+- id: get_customer_context
+  canonical_id: service.shared.get_customer_context
+  type: service
+  roles:
+  - scanner_discovered
+  domain: shared
+  enabled: true
+  attributes:
+    manifest_status: provisional
+    scanner_source_type: api
+- id: list_customer_transactions
+  canonical_id: service.shared.list_customer_transactions
+  type: service
+  roles:
+  - scanner_discovered
+  domain: shared
   enabled: true
   attributes:
     manifest_status: provisional
     scanner_source_type: api
 - id: create_account
   canonical_id: service.shared.create_account
+  type: service
+  roles:
+  - scanner_discovered
+  domain: shared
+  enabled: true
+  attributes:
+    manifest_status: provisional
+    scanner_source_type: api
+- id: get_account
+  canonical_id: service.shared.get_account
+  type: service
+  roles:
+  - scanner_discovered
+  domain: shared
+  enabled: true
+  attributes:
+    manifest_status: provisional
+    scanner_source_type: api
+- id: list_transactions
+  canonical_id: service.shared.list_transactions
   type: service
   roles:
   - scanner_discovered
@@ -285,6 +435,26 @@ identities:
   attributes:
     manifest_status: provisional
     scanner_source_type: api
+- id: list_policies
+  canonical_id: service.shared.list_policies
+  type: service
+  roles:
+  - scanner_discovered
+  domain: shared
+  enabled: true
+  attributes:
+    manifest_status: provisional
+    scanner_source_type: api
+- id: search_policies
+  canonical_id: service.shared.search_policies
+  type: service
+  roles:
+  - scanner_discovered
+  domain: shared
+  enabled: true
+  attributes:
+    manifest_status: provisional
+    scanner_source_type: api
 - id: create_rule
   canonical_id: service.shared.create_rule
   type: service
@@ -295,16 +465,66 @@ identities:
   attributes:
     manifest_status: provisional
     scanner_source_type: api
-- id: update_transaction_status
-  canonical_id: service.front_office.update_transaction_status
+- id: list_rules
+  canonical_id: service.shared.list_rules
   type: service
   roles:
   - scanner_discovered
-  domain: front_office
+  domain: shared
   enabled: true
   attributes:
     manifest_status: provisional
     scanner_source_type: api
+- id: back_office_eod_workflow
+  canonical_id: agent.back_office.back_office_eod_workflow
+  type: agent
+  roles:
+  - workflow
+  domain: back_office
+  enabled: true
+  attributes:
+    manifest_status: provisional
+    scanner_source_type: subject
+- id: back_office_router
+  canonical_id: agent.back_office.back_office_router
+  type: agent
+  roles:
+  - router
+  domain: back_office
+  enabled: true
+  attributes:
+    manifest_status: provisional
+    scanner_source_type: subject
+- id: front_office_transaction_workflow
+  canonical_id: agent.front_office.front_office_transaction_workflow
+  type: agent
+  roles:
+  - workflow
+  domain: front_office
+  enabled: true
+  attributes:
+    manifest_status: provisional
+    scanner_source_type: subject
+- id: customer_service_chatbot_workflow
+  canonical_id: agent.front_office.customer_service_chatbot_workflow
+  type: agent
+  roles:
+  - workflow
+  domain: front_office
+  enabled: true
+  attributes:
+    manifest_status: provisional
+    scanner_source_type: subject
+- id: front_office_router
+  canonical_id: agent.front_office.front_office_router
+  type: agent
+  roles:
+  - router
+  domain: front_office
+  enabled: true
+  attributes:
+    manifest_status: provisional
+    scanner_source_type: subject
 - id: mid_office_router
   canonical_id: agent.mid_office.mid_office_router
   type: agent
@@ -337,6 +557,16 @@ identities:
     scanner_source_type: subject
 - id: representative_assist_parallel
   canonical_id: agent.shared.representative_assist_parallel
+  type: agent
+  roles:
+  - workflow
+  domain: shared
+  enabled: true
+  attributes:
+    manifest_status: provisional
+    scanner_source_type: subject
+- id: representative_assistant_workflow
+  canonical_id: agent.shared.representative_assistant_workflow
   type: agent
   roles:
   - workflow

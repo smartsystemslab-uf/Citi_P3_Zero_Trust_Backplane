@@ -74,3 +74,9 @@ Explicit unresolved-interface report
 ```
 
 It does not claim that arbitrary runtime-generated behavior can always be resolved statically. When static resolution is impossible, Task 2 now records the gap so that runtime introspection or a new scanner plugin can be added without treating the system model as complete.
+
+## Runtime-source precision update
+
+The scanner now excludes conventional test-only sources by default, resolves static tool-list aliases, recognizes dynamic tool collections without inventing fake tool IDs, and avoids treating scalar ORM identifiers as database models. These changes reduce false-positive unresolved findings while preserving true unresolved interfaces for review.
+
+Validation: Task 2 scanner tests = 10/10 PASS; existing Task 1-5 integration remains compatible with the expanded scanner graph.

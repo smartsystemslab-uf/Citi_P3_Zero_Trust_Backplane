@@ -1,0 +1,120 @@
+discovered_agents: 36
+discovered_tools: 29
+discovered_apis: 24
+discovered_databases: 6
+discovered_events: 2
+discovered_edges: 95
+unresolved_interfaces: 0
+coverage_percent: 100.0
+coverage_definition: Resolved scanner entities/edges divided by resolved plus unresolved
+  interface findings; this is scanner-resolution coverage, not security/PEP coverage.
+source_discovery:
+  python_files: 67
+  structured_files: 14
+  openapi_file_count: 0
+  mcp_manifest_count: 0
+  generic_config_count: 14
+  skipped_large_structured_files: []
+details:
+  agents:
+  - validation_checkpoint_agent
+  - eod_processing_agent
+  - ledger_update_agent
+  - reconciliation_agent
+  - report_writing_agent
+  - exception_agent
+  - back_office_eod_workflow
+  - back_office_router
+  - transaction_monitoring_agent
+  - fraud_detection_agent
+  - compliance_agent
+  - decision_making_agent
+  - front_office_transaction_workflow
+  - knowledge_base_agent
+  - transaction_processing_agent
+  - customer_service_agent
+  - chatbot_intent_agent
+  - customer_service_chatbot_workflow
+  - front_office_router
+  - data_analysis_agent
+  - forecasting_agent
+  - staff_scheduling_agent
+  - validation_agent
+  - support_guidance_agent
+  - planning_summary_agent
+  - financial_data_agent
+  - recommender_agent
+  - loan_agent
+  - risk_compliance_agent
+  - representative_merge_agent
+  - mid_office_router
+  - user_proxy_agent
+  - mid_office_planning_parallel
+  - mid_office_planning_workflow
+  - representative_assist_parallel
+  - representative_assistant_workflow
+  tools:
+  - get_customer_context
+  - list_recent_transactions
+  - search_policies
+  - execute_transfer
+  - get_eod_batch
+  - apply_ledger_updates
+  - validate_eod_readiness
+  - get_reconciliation_data
+  - create_exception_case
+  - store_report
+  - get_customer_financial_profile
+  - search_product_catalog
+  - search_loan_playbooks
+  - get_transaction_context
+  - submit_manual_review
+  - search_faqs
+  - get_operations_snapshot
+  - persist_validated_schedule
+  - get_support_playbooks
+  - rank_records
+  - get_transaction
+  - run_fraud_and_compliance_workflow
+  - update_transaction_status
+  - get_branch_workload
+  - propose_staffing_adjustment
+  - get_customer_product_affinity
+  - trigger_eod_reconciliation
+  - get_reconciliation_mismatches
+  - resolve_ledger_entry
+  apis:
+  - health
+  - create_customer
+  - get_customer
+  - list_customer_accounts
+  - get_customer_context
+  - list_customer_transactions
+  - create_account
+  - get_account
+  - monitoring_evaluate_transaction
+  - banking_api_transfer
+  - get_transaction
+  - list_transactions
+  - create_policy
+  - list_policies
+  - search_policies
+  - create_rule
+  - list_rules
+  - update_transaction_status
+  - get_branch_workload
+  - propose_staffing_adjustment
+  - get_customer_product_affinity
+  - trigger_eod_reconciliation
+  - get_reconciliation_mismatches
+  - resolve_ledger_entry
+  databases:
+  - customers
+  - accounts
+  - policies
+  - rules
+  - transactions
+  - audit_logs
+  events:
+  - event.startup
+  - event.trigger_eod_reconciliation

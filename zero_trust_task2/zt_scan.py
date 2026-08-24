@@ -25,6 +25,9 @@ DEFAULT_EXCLUDED_DIRS = {
     ".git", ".hg", ".svn", ".idea", ".vscode", ".pytest_cache", ".mypy_cache",
     "__pycache__", ".venv", "venv", "env", "node_modules", "dist", "build",
     ".tox", ".nox", "site-packages", "coverage", "htmlcov",
+    # Runtime architecture discovery excludes test-only source by default. Tests can
+    # be included explicitly with --include-tests when validating the scanner itself.
+    "tests", "test", "testing",
 }
 HTTP_METHODS = {"get", "post", "put", "patch", "delete", "head", "options"}
 KNOWN_AGENT_CONSTRUCTORS = {
@@ -370,6 +373,25 @@ def _is_excluded(path: Path, repo_root: Path, excluded_dirs: set[str]) -> bool:
     return any(part in excluded_dirs for part in rel.parts)
 
 
+def _is_test_source(path: Path, repo_root: Path) -> bool:
+    """Return True for conventional test-only source/config files.
+
+    Directory filtering catches the common ``tests/`` case. This file-level
+    fallback also excludes test_*.py, *_test.py, and conftest.py that live
+    outside a dedicated tests directory.
+    """
+    try:
+        rel = path.relative_to(repo_root)
+    except ValueError:
+        rel = path
+    name = rel.name.lower()
+    if name == "conftest.py":
+        return True
+    if path.suffix.lower() == ".py" and (name.startswith("test_") or name.endswith("_test.py")):
+        return True
+    return False
+
+
 def _load_structured(path: Path) -> Any:
     text = path.read_text(encoding="utf-8-sig")
     if path.suffix.lower() == ".json":
@@ -400,15 +422,25 @@ def _looks_like_mcp_manifest(data: Any, path: Path) -> bool:
     return "mcp" in meta_text and "tools" in data
 
 
-def discover_repository(repo_root: Path, collector: UnresolvedCollector, excluded_dirs: Optional[set[str]] = None) -> RepositorySources:
+def discover_repository(
+    repo_root: Path,
+    collector: UnresolvedCollector,
+    excluded_dirs: Optional[set[str]] = None,
+    *,
+    include_tests: bool = False,
+) -> RepositorySources:
     root = repo_root.resolve()
     excluded = set(DEFAULT_EXCLUDED_DIRS)
+    if include_tests:
+        excluded.difference_update({"tests", "test", "testing"})
     if excluded_dirs:
         excluded.update(excluded_dirs)
     result = RepositorySources()
 
     for path in root.rglob("*"):
         if not path.is_file() or _is_excluded(path, root, excluded):
+            continue
+        if not include_tests and _is_test_source(path, root):
             continue
         suffix = path.suffix.lower()
         if suffix == ".py":
@@ -457,9 +489,19 @@ class AgentScanner(ast.NodeVisitor):
         self.collector = collector
         self.agents: List[DraftEntity] = []
         self._processed_calls: set[int] = set()
+        # Resolve common collection aliases such as tools=agent_tools where
+        # agent_tools = [tool_a, tool_b]. Dynamic collections are recognized
+        # separately so the alias name is never mistaken for a real tool.
+        self._collection_aliases: Dict[str, List[str]] = {}
+        self._dynamic_collections: set[str] = set()
+        self._call_assigned_names: set[str] = set()
 
     def visit_Assign(self, node: ast.Assign) -> Any:
+        self._record_collection_assignment(node)
         if isinstance(node.value, ast.Call):
+            for target in node.targets:
+                if isinstance(target, ast.Name):
+                    self._call_assigned_names.add(target.id)
             fallback = None
             for target in node.targets:
                 if isinstance(target, ast.Name):
@@ -468,13 +510,82 @@ class AgentScanner(ast.NodeVisitor):
             self._inspect_agent_call(node.value, fallback_name=fallback)
         self.generic_visit(node)
 
+    def _record_collection_assignment(self, node: ast.Assign) -> None:
+        targets = [target.id for target in node.targets if isinstance(target, ast.Name)]
+        if not targets:
+            return
+        values: Optional[List[str]] = None
+        dynamic = False
+        if isinstance(node.value, (ast.List, ast.Tuple, ast.Set)):
+            values = extract_string_list(node.value)
+        elif isinstance(node.value, ast.Name) and node.value.id in self._collection_aliases:
+            values = list(self._collection_aliases[node.value.id])
+            dynamic = node.value.id in self._dynamic_collections
+        elif isinstance(node.value, ast.BinOp) and isinstance(node.value.op, ast.Add):
+            left = self._collection_values(node.value.left)
+            right = self._collection_values(node.value.right)
+            if left is not None and right is not None:
+                values = [*left, *right]
+        if values is not None:
+            for target in targets:
+                self._collection_aliases[target] = list(dict.fromkeys(values))
+                if dynamic:
+                    self._dynamic_collections.add(target)
+
+    def _collection_values(self, node: ast.AST) -> Optional[List[str]]:
+        if isinstance(node, (ast.List, ast.Tuple, ast.Set)):
+            return extract_string_list(node)
+        if isinstance(node, ast.Name) and node.id in self._collection_aliases:
+            return list(self._collection_aliases[node.id])
+        return None
+
+    def _record_collection_mutation(self, node: ast.Call) -> None:
+        if not isinstance(node.func, ast.Attribute) or not isinstance(node.func.value, ast.Name):
+            return
+        alias = node.func.value.id
+        if alias not in self._collection_aliases or node.func.attr not in {"append", "extend"}:
+            return
+        if not node.args:
+            self._dynamic_collections.add(alias)
+            return
+        arg = node.args[0]
+        if node.func.attr == "extend":
+            values = self._collection_values(arg)
+            if values is None:
+                self._dynamic_collections.add(alias)
+            else:
+                self._collection_aliases[alias] = list(dict.fromkeys([*self._collection_aliases[alias], *values]))
+            return
+        # append(tool_name) is statically resolvable for a direct function symbol.
+        # append(wrapper), where wrapper was produced by a runtime call/factory, is
+        # correctly treated as a dynamic collection rather than as a tool named wrapper.
+        value = node_value(arg)
+        if isinstance(arg, (ast.Name, ast.Attribute)) and isinstance(value, str) and value not in self._call_assigned_names:
+            self._collection_aliases[alias] = list(dict.fromkeys([*self._collection_aliases[alias], value]))
+        else:
+            self._dynamic_collections.add(alias)
+
+    def _resolve_collection_keyword(self, key: str, keywords: Sequence[ast.keyword]) -> Tuple[List[str], List[str]]:
+        raw = keyword_node(key, keywords)
+        if raw is None:
+            return [], []
+        if isinstance(raw, ast.Name) and raw.id in self._collection_aliases:
+            dynamic_sources = [raw.id] if raw.id in self._dynamic_collections else []
+            return list(self._collection_aliases[raw.id]), dynamic_sources
+        return extract_string_list(raw), []
+
     def visit_AnnAssign(self, node: ast.AnnAssign) -> Any:
+        if isinstance(node.target, ast.Name) and isinstance(node.value, (ast.List, ast.Tuple, ast.Set)):
+            self._collection_aliases[node.target.id] = extract_string_list(node.value)
         if isinstance(node.value, ast.Call):
+            if isinstance(node.target, ast.Name):
+                self._call_assigned_names.add(node.target.id)
             fallback = node.target.id if isinstance(node.target, ast.Name) else None
             self._inspect_agent_call(node.value, fallback_name=fallback)
         self.generic_visit(node)
 
     def visit_Call(self, node: ast.Call) -> Any:
+        self._record_collection_mutation(node)
         self._inspect_agent_call(node, fallback_name=None)
         self.generic_visit(node)
 
@@ -523,11 +634,17 @@ class AgentScanner(ast.NodeVisitor):
             or ""
         )
         tools: List[str] = []
+        dynamic_tool_sources: List[str] = []
         for key in ("tools", "functions", "capabilities"):
-            tools.extend(extract_string_list(keyword_value(key, node.keywords) or []))
+            resolved, dynamic_sources = self._resolve_collection_keyword(key, node.keywords)
+            tools.extend(resolved)
+            dynamic_tool_sources.extend(dynamic_sources)
         sub_agents: List[str] = []
+        dynamic_agent_sources: List[str] = []
         for key in ("sub_agents", "agents", "children", "delegates"):
-            sub_agents.extend(extract_string_list(keyword_value(key, node.keywords) or []))
+            resolved, dynamic_sources = self._resolve_collection_keyword(key, node.keywords)
+            sub_agents.extend(resolved)
+            dynamic_agent_sources.extend(dynamic_sources)
         # Custom workflow wrappers often name their child agents with keywords such
         # as validation_agent=..., fraud_agent=..., processing_agent=..., etc.
         # Preserve those relationships even when the constructor is framework-specific.
@@ -560,6 +677,8 @@ class AgentScanner(ast.NodeVisitor):
             "risk_tier": "medium",
             "authorized_tools": tools,
             "authorized_transfers": sub_agents,
+            "dynamic_tool_sources": list(dict.fromkeys(dynamic_tool_sources)),
+            "dynamic_agent_sources": list(dict.fromkeys(dynamic_agent_sources)),
             "reads_from": [],
             "writes_to": [],
             "requires_prior_steps": [],
@@ -584,6 +703,17 @@ class ToolScanner(ast.NodeVisitor):
         self.collector = collector
         self.referenced_tools = referenced_tools
         self.tools: List[DraftEntity] = []
+        self._class_depth = 0
+
+    def visit_ClassDef(self, node: ast.ClassDef) -> Any:
+        # Agent tool registrations normally reference module-level callables.
+        # A repository/service class may expose a method with the same name as a
+        # real tool wrapper (for example repo.get_eod_batch vs the top-level
+        # get_eod_batch tool). Do not let such implementation methods steal the
+        # tool identity unless they are explicitly decorated as tools.
+        self._class_depth += 1
+        self.generic_visit(node)
+        self._class_depth -= 1
 
     def visit_FunctionDef(self, node: ast.FunctionDef) -> Any:
         self._visit_function(node)
@@ -597,9 +727,18 @@ class ToolScanner(ast.NodeVisitor):
         decorators = {decorator_qualified_name(dec) for dec in node.decorator_list}
         decorated = any(name in TOOL_DECORATORS or name.rsplit(".", 1)[-1] in {"tool", "function_tool", "register_tool", "kernel_function"} for name in decorators)
         parts = {p.lower() for p in self.source_path.parts}
-        in_tool_module = bool(parts & TOOL_DIR_NAMES) or "mcp" in self.source_path.name.lower()
+        mcp_module = (
+            self.source_path.name.lower() in {"mcp_server.py", "server.py"}
+            and any("mcp" in part.lower() for part in self.source_path.parts)
+        )
+        in_tool_module = bool(parts & TOOL_DIR_NAMES) or mcp_module
         referenced = node.name in self.referenced_tools
         if node.name.startswith("_") and not decorated and not referenced:
+            return
+        # Referencing a name in an agent's tools=[...] list should resolve to a
+        # module-level callable, not an arbitrary same-named class method.
+        # Explicitly decorated class methods are still supported.
+        if self._class_depth > 0 and not decorated:
             return
         if not (decorated or in_tool_module or referenced):
             return
@@ -778,10 +917,17 @@ class ApiScanner(ast.NodeVisitor):
                             variable_models[target.id] = model
             if not isinstance(child, ast.Call):
                 continue
-            # select(Model), update(Model), delete(Model), insert(Model)
+            # select(Model), query(Model), update(Model), delete(Model), insert(Model).
+            # ORM ``session.get(Model, primary_key)`` is special: only the first
+            # argument is a model. Treating every get(...) argument as a model
+            # previously produced false positives such as branch_id.
             func_short = callable_name(child.func).rsplit(".", 1)[-1]
-            if func_short in {"select", "query", "get"}:
+            if func_short in {"select", "query"}:
                 reads.extend(self._extract_models(child))
+            elif func_short == "get" and isinstance(child.func, ast.Attribute):
+                owner = callable_name(child.func.value).lower()
+                if any(token in owner for token in ("db", "session", "repo", "repository", "orm")):
+                    reads.extend(self._extract_models(child, first_only=True))
             if func_short in {"update", "delete", "insert"}:
                 writes.extend(self._extract_models(child))
             if isinstance(child.func, ast.Attribute):
@@ -814,12 +960,36 @@ class ApiScanner(ast.NodeVisitor):
         return name if name and name[:1].isupper() else None
 
     @staticmethod
-    def _extract_models(node: ast.Call) -> List[str]:
-        models = []
-        for arg in node.args:
-            name = callable_name(arg)
-            if name:
-                models.append(name.rsplit(".", 1)[-1])
+    def _model_from_expression(node: ast.AST) -> Optional[str]:
+        """Infer an ORM model class from an expression, rejecting scalar IDs.
+
+        ``Customer`` and ``Customer.customer_id`` both resolve to ``Customer``;
+        lowercase scalar names such as ``branch_id`` do not look like model
+        classes and are ignored.
+        """
+        if isinstance(node, ast.Name):
+            return node.id if node.id[:1].isupper() else None
+        if isinstance(node, ast.Attribute):
+            parts: List[str] = []
+            current: ast.AST = node
+            while isinstance(current, ast.Attribute):
+                parts.append(current.attr)
+                current = current.value
+            if isinstance(current, ast.Name):
+                parts.append(current.id)
+            for part in reversed(parts):
+                if part[:1].isupper():
+                    return part
+        return None
+
+    @classmethod
+    def _extract_models(cls, node: ast.Call, *, first_only: bool = False) -> List[str]:
+        args = node.args[:1] if first_only else node.args
+        models: List[str] = []
+        for arg in args:
+            model = cls._model_from_expression(arg)
+            if model:
+                models.append(model)
         return models
 
 
@@ -1817,11 +1987,17 @@ def find_source_files(repo_root: Path) -> Dict[str, List[Path]]:
     }
 
 
-def run_scan(repo_root: Path, output_dir: Path, *, excluded_dirs: Optional[set[str]] = None) -> Dict[str, Any]:
+def run_scan(
+    repo_root: Path,
+    output_dir: Path,
+    *,
+    excluded_dirs: Optional[set[str]] = None,
+    include_tests: bool = False,
+) -> Dict[str, Any]:
     repo_root = repo_root.resolve()
     output_dir = output_dir.resolve()
     collector = UnresolvedCollector(repo_root)
-    sources = discover_repository(repo_root, collector, excluded_dirs=excluded_dirs)
+    sources = discover_repository(repo_root, collector, excluded_dirs=excluded_dirs, include_tests=include_tests)
 
     agents = scan_agents(sources.python_files, repo_root, collector)
     agent_aliases = discover_agent_aliases(sources.python_files, repo_root, agents, collector)
@@ -1878,11 +2054,17 @@ def main() -> None:
     parser.add_argument("--repo-root", type=Path, default=Path(__file__).resolve().parent.parent, help="Path to the multi-agent system repository root.")
     parser.add_argument("--output-dir", type=Path, default=Path(__file__).resolve().parent / "output" / "draft_manifests", help="Directory where draft manifests are written.")
     parser.add_argument("--exclude-dir", action="append", default=[], help="Additional directory name to exclude from repository discovery. May be repeated.")
+    parser.add_argument("--include-tests", action="store_true", help="Include tests/test_*.py sources in runtime discovery. Disabled by default to avoid test-only false positives.")
     parser.add_argument("--strict-unresolved", action="store_true", help="Exit with status 2 after writing reports when unresolved interfaces remain.")
     parser.add_argument("--print-unresolved", action="store_true", help="Print unresolved interface findings to stdout.")
     args = parser.parse_args()
 
-    result = run_scan(args.repo_root, args.output_dir, excluded_dirs=set(args.exclude_dir))
+    result = run_scan(
+        args.repo_root,
+        args.output_dir,
+        excluded_dirs=set(args.exclude_dir),
+        include_tests=args.include_tests,
+    )
     print(f"Scanner complete. Draft manifests written to: {args.output_dir.resolve()}")
     print(f"Coverage report written to: {result['coverage_path']}")
     print(f"Unresolved-interface report written to: {result['unresolved_path']}")

@@ -184,7 +184,7 @@ resources:
   actions:
   - read
   domain: back_office
-  classification: confidential
+  classification: internal
   critical: false
   attributes:
     manifest_status: provisional
@@ -194,7 +194,7 @@ resources:
   actions:
   - read
   domain: back_office
-  classification: confidential
+  classification: internal
   critical: false
   attributes:
     manifest_status: provisional
@@ -202,7 +202,7 @@ resources:
 - id: store_report
   canonical_id: resource.back_office.tool_store_report
   actions:
-  - read
+  - store
   domain: back_office
   classification: confidential
   critical: false
@@ -212,7 +212,7 @@ resources:
 - id: create_exception_case
   canonical_id: resource.back_office.tool_create_exception_case
   actions:
-  - read
+  - create
   domain: back_office
   classification: confidential
   critical: false
@@ -220,40 +220,40 @@ resources:
     manifest_status: provisional
     scanner_target_type: tool
 - id: get_customer_context
-  canonical_id: resource.front_office.tool_get_customer_context
+  canonical_id: resource.shared.tool_get_customer_context
   actions:
   - read
-  domain: front_office
+  domain: shared
   classification: confidential
   critical: false
   attributes:
     manifest_status: provisional
     scanner_target_type: tool
 - id: get_transaction_context
-  canonical_id: resource.front_office.tool_get_transaction_context
+  canonical_id: resource.shared.tool_get_transaction_context
   actions:
   - read
-  domain: front_office
+  domain: shared
   classification: confidential
   critical: false
   attributes:
     manifest_status: provisional
     scanner_target_type: tool
 - id: list_recent_transactions
-  canonical_id: resource.front_office.tool_list_recent_transactions
+  canonical_id: resource.shared.tool_list_recent_transactions
   actions:
   - read
-  domain: front_office
+  domain: shared
   classification: confidential
   critical: false
   attributes:
     manifest_status: provisional
     scanner_target_type: tool
 - id: submit_manual_review
-  canonical_id: resource.front_office.tool_submit_manual_review
+  canonical_id: resource.shared.tool_submit_manual_review
   actions:
-  - read
-  domain: front_office
+  - create
+  domain: shared
   classification: confidential
   critical: false
   attributes:
@@ -264,57 +264,57 @@ resources:
   actions:
   - search
   domain: shared
-  classification: confidential
+  classification: internal
   critical: false
   attributes:
     manifest_status: provisional
     scanner_target_type: tool
 - id: get_operations_snapshot
-  canonical_id: resource.mid_office.tool_get_operations_snapshot
+  canonical_id: resource.shared.tool_get_operations_snapshot
   actions:
   - read
-  domain: mid_office
-  classification: confidential
+  domain: shared
+  classification: internal
   critical: false
   attributes:
     manifest_status: provisional
     scanner_target_type: tool
 - id: persist_validated_schedule
-  canonical_id: resource.mid_office.tool_persist_validated_schedule
+  canonical_id: resource.shared.tool_persist_validated_schedule
   actions:
-  - read
-  domain: mid_office
+  - update
+  domain: shared
   classification: confidential
   critical: false
   attributes:
     manifest_status: provisional
     scanner_target_type: tool
 - id: get_support_playbooks
-  canonical_id: resource.mid_office.tool_get_support_playbooks
+  canonical_id: resource.shared.tool_get_support_playbooks
   actions:
   - read
-  domain: mid_office
-  classification: confidential
+  domain: shared
+  classification: internal
   critical: false
   attributes:
     manifest_status: provisional
     scanner_target_type: tool
 - id: search_product_catalog
-  canonical_id: resource.mid_office.tool_search_product_catalog
+  canonical_id: resource.shared.tool_search_product_catalog
   actions:
   - search
-  domain: mid_office
-  classification: confidential
+  domain: shared
+  classification: internal
   critical: false
   attributes:
     manifest_status: provisional
     scanner_target_type: tool
 - id: search_loan_playbooks
-  canonical_id: resource.mid_office.tool_search_loan_playbooks
+  canonical_id: resource.shared.tool_search_loan_playbooks
   actions:
   - search
-  domain: mid_office
-  classification: confidential
+  domain: shared
+  classification: internal
   critical: false
   attributes:
     manifest_status: provisional
@@ -324,27 +324,342 @@ resources:
   actions:
   - search
   domain: shared
-  classification: confidential
+  classification: internal
   critical: false
   attributes:
     manifest_status: provisional
     scanner_target_type: tool
-- id: unknown
-  canonical_id: resource.shared.database_unknown_database
+- id: get_transaction
+  canonical_id: resource.shared.api_get_transaction
+  actions:
+  - read
+  domain: shared
+  classification: confidential
+  critical: false
+  attributes:
+    manifest_status: provisional
+    scanner_target_type: api
+- id: monitoring_evaluate_transaction
+  canonical_id: resource.shared.api_monitoring_evaluate_transaction
   actions:
   - update
   domain: shared
+  classification: confidential
+  critical: false
+  attributes:
+    manifest_status: provisional
+    scanner_target_type: api
+- id: update_transaction_status
+  canonical_id: resource.shared.api_update_transaction_status
+  actions:
+  - update
+  domain: shared
+  classification: confidential
+  critical: false
+  attributes:
+    manifest_status: provisional
+    scanner_target_type: api
+- id: get_branch_workload
+  canonical_id: resource.shared.api_get_branch_workload
+  actions:
+  - read
+  domain: shared
   classification: internal
+  critical: false
+  attributes:
+    manifest_status: provisional
+    scanner_target_type: api
+- id: propose_staffing_adjustment
+  canonical_id: resource.shared.api_propose_staffing_adjustment
+  actions:
+  - read
+  domain: shared
+  classification: internal
+  critical: false
+  attributes:
+    manifest_status: provisional
+    scanner_target_type: api
+- id: get_customer_product_affinity
+  canonical_id: resource.shared.api_get_customer_product_affinity
+  actions:
+  - read
+  domain: shared
+  classification: confidential
+  critical: false
+  attributes:
+    manifest_status: provisional
+    scanner_target_type: api
+- id: trigger_eod_reconciliation
+  canonical_id: resource.shared.api_trigger_eod_reconciliation
+  actions:
+  - update
+  domain: shared
+  classification: confidential
+  critical: false
+  attributes:
+    manifest_status: provisional
+    scanner_target_type: api
+- id: get_reconciliation_mismatches
+  canonical_id: resource.shared.api_get_reconciliation_mismatches
+  actions:
+  - read
+  domain: shared
+  classification: internal
+  critical: false
+  attributes:
+    manifest_status: provisional
+    scanner_target_type: api
+- id: resolve_ledger_entry
+  canonical_id: resource.shared.api_resolve_ledger_entry
+  actions:
+  - update
+  domain: shared
+  classification: confidential
+  critical: true
+  attributes:
+    manifest_status: provisional
+    scanner_target_type: api
+- id: customers
+  canonical_id: resource.shared.database_customers
+  actions:
+  - read
+  - update
+  domain: shared
+  classification: confidential
+  critical: false
+  attributes:
+    manifest_status: provisional
+    scanner_target_type: database
+- id: accounts
+  canonical_id: resource.shared.database_accounts
+  actions:
+  - read
+  - update
+  domain: shared
+  classification: confidential
+  critical: false
+  attributes:
+    manifest_status: provisional
+    scanner_target_type: database
+- id: policies
+  canonical_id: resource.shared.database_policies
+  actions:
+  - read
+  - update
+  domain: shared
+  classification: internal
+  critical: false
+  attributes:
+    manifest_status: provisional
+    scanner_target_type: database
+- id: rules
+  canonical_id: resource.shared.database_rules
+  actions:
+  - read
+  - update
+  domain: shared
+  classification: internal
+  critical: false
+  attributes:
+    manifest_status: provisional
+    scanner_target_type: database
+- id: audit_logs
+  canonical_id: resource.shared.database_audit_logs
+  actions:
+  - update
+  - read
+  domain: shared
+  classification: restricted
   critical: true
   attributes:
     manifest_status: provisional
     scanner_target_type: database
+- id: validation_checkpoint_agent
+  canonical_id: resource.back_office.other_validation_checkpoint_agent
+  actions:
+  - read
+  domain: back_office
+  classification: internal
+  critical: false
+  attributes:
+    manifest_status: provisional
+    scanner_target_type: subject
+- id: eod_processing_agent
+  canonical_id: resource.back_office.other_eod_processing_agent
+  actions:
+  - read
+  domain: back_office
+  classification: internal
+  critical: false
+  attributes:
+    manifest_status: provisional
+    scanner_target_type: subject
+- id: ledger_update_agent
+  canonical_id: resource.back_office.other_ledger_update_agent
+  actions:
+  - read
+  domain: back_office
+  classification: internal
+  critical: false
+  attributes:
+    manifest_status: provisional
+    scanner_target_type: subject
+- id: reconciliation_agent
+  canonical_id: resource.back_office.other_reconciliation_agent
+  actions:
+  - read
+  domain: back_office
+  classification: internal
+  critical: false
+  attributes:
+    manifest_status: provisional
+    scanner_target_type: subject
+- id: report_writing_agent
+  canonical_id: resource.back_office.other_report_writing_agent
+  actions:
+  - read
+  domain: back_office
+  classification: internal
+  critical: false
+  attributes:
+    manifest_status: provisional
+    scanner_target_type: subject
+- id: exception_agent
+  canonical_id: resource.back_office.other_exception_agent
+  actions:
+  - read
+  domain: back_office
+  classification: internal
+  critical: false
+  attributes:
+    manifest_status: provisional
+    scanner_target_type: subject
+- id: back_office_eod_workflow
+  canonical_id: resource.back_office.other_back_office_eod_workflow
+  actions:
+  - read
+  domain: back_office
+  classification: internal
+  critical: false
+  attributes:
+    manifest_status: provisional
+    scanner_target_type: subject
+- id: transaction_monitoring_agent
+  canonical_id: resource.front_office.other_transaction_monitoring_agent
+  actions:
+  - read
+  domain: front_office
+  classification: internal
+  critical: false
+  attributes:
+    manifest_status: provisional
+    scanner_target_type: subject
+- id: fraud_detection_agent
+  canonical_id: resource.front_office.other_fraud_detection_agent
+  actions:
+  - read
+  domain: front_office
+  classification: internal
+  critical: false
+  attributes:
+    manifest_status: provisional
+    scanner_target_type: subject
+- id: compliance_agent
+  canonical_id: resource.front_office.other_compliance_agent
+  actions:
+  - read
+  domain: front_office
+  classification: internal
+  critical: false
+  attributes:
+    manifest_status: provisional
+    scanner_target_type: subject
+- id: decision_making_agent
+  canonical_id: resource.front_office.other_decision_making_agent
+  actions:
+  - read
+  domain: front_office
+  classification: internal
+  critical: false
+  attributes:
+    manifest_status: provisional
+    scanner_target_type: subject
+- id: chatbot_intent_agent
+  canonical_id: resource.front_office.other_chatbot_intent_agent
+  actions:
+  - read
+  domain: front_office
+  classification: internal
+  critical: false
+  attributes:
+    manifest_status: provisional
+    scanner_target_type: subject
+- id: knowledge_base_agent
+  canonical_id: resource.front_office.other_knowledge_base_agent
+  actions:
+  - read
+  domain: front_office
+  classification: internal
+  critical: false
+  attributes:
+    manifest_status: provisional
+    scanner_target_type: subject
+- id: customer_service_agent
+  canonical_id: resource.front_office.other_customer_service_agent
+  actions:
+  - read
+  domain: front_office
+  classification: internal
+  critical: false
+  attributes:
+    manifest_status: provisional
+    scanner_target_type: subject
+- id: transaction_processing_agent
+  canonical_id: resource.front_office.other_transaction_processing_agent
+  actions:
+  - read
+  domain: front_office
+  classification: internal
+  critical: false
+  attributes:
+    manifest_status: provisional
+    scanner_target_type: subject
+- id: front_office_transaction_workflow
+  canonical_id: resource.front_office.other_front_office_transaction_workflow
+  actions:
+  - read
+  domain: front_office
+  classification: internal
+  critical: false
+  attributes:
+    manifest_status: provisional
+    scanner_target_type: subject
+- id: customer_service_chatbot_workflow
+  canonical_id: resource.front_office.other_customer_service_chatbot_workflow
+  actions:
+  - read
+  domain: front_office
+  classification: internal
+  critical: false
+  attributes:
+    manifest_status: provisional
+    scanner_target_type: subject
+- id: mid_office_planning_workflow
+  canonical_id: resource.shared.other_mid_office_planning_workflow
+  actions:
+  - read
+  domain: shared
+  classification: internal
+  critical: false
+  attributes:
+    manifest_status: provisional
+    scanner_target_type: subject
 - id: representative_assistant_workflow
   canonical_id: resource.shared.other_representative_assistant_workflow
   actions:
   - read
   domain: shared
-  classification: confidential
+  classification: internal
   critical: false
   attributes:
     manifest_status: provisional
@@ -354,7 +669,7 @@ resources:
   actions:
   - read
   domain: mid_office
-  classification: confidential
+  classification: internal
   critical: false
   attributes:
     manifest_status: provisional
@@ -364,7 +679,7 @@ resources:
   actions:
   - read
   domain: mid_office
-  classification: confidential
+  classification: internal
   critical: false
   attributes:
     manifest_status: provisional
@@ -374,7 +689,7 @@ resources:
   actions:
   - read
   domain: mid_office
-  classification: confidential
+  classification: internal
   critical: false
   attributes:
     manifest_status: provisional
@@ -384,7 +699,7 @@ resources:
   actions:
   - read
   domain: mid_office
-  classification: confidential
+  classification: internal
   critical: false
   attributes:
     manifest_status: provisional
@@ -394,7 +709,17 @@ resources:
   actions:
   - read
   domain: mid_office
-  classification: confidential
+  classification: internal
+  critical: false
+  attributes:
+    manifest_status: provisional
+    scanner_target_type: subject
+- id: mid_office_planning_parallel
+  canonical_id: resource.shared.other_mid_office_planning_parallel
+  actions:
+  - read
+  domain: shared
+  classification: internal
   critical: false
   attributes:
     manifest_status: provisional
@@ -404,7 +729,7 @@ resources:
   actions:
   - read
   domain: mid_office
-  classification: confidential
+  classification: internal
   critical: false
   attributes:
     manifest_status: provisional
@@ -414,7 +739,7 @@ resources:
   actions:
   - read
   domain: mid_office
-  classification: confidential
+  classification: internal
   critical: false
   attributes:
     manifest_status: provisional
@@ -424,7 +749,7 @@ resources:
   actions:
   - read
   domain: mid_office
-  classification: confidential
+  classification: internal
   critical: false
   attributes:
     manifest_status: provisional
@@ -434,7 +759,7 @@ resources:
   actions:
   - read
   domain: mid_office
-  classification: confidential
+  classification: internal
   critical: false
   attributes:
     manifest_status: provisional
@@ -444,7 +769,27 @@ resources:
   actions:
   - read
   domain: mid_office
-  classification: confidential
+  classification: internal
+  critical: false
+  attributes:
+    manifest_status: provisional
+    scanner_target_type: subject
+- id: representative_assist_parallel
+  canonical_id: resource.shared.other_representative_assist_parallel
+  actions:
+  - read
+  domain: shared
+  classification: internal
+  critical: false
+  attributes:
+    manifest_status: provisional
+    scanner_target_type: subject
+- id: representative_merge_agent
+  canonical_id: resource.mid_office.other_representative_merge_agent
+  actions:
+  - read
+  domain: mid_office
+  classification: internal
   critical: false
   attributes:
     manifest_status: provisional

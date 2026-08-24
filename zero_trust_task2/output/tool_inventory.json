@@ -1,0 +1,764 @@
+{
+  "zt_ir_version": "1.0",
+  "tools": [
+    {
+      "tool_id": "get_customer_context",
+      "display_name": "Auto-discovered tool get_customer_context",
+      "source_type": "python",
+      "source": {
+        "provided_by": "task2_scanner",
+        "reference": "citi_banking_adk\\bank_adk\\infra\\api_client.py:43"
+      },
+      "domain": "shared",
+      "action_type": "read",
+      "has_side_effects": false,
+      "risk_level": 3,
+      "requires_live_decision": false,
+      "audit_required": false,
+      "allowed_callers": [],
+      "calls_api": [],
+      "calls_api_methods": [],
+      "pii_fields": [],
+      "compliance_tags": [],
+      "idempotency_key": null,
+      "operation_class": "read",
+      "status": "provisional",
+      "detection_method": "agent_reference"
+    },
+    {
+      "tool_id": "list_recent_transactions",
+      "display_name": "Auto-discovered tool list_recent_transactions",
+      "source_type": "python",
+      "source": {
+        "provided_by": "task2_scanner",
+        "reference": "citi_banking_adk\\bank_adk\\infra\\api_client.py:55"
+      },
+      "domain": "shared",
+      "action_type": "read",
+      "has_side_effects": false,
+      "risk_level": 3,
+      "requires_live_decision": false,
+      "audit_required": false,
+      "allowed_callers": [],
+      "calls_api": [],
+      "calls_api_methods": [],
+      "pii_fields": [],
+      "compliance_tags": [],
+      "idempotency_key": null,
+      "operation_class": "read",
+      "status": "provisional",
+      "detection_method": "agent_reference"
+    },
+    {
+      "tool_id": "search_policies",
+      "display_name": "Auto-discovered tool search_policies",
+      "source_type": "python",
+      "source": {
+        "provided_by": "task2_scanner",
+        "reference": "citi_banking_adk\\bank_adk\\infra\\api_client.py:58"
+      },
+      "domain": "shared",
+      "action_type": "read",
+      "has_side_effects": false,
+      "risk_level": 2,
+      "requires_live_decision": false,
+      "audit_required": false,
+      "allowed_callers": [],
+      "calls_api": [],
+      "calls_api_methods": [],
+      "pii_fields": [],
+      "compliance_tags": [],
+      "idempotency_key": null,
+      "operation_class": "read",
+      "status": "provisional",
+      "detection_method": "agent_reference"
+    },
+    {
+      "tool_id": "execute_transfer",
+      "display_name": "Auto-discovered tool execute_transfer",
+      "source_type": "python",
+      "source": {
+        "provided_by": "task2_scanner",
+        "reference": "citi_banking_adk\\bank_adk\\infra\\api_client.py:77"
+      },
+      "domain": "shared",
+      "action_type": "financial_write",
+      "has_side_effects": true,
+      "risk_level": 4,
+      "requires_live_decision": true,
+      "audit_required": true,
+      "allowed_callers": [],
+      "calls_api": [],
+      "calls_api_methods": [],
+      "pii_fields": [],
+      "compliance_tags": [],
+      "idempotency_key": null,
+      "operation_class": "financial",
+      "status": "provisional",
+      "detection_method": "agent_reference"
+    },
+    {
+      "tool_id": "get_eod_batch",
+      "display_name": "Auto-discovered tool get_eod_batch",
+      "source_type": "python",
+      "source": {
+        "provided_by": "task2_scanner",
+        "reference": "citi_banking_adk\\bank_adk\\infra\\repository.py:147"
+      },
+      "domain": "shared",
+      "action_type": "read",
+      "has_side_effects": false,
+      "risk_level": 2,
+      "requires_live_decision": false,
+      "audit_required": false,
+      "allowed_callers": [],
+      "calls_api": [],
+      "calls_api_methods": [],
+      "pii_fields": [],
+      "compliance_tags": [],
+      "idempotency_key": null,
+      "operation_class": "read",
+      "status": "provisional",
+      "detection_method": "agent_reference"
+    },
+    {
+      "tool_id": "apply_ledger_updates",
+      "display_name": "Auto-discovered tool apply_ledger_updates",
+      "source_type": "python",
+      "source": {
+        "provided_by": "task2_scanner",
+        "reference": "citi_banking_adk\\bank_adk\\infra\\repository.py:153"
+      },
+      "domain": "shared",
+      "action_type": "financial_write",
+      "has_side_effects": true,
+      "risk_level": 4,
+      "requires_live_decision": true,
+      "audit_required": true,
+      "allowed_callers": [],
+      "calls_api": [],
+      "calls_api_methods": [],
+      "pii_fields": [],
+      "compliance_tags": [],
+      "idempotency_key": null,
+      "operation_class": "financial",
+      "status": "provisional",
+      "detection_method": "agent_reference"
+    },
+    {
+      "tool_id": "validate_eod_readiness",
+      "display_name": "Check whether a batch is ready for end-of-day processing and return readiness evidence.",
+      "source_type": "python",
+      "source": {
+        "provided_by": "task2_scanner",
+        "reference": "citi_banking_adk\\bank_adk\\tools\\back_office_tools.py:4"
+      },
+      "domain": "back",
+      "action_type": "compute",
+      "has_side_effects": false,
+      "risk_level": 2,
+      "requires_live_decision": false,
+      "audit_required": false,
+      "allowed_callers": [],
+      "calls_api": [],
+      "calls_api_methods": [],
+      "pii_fields": [],
+      "compliance_tags": [],
+      "idempotency_key": null,
+      "operation_class": "read",
+      "status": "provisional",
+      "detection_method": "agent_reference"
+    },
+    {
+      "tool_id": "get_reconciliation_data",
+      "display_name": "Return the expected and posted totals used by the reconciliation agent.",
+      "source_type": "python",
+      "source": {
+        "provided_by": "task2_scanner",
+        "reference": "citi_banking_adk\\bank_adk\\tools\\back_office_tools.py:19"
+      },
+      "domain": "back",
+      "action_type": "read",
+      "has_side_effects": false,
+      "risk_level": 2,
+      "requires_live_decision": false,
+      "audit_required": false,
+      "allowed_callers": [],
+      "calls_api": [],
+      "calls_api_methods": [],
+      "pii_fields": [],
+      "compliance_tags": [],
+      "idempotency_key": null,
+      "operation_class": "read",
+      "status": "provisional",
+      "detection_method": "agent_reference"
+    },
+    {
+      "tool_id": "create_exception_case",
+      "display_name": "Create an exception case for reconciliation mismatches and abnormal EOD outcomes.",
+      "source_type": "python",
+      "source": {
+        "provided_by": "task2_scanner",
+        "reference": "citi_banking_adk\\bank_adk\\tools\\back_office_tools.py:26"
+      },
+      "domain": "back",
+      "action_type": "state_change",
+      "has_side_effects": true,
+      "risk_level": 3,
+      "requires_live_decision": true,
+      "audit_required": true,
+      "allowed_callers": [],
+      "calls_api": [],
+      "calls_api_methods": [],
+      "pii_fields": [],
+      "compliance_tags": [],
+      "idempotency_key": null,
+      "operation_class": "write",
+      "status": "provisional",
+      "detection_method": "agent_reference"
+    },
+    {
+      "tool_id": "store_report",
+      "display_name": "Store a generated end-of-day report after reconciliation succeeds.",
+      "source_type": "python",
+      "source": {
+        "provided_by": "task2_scanner",
+        "reference": "citi_banking_adk\\bank_adk\\tools\\back_office_tools.py:30"
+      },
+      "domain": "back",
+      "action_type": "state_change",
+      "has_side_effects": true,
+      "risk_level": 3,
+      "requires_live_decision": true,
+      "audit_required": true,
+      "allowed_callers": [],
+      "calls_api": [],
+      "calls_api_methods": [],
+      "pii_fields": [],
+      "compliance_tags": [],
+      "idempotency_key": null,
+      "operation_class": "write",
+      "status": "provisional",
+      "detection_method": "agent_reference"
+    },
+    {
+      "tool_id": "get_customer_financial_profile",
+      "display_name": "Return the customer's financial profile, balances, risk tier, and notes for representative support.",
+      "source_type": "python",
+      "source": {
+        "provided_by": "task2_scanner",
+        "reference": "citi_banking_adk\\bank_adk\\tools\\csr_tools.py:14"
+      },
+      "domain": "shared",
+      "action_type": "read",
+      "has_side_effects": false,
+      "risk_level": 3,
+      "requires_live_decision": false,
+      "audit_required": false,
+      "allowed_callers": [],
+      "calls_api": [],
+      "calls_api_methods": [],
+      "pii_fields": [],
+      "compliance_tags": [],
+      "idempotency_key": null,
+      "operation_class": "read",
+      "status": "provisional",
+      "detection_method": "agent_reference"
+    },
+    {
+      "tool_id": "search_product_catalog",
+      "display_name": "Search product offerings and next-best-action candidates relevant to the customer's needs.",
+      "source_type": "python",
+      "source": {
+        "provided_by": "task2_scanner",
+        "reference": "citi_banking_adk\\bank_adk\\tools\\csr_tools.py:28"
+      },
+      "domain": "shared",
+      "action_type": "read",
+      "has_side_effects": false,
+      "risk_level": 2,
+      "requires_live_decision": false,
+      "audit_required": false,
+      "allowed_callers": [],
+      "calls_api": [],
+      "calls_api_methods": [],
+      "pii_fields": [],
+      "compliance_tags": [],
+      "idempotency_key": null,
+      "operation_class": "read",
+      "status": "provisional",
+      "detection_method": "agent_reference"
+    },
+    {
+      "tool_id": "search_loan_playbooks",
+      "display_name": "Search loan guidance, underwriting steps, and internal process playbooks.",
+      "source_type": "python",
+      "source": {
+        "provided_by": "task2_scanner",
+        "reference": "citi_banking_adk\\bank_adk\\tools\\csr_tools.py:33"
+      },
+      "domain": "shared",
+      "action_type": "read",
+      "has_side_effects": false,
+      "risk_level": 2,
+      "requires_live_decision": false,
+      "audit_required": false,
+      "allowed_callers": [],
+      "calls_api": [],
+      "calls_api_methods": [],
+      "pii_fields": [],
+      "compliance_tags": [],
+      "idempotency_key": null,
+      "operation_class": "read",
+      "status": "provisional",
+      "detection_method": "agent_reference"
+    },
+    {
+      "tool_id": "get_transaction_context",
+      "display_name": "Return transaction details, metadata, channel, current status, and decision context for a transaction id.",
+      "source_type": "python",
+      "source": {
+        "provided_by": "task2_scanner",
+        "reference": "citi_banking_adk\\bank_adk\\tools\\customer_tools.py:23"
+      },
+      "domain": "shared",
+      "action_type": "read",
+      "has_side_effects": false,
+      "risk_level": 3,
+      "requires_live_decision": false,
+      "audit_required": false,
+      "allowed_callers": [],
+      "calls_api": [],
+      "calls_api_methods": [],
+      "pii_fields": [],
+      "compliance_tags": [],
+      "idempotency_key": null,
+      "operation_class": "read",
+      "status": "provisional",
+      "detection_method": "agent_reference"
+    },
+    {
+      "tool_id": "submit_manual_review",
+      "display_name": "Open a manual review case when an automated decision is low-confidence or high-risk.",
+      "source_type": "python",
+      "source": {
+        "provided_by": "task2_scanner",
+        "reference": "citi_banking_adk\\bank_adk\\tools\\customer_tools.py:50"
+      },
+      "domain": "shared",
+      "action_type": "state_change",
+      "has_side_effects": true,
+      "risk_level": 3,
+      "requires_live_decision": true,
+      "audit_required": true,
+      "allowed_callers": [],
+      "calls_api": [],
+      "calls_api_methods": [],
+      "pii_fields": [],
+      "compliance_tags": [],
+      "idempotency_key": null,
+      "operation_class": "write",
+      "status": "provisional",
+      "detection_method": "agent_reference"
+    },
+    {
+      "tool_id": "search_faqs",
+      "display_name": "Search customer FAQs and service policies for informational questions.",
+      "source_type": "python",
+      "source": {
+        "provided_by": "task2_scanner",
+        "reference": "citi_banking_adk\\bank_adk\\tools\\knowledge_tools.py:24"
+      },
+      "domain": "shared",
+      "action_type": "read",
+      "has_side_effects": false,
+      "risk_level": 2,
+      "requires_live_decision": false,
+      "audit_required": false,
+      "allowed_callers": [],
+      "calls_api": [],
+      "calls_api_methods": [],
+      "pii_fields": [],
+      "compliance_tags": [],
+      "idempotency_key": null,
+      "operation_class": "read",
+      "status": "provisional",
+      "detection_method": "agent_reference"
+    },
+    {
+      "tool_id": "get_operations_snapshot",
+      "display_name": "Return internal operations, queue, and workload data for planning and forecasting.",
+      "source_type": "python",
+      "source": {
+        "provided_by": "task2_scanner",
+        "reference": "citi_banking_adk\\bank_adk\\tools\\ops_tools.py:10"
+      },
+      "domain": "shared",
+      "action_type": "read",
+      "has_side_effects": false,
+      "risk_level": 2,
+      "requires_live_decision": false,
+      "audit_required": false,
+      "allowed_callers": [],
+      "calls_api": [],
+      "calls_api_methods": [],
+      "pii_fields": [],
+      "compliance_tags": [],
+      "idempotency_key": null,
+      "operation_class": "read",
+      "status": "provisional",
+      "detection_method": "agent_reference"
+    },
+    {
+      "tool_id": "persist_validated_schedule",
+      "display_name": "Persist a validated staffing schedule after the validation agent approves it.",
+      "source_type": "python",
+      "source": {
+        "provided_by": "task2_scanner",
+        "reference": "citi_banking_adk\\bank_adk\\tools\\ops_tools.py:17"
+      },
+      "domain": "shared",
+      "action_type": "state_change",
+      "has_side_effects": true,
+      "risk_level": 3,
+      "requires_live_decision": true,
+      "audit_required": true,
+      "allowed_callers": [],
+      "calls_api": [],
+      "calls_api_methods": [],
+      "pii_fields": [],
+      "compliance_tags": [],
+      "idempotency_key": null,
+      "operation_class": "write",
+      "status": "provisional",
+      "detection_method": "agent_reference"
+    },
+    {
+      "tool_id": "get_support_playbooks",
+      "display_name": "Retrieve internal support guidance playbooks and operating recommendations.",
+      "source_type": "python",
+      "source": {
+        "provided_by": "task2_scanner",
+        "reference": "citi_banking_adk\\bank_adk\\tools\\ops_tools.py:21"
+      },
+      "domain": "shared",
+      "action_type": "read",
+      "has_side_effects": false,
+      "risk_level": 2,
+      "requires_live_decision": false,
+      "audit_required": false,
+      "allowed_callers": [],
+      "calls_api": [],
+      "calls_api_methods": [],
+      "pii_fields": [],
+      "compliance_tags": [],
+      "idempotency_key": null,
+      "operation_class": "read",
+      "status": "provisional",
+      "detection_method": "agent_reference"
+    },
+    {
+      "tool_id": "rank_records",
+      "display_name": "Auto-discovered tool rank_records",
+      "source_type": "python",
+      "source": {
+        "provided_by": "task2_scanner",
+        "reference": "citi_banking_adk\\bank_adk\\tools\\search.py:3"
+      },
+      "domain": "shared",
+      "action_type": "compute",
+      "has_side_effects": false,
+      "risk_level": 2,
+      "requires_live_decision": false,
+      "audit_required": false,
+      "allowed_callers": [],
+      "calls_api": [],
+      "calls_api_methods": [],
+      "pii_fields": [],
+      "compliance_tags": [],
+      "idempotency_key": null,
+      "operation_class": "read",
+      "status": "provisional",
+      "detection_method": "tool_module"
+    },
+    {
+      "tool_id": "get_transaction",
+      "display_name": "Fetches the full details of a transaction from the database.",
+      "source_type": "mcp",
+      "source": {
+        "provided_by": "task2_scanner",
+        "reference": "citi_banking_mcp_server\\mcp_server.py:22"
+      },
+      "domain": "shared",
+      "action_type": "read",
+      "has_side_effects": false,
+      "risk_level": 3,
+      "requires_live_decision": false,
+      "audit_required": false,
+      "allowed_callers": [],
+      "calls_api": [
+        "/transactions/{param}"
+      ],
+      "calls_api_methods": [
+        {
+          "method": "GET",
+          "path": "/transactions/{param}"
+        }
+      ],
+      "pii_fields": [],
+      "compliance_tags": [],
+      "idempotency_key": null,
+      "operation_class": "read",
+      "status": "provisional",
+      "detection_method": "decorator"
+    },
+    {
+      "tool_id": "run_fraud_and_compliance_workflow",
+      "display_name": "Runs the internal transaction monitoring and fraud evaluation.",
+      "source_type": "mcp",
+      "source": {
+        "provided_by": "task2_scanner",
+        "reference": "citi_banking_mcp_server\\mcp_server.py:36"
+      },
+      "domain": "shared",
+      "action_type": "compute",
+      "has_side_effects": false,
+      "risk_level": 2,
+      "requires_live_decision": false,
+      "audit_required": false,
+      "allowed_callers": [],
+      "calls_api": [
+        "/monitoring/evaluate_transaction"
+      ],
+      "calls_api_methods": [
+        {
+          "method": "POST",
+          "path": "/monitoring/evaluate_transaction"
+        }
+      ],
+      "pii_fields": [],
+      "compliance_tags": [],
+      "idempotency_key": null,
+      "operation_class": "read",
+      "status": "provisional",
+      "detection_method": "decorator"
+    },
+    {
+      "tool_id": "update_transaction_status",
+      "display_name": "Updates the transaction status after review.",
+      "source_type": "mcp",
+      "source": {
+        "provided_by": "task2_scanner",
+        "reference": "citi_banking_mcp_server\\mcp_server.py:57"
+      },
+      "domain": "shared",
+      "action_type": "state_change",
+      "has_side_effects": true,
+      "risk_level": 3,
+      "requires_live_decision": true,
+      "audit_required": true,
+      "allowed_callers": [],
+      "calls_api": [
+        "/transactions/{param}/status"
+      ],
+      "calls_api_methods": [
+        {
+          "method": "PATCH",
+          "path": "/transactions/{param}/status"
+        }
+      ],
+      "pii_fields": [],
+      "compliance_tags": [],
+      "idempotency_key": null,
+      "operation_class": "write",
+      "status": "provisional",
+      "detection_method": "decorator"
+    },
+    {
+      "tool_id": "get_branch_workload",
+      "display_name": "Retrieves real-time operational data for a branch, including:",
+      "source_type": "mcp",
+      "source": {
+        "provided_by": "task2_scanner",
+        "reference": "citi_banking_mcp_server\\mcp_server.py:81"
+      },
+      "domain": "shared",
+      "action_type": "read",
+      "has_side_effects": false,
+      "risk_level": 2,
+      "requires_live_decision": false,
+      "audit_required": false,
+      "allowed_callers": [],
+      "calls_api": [
+        "/mid-office/workload/{param}"
+      ],
+      "calls_api_methods": [
+        {
+          "method": "GET",
+          "path": "/mid-office/workload/{param}"
+        }
+      ],
+      "pii_fields": [],
+      "compliance_tags": [],
+      "idempotency_key": null,
+      "operation_class": "read",
+      "status": "provisional",
+      "detection_method": "decorator"
+    },
+    {
+      "tool_id": "propose_staffing_adjustment",
+      "display_name": "Simulates the impact of moving staff between branches to reduce wait times.",
+      "source_type": "mcp",
+      "source": {
+        "provided_by": "task2_scanner",
+        "reference": "citi_banking_mcp_server\\mcp_server.py:93"
+      },
+      "domain": "shared",
+      "action_type": "compute",
+      "has_side_effects": false,
+      "risk_level": 2,
+      "requires_live_decision": false,
+      "audit_required": false,
+      "allowed_callers": [],
+      "calls_api": [
+        "/mid-office/rebalance"
+      ],
+      "calls_api_methods": [
+        {
+          "method": "POST",
+          "path": "/mid-office/rebalance"
+        }
+      ],
+      "pii_fields": [],
+      "compliance_tags": [],
+      "idempotency_key": null,
+      "operation_class": "read",
+      "status": "provisional",
+      "detection_method": "decorator"
+    },
+    {
+      "tool_id": "get_customer_product_affinity",
+      "display_name": "Predictive tool that returns a JSON list of products a customer is likely to need",
+      "source_type": "mcp",
+      "source": {
+        "provided_by": "task2_scanner",
+        "reference": "citi_banking_mcp_server\\mcp_server.py:104"
+      },
+      "domain": "shared",
+      "action_type": "read",
+      "has_side_effects": false,
+      "risk_level": 3,
+      "requires_live_decision": false,
+      "audit_required": false,
+      "allowed_callers": [],
+      "calls_api": [
+        "/mid-office/affinity/{param}"
+      ],
+      "calls_api_methods": [
+        {
+          "method": "GET",
+          "path": "/mid-office/affinity/{param}"
+        }
+      ],
+      "pii_fields": [],
+      "compliance_tags": [],
+      "idempotency_key": null,
+      "operation_class": "read",
+      "status": "provisional",
+      "detection_method": "decorator"
+    },
+    {
+      "tool_id": "trigger_eod_reconciliation",
+      "display_name": "Triggers the End-of-Day reconciliation batch process for a specific date (YYYY-MM-DD).",
+      "source_type": "mcp",
+      "source": {
+        "provided_by": "task2_scanner",
+        "reference": "citi_banking_mcp_server\\mcp_server.py:118"
+      },
+      "domain": "shared",
+      "action_type": "state_change",
+      "has_side_effects": true,
+      "risk_level": 3,
+      "requires_live_decision": true,
+      "audit_required": true,
+      "allowed_callers": [],
+      "calls_api": [
+        "/back-office/reconcile"
+      ],
+      "calls_api_methods": [
+        {
+          "method": "POST",
+          "path": "/back-office/reconcile"
+        }
+      ],
+      "pii_fields": [],
+      "compliance_tags": [],
+      "idempotency_key": null,
+      "operation_class": "write",
+      "status": "provisional",
+      "detection_method": "decorator"
+    },
+    {
+      "tool_id": "get_reconciliation_mismatches",
+      "display_name": "Retrieves a list of specific ledger mismatches found during a reconciliation run.",
+      "source_type": "mcp",
+      "source": {
+        "provided_by": "task2_scanner",
+        "reference": "citi_banking_mcp_server\\mcp_server.py:128"
+      },
+      "domain": "shared",
+      "action_type": "read",
+      "has_side_effects": false,
+      "risk_level": 2,
+      "requires_live_decision": false,
+      "audit_required": false,
+      "allowed_callers": [],
+      "calls_api": [
+        "/back-office/mismatches/{param}"
+      ],
+      "calls_api_methods": [
+        {
+          "method": "GET",
+          "path": "/back-office/mismatches/{param}"
+        }
+      ],
+      "pii_fields": [],
+      "compliance_tags": [],
+      "idempotency_key": null,
+      "operation_class": "read",
+      "status": "provisional",
+      "detection_method": "decorator"
+    },
+    {
+      "tool_id": "resolve_ledger_entry",
+      "display_name": "Adjusts a ledger entry to fix a reconciliation mismatch. ",
+      "source_type": "mcp",
+      "source": {
+        "provided_by": "task2_scanner",
+        "reference": "citi_banking_mcp_server\\mcp_server.py:138"
+      },
+      "domain": "shared",
+      "action_type": "financial_write",
+      "has_side_effects": true,
+      "risk_level": 4,
+      "requires_live_decision": true,
+      "audit_required": true,
+      "allowed_callers": [],
+      "calls_api": [
+        "/back-office/resolve/{param}"
+      ],
+      "calls_api_methods": [
+        {
+          "method": "POST",
+          "path": "/back-office/resolve/{param}"
+        }
+      ],
+      "pii_fields": [],
+      "compliance_tags": [],
+      "idempotency_key": null,
+      "operation_class": "financial",
+      "status": "provisional",
+      "detection_method": "decorator"
+    }
+  ]
+}

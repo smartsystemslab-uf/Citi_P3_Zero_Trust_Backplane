@@ -64,9 +64,16 @@ class NativeTask4InProcessBridge:
         # Imports are intentionally lazy: Task 5 remains independently testable.
         from zt_backplane.decision_signing import verify_decision_headers
         from zt_backplane.dev_evidence import build_signed_request
+        from zt_backplane.canonical import request_proof_payload
+        from zt_backplane.crypto import load_private_key, sign_mapping
 
         self._verify_decision_headers = verify_decision_headers
         self._build_signed_request = build_signed_request
+        self._request_proof_payload = request_proof_payload
+        self._sign_mapping = sign_mapping
+        self._dev_pep_private_key = load_private_key(
+            self.task4_root / "security" / "dev_keys" / "pep_private.pem"
+        )
         self.public_key = self.task4_root / "security" / "dev_keys" / "pdp_signing_public.pem"
 
     def __call__(self, request: UnifiedAuthorizationRequest) -> Task4DecisionEnvelope:
@@ -123,6 +130,18 @@ class NativeTask4InProcessBridge:
             with_human_approval=with_human_approval,
             with_secondary_authorization=with_secondary_authorization,
         )
+
+        # Task 6 supplies one trace identifier for the full workflow. Preserve
+        # that trace inside the signed native Task 4 request so PDP audit records,
+        # Task 6 workflow audit, and later Task 7 latency traces can be correlated.
+        task6_trace_id = str(request.context.get("trace_id") or "").strip()
+        if task6_trace_id:
+            native.trace_id = task6_trace_id
+            proof = dict(native.subject.identity_evidence or {})
+            proof["signature"] = self._sign_mapping(
+                self._dev_pep_private_key, self._request_proof_payload(native)
+            )
+            native.subject.identity_evidence = proof
 
         # Bind Task 5's Permit Lease to the exact signed context assertions that
         # Task 4 evaluated. Evidence is excluded from Task 5's operation hash and

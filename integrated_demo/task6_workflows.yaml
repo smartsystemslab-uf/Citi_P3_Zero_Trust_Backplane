@@ -1,0 +1,16 @@
+# Deterministic inputs for Task 6 real-testbed workflow integration.
+# The runner executes original Citi P3 tool/repository/backend code behind generated PEPs.
+customer_transaction:
+  transfer:
+    source_account: CHK-002
+    destination_account: EXT-998
+    amount: 1.25
+    memo: Task 6 protected workflow integration
+    customer_id: CUST-002
+
+fraud_compliance:
+  customer_id: CUST-001
+  transaction_id: TXN-1001
+
+back_office_eod:
+  batch_id: EOD-2026-04-21-CLEAN

@@ -37,6 +37,16 @@ from native_task4_bridge import NativeTask4InProcessBridge
 from reconcile import reconcile_task1_task2_to_unified
 from scanner_merge import merge_task2_graph_into_unified
 from testbed_runtime import TestbedToolError, TestbedToolRuntime
+from task6_real_workflows import (
+    ProtectedTestbedRuntime,
+    Task6WorkflowRunner,
+    audit_completeness,
+    build_default_workflows,
+    build_task6_policy_bundle,
+    required_tool_ids,
+    verify_unique_workload_identities,
+    workflow_agents,
+)
 from zt_interface.compiler import compile_task4
 from zt_interface.loader import load_yaml
 from zt_interface.validator import validate_manifest as validate_unified_manifest
@@ -81,7 +91,7 @@ def require_backend_health(base_url: str) -> dict[str, Any]:
             data = json.loads(body) if body else {}
     except (urllib.error.URLError, TimeoutError, OSError, json.JSONDecodeError) as exc:
         raise RuntimeError(
-            "Real write execution requires the Citi P3 FastAPI backend. "
+            "Real backend execution requires the Citi P3 FastAPI backend. "
             f"Health check failed at {url}: {exc}. "
             "Start citi_banking_backend first, then rerun the Backplane."
         ) from exc
@@ -146,43 +156,8 @@ def prepare_task4_compatibility_view(output: Path, config_dir: Path) -> Path:
     return view
 
 
-def prepare_real_testbed_policy_store(output: Path, manifest: dict[str, Any]) -> Path:
-    """Stage signed Task 4 policies for runtime identities discovered from the real testbed.
-
-    Task 4 source policy files remain untouched. The integrated demo copies the policy
-    store into its output directory and updates only the EOD ledger-write subject when
-    the real ledger_update_agent identity is present in the reconciled manifest.
-    """
-    policy_dir = output / "task4_policy_store"
-    if policy_dir.exists():
-        shutil.rmtree(policy_dir)
-    shutil.copytree(TASK4_ROOT / "policy_store", policy_dir)
-
-    subject_ids = {item["id"] for item in manifest["spec"].get("subjects", [])}
-    ledger_subject = "agent.back_office.ledger_update"
-    if ledger_subject not in subject_ids:
-        return policy_dir
-
-    ledger_path = policy_dir / "ledger_access.yaml"
-    raw = yaml.safe_load(ledger_path.read_text(encoding="utf-8")) or {}
-    changed = False
-    for policy in raw.get("policies", []):
-        match = policy.get("match", {})
-        if (
-            "resource.back_office.ledger" in match.get("resources", [])
-            and "update" in match.get("actions", [])
-            and "agent.back_office.eod" in match.get("subjects", [])
-        ):
-            match["subjects"] = [ledger_subject]
-            policy["description"] = policy.get("description", "").replace(
-                "EOD ledger update", "Ledger-update agent operation in the EOD workflow"
-            )
-            changed = True
-
-    if not changed:
-        return policy_dir
-
-    ledger_path.write_text(yaml.safe_dump(raw, sort_keys=False), encoding="utf-8")
+def _write_signed_policy_bundle(policy_path: Path, raw: dict[str, Any]) -> None:
+    policy_path.write_text(yaml.safe_dump(raw, sort_keys=False), encoding="utf-8")
     policy_key = load_private_key(TASK4_ROOT / "security" / "dev_keys" / "policy_private.pem")
     sidecar = {
         "schema_version": "1.0",
@@ -193,14 +168,83 @@ def prepare_real_testbed_policy_store(output: Path, manifest: dict[str, Any]) ->
         "bundle_digest": sha256_hex(raw),
         "signature": sign_mapping(policy_key, raw),
     }
-    ledger_path.with_suffix(".sig.json").write_text(
+    policy_path.with_suffix(".sig.json").write_text(
         json.dumps(sidecar, indent=2, sort_keys=True) + "\n", encoding="utf-8"
     )
-    print(
-        "Task 4 runtime policy binding: agent.back_office.ledger_update "
-        "(ledger_update_agent) may request the EOD ledger-update policy."
-    )
+
+
+def prepare_real_testbed_policy_store(
+    output: Path,
+    manifest: dict[str, Any],
+    *,
+    task6_bundle: dict[str, Any] | None = None,
+) -> Path:
+    """Stage signed Task 4 policies for real-testbed runtime identities.
+
+    Source Task 4 policies remain untouched. Integration-specific bindings and
+    the narrowly-scoped Task 6 workflow bundle are written only under output/.
+    """
+    policy_dir = output / "task4_policy_store"
+    if policy_dir.exists():
+        shutil.rmtree(policy_dir)
+    shutil.copytree(TASK4_ROOT / "policy_store", policy_dir)
+
+    subject_ids = {item["id"] for item in manifest["spec"].get("subjects", [])}
+    ledger_subject = "agent.back_office.ledger_update"
+    if ledger_subject in subject_ids:
+        ledger_path = policy_dir / "ledger_access.yaml"
+        raw = yaml.safe_load(ledger_path.read_text(encoding="utf-8")) or {}
+        changed = False
+        for policy in raw.get("policies", []):
+            match = policy.get("match", {})
+            if (
+                "resource.back_office.ledger" in match.get("resources", [])
+                and "update" in match.get("actions", [])
+                and "agent.back_office.eod" in match.get("subjects", [])
+            ):
+                match["subjects"] = [ledger_subject]
+                policy["description"] = policy.get("description", "").replace(
+                    "EOD ledger update", "Ledger-update agent operation in the EOD workflow"
+                )
+                changed = True
+        if changed:
+            _write_signed_policy_bundle(ledger_path, raw)
+            print(
+                "Task 4 runtime policy binding: agent.back_office.ledger_update "
+                "(ledger_update_agent) may request the EOD ledger-update policy."
+            )
+
+    if task6_bundle is not None:
+        task6_path = policy_dir / "task6_real_workflows.yaml"
+        _write_signed_policy_bundle(task6_path, task6_bundle)
+        print(
+            "Task 6 runtime policy bundle staged: "
+            f"{len(task6_bundle.get('policies', []))} representative workflow policies."
+        )
+
     return policy_dir
+
+
+def verify_task6_trace_correlation(task4_audit_path: Path, workflow_runs: list[dict[str, Any]]) -> dict[str, Any]:
+    expected = {str(item.get("trace_id") or "") for item in workflow_runs if item.get("trace_id")}
+    observed: set[str] = set()
+    if task4_audit_path.exists():
+        for line in task4_audit_path.read_text(encoding="utf-8").splitlines():
+            if not line.strip():
+                continue
+            try:
+                event = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            trace_id = str(event.get("trace_id") or "")
+            if trace_id in expected:
+                observed.add(trace_id)
+    return {
+        "passed": bool(expected) and observed == expected,
+        "expected_trace_ids": sorted(expected),
+        "observed_in_task4_audit": sorted(observed),
+        "missing_from_task4_audit": sorted(expected - observed),
+    }
 
 
 def run(args: argparse.Namespace) -> int:
@@ -211,7 +255,7 @@ def run(args: argparse.Namespace) -> int:
 
     banking_repo = Path(args.banking_repo).resolve()
 
-    if args.execute_real_writes:
+    if args.execute_real_writes or (args.task6_real_workflows and args.task6_external_backend):
         os.environ["BANKING_USE_EXTERNAL_API"] = "true"
         os.environ["BANKING_BACKEND_BASE_URL"] = args.banking_backend_url.rstrip("/")
         health = require_backend_health(args.banking_backend_url)
@@ -266,7 +310,7 @@ def run(args: argparse.Namespace) -> int:
         )
 
     scanner_merge_report = None
-    if args.scanner_graph or args.execute_real_tools or args.execute_real_writes:
+    if args.scanner_graph or args.execute_real_tools or args.execute_real_writes or args.task6_real_workflows:
         banner("TASK 2 -> Unified Interface — Merge the real discovered testbed graph")
         manifest, scanner_merge_report = merge_task2_graph_into_unified(
             manifest,
@@ -307,13 +351,23 @@ def run(args: argparse.Namespace) -> int:
     )
     task3_generated = output / "task3_generated"
     generate_artifacts(plan, updated_manifest, task3_generated)
+    plan_json = load_json(task3_generated / "generated_pep_plan.json")
+    task6_inputs = load_yaml(Path(args.task6_inputs).resolve()) if args.task6_real_workflows else {}
+    task6_workflows = build_default_workflows(task6_inputs) if args.task6_real_workflows else []
+    task6_policy_bundle = (
+        build_task6_policy_bundle(plan_json, task6_workflows)
+        if args.task6_real_workflows
+        else None
+    )
     print(json.dumps(plan.coverage, indent=2))
     print("Task 3 / Task 4 registry compatibility:", plan.compatibility["summary"]["compatible"])
 
     banner("TASK 4 — Start real in-process signed PDP")
     os.environ["ZT_IDENTITY_FILE"] = str(task4_config / "identities.yaml")
     os.environ["ZT_RESOURCE_FILE"] = str(task4_config / "resources.yaml")
-    runtime_policy_dir = prepare_real_testbed_policy_store(output, manifest)
+    runtime_policy_dir = prepare_real_testbed_policy_store(
+        output, manifest, task6_bundle=task6_policy_bundle
+    )
     os.environ["ZT_POLICY_DIR"] = str(runtime_policy_dir)
     os.environ["ZT_AUDIT_LOG"] = str(output / "task4_decision_log.jsonl")
     os.environ["ZT_POLICY_VERSION_STORE"] = str(output / "task4_policy_versions.json")
@@ -345,7 +399,6 @@ def run(args: argparse.Namespace) -> int:
         critical_ttl_seconds=15,
         normal_max_uses=3,
     )
-    plan_json = load_json(task3_generated / "generated_pep_plan.json")
     fraud_placement = selected_placement(plan_json, "pep.fraud_review.read_history")
 
     # The baseline fixture models EOD -> ledger as a direct protected operation.
@@ -616,6 +669,106 @@ def run(args: argparse.Namespace) -> int:
                     "error": str(exc),
                 })
 
+    task6_report = None
+    if args.task6_real_workflows:
+        banner("TASK 6 — Full real-testbed workflow integration")
+        base_runtime = TestbedToolRuntime(banking_repo, task2_output)
+        protected_runtime = ProtectedTestbedRuntime(base_runtime)
+        protected_runtime.install(required_tool_ids(task6_workflows))
+        task6_dir = output / "task6"
+        runner = Task6WorkflowRunner(
+            plan_json=plan_json,
+            build_pep=build_pep,
+            request_builder=task5_request_from_placement,
+            runtime=protected_runtime,
+            output_dir=task6_dir,
+        )
+        identity_check = verify_unique_workload_identities(
+            plan_json, workflow_agents(task6_workflows)
+        )
+        print(
+            "Task 6 workload identities: "
+            f"{'PASS' if identity_check['passed'] else 'FAIL'} "
+            f"({identity_check['checked_agents']} workflow agents checked)"
+        )
+
+        workflow_runs = []
+        try:
+            for workflow in task6_workflows:
+                run_result = runner.run_workflow(workflow, mode=args.task6_mode)
+                workflow_runs.append(run_result.__dict__)
+                print(
+                    f"{workflow.name}: {'PASS' if run_result.passed else 'FAIL'} "
+                    f"mode={args.task6_mode} trace={run_result.trace_id} "
+                    f"duration_ms={run_result.duration_ms:.3f}"
+                )
+                if run_result.error:
+                    print(f"  error: {run_result.error}")
+
+            negative_checks = runner.run_negative_tests()
+            for check in negative_checks:
+                print(
+                    f"Task 6 security check {check['name']}: "
+                    f"{'PASS' if check['passed'] else 'FAIL'}"
+                )
+        finally:
+            protected_runtime.restore()
+
+        completeness = audit_completeness(runner.audit_path)
+        print(
+            "Task 6 audit completeness: "
+            f"{'PASS' if completeness['passed'] else 'FAIL'} "
+            f"({completeness['sensitive_event_count']} sensitive records)"
+        )
+        trace_correlation = verify_task6_trace_correlation(
+            output / "task4_decision_log.jsonl", workflow_runs
+        )
+        print(
+            "Task 6 end-to-end trace correlation: "
+            f"{'PASS' if trace_correlation['passed'] else 'FAIL'}"
+        )
+        task6_passed = (
+            identity_check["passed"]
+            and all(item["passed"] for item in workflow_runs)
+            and all(item["passed"] for item in negative_checks)
+            and completeness["passed"]
+            and trace_correlation["passed"]
+        )
+        task6_report = {
+            "passed": task6_passed,
+            "mode": args.task6_mode,
+            "workload_identity_check": identity_check,
+            "workflows": workflow_runs,
+            "negative_and_mode_checks": negative_checks,
+            "audit_completeness": completeness,
+            "trace_correlation": trace_correlation,
+            "audit_path": str(runner.audit_path),
+            "completion_criteria": {
+                "all_three_workflows_successful": all(item["passed"] for item in workflow_runs),
+                "authorized_requests_complete": all(item["passed"] for item in workflow_runs),
+                "unauthorized_requests_blocked": all(
+                    item["passed"] for item in negative_checks
+                    if item["name"] in {
+                        "unauthorized_transfer_blocked",
+                        "unauthorized_ledger_update_blocked",
+                        "direct_protected_tool_bypass_blocked",
+                    }
+                ),
+                "shadow_mode_supported": any(
+                    item["name"] == "shadow_mode_would_block_but_safe_read_continues"
+                    and item["passed"]
+                    for item in negative_checks
+                ),
+                "audit_record_complete": completeness["passed"],
+                "end_to_end_trace_id": trace_correlation["passed"],
+            },
+        }
+        (task6_dir / "task6_report.json").write_text(
+            json.dumps(task6_report, indent=2, sort_keys=True, default=str),
+            encoding="utf-8",
+        )
+        results.append({"scenario": "task6_full_real_testbed", "passed": task6_passed})
+
     audit_path = output / "task5_audit.json"
     audit_path.write_text(
         json.dumps(components.audit_log.events(), indent=2, sort_keys=True), encoding="utf-8"
@@ -632,6 +785,7 @@ def run(args: argparse.Namespace) -> int:
         "task4_policy_version": task4_runtime.engine.bundle.version,
         "task5_audit_valid": audit_valid,
         "scanner_graph_merge": scanner_merge_report,
+        "task6": task6_report,
         "artifacts": {
             "task2": str(task2_output),
             "reconciled_manifest": str(reconciled_manifest),
@@ -639,6 +793,8 @@ def run(args: argparse.Namespace) -> int:
             "task4_config": str(task4_config),
             "task4_audit": str(output / "task4_decision_log.jsonl"),
             "task5_audit": str(audit_path),
+            "task6_report": str(output / "task6" / "task6_report.json") if task6_report else None,
+            "task6_audit": str(output / "task6" / "task6_workflow_audit.jsonl") if task6_report else None,
         },
     }
     (output / "demo_summary.json").write_text(
@@ -648,13 +804,14 @@ def run(args: argparse.Namespace) -> int:
     banner("DEMO RESULT")
     for item in results:
         print(f"{'PASS' if item['passed'] else 'FAIL'}  {item['scenario']}")
-    print("\nALL TASKS 1-5 INTEGRATED:", "PASS" if summary["all_passed"] else "FAIL")
+    task_label = "ALL TASKS 1-6 INTEGRATED" if args.task6_real_workflows else "ALL TASKS 1-5 INTEGRATED"
+    print(f"\n{task_label}:", "PASS" if summary["all_passed"] else "FAIL")
     print("Artifacts:", output)
     return 0 if summary["all_passed"] else 1
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Run the integrated Zero Trust Backplane Task 1-5 demo")
+    parser = argparse.ArgumentParser(description="Run the integrated Zero Trust Backplane Task 1-6 demo")
     parser.add_argument(
         "--banking-repo",
         default=str(HERE / "sample_banking_system"),
@@ -703,6 +860,33 @@ def parse_args() -> argparse.Namespace:
         "--banking-backend-url",
         default=os.getenv("BANKING_BACKEND_BASE_URL", "http://127.0.0.1:8000"),
         help="Citi P3 FastAPI backend base URL used by the real transfer tool.",
+    )
+    parser.add_argument(
+        "--task6-real-workflows",
+        action="store_true",
+        help=(
+            "Run the three Task 6 representative workflows against the original multi-agent "
+            "testbed tools behind generated PEP/PDP/Permit-Lease enforcement. Implies scanner-graph merge."
+        ),
+    )
+    parser.add_argument(
+        "--task6-external-backend",
+        action="store_true",
+        help=(
+            "Use the running Citi P3 FastAPI backend for Task 6 customer-transfer execution. "
+            "Without this flag the original Citi testbed local repository is used."
+        ),
+    )
+    parser.add_argument(
+        "--task6-inputs",
+        default=str(HERE / "task6_workflows.yaml"),
+        help="YAML inputs for Task 6 deterministic real-testbed workflow execution.",
+    )
+    parser.add_argument(
+        "--task6-mode",
+        choices=["enforce", "shadow"],
+        default="enforce",
+        help="Task 6 workflow mode. The built-in M6 checks also exercise safe shadow behavior.",
     )
     parser.add_argument("--clean", action="store_true", help="Delete the output directory before running")
     return parser.parse_args()

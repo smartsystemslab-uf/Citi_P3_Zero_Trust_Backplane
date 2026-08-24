@@ -1,0 +1,293 @@
+digraph Task2InteractionGraph {
+  rankdir=LR;
+  node [shape=box];
+  agent_validation_checkpoint_agent [label="validation_checkpoint_agent
+(agent)"];
+  agent_eod_processing_agent [label="eod_processing_agent
+(agent)"];
+  agent_ledger_update_agent [label="ledger_update_agent
+(agent)"];
+  agent_reconciliation_agent [label="reconciliation_agent
+(agent)"];
+  agent_report_writing_agent [label="report_writing_agent
+(agent)"];
+  agent_exception_agent [label="exception_agent
+(agent)"];
+  agent_back_office_eod_workflow [label="back_office_eod_workflow
+(agent)"];
+  agent_back_office_router [label="back_office_router
+(agent)"];
+  agent_transaction_monitoring_agent [label="transaction_monitoring_agent
+(agent)"];
+  agent_fraud_detection_agent [label="fraud_detection_agent
+(agent)"];
+  agent_compliance_agent [label="compliance_agent
+(agent)"];
+  agent_decision_making_agent [label="decision_making_agent
+(agent)"];
+  agent_front_office_transaction_workflow [label="front_office_transaction_workflow
+(agent)"];
+  agent_knowledge_base_agent [label="knowledge_base_agent
+(agent)"];
+  agent_transaction_processing_agent [label="transaction_processing_agent
+(agent)"];
+  agent_customer_service_agent [label="customer_service_agent
+(agent)"];
+  agent_chatbot_intent_agent [label="chatbot_intent_agent
+(agent)"];
+  agent_customer_service_chatbot_workflow [label="customer_service_chatbot_workflow
+(agent)"];
+  agent_front_office_router [label="front_office_router
+(agent)"];
+  agent_data_analysis_agent [label="data_analysis_agent
+(agent)"];
+  agent_forecasting_agent [label="forecasting_agent
+(agent)"];
+  agent_staff_scheduling_agent [label="staff_scheduling_agent
+(agent)"];
+  agent_validation_agent [label="validation_agent
+(agent)"];
+  agent_support_guidance_agent [label="support_guidance_agent
+(agent)"];
+  agent_planning_summary_agent [label="planning_summary_agent
+(agent)"];
+  agent_financial_data_agent [label="financial_data_agent
+(agent)"];
+  agent_recommender_agent [label="recommender_agent
+(agent)"];
+  agent_loan_agent [label="loan_agent
+(agent)"];
+  agent_risk_compliance_agent [label="risk_compliance_agent
+(agent)"];
+  agent_representative_merge_agent [label="representative_merge_agent
+(agent)"];
+  agent_mid_office_router [label="mid_office_router
+(agent)"];
+  agent_user_proxy_agent [label="user_proxy_agent
+(agent)"];
+  agent_mid_office_planning_parallel [label="mid_office_planning_parallel
+(agent)"];
+  agent_mid_office_planning_workflow [label="mid_office_planning_workflow
+(agent)"];
+  agent_representative_assist_parallel [label="representative_assist_parallel
+(agent)"];
+  agent_representative_assistant_workflow [label="representative_assistant_workflow
+(agent)"];
+  tool_get_customer_context [label="get_customer_context
+(tool)"];
+  tool_list_recent_transactions [label="list_recent_transactions
+(tool)"];
+  tool_search_policies [label="search_policies
+(tool)"];
+  tool_execute_transfer [label="execute_transfer
+(tool)"];
+  tool_get_eod_batch [label="get_eod_batch
+(tool)"];
+  tool_apply_ledger_updates [label="apply_ledger_updates
+(tool)"];
+  tool_validate_eod_readiness [label="validate_eod_readiness
+(tool)"];
+  tool_get_reconciliation_data [label="get_reconciliation_data
+(tool)"];
+  tool_create_exception_case [label="create_exception_case
+(tool)"];
+  tool_store_report [label="store_report
+(tool)"];
+  tool_get_customer_financial_profile [label="get_customer_financial_profile
+(tool)"];
+  tool_search_product_catalog [label="search_product_catalog
+(tool)"];
+  tool_search_loan_playbooks [label="search_loan_playbooks
+(tool)"];
+  tool_get_transaction_context [label="get_transaction_context
+(tool)"];
+  tool_submit_manual_review [label="submit_manual_review
+(tool)"];
+  tool_search_faqs [label="search_faqs
+(tool)"];
+  tool_get_operations_snapshot [label="get_operations_snapshot
+(tool)"];
+  tool_persist_validated_schedule [label="persist_validated_schedule
+(tool)"];
+  tool_get_support_playbooks [label="get_support_playbooks
+(tool)"];
+  tool_rank_records [label="rank_records
+(tool)"];
+  tool_get_transaction [label="get_transaction
+(tool)"];
+  tool_run_fraud_and_compliance_workflow [label="run_fraud_and_compliance_workflow
+(tool)"];
+  tool_update_transaction_status [label="update_transaction_status
+(tool)"];
+  tool_get_branch_workload [label="get_branch_workload
+(tool)"];
+  tool_propose_staffing_adjustment [label="propose_staffing_adjustment
+(tool)"];
+  tool_get_customer_product_affinity [label="get_customer_product_affinity
+(tool)"];
+  tool_trigger_eod_reconciliation [label="trigger_eod_reconciliation
+(tool)"];
+  tool_get_reconciliation_mismatches [label="get_reconciliation_mismatches
+(tool)"];
+  tool_resolve_ledger_entry [label="resolve_ledger_entry
+(tool)"];
+  api_health [label="health
+(api)"];
+  api_create_customer [label="create_customer
+(api)"];
+  api_get_customer [label="get_customer
+(api)"];
+  api_list_customer_accounts [label="list_customer_accounts
+(api)"];
+  api_get_customer_context [label="get_customer_context
+(api)"];
+  api_list_customer_transactions [label="list_customer_transactions
+(api)"];
+  api_create_account [label="create_account
+(api)"];
+  api_get_account [label="get_account
+(api)"];
+  api_monitoring_evaluate_transaction [label="monitoring_evaluate_transaction
+(api)"];
+  api_banking_api_transfer [label="banking_api_transfer
+(api)"];
+  api_get_transaction [label="get_transaction
+(api)"];
+  api_list_transactions [label="list_transactions
+(api)"];
+  api_create_policy [label="create_policy
+(api)"];
+  api_list_policies [label="list_policies
+(api)"];
+  api_search_policies [label="search_policies
+(api)"];
+  api_create_rule [label="create_rule
+(api)"];
+  api_list_rules [label="list_rules
+(api)"];
+  api_update_transaction_status [label="update_transaction_status
+(api)"];
+  api_get_branch_workload [label="get_branch_workload
+(api)"];
+  api_propose_staffing_adjustment [label="propose_staffing_adjustment
+(api)"];
+  api_get_customer_product_affinity [label="get_customer_product_affinity
+(api)"];
+  api_trigger_eod_reconciliation [label="trigger_eod_reconciliation
+(api)"];
+  api_get_reconciliation_mismatches [label="get_reconciliation_mismatches
+(api)"];
+  api_resolve_ledger_entry [label="resolve_ledger_entry
+(api)"];
+  database_customers [label="customers
+(database)"];
+  database_accounts [label="accounts
+(database)"];
+  database_policies [label="policies
+(database)"];
+  database_rules [label="rules
+(database)"];
+  database_transactions [label="transactions
+(database)"];
+  database_audit_logs [label="audit_logs
+(database)"];
+  event_event_startup [label="event.startup
+(event)"];
+  event_event_trigger_eod_reconciliation [label="event.trigger_eod_reconciliation
+(event)"];
+  agent_validation_checkpoint_agent -> tool_validate_eod_readiness [label="agent_to_tool"];
+  agent_eod_processing_agent -> tool_get_eod_batch [label="agent_to_tool"];
+  agent_ledger_update_agent -> tool_apply_ledger_updates [label="agent_to_tool"];
+  agent_reconciliation_agent -> tool_get_reconciliation_data [label="agent_to_tool"];
+  agent_report_writing_agent -> tool_store_report [label="agent_to_tool"];
+  agent_exception_agent -> tool_create_exception_case [label="agent_to_tool"];
+  agent_transaction_monitoring_agent -> tool_get_customer_context [label="agent_to_tool"];
+  agent_transaction_monitoring_agent -> tool_get_transaction_context [label="agent_to_tool"];
+  agent_transaction_monitoring_agent -> tool_list_recent_transactions [label="agent_to_tool"];
+  agent_fraud_detection_agent -> tool_get_customer_context [label="agent_to_tool"];
+  agent_fraud_detection_agent -> tool_get_transaction_context [label="agent_to_tool"];
+  agent_fraud_detection_agent -> tool_list_recent_transactions [label="agent_to_tool"];
+  agent_compliance_agent -> tool_search_policies [label="agent_to_tool"];
+  agent_compliance_agent -> tool_get_customer_context [label="agent_to_tool"];
+  agent_compliance_agent -> tool_get_transaction_context [label="agent_to_tool"];
+  agent_decision_making_agent -> tool_submit_manual_review [label="agent_to_tool"];
+  agent_knowledge_base_agent -> tool_search_faqs [label="agent_to_tool"];
+  agent_transaction_processing_agent -> tool_execute_transfer [label="agent_to_tool"];
+  agent_data_analysis_agent -> tool_get_operations_snapshot [label="agent_to_tool"];
+  agent_forecasting_agent -> tool_get_operations_snapshot [label="agent_to_tool"];
+  agent_validation_agent -> tool_persist_validated_schedule [label="agent_to_tool"];
+  agent_support_guidance_agent -> tool_get_support_playbooks [label="agent_to_tool"];
+  agent_financial_data_agent -> tool_get_customer_financial_profile [label="agent_to_tool"];
+  agent_recommender_agent -> tool_search_product_catalog [label="agent_to_tool"];
+  agent_loan_agent -> tool_search_loan_playbooks [label="agent_to_tool"];
+  agent_risk_compliance_agent -> tool_search_policies [label="agent_to_tool"];
+  tool_get_transaction -> api_get_transaction [label="tool_to_api"];
+  tool_run_fraud_and_compliance_workflow -> api_monitoring_evaluate_transaction [label="tool_to_api"];
+  tool_update_transaction_status -> api_update_transaction_status [label="tool_to_api"];
+  tool_get_branch_workload -> api_get_branch_workload [label="tool_to_api"];
+  tool_propose_staffing_adjustment -> api_propose_staffing_adjustment [label="tool_to_api"];
+  tool_get_customer_product_affinity -> api_get_customer_product_affinity [label="tool_to_api"];
+  tool_trigger_eod_reconciliation -> api_trigger_eod_reconciliation [label="tool_to_api"];
+  tool_get_reconciliation_mismatches -> api_get_reconciliation_mismatches [label="tool_to_api"];
+  tool_resolve_ledger_entry -> api_resolve_ledger_entry [label="tool_to_api"];
+  api_create_customer -> database_customers [label="api_to_database"];
+  api_create_customer -> database_customers [label="api_to_database"];
+  api_get_customer -> database_customers [label="api_to_database"];
+  api_list_customer_accounts -> database_accounts [label="api_to_database"];
+  api_get_customer_context -> database_customers [label="api_to_database"];
+  api_list_customer_transactions -> database_accounts [label="api_to_database"];
+  api_list_customer_transactions -> database_transactions [label="api_to_database"];
+  api_create_account -> database_customers [label="api_to_database"];
+  api_create_account -> database_accounts [label="api_to_database"];
+  api_create_account -> database_accounts [label="api_to_database"];
+  api_get_account -> database_accounts [label="api_to_database"];
+  api_get_transaction -> database_transactions [label="api_to_database"];
+  api_list_transactions -> database_transactions [label="api_to_database"];
+  api_create_policy -> database_policies [label="api_to_database"];
+  api_create_policy -> database_policies [label="api_to_database"];
+  api_list_policies -> database_policies [label="api_to_database"];
+  api_search_policies -> database_policies [label="api_to_database"];
+  api_create_rule -> database_rules [label="api_to_database"];
+  api_create_rule -> database_rules [label="api_to_database"];
+  api_list_rules -> database_rules [label="api_to_database"];
+  api_update_transaction_status -> database_transactions [label="api_to_database"];
+  api_get_customer_product_affinity -> database_customers [label="api_to_database"];
+  api_get_customer_product_affinity -> database_accounts [label="api_to_database"];
+  api_trigger_eod_reconciliation -> database_transactions [label="api_to_database"];
+  api_trigger_eod_reconciliation -> database_audit_logs [label="api_to_database"];
+  api_get_reconciliation_mismatches -> database_audit_logs [label="api_to_database"];
+  api_resolve_ledger_entry -> database_transactions [label="api_to_database"];
+  api_resolve_ledger_entry -> database_audit_logs [label="api_to_database"];
+  agent_back_office_eod_workflow -> agent_validation_checkpoint_agent [label="agent_to_agent"];
+  agent_back_office_eod_workflow -> agent_eod_processing_agent [label="agent_to_agent"];
+  agent_back_office_eod_workflow -> agent_ledger_update_agent [label="agent_to_agent"];
+  agent_back_office_eod_workflow -> agent_reconciliation_agent [label="agent_to_agent"];
+  agent_back_office_eod_workflow -> agent_report_writing_agent [label="agent_to_agent"];
+  agent_back_office_eod_workflow -> agent_exception_agent [label="agent_to_agent"];
+  agent_back_office_router -> agent_back_office_eod_workflow [label="agent_to_agent"];
+  agent_front_office_transaction_workflow -> agent_transaction_monitoring_agent [label="agent_to_agent"];
+  agent_front_office_transaction_workflow -> agent_fraud_detection_agent [label="agent_to_agent"];
+  agent_front_office_transaction_workflow -> agent_compliance_agent [label="agent_to_agent"];
+  agent_front_office_transaction_workflow -> agent_decision_making_agent [label="agent_to_agent"];
+  agent_customer_service_chatbot_workflow -> agent_chatbot_intent_agent [label="agent_to_agent"];
+  agent_customer_service_chatbot_workflow -> agent_knowledge_base_agent [label="agent_to_agent"];
+  agent_customer_service_chatbot_workflow -> agent_customer_service_agent [label="agent_to_agent"];
+  agent_customer_service_chatbot_workflow -> agent_transaction_processing_agent [label="agent_to_agent"];
+  agent_front_office_router -> agent_front_office_transaction_workflow [label="agent_to_agent"];
+  agent_front_office_router -> agent_customer_service_chatbot_workflow [label="agent_to_agent"];
+  agent_mid_office_router -> agent_mid_office_planning_workflow [label="agent_to_agent"];
+  agent_mid_office_router -> agent_representative_assistant_workflow [label="agent_to_agent"];
+  agent_mid_office_planning_parallel -> agent_validation_agent [label="agent_to_agent"];
+  agent_mid_office_planning_parallel -> agent_support_guidance_agent [label="agent_to_agent"];
+  agent_mid_office_planning_workflow -> agent_data_analysis_agent [label="agent_to_agent"];
+  agent_mid_office_planning_workflow -> agent_forecasting_agent [label="agent_to_agent"];
+  agent_mid_office_planning_workflow -> agent_staff_scheduling_agent [label="agent_to_agent"];
+  agent_mid_office_planning_workflow -> agent_mid_office_planning_parallel [label="agent_to_agent"];
+  agent_mid_office_planning_workflow -> agent_planning_summary_agent [label="agent_to_agent"];
+  agent_representative_assist_parallel -> agent_financial_data_agent [label="agent_to_agent"];
+  agent_representative_assist_parallel -> agent_recommender_agent [label="agent_to_agent"];
+  agent_representative_assist_parallel -> agent_loan_agent [label="agent_to_agent"];
+  agent_representative_assist_parallel -> agent_risk_compliance_agent [label="agent_to_agent"];
+  agent_representative_assistant_workflow -> agent_representative_assist_parallel [label="agent_to_agent"];
+  agent_representative_assistant_workflow -> agent_representative_merge_agent [label="agent_to_agent"];
+}

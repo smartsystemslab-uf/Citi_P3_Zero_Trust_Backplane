@@ -1,12 +1,12 @@
 {
   "coverage_claim_scope": "Known interaction edges in the unified manifest only",
-  "deduplicated_component_savings": 38,
-  "interaction_edges_total": 42,
+  "deduplicated_component_savings": 86,
+  "interaction_edges_total": 95,
   "known_direct_bypass_paths": 0,
-  "logical_pep_count": 42,
-  "physical_pep_count": 4,
-  "protected_sensitive_edges": 42,
-  "sensitive_interaction_edges": 42,
+  "logical_pep_count": 95,
+  "physical_pep_count": 9,
+  "protected_sensitive_edges": 95,
+  "sensitive_interaction_edges": 95,
   "sensitive_inventory_resources_without_discovered_edges": [
     "resource.back_office.exception_case",
     "resource.back_office.final_report",
