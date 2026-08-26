@@ -2,6 +2,11 @@
 
 Date: 2026-08-26
 
+> For how to run this and a detailed architecture walkthrough, see
+> [`../../Citi_P3/citi_banking_adk/NATIVE_ZERO_TRUST_README.md`](../../Citi_P3/citi_banking_adk/NATIVE_ZERO_TRUST_README.md)
+> in the MAS repo. This document is the narrative record of the bug, the
+> fix, and the live evidence.
+
 ## Why this document exists
 
 A review of the project raised a fair challenge: everything demonstrated and
