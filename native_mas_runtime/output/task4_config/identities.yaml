@@ -1,0 +1,597 @@
+identities:
+- id: front_office_agent
+  canonical_id: agent.front_office.front_office
+  type: agent
+  roles:
+  - front_office_entry
+  domain: front_office
+  enabled: true
+  attributes:
+    manifest_status: provisional
+- id: transaction_monitoring_agent
+  canonical_id: agent.front_office.transaction_monitoring
+  type: agent
+  roles:
+  - transaction_monitor
+  domain: front_office
+  enabled: true
+  attributes:
+    manifest_status: provisional
+- id: fraud_detection_agent
+  canonical_id: agent.front_office.fraud
+  type: agent
+  roles:
+  - fraud_analyst
+  domain: front_office
+  enabled: true
+  attributes:
+    manifest_status: provisional
+- id: compliance_agent
+  canonical_id: agent.front_office.compliance
+  type: agent
+  roles:
+  - compliance_reader
+  domain: front_office
+  enabled: true
+  attributes:
+    manifest_status: provisional
+- id: decision_agent
+  canonical_id: agent.front_office.decision
+  type: agent
+  roles:
+  - risk_decision
+  domain: front_office
+  enabled: true
+  attributes:
+    manifest_status: provisional
+- id: chatbot_agent
+  canonical_id: agent.front_office.chatbot
+  type: agent
+  roles:
+  - customer_chat
+  domain: front_office
+  enabled: true
+  attributes:
+    manifest_status: provisional
+- id: knowledge_base_agent
+  canonical_id: agent.front_office.knowledge_base
+  type: agent
+  roles:
+  - knowledge_reader
+  domain: front_office
+  enabled: true
+  attributes:
+    manifest_status: provisional
+- id: customer_service_agent
+  canonical_id: agent.front_office.customer_service
+  type: agent
+  roles:
+  - customer_service
+  domain: front_office
+  enabled: true
+  attributes:
+    manifest_status: provisional
+- id: transaction_processing_agent
+  canonical_id: agent.front_office.transaction_processing
+  type: agent
+  roles:
+  - transaction_executor
+  domain: front_office
+  enabled: true
+  attributes:
+    manifest_status: provisional
+- id: data_analysis_agent
+  canonical_id: agent.mid_office.data_analysis
+  type: agent
+  roles:
+  - operations_analyst
+  domain: mid_office
+  enabled: true
+  attributes:
+    manifest_status: provisional
+- id: forecasting_agent
+  canonical_id: agent.mid_office.forecasting
+  type: agent
+  roles:
+  - forecaster
+  domain: mid_office
+  enabled: true
+  attributes:
+    manifest_status: provisional
+- id: staff_scheduling_agent
+  canonical_id: agent.mid_office.staff_scheduling
+  type: agent
+  roles:
+  - scheduler
+  domain: mid_office
+  enabled: true
+  attributes:
+    manifest_status: provisional
+- id: validation_agent
+  canonical_id: agent.mid_office.validation
+  type: agent
+  roles:
+  - validator
+  domain: mid_office
+  enabled: true
+  attributes:
+    manifest_status: provisional
+- id: support_guidance_agent
+  canonical_id: agent.mid_office.support_guidance
+  type: agent
+  roles:
+  - support_advisor
+  domain: mid_office
+  enabled: true
+  attributes:
+    manifest_status: provisional
+- id: financial_data_agent
+  canonical_id: agent.mid_office.financial_data
+  type: agent
+  roles:
+  - financial_data_reader
+  domain: mid_office
+  enabled: true
+  attributes:
+    manifest_status: provisional
+- id: recommender_agent
+  canonical_id: agent.mid_office.recommender
+  type: agent
+  roles:
+  - product_recommender
+  domain: mid_office
+  enabled: true
+  attributes:
+    manifest_status: provisional
+- id: loan_agent
+  canonical_id: agent.mid_office.loan
+  type: agent
+  roles:
+  - loan_support
+  domain: mid_office
+  enabled: true
+  attributes:
+    manifest_status: provisional
+- id: risk_compliance_agent
+  canonical_id: agent.mid_office.risk_compliance
+  type: agent
+  roles:
+  - risk_compliance
+  domain: mid_office
+  enabled: true
+  attributes:
+    manifest_status: provisional
+- id: back_office_agent
+  canonical_id: agent.back_office.back_office
+  type: agent
+  roles:
+  - back_office_orchestrator
+  domain: back_office
+  enabled: true
+  attributes:
+    manifest_status: provisional
+- id: eod_processing_agent
+  canonical_id: agent.back_office.eod
+  type: agent
+  roles:
+  - eod_processor
+  domain: back_office
+  enabled: true
+  attributes:
+    manifest_status: provisional
+- id: reconciliation_agent
+  canonical_id: agent.back_office.reconciliation
+  type: agent
+  roles:
+  - reconciler
+  domain: back_office
+  enabled: true
+  attributes:
+    manifest_status: provisional
+- id: report_agent
+  canonical_id: agent.back_office.report
+  type: agent
+  roles:
+  - report_writer
+  domain: back_office
+  enabled: true
+  attributes:
+    manifest_status: provisional
+- id: exception_agent
+  canonical_id: agent.back_office.exception
+  type: agent
+  roles:
+  - exception_handler
+  domain: back_office
+  enabled: true
+  attributes:
+    manifest_status: provisional
+- id: zt_pdp
+  canonical_id: service.shared.pdp
+  type: service
+  roles:
+  - authorization_decision
+  domain: shared
+  enabled: true
+  attributes:
+    manifest_status: confirmed
+- id: validation_checkpoint_agent
+  canonical_id: agent.back_office.validation_checkpoint_agent
+  type: agent
+  roles:
+  - specialist
+  domain: back_office
+  enabled: true
+  attributes:
+    manifest_status: provisional
+    scanner_source_type: subject
+- id: ledger_update_agent
+  canonical_id: agent.back_office.ledger_update
+  type: agent
+  roles:
+  - specialist
+  domain: back_office
+  enabled: true
+  attributes:
+    manifest_status: provisional
+    scanner_source_type: subject
+- id: report_writing_agent
+  canonical_id: agent.back_office.report_writing_agent
+  type: agent
+  roles:
+  - specialist
+  domain: back_office
+  enabled: true
+  attributes:
+    manifest_status: provisional
+    scanner_source_type: subject
+- id: decision_making_agent
+  canonical_id: agent.front_office.decision_making_agent
+  type: agent
+  roles:
+  - specialist
+  domain: front_office
+  enabled: true
+  attributes:
+    manifest_status: provisional
+    scanner_source_type: subject
+- id: get_transaction
+  canonical_id: service.shared.get_transaction
+  type: service
+  roles:
+  - scanner_discovered
+  domain: shared
+  enabled: true
+  attributes:
+    manifest_status: provisional
+    scanner_source_type: tool
+- id: run_fraud_and_compliance_workflow
+  canonical_id: service.shared.run_fraud_and_compliance_workflow
+  type: service
+  roles:
+  - scanner_discovered
+  domain: shared
+  enabled: true
+  attributes:
+    manifest_status: provisional
+    scanner_source_type: tool
+- id: update_transaction_status
+  canonical_id: service.shared.update_transaction_status
+  type: service
+  roles:
+  - scanner_discovered
+  domain: shared
+  enabled: true
+  attributes:
+    manifest_status: provisional
+    scanner_source_type: tool
+- id: get_branch_workload
+  canonical_id: service.shared.get_branch_workload
+  type: service
+  roles:
+  - scanner_discovered
+  domain: shared
+  enabled: true
+  attributes:
+    manifest_status: provisional
+    scanner_source_type: tool
+- id: propose_staffing_adjustment
+  canonical_id: service.shared.propose_staffing_adjustment
+  type: service
+  roles:
+  - scanner_discovered
+  domain: shared
+  enabled: true
+  attributes:
+    manifest_status: provisional
+    scanner_source_type: tool
+- id: get_customer_product_affinity
+  canonical_id: service.shared.get_customer_product_affinity
+  type: service
+  roles:
+  - scanner_discovered
+  domain: shared
+  enabled: true
+  attributes:
+    manifest_status: provisional
+    scanner_source_type: tool
+- id: trigger_eod_reconciliation
+  canonical_id: service.shared.trigger_eod_reconciliation
+  type: service
+  roles:
+  - scanner_discovered
+  domain: shared
+  enabled: true
+  attributes:
+    manifest_status: provisional
+    scanner_source_type: tool
+- id: get_reconciliation_mismatches
+  canonical_id: service.shared.get_reconciliation_mismatches
+  type: service
+  roles:
+  - scanner_discovered
+  domain: shared
+  enabled: true
+  attributes:
+    manifest_status: provisional
+    scanner_source_type: tool
+- id: resolve_ledger_entry
+  canonical_id: service.shared.resolve_ledger_entry
+  type: service
+  roles:
+  - scanner_discovered
+  domain: shared
+  enabled: true
+  attributes:
+    manifest_status: provisional
+    scanner_source_type: tool
+- id: create_customer
+  canonical_id: service.shared.create_customer
+  type: service
+  roles:
+  - scanner_discovered
+  domain: shared
+  enabled: true
+  attributes:
+    manifest_status: provisional
+    scanner_source_type: api
+- id: get_customer
+  canonical_id: service.shared.get_customer
+  type: service
+  roles:
+  - scanner_discovered
+  domain: shared
+  enabled: true
+  attributes:
+    manifest_status: provisional
+    scanner_source_type: api
+- id: list_customer_accounts
+  canonical_id: service.shared.list_customer_accounts
+  type: service
+  roles:
+  - scanner_discovered
+  domain: shared
+  enabled: true
+  attributes:
+    manifest_status: provisional
+    scanner_source_type: api
+- id: get_customer_context
+  canonical_id: service.shared.get_customer_context
+  type: service
+  roles:
+  - scanner_discovered
+  domain: shared
+  enabled: true
+  attributes:
+    manifest_status: provisional
+    scanner_source_type: api
+- id: list_customer_transactions
+  canonical_id: service.shared.list_customer_transactions
+  type: service
+  roles:
+  - scanner_discovered
+  domain: shared
+  enabled: true
+  attributes:
+    manifest_status: provisional
+    scanner_source_type: api
+- id: create_account
+  canonical_id: service.shared.create_account
+  type: service
+  roles:
+  - scanner_discovered
+  domain: shared
+  enabled: true
+  attributes:
+    manifest_status: provisional
+    scanner_source_type: api
+- id: get_account
+  canonical_id: service.shared.get_account
+  type: service
+  roles:
+  - scanner_discovered
+  domain: shared
+  enabled: true
+  attributes:
+    manifest_status: provisional
+    scanner_source_type: api
+- id: list_transactions
+  canonical_id: service.shared.list_transactions
+  type: service
+  roles:
+  - scanner_discovered
+  domain: shared
+  enabled: true
+  attributes:
+    manifest_status: provisional
+    scanner_source_type: api
+- id: create_policy
+  canonical_id: service.shared.create_policy
+  type: service
+  roles:
+  - scanner_discovered
+  domain: shared
+  enabled: true
+  attributes:
+    manifest_status: provisional
+    scanner_source_type: api
+- id: list_policies
+  canonical_id: service.shared.list_policies
+  type: service
+  roles:
+  - scanner_discovered
+  domain: shared
+  enabled: true
+  attributes:
+    manifest_status: provisional
+    scanner_source_type: api
+- id: search_policies
+  canonical_id: service.shared.search_policies
+  type: service
+  roles:
+  - scanner_discovered
+  domain: shared
+  enabled: true
+  attributes:
+    manifest_status: provisional
+    scanner_source_type: api
+- id: create_rule
+  canonical_id: service.shared.create_rule
+  type: service
+  roles:
+  - scanner_discovered
+  domain: shared
+  enabled: true
+  attributes:
+    manifest_status: provisional
+    scanner_source_type: api
+- id: list_rules
+  canonical_id: service.shared.list_rules
+  type: service
+  roles:
+  - scanner_discovered
+  domain: shared
+  enabled: true
+  attributes:
+    manifest_status: provisional
+    scanner_source_type: api
+- id: back_office_eod_workflow
+  canonical_id: agent.back_office.back_office_eod_workflow
+  type: agent
+  roles:
+  - workflow
+  domain: back_office
+  enabled: true
+  attributes:
+    manifest_status: provisional
+    scanner_source_type: subject
+- id: back_office_router
+  canonical_id: agent.back_office.back_office_router
+  type: agent
+  roles:
+  - router
+  domain: back_office
+  enabled: true
+  attributes:
+    manifest_status: provisional
+    scanner_source_type: subject
+- id: front_office_transaction_workflow
+  canonical_id: agent.front_office.front_office_transaction_workflow
+  type: agent
+  roles:
+  - workflow
+  domain: front_office
+  enabled: true
+  attributes:
+    manifest_status: provisional
+    scanner_source_type: subject
+- id: customer_service_chatbot_workflow
+  canonical_id: agent.front_office.customer_service_chatbot_workflow
+  type: agent
+  roles:
+  - workflow
+  domain: front_office
+  enabled: true
+  attributes:
+    manifest_status: provisional
+    scanner_source_type: subject
+- id: front_office_router
+  canonical_id: agent.front_office.front_office_router
+  type: agent
+  roles:
+  - router
+  domain: front_office
+  enabled: true
+  attributes:
+    manifest_status: provisional
+    scanner_source_type: subject
+- id: mid_office_router
+  canonical_id: agent.mid_office.mid_office_router
+  type: agent
+  roles:
+  - router
+  domain: mid_office
+  enabled: true
+  attributes:
+    manifest_status: provisional
+    scanner_source_type: subject
+- id: mid_office_planning_parallel
+  canonical_id: agent.shared.mid_office_planning_parallel
+  type: agent
+  roles:
+  - workflow
+  domain: shared
+  enabled: true
+  attributes:
+    manifest_status: provisional
+    scanner_source_type: subject
+- id: mid_office_planning_workflow
+  canonical_id: agent.shared.mid_office_planning_workflow
+  type: agent
+  roles:
+  - workflow
+  domain: shared
+  enabled: true
+  attributes:
+    manifest_status: provisional
+    scanner_source_type: subject
+- id: representative_assist_parallel
+  canonical_id: agent.shared.representative_assist_parallel
+  type: agent
+  roles:
+  - workflow
+  domain: shared
+  enabled: true
+  attributes:
+    manifest_status: provisional
+    scanner_source_type: subject
+- id: representative_assistant_workflow
+  canonical_id: agent.shared.representative_assistant_workflow
+  type: agent
+  roles:
+  - workflow
+  domain: shared
+  enabled: true
+  attributes:
+    manifest_status: provisional
+    scanner_source_type: subject
+- id: cli_user
+  canonical_id: service.external.cli_user
+  type: service
+  roles:
+  - cli_ingress
+  domain: external
+  enabled: true
+  attributes:
+    manifest_status: provisional
+    native_boundary: input
+- id: user_proxy_agent
+  canonical_id: agent.shared.user_proxy_agent
+  type: agent
+  roles:
+  - native_root_router
+  domain: shared
+  enabled: true
+  attributes:
+    manifest_status: provisional
+    native_boundary: root_agent

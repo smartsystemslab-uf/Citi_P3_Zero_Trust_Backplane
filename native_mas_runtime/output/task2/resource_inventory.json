@@ -1,0 +1,968 @@
+{
+  "zt_ir_version": "1.0",
+  "apis": [
+    {
+      "api_id": "health",
+      "display_name": "Auto-discovered API endpoint health",
+      "service": "app",
+      "base_url": null,
+      "path": "/health",
+      "method": "GET",
+      "domain": "shared",
+      "action_type": "read",
+      "has_side_effects": false,
+      "risk_level": 2,
+      "requires_auth": true,
+      "audit_required": false,
+      "reads_tables": [],
+      "writes_tables": [],
+      "pii_fields": [],
+      "compliance_tags": [],
+      "idempotency_key": null,
+      "operation_class": "read",
+      "allowed_callers": [],
+      "status": "provisional",
+      "source_type": "python_route",
+      "source": {
+        "provided_by": "task2_scanner",
+        "reference": "citi_banking_backend\\app\\main.py:30"
+      }
+    },
+    {
+      "api_id": "create_customer",
+      "display_name": "Auto-discovered API endpoint create_customer",
+      "service": "app",
+      "base_url": null,
+      "path": "/customers",
+      "method": "POST",
+      "domain": "shared",
+      "action_type": "state_change",
+      "has_side_effects": true,
+      "risk_level": 3,
+      "requires_auth": true,
+      "audit_required": true,
+      "reads_tables": [
+        "Customer"
+      ],
+      "writes_tables": [
+        "Customer"
+      ],
+      "pii_fields": [],
+      "compliance_tags": [],
+      "idempotency_key": null,
+      "operation_class": "write",
+      "allowed_callers": [],
+      "status": "provisional",
+      "source_type": "python_route",
+      "source": {
+        "provided_by": "task2_scanner",
+        "reference": "citi_banking_backend\\app\\main.py:82"
+      }
+    },
+    {
+      "api_id": "get_customer",
+      "display_name": "Auto-discovered API endpoint get_customer",
+      "service": "app",
+      "base_url": null,
+      "path": "/customers/{customer_id}",
+      "method": "GET",
+      "domain": "shared",
+      "action_type": "read",
+      "has_side_effects": false,
+      "risk_level": 3,
+      "requires_auth": true,
+      "audit_required": false,
+      "reads_tables": [
+        "Customer"
+      ],
+      "writes_tables": [],
+      "pii_fields": [],
+      "compliance_tags": [],
+      "idempotency_key": null,
+      "operation_class": "read",
+      "allowed_callers": [],
+      "status": "provisional",
+      "source_type": "python_route",
+      "source": {
+        "provided_by": "task2_scanner",
+        "reference": "citi_banking_backend\\app\\main.py:93"
+      }
+    },
+    {
+      "api_id": "list_customer_accounts",
+      "display_name": "Auto-discovered API endpoint list_customer_accounts",
+      "service": "app",
+      "base_url": null,
+      "path": "/customers/{customer_id}/accounts",
+      "method": "GET",
+      "domain": "shared",
+      "action_type": "read",
+      "has_side_effects": false,
+      "risk_level": 3,
+      "requires_auth": true,
+      "audit_required": false,
+      "reads_tables": [
+        "Account"
+      ],
+      "writes_tables": [],
+      "pii_fields": [],
+      "compliance_tags": [],
+      "idempotency_key": null,
+      "operation_class": "read",
+      "allowed_callers": [],
+      "status": "provisional",
+      "source_type": "python_route",
+      "source": {
+        "provided_by": "task2_scanner",
+        "reference": "citi_banking_backend\\app\\main.py:100"
+      }
+    },
+    {
+      "api_id": "get_customer_context",
+      "display_name": "Auto-discovered API endpoint get_customer_context",
+      "service": "app",
+      "base_url": null,
+      "path": "/customers/{customer_id}/context",
+      "method": "GET",
+      "domain": "shared",
+      "action_type": "read",
+      "has_side_effects": false,
+      "risk_level": 3,
+      "requires_auth": true,
+      "audit_required": false,
+      "reads_tables": [
+        "Customer"
+      ],
+      "writes_tables": [],
+      "pii_fields": [],
+      "compliance_tags": [],
+      "idempotency_key": null,
+      "operation_class": "read",
+      "allowed_callers": [],
+      "status": "provisional",
+      "source_type": "python_route",
+      "source": {
+        "provided_by": "task2_scanner",
+        "reference": "citi_banking_backend\\app\\main.py:105"
+      }
+    },
+    {
+      "api_id": "list_customer_transactions",
+      "display_name": "Auto-discovered API endpoint list_customer_transactions",
+      "service": "app",
+      "base_url": null,
+      "path": "/customers/{customer_id}/transactions",
+      "method": "GET",
+      "domain": "shared",
+      "action_type": "read",
+      "has_side_effects": false,
+      "risk_level": 3,
+      "requires_auth": true,
+      "audit_required": false,
+      "reads_tables": [
+        "Account",
+        "Transaction"
+      ],
+      "writes_tables": [],
+      "pii_fields": [],
+      "compliance_tags": [],
+      "idempotency_key": null,
+      "operation_class": "read",
+      "allowed_callers": [],
+      "status": "provisional",
+      "source_type": "python_route",
+      "source": {
+        "provided_by": "task2_scanner",
+        "reference": "citi_banking_backend\\app\\main.py:113"
+      }
+    },
+    {
+      "api_id": "create_account",
+      "display_name": "Auto-discovered API endpoint create_account",
+      "service": "app",
+      "base_url": null,
+      "path": "/accounts",
+      "method": "POST",
+      "domain": "shared",
+      "action_type": "state_change",
+      "has_side_effects": true,
+      "risk_level": 3,
+      "requires_auth": true,
+      "audit_required": true,
+      "reads_tables": [
+        "Customer",
+        "Account"
+      ],
+      "writes_tables": [
+        "Account"
+      ],
+      "pii_fields": [],
+      "compliance_tags": [],
+      "idempotency_key": null,
+      "operation_class": "write",
+      "allowed_callers": [],
+      "status": "provisional",
+      "source_type": "python_route",
+      "source": {
+        "provided_by": "task2_scanner",
+        "reference": "citi_banking_backend\\app\\main.py:127"
+      }
+    },
+    {
+      "api_id": "get_account",
+      "display_name": "Auto-discovered API endpoint get_account",
+      "service": "app",
+      "base_url": null,
+      "path": "/accounts/{account_id}",
+      "method": "GET",
+      "domain": "shared",
+      "action_type": "read",
+      "has_side_effects": false,
+      "risk_level": 3,
+      "requires_auth": true,
+      "audit_required": false,
+      "reads_tables": [
+        "Account"
+      ],
+      "writes_tables": [],
+      "pii_fields": [],
+      "compliance_tags": [],
+      "idempotency_key": null,
+      "operation_class": "read",
+      "allowed_callers": [],
+      "status": "provisional",
+      "source_type": "python_route",
+      "source": {
+        "provided_by": "task2_scanner",
+        "reference": "citi_banking_backend\\app\\main.py:141"
+      }
+    },
+    {
+      "api_id": "monitoring_evaluate_transaction",
+      "display_name": "Auto-discovered API endpoint monitoring_evaluate_transaction",
+      "service": "app",
+      "base_url": null,
+      "path": "/monitoring/evaluate_transaction",
+      "method": "POST",
+      "domain": "shared",
+      "action_type": "state_change",
+      "has_side_effects": true,
+      "risk_level": 3,
+      "requires_auth": true,
+      "audit_required": true,
+      "reads_tables": [],
+      "writes_tables": [],
+      "pii_fields": [],
+      "compliance_tags": [],
+      "idempotency_key": null,
+      "operation_class": "write",
+      "allowed_callers": [],
+      "status": "provisional",
+      "source_type": "python_route",
+      "source": {
+        "provided_by": "task2_scanner",
+        "reference": "citi_banking_backend\\app\\main.py:148"
+      }
+    },
+    {
+      "api_id": "banking_api_transfer",
+      "display_name": "Auto-discovered API endpoint banking_api_transfer",
+      "service": "app",
+      "base_url": null,
+      "path": "/banking-api/transfer",
+      "method": "POST",
+      "domain": "shared",
+      "action_type": "financial_write",
+      "has_side_effects": true,
+      "risk_level": 4,
+      "requires_auth": true,
+      "audit_required": true,
+      "reads_tables": [],
+      "writes_tables": [],
+      "pii_fields": [],
+      "compliance_tags": [],
+      "idempotency_key": null,
+      "operation_class": "financial",
+      "allowed_callers": [],
+      "status": "provisional",
+      "source_type": "python_route",
+      "source": {
+        "provided_by": "task2_scanner",
+        "reference": "citi_banking_backend\\app\\main.py:152"
+      }
+    },
+    {
+      "api_id": "get_transaction",
+      "display_name": "Auto-discovered API endpoint get_transaction",
+      "service": "app",
+      "base_url": null,
+      "path": "/transactions/{transaction_id}",
+      "method": "GET",
+      "domain": "shared",
+      "action_type": "read",
+      "has_side_effects": false,
+      "risk_level": 3,
+      "requires_auth": true,
+      "audit_required": false,
+      "reads_tables": [
+        "Transaction"
+      ],
+      "writes_tables": [],
+      "pii_fields": [],
+      "compliance_tags": [],
+      "idempotency_key": null,
+      "operation_class": "read",
+      "allowed_callers": [],
+      "status": "provisional",
+      "source_type": "python_route",
+      "source": {
+        "provided_by": "task2_scanner",
+        "reference": "citi_banking_backend\\app\\main.py:166"
+      }
+    },
+    {
+      "api_id": "list_transactions",
+      "display_name": "Auto-discovered API endpoint list_transactions",
+      "service": "app",
+      "base_url": null,
+      "path": "/transactions",
+      "method": "GET",
+      "domain": "shared",
+      "action_type": "read",
+      "has_side_effects": false,
+      "risk_level": 3,
+      "requires_auth": true,
+      "audit_required": false,
+      "reads_tables": [
+        "Transaction"
+      ],
+      "writes_tables": [],
+      "pii_fields": [],
+      "compliance_tags": [],
+      "idempotency_key": null,
+      "operation_class": "read",
+      "allowed_callers": [],
+      "status": "provisional",
+      "source_type": "python_route",
+      "source": {
+        "provided_by": "task2_scanner",
+        "reference": "citi_banking_backend\\app\\main.py:173"
+      }
+    },
+    {
+      "api_id": "create_policy",
+      "display_name": "Auto-discovered API endpoint create_policy",
+      "service": "app",
+      "base_url": null,
+      "path": "/policies",
+      "method": "POST",
+      "domain": "shared",
+      "action_type": "state_change",
+      "has_side_effects": true,
+      "risk_level": 3,
+      "requires_auth": true,
+      "audit_required": true,
+      "reads_tables": [
+        "Policy"
+      ],
+      "writes_tables": [
+        "Policy"
+      ],
+      "pii_fields": [],
+      "compliance_tags": [],
+      "idempotency_key": null,
+      "operation_class": "write",
+      "allowed_callers": [],
+      "status": "provisional",
+      "source_type": "python_route",
+      "source": {
+        "provided_by": "task2_scanner",
+        "reference": "citi_banking_backend\\app\\main.py:177"
+      }
+    },
+    {
+      "api_id": "list_policies",
+      "display_name": "Auto-discovered API endpoint list_policies",
+      "service": "app",
+      "base_url": null,
+      "path": "/policies",
+      "method": "GET",
+      "domain": "shared",
+      "action_type": "read",
+      "has_side_effects": false,
+      "risk_level": 2,
+      "requires_auth": true,
+      "audit_required": false,
+      "reads_tables": [
+        "Policy"
+      ],
+      "writes_tables": [],
+      "pii_fields": [],
+      "compliance_tags": [],
+      "idempotency_key": null,
+      "operation_class": "read",
+      "allowed_callers": [],
+      "status": "provisional",
+      "source_type": "python_route",
+      "source": {
+        "provided_by": "task2_scanner",
+        "reference": "citi_banking_backend\\app\\main.py:188"
+      }
+    },
+    {
+      "api_id": "search_policies",
+      "display_name": "Auto-discovered API endpoint search_policies",
+      "service": "app",
+      "base_url": null,
+      "path": "/policies/search",
+      "method": "GET",
+      "domain": "shared",
+      "action_type": "read",
+      "has_side_effects": false,
+      "risk_level": 2,
+      "requires_auth": true,
+      "audit_required": false,
+      "reads_tables": [
+        "Policy"
+      ],
+      "writes_tables": [],
+      "pii_fields": [],
+      "compliance_tags": [],
+      "idempotency_key": null,
+      "operation_class": "read",
+      "allowed_callers": [],
+      "status": "provisional",
+      "source_type": "python_route",
+      "source": {
+        "provided_by": "task2_scanner",
+        "reference": "citi_banking_backend\\app\\main.py:197"
+      }
+    },
+    {
+      "api_id": "create_rule",
+      "display_name": "Auto-discovered API endpoint create_rule",
+      "service": "app",
+      "base_url": null,
+      "path": "/rules",
+      "method": "POST",
+      "domain": "shared",
+      "action_type": "state_change",
+      "has_side_effects": true,
+      "risk_level": 3,
+      "requires_auth": true,
+      "audit_required": true,
+      "reads_tables": [
+        "Rule"
+      ],
+      "writes_tables": [
+        "Rule"
+      ],
+      "pii_fields": [],
+      "compliance_tags": [],
+      "idempotency_key": null,
+      "operation_class": "write",
+      "allowed_callers": [],
+      "status": "provisional",
+      "source_type": "python_route",
+      "source": {
+        "provided_by": "task2_scanner",
+        "reference": "citi_banking_backend\\app\\main.py:221"
+      }
+    },
+    {
+      "api_id": "list_rules",
+      "display_name": "Auto-discovered API endpoint list_rules",
+      "service": "app",
+      "base_url": null,
+      "path": "/rules",
+      "method": "GET",
+      "domain": "shared",
+      "action_type": "read",
+      "has_side_effects": false,
+      "risk_level": 2,
+      "requires_auth": true,
+      "audit_required": false,
+      "reads_tables": [
+        "Rule"
+      ],
+      "writes_tables": [],
+      "pii_fields": [],
+      "compliance_tags": [],
+      "idempotency_key": null,
+      "operation_class": "read",
+      "allowed_callers": [],
+      "status": "provisional",
+      "source_type": "python_route",
+      "source": {
+        "provided_by": "task2_scanner",
+        "reference": "citi_banking_backend\\app\\main.py:232"
+      }
+    },
+    {
+      "api_id": "update_transaction_status",
+      "display_name": "Auto-discovered API endpoint update_transaction_status",
+      "service": "app",
+      "base_url": null,
+      "path": "/transactions/{transaction_id}/status",
+      "method": "PATCH",
+      "domain": "shared",
+      "action_type": "state_change",
+      "has_side_effects": true,
+      "risk_level": 3,
+      "requires_auth": true,
+      "audit_required": true,
+      "reads_tables": [
+        "Transaction"
+      ],
+      "writes_tables": [],
+      "pii_fields": [],
+      "compliance_tags": [],
+      "idempotency_key": null,
+      "operation_class": "write",
+      "allowed_callers": [],
+      "status": "provisional",
+      "source_type": "python_route",
+      "source": {
+        "provided_by": "task2_scanner",
+        "reference": "citi_banking_backend\\app\\main.py:242"
+      }
+    },
+    {
+      "api_id": "get_branch_workload",
+      "display_name": "Auto-discovered API endpoint get_branch_workload",
+      "service": "app",
+      "base_url": null,
+      "path": "/mid-office/workload/{branch_id}",
+      "method": "GET",
+      "domain": "shared",
+      "action_type": "read",
+      "has_side_effects": false,
+      "risk_level": 2,
+      "requires_auth": true,
+      "audit_required": false,
+      "reads_tables": [],
+      "writes_tables": [],
+      "pii_fields": [],
+      "compliance_tags": [],
+      "idempotency_key": null,
+      "operation_class": "read",
+      "allowed_callers": [],
+      "status": "provisional",
+      "source_type": "python_route",
+      "source": {
+        "provided_by": "task2_scanner",
+        "reference": "citi_banking_backend\\app\\main.py:264"
+      }
+    },
+    {
+      "api_id": "propose_staffing_adjustment",
+      "display_name": "Auto-discovered API endpoint propose_staffing_adjustment",
+      "service": "app",
+      "base_url": null,
+      "path": "/mid-office/rebalance",
+      "method": "POST",
+      "domain": "shared",
+      "action_type": "compute",
+      "has_side_effects": true,
+      "risk_level": 2,
+      "requires_auth": true,
+      "audit_required": true,
+      "reads_tables": [],
+      "writes_tables": [],
+      "pii_fields": [],
+      "compliance_tags": [],
+      "idempotency_key": null,
+      "operation_class": "read",
+      "allowed_callers": [],
+      "status": "provisional",
+      "source_type": "python_route",
+      "source": {
+        "provided_by": "task2_scanner",
+        "reference": "citi_banking_backend\\app\\main.py:277"
+      }
+    },
+    {
+      "api_id": "get_customer_product_affinity",
+      "display_name": "Auto-discovered API endpoint get_customer_product_affinity",
+      "service": "app",
+      "base_url": null,
+      "path": "/mid-office/affinity/{customer_id}",
+      "method": "GET",
+      "domain": "shared",
+      "action_type": "read",
+      "has_side_effects": false,
+      "risk_level": 3,
+      "requires_auth": true,
+      "audit_required": false,
+      "reads_tables": [
+        "Customer",
+        "Account"
+      ],
+      "writes_tables": [],
+      "pii_fields": [],
+      "compliance_tags": [],
+      "idempotency_key": null,
+      "operation_class": "read",
+      "allowed_callers": [],
+      "status": "provisional",
+      "source_type": "python_route",
+      "source": {
+        "provided_by": "task2_scanner",
+        "reference": "citi_banking_backend\\app\\main.py:289"
+      }
+    },
+    {
+      "api_id": "trigger_eod_reconciliation",
+      "display_name": "Auto-discovered API endpoint trigger_eod_reconciliation",
+      "service": "app",
+      "base_url": null,
+      "path": "/back-office/reconcile",
+      "method": "POST",
+      "domain": "shared",
+      "action_type": "state_change",
+      "has_side_effects": true,
+      "risk_level": 3,
+      "requires_auth": true,
+      "audit_required": true,
+      "reads_tables": [
+        "Transaction"
+      ],
+      "writes_tables": [
+        "AuditLog"
+      ],
+      "pii_fields": [],
+      "compliance_tags": [],
+      "idempotency_key": null,
+      "operation_class": "write",
+      "allowed_callers": [],
+      "status": "provisional",
+      "source_type": "python_route",
+      "source": {
+        "provided_by": "task2_scanner",
+        "reference": "citi_banking_backend\\app\\main.py:306"
+      }
+    },
+    {
+      "api_id": "get_reconciliation_mismatches",
+      "display_name": "Auto-discovered API endpoint get_reconciliation_mismatches",
+      "service": "app",
+      "base_url": null,
+      "path": "/back-office/mismatches/{report_id}",
+      "method": "GET",
+      "domain": "shared",
+      "action_type": "read",
+      "has_side_effects": false,
+      "risk_level": 2,
+      "requires_auth": true,
+      "audit_required": false,
+      "reads_tables": [
+        "AuditLog"
+      ],
+      "writes_tables": [],
+      "pii_fields": [],
+      "compliance_tags": [],
+      "idempotency_key": null,
+      "operation_class": "read",
+      "allowed_callers": [],
+      "status": "provisional",
+      "source_type": "python_route",
+      "source": {
+        "provided_by": "task2_scanner",
+        "reference": "citi_banking_backend\\app\\main.py:337"
+      }
+    },
+    {
+      "api_id": "resolve_ledger_entry",
+      "display_name": "Auto-discovered API endpoint resolve_ledger_entry",
+      "service": "app",
+      "base_url": null,
+      "path": "/back-office/resolve/{transaction_id}",
+      "method": "POST",
+      "domain": "shared",
+      "action_type": "financial_write",
+      "has_side_effects": true,
+      "risk_level": 4,
+      "requires_auth": true,
+      "audit_required": true,
+      "reads_tables": [
+        "Transaction"
+      ],
+      "writes_tables": [
+        "AuditLog"
+      ],
+      "pii_fields": [],
+      "compliance_tags": [],
+      "idempotency_key": null,
+      "operation_class": "financial",
+      "allowed_callers": [],
+      "status": "provisional",
+      "source_type": "python_route",
+      "source": {
+        "provided_by": "task2_scanner",
+        "reference": "citi_banking_backend\\app\\main.py:350"
+      }
+    }
+  ],
+  "databases": [
+    {
+      "database_id": "customers",
+      "model_name": "Customer",
+      "display_name": "Customer table",
+      "db_type": "relational",
+      "engine": "unknown",
+      "table_name": "customers",
+      "classification": "confidential",
+      "contains_pii": true,
+      "contains_financial": true,
+      "contains_audit": false,
+      "columns": [
+        "id",
+        "customer_id",
+        "full_name",
+        "email",
+        "phone",
+        "address",
+        "kyc_status",
+        "risk_level",
+        "created_at",
+        "accounts"
+      ],
+      "allowed_operations": [
+        "SELECT",
+        "INSERT",
+        "UPDATE",
+        "DELETE"
+      ],
+      "allowed_api_callers": [],
+      "compliance_tags": [],
+      "risk_level": 3,
+      "immutable": false,
+      "status": "provisional",
+      "source": {
+        "provided_by": "task2_scanner",
+        "reference": "citi_banking_backend\\app\\models.py:6"
+      }
+    },
+    {
+      "database_id": "accounts",
+      "model_name": "Account",
+      "display_name": "Account table",
+      "db_type": "relational",
+      "engine": "unknown",
+      "table_name": "accounts",
+      "classification": "confidential",
+      "contains_pii": true,
+      "contains_financial": true,
+      "contains_audit": false,
+      "columns": [
+        "id",
+        "account_id",
+        "customer_id",
+        "account_type",
+        "balance",
+        "currency",
+        "status",
+        "created_at",
+        "customer"
+      ],
+      "allowed_operations": [
+        "SELECT",
+        "INSERT",
+        "UPDATE",
+        "DELETE"
+      ],
+      "allowed_api_callers": [],
+      "compliance_tags": [],
+      "risk_level": 3,
+      "immutable": false,
+      "status": "provisional",
+      "source": {
+        "provided_by": "task2_scanner",
+        "reference": "citi_banking_backend\\app\\models.py:21"
+      }
+    },
+    {
+      "database_id": "policies",
+      "model_name": "Policy",
+      "display_name": "Policy table",
+      "db_type": "relational",
+      "engine": "unknown",
+      "table_name": "policies",
+      "classification": "internal",
+      "contains_pii": false,
+      "contains_financial": false,
+      "contains_audit": false,
+      "columns": [
+        "id",
+        "policy_id",
+        "title",
+        "category",
+        "severity",
+        "content",
+        "effective_date",
+        "is_active",
+        "created_at"
+      ],
+      "allowed_operations": [
+        "SELECT",
+        "INSERT",
+        "UPDATE",
+        "DELETE"
+      ],
+      "allowed_api_callers": [],
+      "compliance_tags": [],
+      "risk_level": 2,
+      "immutable": false,
+      "status": "provisional",
+      "source": {
+        "provided_by": "task2_scanner",
+        "reference": "citi_banking_backend\\app\\models.py:35"
+      }
+    },
+    {
+      "database_id": "rules",
+      "model_name": "Rule",
+      "display_name": "Rule table",
+      "db_type": "relational",
+      "engine": "unknown",
+      "table_name": "rules",
+      "classification": "internal",
+      "contains_pii": false,
+      "contains_financial": false,
+      "contains_audit": false,
+      "columns": [
+        "id",
+        "rule_id",
+        "name",
+        "category",
+        "field_name",
+        "operator",
+        "threshold_value",
+        "risk_score_delta",
+        "action",
+        "description",
+        "is_active",
+        "created_at"
+      ],
+      "allowed_operations": [
+        "SELECT",
+        "INSERT",
+        "UPDATE",
+        "DELETE"
+      ],
+      "allowed_api_callers": [],
+      "compliance_tags": [],
+      "risk_level": 2,
+      "immutable": false,
+      "status": "provisional",
+      "source": {
+        "provided_by": "task2_scanner",
+        "reference": "citi_banking_backend\\app\\models.py:48"
+      }
+    },
+    {
+      "database_id": "transactions",
+      "model_name": "Transaction",
+      "display_name": "Transaction table",
+      "db_type": "relational",
+      "engine": "unknown",
+      "table_name": "transactions",
+      "classification": "confidential",
+      "contains_pii": false,
+      "contains_financial": true,
+      "contains_audit": false,
+      "columns": [
+        "id",
+        "transaction_id",
+        "from_account_id",
+        "to_account_id",
+        "amount",
+        "currency",
+        "tx_type",
+        "status",
+        "risk_score",
+        "decision_reason",
+        "created_at"
+      ],
+      "allowed_operations": [
+        "SELECT",
+        "INSERT",
+        "UPDATE",
+        "DELETE"
+      ],
+      "allowed_api_callers": [],
+      "compliance_tags": [],
+      "risk_level": 3,
+      "immutable": false,
+      "status": "provisional",
+      "source": {
+        "provided_by": "task2_scanner",
+        "reference": "citi_banking_backend\\app\\models.py:64"
+      }
+    },
+    {
+      "database_id": "audit_logs",
+      "model_name": "AuditLog",
+      "display_name": "AuditLog table",
+      "db_type": "relational",
+      "engine": "unknown",
+      "table_name": "audit_logs",
+      "classification": "restricted",
+      "contains_pii": false,
+      "contains_financial": false,
+      "contains_audit": true,
+      "columns": [
+        "id",
+        "event_type",
+        "actor",
+        "payload",
+        "created_at"
+      ],
+      "allowed_operations": [
+        "SELECT",
+        "INSERT",
+        "UPDATE",
+        "DELETE"
+      ],
+      "allowed_api_callers": [],
+      "compliance_tags": [],
+      "risk_level": 4,
+      "immutable": true,
+      "status": "provisional",
+      "source": {
+        "provided_by": "task2_scanner",
+        "reference": "citi_banking_backend\\app\\models.py:79"
+      }
+    }
+  ],
+  "events": [
+    {
+      "event_id": "event.startup",
+      "event_name": "startup",
+      "handler": "startup_event",
+      "trigger_type": "on_event",
+      "domain": "shared",
+      "target_agents": [],
+      "risk_level": 2,
+      "status": "provisional",
+      "source": {
+        "provided_by": "task2_scanner",
+        "reference": "citi_banking_backend\\app\\main.py:26"
+      }
+    },
+    {
+      "event_id": "event.trigger_eod_reconciliation",
+      "event_name": "trigger_eod_reconciliation",
+      "handler": "trigger_eod_reconciliation",
+      "trigger_type": "function_trigger",
+      "domain": "shared",
+      "target_agents": [],
+      "risk_level": 3,
+      "status": "provisional",
+      "source": {
+        "provided_by": "task2_scanner",
+        "reference": "citi_banking_backend\\app\\main.py:306"
+      }
+    }
+  ]
+}

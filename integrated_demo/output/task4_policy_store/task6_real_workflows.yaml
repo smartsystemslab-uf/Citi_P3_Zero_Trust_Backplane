@@ -1,0 +1,386 @@
+apiVersion: ztb/v1alpha1
+kind: PolicyBundle
+metadata:
+  id: bundle.task6_real_workflows
+  version: 1.0.0
+  domain: integration
+  status: provisional
+policies:
+- id: policy.task6.route.customer_service_to_transaction_processing
+  description: Task 6 representative real-testbed workflow operation.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - agent.front_office.customer_service_chatbot_workflow
+    resources:
+    - resource.front_office.other_transaction_processing_agent
+    actions:
+    - read
+    workflows:
+    - workflow.front_office.customer_transaction
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: task6_real_workflow
+  enabled: true
+- id: policy.task6.transaction_processing.execute_transfer
+  description: Task 6 representative real-testbed workflow operation.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - agent.front_office.transaction_processing
+    resources:
+    - resource.front_office.banking_transfer
+    actions:
+    - execute
+    workflows:
+    - workflow.front_office.customer_transaction
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: task6_real_workflow
+  enabled: true
+- id: policy.task6.route.fraud_workflow_to_monitoring
+  description: Task 6 representative real-testbed workflow operation.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - agent.front_office.front_office_transaction_workflow
+    resources:
+    - resource.front_office.other_transaction_monitoring_agent
+    actions:
+    - read
+    workflows:
+    - workflow.front_office.fraud_review
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: task6_real_workflow
+  enabled: true
+- id: policy.task6.route.fraud_workflow_to_fraud
+  description: Task 6 representative real-testbed workflow operation.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - agent.front_office.front_office_transaction_workflow
+    resources:
+    - resource.front_office.other_fraud_detection_agent
+    actions:
+    - read
+    workflows:
+    - workflow.front_office.fraud_review
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: task6_real_workflow
+  enabled: true
+- id: policy.task6.route.fraud_workflow_to_compliance
+  description: Task 6 representative real-testbed workflow operation.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - agent.front_office.front_office_transaction_workflow
+    resources:
+    - resource.front_office.other_compliance_agent
+    actions:
+    - read
+    workflows:
+    - workflow.front_office.fraud_review
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: task6_real_workflow
+  enabled: true
+- id: policy.task6.route.fraud_workflow_to_decision
+  description: Task 6 representative real-testbed workflow operation.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - agent.front_office.front_office_transaction_workflow
+    resources:
+    - resource.front_office.other_decision_making_agent
+    actions:
+    - read
+    workflows:
+    - workflow.front_office.fraud_review
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: task6_real_workflow
+  enabled: true
+- id: policy.task6.monitoring.get_transaction_context
+  description: Task 6 representative real-testbed workflow operation.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - agent.front_office.transaction_monitoring
+    resources:
+    - resource.shared.tool_get_transaction_context
+    actions:
+    - read
+    workflows:
+    - workflow.front_office.fraud_review
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: task6_real_workflow
+  enabled: true
+- id: policy.task6.monitoring.get_customer_context
+  description: Task 6 representative real-testbed workflow operation.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - agent.front_office.transaction_monitoring
+    resources:
+    - resource.shared.tool_get_customer_context
+    actions:
+    - read
+    workflows:
+    - workflow.front_office.fraud_review
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: task6_real_workflow
+  enabled: true
+- id: policy.task6.monitoring.list_recent_transactions
+  description: Task 6 representative real-testbed workflow operation.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - agent.front_office.transaction_monitoring
+    resources:
+    - resource.shared.tool_list_recent_transactions
+    actions:
+    - read
+    workflows:
+    - workflow.front_office.fraud_review
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: task6_real_workflow
+  enabled: true
+- id: policy.task6.fraud.get_transaction_context
+  description: Task 6 representative real-testbed workflow operation.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - agent.front_office.fraud
+    resources:
+    - resource.front_office.transaction_history
+    actions:
+    - read
+    workflows:
+    - workflow.front_office.fraud_review
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: task6_real_workflow
+  enabled: true
+- id: policy.task6.compliance.search_policies
+  description: Task 6 representative real-testbed workflow operation.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - agent.front_office.compliance
+    resources:
+    - resource.front_office.policy_knowledge_base
+    actions:
+    - search
+    workflows:
+    - workflow.front_office.fraud_review
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: task6_real_workflow
+  enabled: true
+- id: policy.task6.route.eod_workflow_to_validation
+  description: Task 6 representative real-testbed workflow operation.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - agent.back_office.back_office_eod_workflow
+    resources:
+    - resource.back_office.other_validation_checkpoint_agent
+    actions:
+    - read
+    workflows:
+    - workflow.back_office.eod_processing
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: task6_real_workflow
+  enabled: true
+- id: policy.task6.route.eod_workflow_to_processing
+  description: Task 6 representative real-testbed workflow operation.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - agent.back_office.back_office_eod_workflow
+    resources:
+    - resource.back_office.other_eod_processing_agent
+    actions:
+    - read
+    workflows:
+    - workflow.back_office.eod_processing
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: task6_real_workflow
+  enabled: true
+- id: policy.task6.route.eod_workflow_to_ledger
+  description: Task 6 representative real-testbed workflow operation.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - agent.back_office.back_office_eod_workflow
+    resources:
+    - resource.back_office.other_ledger_update_agent
+    actions:
+    - read
+    workflows:
+    - workflow.back_office.eod_processing
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: task6_real_workflow
+  enabled: true
+- id: policy.task6.route.eod_workflow_to_reconciliation
+  description: Task 6 representative real-testbed workflow operation.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - agent.back_office.back_office_eod_workflow
+    resources:
+    - resource.back_office.other_reconciliation_agent
+    actions:
+    - read
+    workflows:
+    - workflow.back_office.eod_processing
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: task6_real_workflow
+  enabled: true
+- id: policy.task6.validation.validate_eod_readiness
+  description: Task 6 representative real-testbed workflow operation.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - agent.back_office.validation_checkpoint_agent
+    resources:
+    - resource.back_office.tool_validate_eod_readiness
+    actions:
+    - read
+    workflows:
+    - workflow.back_office.eod_processing
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: task6_real_workflow
+  enabled: true
+- id: policy.task6.processing.get_eod_batch
+  description: Task 6 representative real-testbed workflow operation.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - agent.back_office.eod
+    resources:
+    - resource.back_office.eod_batches
+    actions:
+    - read
+    workflows:
+    - workflow.back_office.eod_processing
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: task6_real_workflow
+  enabled: true
+- id: policy.task6.ledger.apply_ledger_updates
+  description: Task 6 representative real-testbed workflow operation.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - agent.back_office.ledger_update
+    resources:
+    - resource.back_office.ledger
+    actions:
+    - update
+    workflows:
+    - workflow.back_office.eod_processing
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: task6_real_workflow
+  enabled: true
+- id: policy.task6.reconciliation.get_reconciliation_data
+  description: Task 6 representative real-testbed workflow operation.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - agent.back_office.reconciliation
+    resources:
+    - resource.back_office.tool_get_reconciliation_data
+    actions:
+    - read
+    workflows:
+    - workflow.back_office.eod_processing
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: task6_real_workflow
+  enabled: true
+- id: policy.task6.report.store_report
+  description: Task 6 representative real-testbed workflow operation.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - agent.back_office.report_writing_agent
+    resources:
+    - resource.back_office.tool_store_report
+    actions:
+    - store
+    workflows:
+    - workflow.back_office.eod_processing
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: task6_real_workflow
+  enabled: true
+- id: policy.task6.exception.create_exception_case
+  description: Task 6 representative real-testbed workflow operation.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - agent.back_office.exception
+    resources:
+    - resource.back_office.tool_create_exception_case
+    actions:
+    - create
+    workflows:
+    - workflow.back_office.eod_processing
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: task6_real_workflow
+  enabled: true

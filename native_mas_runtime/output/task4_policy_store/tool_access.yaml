@@ -1,0 +1,50 @@
+apiVersion: ztb/v1alpha1
+kind: PolicyBundle
+metadata:
+  id: bundle.tool_access
+  version: 1.0.0
+  domain: shared
+  status: provisional
+policies:
+  - id: policy.tool.knowledge_search
+    description: Knowledge and compliance agents may search managed policy content.
+    priority: 180
+    effect: ALLOW
+    match:
+      subjects: [agent.front_office.knowledge_base, agent.front_office.compliance]
+      resources: [resource.front_office.policy_knowledge_base]
+      actions: [read, search]
+    obligations: []
+    enabled: true
+
+  - id: policy.tool.transfer_pending_review
+    description: Transfer execution is blocked until signed approval and independent authorization are present.
+    priority: 300
+    effect: MANUAL_REVIEW
+    match:
+      subjects: [agent.front_office.transaction_processing]
+      resources: [resource.front_office.banking_transfer]
+      actions: [execute]
+      workflows: [workflow.front_office.customer_transaction]
+    obligations: []
+    enabled: true
+
+  - id: policy.tool.transfer_approved
+    description: A transfer may proceed only when approval and secondary authorization are signed and request-bound.
+    priority: 360
+    effect: ALLOW_WITH_OBLIGATIONS
+    match:
+      subjects: [agent.front_office.transaction_processing]
+      resources: [resource.front_office.banking_transfer]
+      actions: [execute]
+      workflows: [workflow.front_office.customer_transaction]
+      approval_valid: true
+      secondary_authorization_valid: true
+    obligations:
+      - type: enhanced_logging
+        parameters: {reason: financial_write}
+      - type: require_idempotency_key
+        parameters: {}
+      - type: independent_resource_audit
+        parameters: {}
+    enabled: true

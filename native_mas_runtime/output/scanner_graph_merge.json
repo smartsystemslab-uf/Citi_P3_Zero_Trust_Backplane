@@ -1,0 +1,16 @@
+{
+  "created": {
+    "interactions": 95,
+    "interfaces": 21,
+    "resources": 61,
+    "subjects": 36
+  },
+  "ignored_private_helper_edges": 0,
+  "note": "Task 3 interactions now come from Task 2's discovered testbed graph; canonical policy resources are reused for known Citi operations.",
+  "scanner_agents": 36,
+  "scanner_apis": 24,
+  "scanner_databases": 6,
+  "scanner_edges_input": 95,
+  "scanner_edges_merged": 95,
+  "scanner_tools": 29
+}

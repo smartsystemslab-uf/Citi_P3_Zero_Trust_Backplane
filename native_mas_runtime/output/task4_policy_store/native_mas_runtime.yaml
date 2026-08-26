@@ -1,0 +1,1858 @@
+apiVersion: ztb/v1alpha1
+kind: PolicyBundle
+metadata:
+  id: bundle.native_mas_runtime
+  version: 1.0.0
+  domain: integration
+  status: provisional
+policies:
+- id: policy.native.pep.customer_transaction.execute_transfer.pending_review
+  description: Generated native-runtime critical operation gate.
+  priority: 280
+  effect: MANUAL_REVIEW
+  match:
+    subjects: &id001
+    - agent.front_office.transaction_processing
+    resources: &id002
+    - resource.front_office.banking_transfer
+    actions: &id003
+    - execute
+    workflows: &id004
+    - workflow.front_office.customer_transaction
+  obligations: []
+  enabled: true
+- id: policy.native.pep.customer_transaction.execute_transfer.approved
+  description: Generated native-runtime approved critical operation.
+  priority: 340
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects: *id001
+    resources: *id002
+    actions: *id003
+    workflows: *id004
+    approval_valid: true
+    secondary_authorization_valid: true
+  obligations:
+  - type: require_idempotency_key
+    parameters: {}
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_critical
+  enabled: true
+- id: policy.native.pep.eod_processing.get_batches.allow
+  description: Generated allow for one discovered native MAS edge.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - agent.back_office.eod
+    resources:
+    - resource.back_office.eod_batches
+    actions:
+    - read
+    workflows:
+    - workflow.back_office.eod_processing
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_runtime
+  enabled: true
+- id: policy.native.pep.fraud_review.policy_search.allow
+  description: Generated allow for one discovered native MAS edge.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - agent.front_office.compliance
+    resources:
+    - resource.front_office.policy_knowledge_base
+    actions:
+    - search
+    workflows:
+    - workflow.front_office.fraud_review
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_runtime
+  enabled: true
+- id: policy.native.pep.fraud_review.read_history.allow
+  description: Generated allow for one discovered native MAS edge.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - agent.front_office.fraud
+    resources:
+    - resource.front_office.transaction_history
+    actions:
+    - read
+    workflows:
+    - workflow.front_office.fraud_review
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_runtime
+  enabled: true
+- id: policy.native.pep.ledger_update.apply_ledger_updates.pending_review
+  description: Generated native-runtime critical operation gate.
+  priority: 280
+  effect: MANUAL_REVIEW
+  match:
+    subjects: &id005
+    - agent.back_office.ledger_update
+    resources: &id006
+    - resource.back_office.ledger
+    actions: &id007
+    - update
+    workflows: &id008
+    - workflow.back_office.eod_processing
+  obligations: []
+  enabled: true
+- id: policy.native.pep.ledger_update.apply_ledger_updates.approved
+  description: Generated native-runtime approved critical operation.
+  priority: 340
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects: *id005
+    resources: *id006
+    actions: *id007
+    workflows: *id008
+    approval_valid: true
+    secondary_authorization_valid: true
+  obligations:
+  - type: require_idempotency_key
+    parameters: {}
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_critical
+  enabled: true
+- id: policy.native.pep.mid_office.financial_data.read_profile.allow
+  description: Generated allow for one discovered native MAS edge.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - agent.mid_office.financial_data
+    resources:
+    - resource.mid_office.financial_customer_data
+    actions:
+    - read
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_runtime
+  enabled: true
+- id: policy.native.pep.mid_office.operations.read_snapshot.allow
+  description: Generated allow for one discovered native MAS edge.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - agent.mid_office.data_analysis
+    resources:
+    - resource.mid_office.internal_operations_data
+    actions:
+    - read
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_runtime
+  enabled: true
+- id: policy.native.pep.native.cli_input.allow
+  description: Generated allow for one discovered native MAS edge.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - service.external.cli_user
+    resources:
+    - resource.shared.mas_input
+    actions:
+    - invoke
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_runtime
+  enabled: true
+- id: policy.native.pep.native.cli_output.allow
+  description: Generated allow for one discovered native MAS edge.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - agent.shared.user_proxy_agent
+    resources:
+    - resource.shared.mas_output
+    actions:
+    - emit
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_runtime
+  enabled: true
+- id: policy.native.pep.native.route_user_proxy_agent_back_office_router.allow
+  description: Generated allow for one discovered native MAS edge.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - agent.shared.user_proxy_agent
+    resources:
+    - resource.back_office.agent_back_office_router
+    actions:
+    - invoke
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_runtime
+  enabled: true
+- id: policy.native.pep.native.route_user_proxy_agent_front_office_router.allow
+  description: Generated allow for one discovered native MAS edge.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - agent.shared.user_proxy_agent
+    resources:
+    - resource.front_office.agent_front_office_router
+    actions:
+    - invoke
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_runtime
+  enabled: true
+- id: policy.native.pep.native.route_user_proxy_agent_mid_office_router.allow
+  description: Generated allow for one discovered native MAS edge.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - agent.shared.user_proxy_agent
+    resources:
+    - resource.mid_office.agent_mid_office_router
+    actions:
+    - invoke
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_runtime
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_001_validation_checkpoint_agent_validate_eod_readiness.allow
+  description: Generated allow for one discovered native MAS edge.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - agent.back_office.validation_checkpoint_agent
+    resources:
+    - resource.back_office.tool_validate_eod_readiness
+    actions:
+    - read
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_runtime
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_004_reconciliation_agent_get_reconciliation_data.allow
+  description: Generated allow for one discovered native MAS edge.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - agent.back_office.reconciliation
+    resources:
+    - resource.back_office.tool_get_reconciliation_data
+    actions:
+    - read
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_runtime
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_005_report_writing_agent_store_report.pending_review
+  description: Generated native-runtime critical operation gate.
+  priority: 280
+  effect: MANUAL_REVIEW
+  match:
+    subjects: &id009
+    - agent.back_office.report_writing_agent
+    resources: &id010
+    - resource.back_office.tool_store_report
+    actions: &id011
+    - store
+  obligations: []
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_005_report_writing_agent_store_report.approved
+  description: Generated native-runtime approved critical operation.
+  priority: 340
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects: *id009
+    resources: *id010
+    actions: *id011
+    approval_valid: true
+    secondary_authorization_valid: true
+  obligations:
+  - type: require_idempotency_key
+    parameters: {}
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_critical
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_006_exception_agent_create_exception_case.pending_review
+  description: Generated native-runtime critical operation gate.
+  priority: 280
+  effect: MANUAL_REVIEW
+  match:
+    subjects: &id012
+    - agent.back_office.exception
+    resources: &id013
+    - resource.back_office.tool_create_exception_case
+    actions: &id014
+    - create
+  obligations: []
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_006_exception_agent_create_exception_case.approved
+  description: Generated native-runtime approved critical operation.
+  priority: 340
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects: *id012
+    resources: *id013
+    actions: *id014
+    approval_valid: true
+    secondary_authorization_valid: true
+  obligations:
+  - type: require_idempotency_key
+    parameters: {}
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_critical
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_007_transaction_monitoring_agent_get_customer_context.allow
+  description: Generated allow for one discovered native MAS edge.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - agent.front_office.transaction_monitoring
+    resources:
+    - resource.shared.tool_get_customer_context
+    actions:
+    - read
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_runtime
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_008_transaction_monitoring_agent_get_transaction_context.allow
+  description: Generated allow for one discovered native MAS edge.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - agent.front_office.transaction_monitoring
+    resources:
+    - resource.shared.tool_get_transaction_context
+    actions:
+    - read
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_runtime
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_009_transaction_monitoring_agent_list_recent_transactions.allow
+  description: Generated allow for one discovered native MAS edge.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - agent.front_office.transaction_monitoring
+    resources:
+    - resource.shared.tool_list_recent_transactions
+    actions:
+    - read
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_runtime
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_010_fraud_detection_agent_get_customer_context.allow
+  description: Generated allow for one discovered native MAS edge.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - agent.front_office.fraud
+    resources:
+    - resource.shared.tool_get_customer_context
+    actions:
+    - read
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_runtime
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_012_fraud_detection_agent_list_recent_transactions.allow
+  description: Generated allow for one discovered native MAS edge.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - agent.front_office.fraud
+    resources:
+    - resource.shared.tool_list_recent_transactions
+    actions:
+    - read
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_runtime
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_014_compliance_agent_get_customer_context.allow
+  description: Generated allow for one discovered native MAS edge.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - agent.front_office.compliance
+    resources:
+    - resource.shared.tool_get_customer_context
+    actions:
+    - read
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_runtime
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_015_compliance_agent_get_transaction_context.allow
+  description: Generated allow for one discovered native MAS edge.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - agent.front_office.compliance
+    resources:
+    - resource.shared.tool_get_transaction_context
+    actions:
+    - read
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_runtime
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_016_decision_making_agent_submit_manual_review.pending_review
+  description: Generated native-runtime critical operation gate.
+  priority: 280
+  effect: MANUAL_REVIEW
+  match:
+    subjects: &id015
+    - agent.front_office.decision_making_agent
+    resources: &id016
+    - resource.shared.tool_submit_manual_review
+    actions: &id017
+    - create
+  obligations: []
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_016_decision_making_agent_submit_manual_review.approved
+  description: Generated native-runtime approved critical operation.
+  priority: 340
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects: *id015
+    resources: *id016
+    actions: *id017
+    approval_valid: true
+    secondary_authorization_valid: true
+  obligations:
+  - type: require_idempotency_key
+    parameters: {}
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_critical
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_017_knowledge_base_agent_search_faqs.allow
+  description: Generated allow for one discovered native MAS edge.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - agent.front_office.knowledge_base
+    resources:
+    - resource.shared.tool_search_faqs
+    actions:
+    - search
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_runtime
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_020_forecasting_agent_get_operations_snapshot.allow
+  description: Generated allow for one discovered native MAS edge.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - agent.mid_office.forecasting
+    resources:
+    - resource.shared.tool_get_operations_snapshot
+    actions:
+    - read
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_runtime
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_021_validation_agent_persist_validated_schedule.pending_review
+  description: Generated native-runtime critical operation gate.
+  priority: 280
+  effect: MANUAL_REVIEW
+  match:
+    subjects: &id018
+    - agent.mid_office.validation
+    resources: &id019
+    - resource.shared.tool_persist_validated_schedule
+    actions: &id020
+    - update
+  obligations: []
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_021_validation_agent_persist_validated_schedule.approved
+  description: Generated native-runtime approved critical operation.
+  priority: 340
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects: *id018
+    resources: *id019
+    actions: *id020
+    approval_valid: true
+    secondary_authorization_valid: true
+  obligations:
+  - type: require_idempotency_key
+    parameters: {}
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_critical
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_022_support_guidance_agent_get_support_playbooks.allow
+  description: Generated allow for one discovered native MAS edge.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - agent.mid_office.support_guidance
+    resources:
+    - resource.shared.tool_get_support_playbooks
+    actions:
+    - read
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_runtime
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_024_recommender_agent_search_product_catalog.allow
+  description: Generated allow for one discovered native MAS edge.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - agent.mid_office.recommender
+    resources:
+    - resource.shared.tool_search_product_catalog
+    actions:
+    - search
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_runtime
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_025_loan_agent_search_loan_playbooks.allow
+  description: Generated allow for one discovered native MAS edge.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - agent.mid_office.loan
+    resources:
+    - resource.shared.tool_search_loan_playbooks
+    actions:
+    - search
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_runtime
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_026_risk_compliance_agent_search_policies.allow
+  description: Generated allow for one discovered native MAS edge.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - agent.mid_office.risk_compliance
+    resources:
+    - resource.shared.tool_search_policies
+    actions:
+    - search
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_runtime
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_027_get_transaction_get_transaction.allow
+  description: Generated allow for one discovered native MAS edge.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - service.shared.get_transaction
+    resources:
+    - resource.shared.api_get_transaction
+    actions:
+    - read
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_runtime
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_028_run_fraud_and_compliance_workflow_monitoring_evaluate_transaction.pending_review
+  description: Generated native-runtime critical operation gate.
+  priority: 280
+  effect: MANUAL_REVIEW
+  match:
+    subjects: &id021
+    - service.shared.run_fraud_and_compliance_workflow
+    resources: &id022
+    - resource.shared.api_monitoring_evaluate_transaction
+    actions: &id023
+    - update
+  obligations: []
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_028_run_fraud_and_compliance_workflow_monitoring_evaluate_transaction.approved
+  description: Generated native-runtime approved critical operation.
+  priority: 340
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects: *id021
+    resources: *id022
+    actions: *id023
+    approval_valid: true
+    secondary_authorization_valid: true
+  obligations:
+  - type: require_idempotency_key
+    parameters: {}
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_critical
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_029_update_transaction_status_update_transaction_status.pending_review
+  description: Generated native-runtime critical operation gate.
+  priority: 280
+  effect: MANUAL_REVIEW
+  match:
+    subjects: &id024
+    - service.shared.update_transaction_status
+    resources: &id025
+    - resource.shared.api_update_transaction_status
+    actions: &id026
+    - update
+  obligations: []
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_029_update_transaction_status_update_transaction_status.approved
+  description: Generated native-runtime approved critical operation.
+  priority: 340
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects: *id024
+    resources: *id025
+    actions: *id026
+    approval_valid: true
+    secondary_authorization_valid: true
+  obligations:
+  - type: require_idempotency_key
+    parameters: {}
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_critical
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_030_get_branch_workload_get_branch_workload.allow
+  description: Generated allow for one discovered native MAS edge.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - service.shared.get_branch_workload
+    resources:
+    - resource.shared.api_get_branch_workload
+    actions:
+    - read
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_runtime
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_031_propose_staffing_adjustment_propose_staffing_adjustment.allow
+  description: Generated allow for one discovered native MAS edge.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - service.shared.propose_staffing_adjustment
+    resources:
+    - resource.shared.api_propose_staffing_adjustment
+    actions:
+    - read
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_runtime
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_032_get_customer_product_affinity_get_customer_product_affinity.allow
+  description: Generated allow for one discovered native MAS edge.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - service.shared.get_customer_product_affinity
+    resources:
+    - resource.shared.api_get_customer_product_affinity
+    actions:
+    - read
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_runtime
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_033_trigger_eod_reconciliation_trigger_eod_reconciliation.pending_review
+  description: Generated native-runtime critical operation gate.
+  priority: 280
+  effect: MANUAL_REVIEW
+  match:
+    subjects: &id027
+    - service.shared.trigger_eod_reconciliation
+    resources: &id028
+    - resource.shared.api_trigger_eod_reconciliation
+    actions: &id029
+    - update
+  obligations: []
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_033_trigger_eod_reconciliation_trigger_eod_reconciliation.approved
+  description: Generated native-runtime approved critical operation.
+  priority: 340
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects: *id027
+    resources: *id028
+    actions: *id029
+    approval_valid: true
+    secondary_authorization_valid: true
+  obligations:
+  - type: require_idempotency_key
+    parameters: {}
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_critical
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_034_get_reconciliation_mismatches_get_reconciliation_mismatches.allow
+  description: Generated allow for one discovered native MAS edge.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - service.shared.get_reconciliation_mismatches
+    resources:
+    - resource.shared.api_get_reconciliation_mismatches
+    actions:
+    - read
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_runtime
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_035_resolve_ledger_entry_resolve_ledger_entry.pending_review
+  description: Generated native-runtime critical operation gate.
+  priority: 280
+  effect: MANUAL_REVIEW
+  match:
+    subjects: &id030
+    - service.shared.resolve_ledger_entry
+    resources: &id031
+    - resource.shared.api_resolve_ledger_entry
+    actions: &id032
+    - update
+  obligations: []
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_035_resolve_ledger_entry_resolve_ledger_entry.approved
+  description: Generated native-runtime approved critical operation.
+  priority: 340
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects: *id030
+    resources: *id031
+    actions: *id032
+    approval_valid: true
+    secondary_authorization_valid: true
+  obligations:
+  - type: require_idempotency_key
+    parameters: {}
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_critical
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_036_create_customer_customers.allow
+  description: Generated allow for one discovered native MAS edge.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - service.shared.create_customer
+    resources:
+    - resource.shared.database_customers
+    actions:
+    - read
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_runtime
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_037_create_customer_customers.pending_review
+  description: Generated native-runtime critical operation gate.
+  priority: 280
+  effect: MANUAL_REVIEW
+  match:
+    subjects: &id033
+    - service.shared.create_customer
+    resources: &id034
+    - resource.shared.database_customers
+    actions: &id035
+    - update
+  obligations: []
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_037_create_customer_customers.approved
+  description: Generated native-runtime approved critical operation.
+  priority: 340
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects: *id033
+    resources: *id034
+    actions: *id035
+    approval_valid: true
+    secondary_authorization_valid: true
+  obligations:
+  - type: require_idempotency_key
+    parameters: {}
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_critical
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_038_get_customer_customers.allow
+  description: Generated allow for one discovered native MAS edge.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - service.shared.get_customer
+    resources:
+    - resource.shared.database_customers
+    actions:
+    - read
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_runtime
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_039_list_customer_accounts_accounts.allow
+  description: Generated allow for one discovered native MAS edge.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - service.shared.list_customer_accounts
+    resources:
+    - resource.shared.database_accounts
+    actions:
+    - read
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_runtime
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_040_get_customer_context_customers.allow
+  description: Generated allow for one discovered native MAS edge.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - service.shared.get_customer_context
+    resources:
+    - resource.shared.database_customers
+    actions:
+    - read
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_runtime
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_041_list_customer_transactions_accounts.allow
+  description: Generated allow for one discovered native MAS edge.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - service.shared.list_customer_transactions
+    resources:
+    - resource.shared.database_accounts
+    actions:
+    - read
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_runtime
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_042_list_customer_transactions_transactions.allow
+  description: Generated allow for one discovered native MAS edge.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - service.shared.list_customer_transactions
+    resources:
+    - resource.front_office.transaction_history
+    actions:
+    - read
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_runtime
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_043_create_account_customers.allow
+  description: Generated allow for one discovered native MAS edge.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - service.shared.create_account
+    resources:
+    - resource.shared.database_customers
+    actions:
+    - read
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_runtime
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_044_create_account_accounts.allow
+  description: Generated allow for one discovered native MAS edge.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - service.shared.create_account
+    resources:
+    - resource.shared.database_accounts
+    actions:
+    - read
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_runtime
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_045_create_account_accounts.pending_review
+  description: Generated native-runtime critical operation gate.
+  priority: 280
+  effect: MANUAL_REVIEW
+  match:
+    subjects: &id036
+    - service.shared.create_account
+    resources: &id037
+    - resource.shared.database_accounts
+    actions: &id038
+    - update
+  obligations: []
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_045_create_account_accounts.approved
+  description: Generated native-runtime approved critical operation.
+  priority: 340
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects: *id036
+    resources: *id037
+    actions: *id038
+    approval_valid: true
+    secondary_authorization_valid: true
+  obligations:
+  - type: require_idempotency_key
+    parameters: {}
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_critical
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_046_get_account_accounts.allow
+  description: Generated allow for one discovered native MAS edge.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - service.shared.get_account
+    resources:
+    - resource.shared.database_accounts
+    actions:
+    - read
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_runtime
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_047_get_transaction_transactions.allow
+  description: Generated allow for one discovered native MAS edge.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - service.shared.get_transaction
+    resources:
+    - resource.front_office.transaction_history
+    actions:
+    - read
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_runtime
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_048_list_transactions_transactions.allow
+  description: Generated allow for one discovered native MAS edge.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - service.shared.list_transactions
+    resources:
+    - resource.front_office.transaction_history
+    actions:
+    - read
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_runtime
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_049_create_policy_policies.allow
+  description: Generated allow for one discovered native MAS edge.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - service.shared.create_policy
+    resources:
+    - resource.shared.database_policies
+    actions:
+    - read
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_runtime
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_050_create_policy_policies.pending_review
+  description: Generated native-runtime critical operation gate.
+  priority: 280
+  effect: MANUAL_REVIEW
+  match:
+    subjects: &id039
+    - service.shared.create_policy
+    resources: &id040
+    - resource.shared.database_policies
+    actions: &id041
+    - update
+  obligations: []
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_050_create_policy_policies.approved
+  description: Generated native-runtime approved critical operation.
+  priority: 340
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects: *id039
+    resources: *id040
+    actions: *id041
+    approval_valid: true
+    secondary_authorization_valid: true
+  obligations:
+  - type: require_idempotency_key
+    parameters: {}
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_critical
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_051_list_policies_policies.allow
+  description: Generated allow for one discovered native MAS edge.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - service.shared.list_policies
+    resources:
+    - resource.shared.database_policies
+    actions:
+    - read
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_runtime
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_052_search_policies_policies.allow
+  description: Generated allow for one discovered native MAS edge.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - service.shared.search_policies
+    resources:
+    - resource.shared.database_policies
+    actions:
+    - read
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_runtime
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_053_create_rule_rules.allow
+  description: Generated allow for one discovered native MAS edge.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - service.shared.create_rule
+    resources:
+    - resource.shared.database_rules
+    actions:
+    - read
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_runtime
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_054_create_rule_rules.pending_review
+  description: Generated native-runtime critical operation gate.
+  priority: 280
+  effect: MANUAL_REVIEW
+  match:
+    subjects: &id042
+    - service.shared.create_rule
+    resources: &id043
+    - resource.shared.database_rules
+    actions: &id044
+    - update
+  obligations: []
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_054_create_rule_rules.approved
+  description: Generated native-runtime approved critical operation.
+  priority: 340
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects: *id042
+    resources: *id043
+    actions: *id044
+    approval_valid: true
+    secondary_authorization_valid: true
+  obligations:
+  - type: require_idempotency_key
+    parameters: {}
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_critical
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_055_list_rules_rules.allow
+  description: Generated allow for one discovered native MAS edge.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - service.shared.list_rules
+    resources:
+    - resource.shared.database_rules
+    actions:
+    - read
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_runtime
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_056_update_transaction_status_transactions.allow
+  description: Generated allow for one discovered native MAS edge.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - service.shared.update_transaction_status
+    resources:
+    - resource.front_office.transaction_history
+    actions:
+    - read
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_runtime
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_057_get_customer_product_affinity_customers.allow
+  description: Generated allow for one discovered native MAS edge.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - service.shared.get_customer_product_affinity
+    resources:
+    - resource.shared.database_customers
+    actions:
+    - read
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_runtime
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_058_get_customer_product_affinity_accounts.allow
+  description: Generated allow for one discovered native MAS edge.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - service.shared.get_customer_product_affinity
+    resources:
+    - resource.shared.database_accounts
+    actions:
+    - read
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_runtime
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_059_trigger_eod_reconciliation_transactions.allow
+  description: Generated allow for one discovered native MAS edge.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - service.shared.trigger_eod_reconciliation
+    resources:
+    - resource.front_office.transaction_history
+    actions:
+    - read
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_runtime
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_060_trigger_eod_reconciliation_audit_logs.pending_review
+  description: Generated native-runtime critical operation gate.
+  priority: 280
+  effect: MANUAL_REVIEW
+  match:
+    subjects: &id045
+    - service.shared.trigger_eod_reconciliation
+    resources: &id046
+    - resource.shared.database_audit_logs
+    actions: &id047
+    - update
+  obligations: []
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_060_trigger_eod_reconciliation_audit_logs.approved
+  description: Generated native-runtime approved critical operation.
+  priority: 340
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects: *id045
+    resources: *id046
+    actions: *id047
+    approval_valid: true
+    secondary_authorization_valid: true
+  obligations:
+  - type: require_idempotency_key
+    parameters: {}
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_critical
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_061_get_reconciliation_mismatches_audit_logs.pending_review
+  description: Generated native-runtime critical operation gate.
+  priority: 280
+  effect: MANUAL_REVIEW
+  match:
+    subjects: &id048
+    - service.shared.get_reconciliation_mismatches
+    resources: &id049
+    - resource.shared.database_audit_logs
+    actions: &id050
+    - read
+  obligations: []
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_061_get_reconciliation_mismatches_audit_logs.approved
+  description: Generated native-runtime approved critical operation.
+  priority: 340
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects: *id048
+    resources: *id049
+    actions: *id050
+    approval_valid: true
+    secondary_authorization_valid: true
+  obligations:
+  - type: require_idempotency_key
+    parameters: {}
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_critical
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_062_resolve_ledger_entry_transactions.allow
+  description: Generated allow for one discovered native MAS edge.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - service.shared.resolve_ledger_entry
+    resources:
+    - resource.front_office.transaction_history
+    actions:
+    - read
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_runtime
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_063_resolve_ledger_entry_audit_logs.pending_review
+  description: Generated native-runtime critical operation gate.
+  priority: 280
+  effect: MANUAL_REVIEW
+  match:
+    subjects: &id051
+    - service.shared.resolve_ledger_entry
+    resources: &id052
+    - resource.shared.database_audit_logs
+    actions: &id053
+    - update
+  obligations: []
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_063_resolve_ledger_entry_audit_logs.approved
+  description: Generated native-runtime approved critical operation.
+  priority: 340
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects: *id051
+    resources: *id052
+    actions: *id053
+    approval_valid: true
+    secondary_authorization_valid: true
+  obligations:
+  - type: require_idempotency_key
+    parameters: {}
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_critical
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_064_back_office_eod_workflow_validation_checkpoint_agent.allow
+  description: Generated allow for one discovered native MAS edge.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - agent.back_office.back_office_eod_workflow
+    resources:
+    - resource.back_office.other_validation_checkpoint_agent
+    actions:
+    - read
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_runtime
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_065_back_office_eod_workflow_eod_processing_agent.allow
+  description: Generated allow for one discovered native MAS edge.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - agent.back_office.back_office_eod_workflow
+    resources:
+    - resource.back_office.other_eod_processing_agent
+    actions:
+    - read
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_runtime
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_066_back_office_eod_workflow_ledger_update_agent.allow
+  description: Generated allow for one discovered native MAS edge.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - agent.back_office.back_office_eod_workflow
+    resources:
+    - resource.back_office.other_ledger_update_agent
+    actions:
+    - read
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_runtime
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_067_back_office_eod_workflow_reconciliation_agent.allow
+  description: Generated allow for one discovered native MAS edge.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - agent.back_office.back_office_eod_workflow
+    resources:
+    - resource.back_office.other_reconciliation_agent
+    actions:
+    - read
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_runtime
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_068_back_office_eod_workflow_report_writing_agent.allow
+  description: Generated allow for one discovered native MAS edge.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - agent.back_office.back_office_eod_workflow
+    resources:
+    - resource.back_office.other_report_writing_agent
+    actions:
+    - read
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_runtime
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_069_back_office_eod_workflow_exception_agent.allow
+  description: Generated allow for one discovered native MAS edge.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - agent.back_office.back_office_eod_workflow
+    resources:
+    - resource.back_office.other_exception_agent
+    actions:
+    - read
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_runtime
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_070_back_office_router_back_office_eod_workflow.allow
+  description: Generated allow for one discovered native MAS edge.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - agent.back_office.back_office_router
+    resources:
+    - resource.back_office.other_back_office_eod_workflow
+    actions:
+    - read
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_runtime
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_071_front_office_transaction_workflow_transaction_monitoring_agent.allow
+  description: Generated allow for one discovered native MAS edge.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - agent.front_office.front_office_transaction_workflow
+    resources:
+    - resource.front_office.other_transaction_monitoring_agent
+    actions:
+    - read
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_runtime
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_072_front_office_transaction_workflow_fraud_detection_agent.allow
+  description: Generated allow for one discovered native MAS edge.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - agent.front_office.front_office_transaction_workflow
+    resources:
+    - resource.front_office.other_fraud_detection_agent
+    actions:
+    - read
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_runtime
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_073_front_office_transaction_workflow_compliance_agent.allow
+  description: Generated allow for one discovered native MAS edge.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - agent.front_office.front_office_transaction_workflow
+    resources:
+    - resource.front_office.other_compliance_agent
+    actions:
+    - read
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_runtime
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_074_front_office_transaction_workflow_decision_making_agent.allow
+  description: Generated allow for one discovered native MAS edge.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - agent.front_office.front_office_transaction_workflow
+    resources:
+    - resource.front_office.other_decision_making_agent
+    actions:
+    - read
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_runtime
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_075_customer_service_chatbot_workflow_chatbot_intent_agent.allow
+  description: Generated allow for one discovered native MAS edge.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - agent.front_office.customer_service_chatbot_workflow
+    resources:
+    - resource.front_office.other_chatbot_intent_agent
+    actions:
+    - read
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_runtime
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_076_customer_service_chatbot_workflow_knowledge_base_agent.allow
+  description: Generated allow for one discovered native MAS edge.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - agent.front_office.customer_service_chatbot_workflow
+    resources:
+    - resource.front_office.other_knowledge_base_agent
+    actions:
+    - read
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_runtime
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_077_customer_service_chatbot_workflow_customer_service_agent.allow
+  description: Generated allow for one discovered native MAS edge.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - agent.front_office.customer_service_chatbot_workflow
+    resources:
+    - resource.front_office.other_customer_service_agent
+    actions:
+    - read
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_runtime
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_078_customer_service_chatbot_workflow_transaction_processing_agent.allow
+  description: Generated allow for one discovered native MAS edge.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - agent.front_office.customer_service_chatbot_workflow
+    resources:
+    - resource.front_office.other_transaction_processing_agent
+    actions:
+    - read
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_runtime
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_079_front_office_router_front_office_transaction_workflow.allow
+  description: Generated allow for one discovered native MAS edge.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - agent.front_office.front_office_router
+    resources:
+    - resource.front_office.other_front_office_transaction_workflow
+    actions:
+    - read
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_runtime
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_080_front_office_router_customer_service_chatbot_workflow.allow
+  description: Generated allow for one discovered native MAS edge.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - agent.front_office.front_office_router
+    resources:
+    - resource.front_office.other_customer_service_chatbot_workflow
+    actions:
+    - read
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_runtime
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_081_mid_office_router_mid_office_planning_workflow.allow
+  description: Generated allow for one discovered native MAS edge.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - agent.mid_office.mid_office_router
+    resources:
+    - resource.shared.other_mid_office_planning_workflow
+    actions:
+    - read
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_runtime
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_082_mid_office_router_representative_assistant_workflow.allow
+  description: Generated allow for one discovered native MAS edge.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - agent.mid_office.mid_office_router
+    resources:
+    - resource.shared.other_representative_assistant_workflow
+    actions:
+    - read
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_runtime
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_083_mid_office_planning_parallel_validation_agent.allow
+  description: Generated allow for one discovered native MAS edge.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - agent.shared.mid_office_planning_parallel
+    resources:
+    - resource.mid_office.other_validation_agent
+    actions:
+    - read
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_runtime
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_084_mid_office_planning_parallel_support_guidance_agent.allow
+  description: Generated allow for one discovered native MAS edge.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - agent.shared.mid_office_planning_parallel
+    resources:
+    - resource.mid_office.other_support_guidance_agent
+    actions:
+    - read
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_runtime
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_085_mid_office_planning_workflow_data_analysis_agent.allow
+  description: Generated allow for one discovered native MAS edge.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - agent.shared.mid_office_planning_workflow
+    resources:
+    - resource.mid_office.other_data_analysis_agent
+    actions:
+    - read
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_runtime
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_086_mid_office_planning_workflow_forecasting_agent.allow
+  description: Generated allow for one discovered native MAS edge.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - agent.shared.mid_office_planning_workflow
+    resources:
+    - resource.mid_office.other_forecasting_agent
+    actions:
+    - read
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_runtime
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_087_mid_office_planning_workflow_staff_scheduling_agent.allow
+  description: Generated allow for one discovered native MAS edge.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - agent.shared.mid_office_planning_workflow
+    resources:
+    - resource.mid_office.other_staff_scheduling_agent
+    actions:
+    - read
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_runtime
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_088_mid_office_planning_workflow_mid_office_planning_parallel.allow
+  description: Generated allow for one discovered native MAS edge.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - agent.shared.mid_office_planning_workflow
+    resources:
+    - resource.shared.other_mid_office_planning_parallel
+    actions:
+    - read
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_runtime
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_089_mid_office_planning_workflow_planning_summary_agent.allow
+  description: Generated allow for one discovered native MAS edge.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - agent.shared.mid_office_planning_workflow
+    resources:
+    - resource.mid_office.other_planning_summary_agent
+    actions:
+    - read
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_runtime
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_090_representative_assist_parallel_financial_data_agent.allow
+  description: Generated allow for one discovered native MAS edge.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - agent.shared.representative_assist_parallel
+    resources:
+    - resource.mid_office.other_financial_data_agent
+    actions:
+    - read
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_runtime
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_091_representative_assist_parallel_recommender_agent.allow
+  description: Generated allow for one discovered native MAS edge.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - agent.shared.representative_assist_parallel
+    resources:
+    - resource.mid_office.other_recommender_agent
+    actions:
+    - read
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_runtime
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_092_representative_assist_parallel_loan_agent.allow
+  description: Generated allow for one discovered native MAS edge.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - agent.shared.representative_assist_parallel
+    resources:
+    - resource.mid_office.other_loan_agent
+    actions:
+    - read
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_runtime
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_093_representative_assist_parallel_risk_compliance_agent.allow
+  description: Generated allow for one discovered native MAS edge.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - agent.shared.representative_assist_parallel
+    resources:
+    - resource.mid_office.other_risk_compliance_agent
+    actions:
+    - read
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_runtime
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_094_representative_assistant_workflow_representative_assist_parallel.allow
+  description: Generated allow for one discovered native MAS edge.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - agent.shared.representative_assistant_workflow
+    resources:
+    - resource.shared.other_representative_assist_parallel
+    actions:
+    - read
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_runtime
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_095_representative_assistant_workflow_representative_merge_agent.allow
+  description: Generated allow for one discovered native MAS edge.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - agent.shared.representative_assistant_workflow
+    resources:
+    - resource.mid_office.other_representative_merge_agent
+    actions:
+    - read
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_runtime
+  enabled: true

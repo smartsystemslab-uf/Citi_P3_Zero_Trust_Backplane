@@ -1,0 +1,203 @@
+zt_ir_version: '1.0'
+manifest_type: databases_draft
+databases:
+- database_id: customers
+  model_name: Customer
+  display_name: Customer table
+  db_type: relational
+  engine: unknown
+  table_name: customers
+  classification: confidential
+  contains_pii: true
+  contains_financial: true
+  contains_audit: false
+  columns:
+  - id
+  - customer_id
+  - full_name
+  - email
+  - phone
+  - address
+  - kyc_status
+  - risk_level
+  - created_at
+  - accounts
+  allowed_operations:
+  - SELECT
+  - INSERT
+  - UPDATE
+  - DELETE
+  allowed_api_callers: []
+  compliance_tags: []
+  risk_level: 3
+  immutable: false
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_backend\app\models.py:6
+- database_id: accounts
+  model_name: Account
+  display_name: Account table
+  db_type: relational
+  engine: unknown
+  table_name: accounts
+  classification: confidential
+  contains_pii: true
+  contains_financial: true
+  contains_audit: false
+  columns:
+  - id
+  - account_id
+  - customer_id
+  - account_type
+  - balance
+  - currency
+  - status
+  - created_at
+  - customer
+  allowed_operations:
+  - SELECT
+  - INSERT
+  - UPDATE
+  - DELETE
+  allowed_api_callers: []
+  compliance_tags: []
+  risk_level: 3
+  immutable: false
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_backend\app\models.py:21
+- database_id: policies
+  model_name: Policy
+  display_name: Policy table
+  db_type: relational
+  engine: unknown
+  table_name: policies
+  classification: internal
+  contains_pii: false
+  contains_financial: false
+  contains_audit: false
+  columns:
+  - id
+  - policy_id
+  - title
+  - category
+  - severity
+  - content
+  - effective_date
+  - is_active
+  - created_at
+  allowed_operations:
+  - SELECT
+  - INSERT
+  - UPDATE
+  - DELETE
+  allowed_api_callers: []
+  compliance_tags: []
+  risk_level: 2
+  immutable: false
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_backend\app\models.py:35
+- database_id: rules
+  model_name: Rule
+  display_name: Rule table
+  db_type: relational
+  engine: unknown
+  table_name: rules
+  classification: internal
+  contains_pii: false
+  contains_financial: false
+  contains_audit: false
+  columns:
+  - id
+  - rule_id
+  - name
+  - category
+  - field_name
+  - operator
+  - threshold_value
+  - risk_score_delta
+  - action
+  - description
+  - is_active
+  - created_at
+  allowed_operations:
+  - SELECT
+  - INSERT
+  - UPDATE
+  - DELETE
+  allowed_api_callers: []
+  compliance_tags: []
+  risk_level: 2
+  immutable: false
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_backend\app\models.py:48
+- database_id: transactions
+  model_name: Transaction
+  display_name: Transaction table
+  db_type: relational
+  engine: unknown
+  table_name: transactions
+  classification: confidential
+  contains_pii: false
+  contains_financial: true
+  contains_audit: false
+  columns:
+  - id
+  - transaction_id
+  - from_account_id
+  - to_account_id
+  - amount
+  - currency
+  - tx_type
+  - status
+  - risk_score
+  - decision_reason
+  - created_at
+  allowed_operations:
+  - SELECT
+  - INSERT
+  - UPDATE
+  - DELETE
+  allowed_api_callers: []
+  compliance_tags: []
+  risk_level: 3
+  immutable: false
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_backend\app\models.py:64
+- database_id: audit_logs
+  model_name: AuditLog
+  display_name: AuditLog table
+  db_type: relational
+  engine: unknown
+  table_name: audit_logs
+  classification: restricted
+  contains_pii: false
+  contains_financial: false
+  contains_audit: true
+  columns:
+  - id
+  - event_type
+  - actor
+  - payload
+  - created_at
+  allowed_operations:
+  - SELECT
+  - INSERT
+  - UPDATE
+  - DELETE
+  allowed_api_callers: []
+  compliance_tags: []
+  risk_level: 4
+  immutable: true
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_backend\app\models.py:79

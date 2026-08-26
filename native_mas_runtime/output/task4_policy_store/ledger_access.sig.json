@@ -1,0 +1,9 @@
+{
+  "algorithm": "Ed25519",
+  "bundle_digest": "2d9b49b5a7527672d9ea3bda112d3c1d6fcd583453277d90b11d5dde10bf5252",
+  "issuer": "policy.prototype",
+  "key_id": "policy-1",
+  "schema_version": "1.0",
+  "signature": "T7uUtQ5HiQeorzTr6WKYyxpYv051cJONIHf62e1uHCbC1madGK61ue3vSKrTUGSqxIut-aLwWRfvUe4ixVslAw",
+  "signed_at": "2026-08-26T02:46:57.918364+00:00"
+}

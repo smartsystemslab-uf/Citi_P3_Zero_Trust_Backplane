@@ -1,0 +1,52 @@
+{
+  "result": [
+    {
+      "agent": "user_proxy_agent",
+      "event": "transfer",
+      "to": "front_office_router"
+    },
+    {
+      "agent": "front_office_router",
+      "event": "transfer",
+      "to": "customer_service_chatbot_workflow"
+    },
+    {
+      "agent": "transaction_processing_agent",
+      "event": "tool_call",
+      "tool": "execute_transfer",
+      "args": {
+        "source_account": "ACC-1001",
+        "destination_account": "ACC-1002",
+        "amount": 50,
+        "memo": "",
+        "customer_id": ""
+      }
+    },
+    {
+      "agent": "transaction_processing_agent",
+      "event": "tool_result",
+      "tool": "execute_transfer",
+      "result": null
+    },
+    {
+      "agent": "transaction_processing_agent",
+      "event": "result",
+      "key": "fo_transaction_execution",
+      "value": {
+        "status": "failed",
+        "execution_performed": false,
+        "transaction_id": "",
+        "outcome": "TASK4_MANUAL_REVIEW",
+        "customer_message": "The transfer was not completed and requires manual review."
+      }
+    }
+  ],
+  "zero_trust": {
+    "trace_id": "trace-native-810dcbfc-5890-445b-9489-d54d9008456c",
+    "workflow_instance_id": "workflow-native-865a83c1-79d9-484e-90c0-178dea49fc94",
+    "invocation_id": "e-0b5c7728-df3e-485e-8812-ada361b814ff",
+    "mode": "enforce",
+    "audit_path": "D:\\Lab\\Citi_P3_Zero_Trust_Backplane\\native_mas_runtime\\output\\native_mas_audit.jsonl",
+    "policy_version": "a9f375f41a28ee0c"
+  }
+}
