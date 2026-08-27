@@ -9,11 +9,11 @@
   "coverage_percent": 100.0,
   "coverage_definition": "Resolved scanner entities/edges divided by resolved plus unresolved interface findings; this is scanner-resolution coverage, not security/PEP coverage.",
   "source_discovery": {
-    "python_files": 71,
-    "structured_files": 14,
+    "python_files": 73,
+    "structured_files": 16,
     "openapi_file_count": 0,
     "mcp_manifest_count": 0,
-    "generic_config_count": 14,
+    "generic_config_count": 16,
     "skipped_large_structured_files": []
   },
   "details": {

@@ -13,13 +13,13 @@
       {
         "description": "root -> front_office_router handoff was authorized (not blocked)",
         "passed": true,
-        "detail": "{\"allowed\": true, \"authorization_latency_ms\": 9.332, \"caller_runtime_id\": \"user_proxy_agent\", \"decision\": \"ALLOW_WITH_OBLIGATIONS\", \"event_type\": \"AGENT_ROUTE_AUTHORIZATION\", \"mode\": \"enforce\", \"parameter_summary\": {\"bytes\": 39, \"keys\": [\"target_agent\"], \"sha256\": \"3efba1b70c8b8e1d1af53e7a8f53c4cb00ccceecc9d193c0047a51d43ea05afd\"}, \"permit_id\": \"591fc02b-fa33-4861-9dd3-4b955aaf6a49\", \"physical_pep_id\": \"physical_pep.agent_route_enforce_closed_boundary_agent_agent\", \"placement_id\": \"pep.native.route_user_proxy_agent_front_office_router\", \"policy_version\": \"a9f375f41a28ee0c\", \"reason\": \"VALID_PERMIT_LEASE\", \"sequence\": 4, \"source\": \"PDP\", \"target_runtime_id\": \"front_office_router\", \"timestamp\": \"2026-08-26T02:43:49.051274+00:00\", \"trace_id\": \"trace-native-c599bb0e-5a9f-4705-911f-2454d3d2322b\", \"workflow_id\": \"\", \"workflow_instance_id\": \"workflow-native-e03d44eb-ceb8-4f2f-8d74-85755a765370\", \"would_block\": false}",
+        "detail": "{\"allowed\": true, \"authorization_latency_ms\": 10.6742, \"caller_runtime_id\": \"user_proxy_agent\", \"decision\": \"ALLOW_WITH_OBLIGATIONS\", \"event_type\": \"AGENT_ROUTE_AUTHORIZATION\", \"mode\": \"enforce\", \"parameter_summary\": {\"bytes\": 39, \"keys\": [\"target_agent\"], \"sha256\": \"3efba1b70c8b8e1d1af53e7a8f53c4cb00ccceecc9d193c0047a51d43ea05afd\"}, \"permit_id\": \"7f4530ef-983a-4a47-a431-eda52548413f\", \"physical_pep_id\": \"physical_pep.agent_route_enforce_closed_boundary_agent_agent\", \"placement_id\": \"pep.native.route_user_proxy_agent_front_office_router\", \"policy_version\": \"a9f375f41a28ee0c\", \"reason\": \"VALID_PERMIT_LEASE\", \"sequence\": 4, \"source\": \"PDP\", \"target_runtime_id\": \"front_office_router\", \"timestamp\": \"2026-08-27T00:23:24.707130+00:00\", \"trace_id\": \"trace-native-235a3d96-2420-42ea-8553-a514b40dd14b\", \"workflow_id\": \"\", \"workflow_instance_id\": \"workflow-native-527a4ebb-0760-4f3e-bca1-1d999cfaf25c\", \"would_block\": false}",
         "precondition": false
       },
       {
         "description": "real search_faqs tool call was authorized",
         "passed": true,
-        "detail": "{\"allowed\": true, \"authorization_latency_ms\": 9.3348, \"caller_runtime_id\": \"knowledge_base_agent\", \"decision\": \"ALLOW_WITH_OBLIGATIONS\", \"event_type\": \"TOOL_AUTHORIZATION\", \"mode\": \"enforce\", \"parameter_summary\": {\"bytes\": 35, \"keys\": [\"query\"], \"sha256\": \"5a27b4a9ccf3c7b16cdc923a63336f2509796526e20fe538fbc1c0a7b037e1ab\"}, \"permit_id\": \"0b16f8f1-2c54-499c-9196-55911af9a94b\", \"physical_pep_id\": \"physical_pep.tool_enforce_open_for_noncritical_python_function\", \"placement_id\": \"pep.scanner.scan_edge_017_knowledge_base_agent_search_faqs\", \"policy_version\": \"a9f375f41a28ee0c\", \"reason\": \"VALID_PERMIT_LEASE\", \"sequence\": 16, \"source\": \"PDP\", \"target_runtime_id\": \"search_faqs\", \"timestamp\": \"2026-08-26T02:43:50.247819+00:00\", \"trace_id\": \"trace-native-c599bb0e-5a9f-4705-911f-2454d3d2322b\", \"workflow_id\": \"workflow.front_office.customer_transaction\", \"workflow_instance_id\": \"workflow-native-e03d44eb-ceb8-4f2f-8d74-85755a765370\", \"would_block\": false}",
+        "detail": "{\"allowed\": true, \"authorization_latency_ms\": 10.6182, \"caller_runtime_id\": \"knowledge_base_agent\", \"decision\": \"ALLOW_WITH_OBLIGATIONS\", \"event_type\": \"TOOL_AUTHORIZATION\", \"mode\": \"enforce\", \"parameter_summary\": {\"bytes\": 35, \"keys\": [\"query\"], \"sha256\": \"5a27b4a9ccf3c7b16cdc923a63336f2509796526e20fe538fbc1c0a7b037e1ab\"}, \"permit_id\": \"e491a58f-9acb-4699-8188-73b98c237b15\", \"physical_pep_id\": \"physical_pep.tool_enforce_open_for_noncritical_python_function\", \"placement_id\": \"pep.scanner.scan_edge_017_knowledge_base_agent_search_faqs\", \"policy_version\": \"a9f375f41a28ee0c\", \"reason\": \"VALID_PERMIT_LEASE\", \"sequence\": 16, \"source\": \"PDP\", \"target_runtime_id\": \"search_faqs\", \"timestamp\": \"2026-08-27T00:23:26.116871+00:00\", \"trace_id\": \"trace-native-235a3d96-2420-42ea-8553-a514b40dd14b\", \"workflow_id\": \"workflow.front_office.customer_transaction\", \"workflow_instance_id\": \"workflow-native-527a4ebb-0760-4f3e-bca1-1d999cfaf25c\", \"would_block\": false}",
         "precondition": false
       },
       {
@@ -35,7 +35,7 @@
         "precondition": false
       }
     ],
-    "audit_event_count": 30
+    "audit_event_count": 36
   },
   {
     "scenario": "unauthorized_transfer_blocked",
@@ -63,13 +63,13 @@
       {
         "description": "the unauthorized critical write was blocked before the real tool ran",
         "passed": true,
-        "detail": "{\"allowed\": false, \"authorization_latency_ms\": 9.9756, \"caller_runtime_id\": \"transaction_processing_agent\", \"decision\": \"MANUAL_REVIEW\", \"event_type\": \"TOOL_AUTHORIZATION\", \"mode\": \"enforce\", \"parameter_summary\": {\"bytes\": 110, \"keys\": [\"amount\", \"customer_id\", \"destination_account\", \"memo\", \"source_account\"], \"sha256\": \"3e21bae8960a2390bca23b665cf846664e60f6fec00599e647732d7867acc7df\"}, \"permit_id\": null, \"physical_pep_id\": \"physical_pep.mcp_enforce_closed_shared_mcp_gateway\", \"placement_id\": \"pep.customer_transaction.execute_transfer\", \"policy_version\": \"a9f375f41a28ee0c\", \"reason\": \"TASK4_MANUAL_REVIEW\", \"sequence\": 19, \"source\": \"PDP\", \"target_runtime_id\": \"execute_transfer\", \"timestamp\": \"2026-08-26T02:43:58.862188+00:00\", \"trace_id\": \"trace-native-5064deba-4f1a-4ca6-af2d-a2cdcb21e3c5\", \"workflow_id\": \"workflow.front_office.customer_transaction\", \"workflow_instance_id\": \"workflow-native-12edc61f-04d9-4abe-bbd5-e0a16b4a0c17\", \"would_block\": true}",
+        "detail": "{\"allowed\": false, \"authorization_latency_ms\": 10.3788, \"caller_runtime_id\": \"transaction_processing_agent\", \"decision\": \"MANUAL_REVIEW\", \"event_type\": \"TOOL_AUTHORIZATION\", \"mode\": \"enforce\", \"parameter_summary\": {\"bytes\": 117, \"keys\": [\"amount\", \"customer_id\", \"destination_account\", \"memo\", \"source_account\"], \"sha256\": \"886f44ad699eaebe9cf09b0fb9ab430ca38c4ce7a3fff919514de0bd59416a66\"}, \"permit_id\": null, \"physical_pep_id\": \"physical_pep.mcp_enforce_closed_shared_mcp_gateway\", \"placement_id\": \"pep.customer_transaction.execute_transfer\", \"policy_version\": \"a9f375f41a28ee0c\", \"reason\": \"TASK4_MANUAL_REVIEW\", \"sequence\": 19, \"source\": \"PDP\", \"target_runtime_id\": \"execute_transfer\", \"timestamp\": \"2026-08-27T00:23:34.512836+00:00\", \"trace_id\": \"trace-native-ea906d1c-423f-4f0a-95fa-321d92eb2597\", \"workflow_id\": \"workflow.front_office.customer_transaction\", \"workflow_instance_id\": \"workflow-native-114eef47-a24e-4eb4-a6da-4f24c57dc2d2\", \"would_block\": true}",
         "precondition": false
       },
       {
         "description": "blocked for a real PDP reason, not a coverage gap",
         "passed": true,
-        "detail": "{\"allowed\": false, \"authorization_latency_ms\": 9.9756, \"caller_runtime_id\": \"transaction_processing_agent\", \"decision\": \"MANUAL_REVIEW\", \"event_type\": \"TOOL_AUTHORIZATION\", \"mode\": \"enforce\", \"parameter_summary\": {\"bytes\": 110, \"keys\": [\"amount\", \"customer_id\", \"destination_account\", \"memo\", \"source_account\"], \"sha256\": \"3e21bae8960a2390bca23b665cf846664e60f6fec00599e647732d7867acc7df\"}, \"permit_id\": null, \"physical_pep_id\": \"physical_pep.mcp_enforce_closed_shared_mcp_gateway\", \"placement_id\": \"pep.customer_transaction.execute_transfer\", \"policy_version\": \"a9f375f41a28ee0c\", \"reason\": \"TASK4_MANUAL_REVIEW\", \"sequence\": 19, \"source\": \"PDP\", \"target_runtime_id\": \"execute_transfer\", \"timestamp\": \"2026-08-26T02:43:58.862188+00:00\", \"trace_id\": \"trace-native-5064deba-4f1a-4ca6-af2d-a2cdcb21e3c5\", \"workflow_id\": \"workflow.front_office.customer_transaction\", \"workflow_instance_id\": \"workflow-native-12edc61f-04d9-4abe-bbd5-e0a16b4a0c17\", \"would_block\": true}",
+        "detail": "{\"allowed\": false, \"authorization_latency_ms\": 10.3788, \"caller_runtime_id\": \"transaction_processing_agent\", \"decision\": \"MANUAL_REVIEW\", \"event_type\": \"TOOL_AUTHORIZATION\", \"mode\": \"enforce\", \"parameter_summary\": {\"bytes\": 117, \"keys\": [\"amount\", \"customer_id\", \"destination_account\", \"memo\", \"source_account\"], \"sha256\": \"886f44ad699eaebe9cf09b0fb9ab430ca38c4ce7a3fff919514de0bd59416a66\"}, \"permit_id\": null, \"physical_pep_id\": \"physical_pep.mcp_enforce_closed_shared_mcp_gateway\", \"placement_id\": \"pep.customer_transaction.execute_transfer\", \"policy_version\": \"a9f375f41a28ee0c\", \"reason\": \"TASK4_MANUAL_REVIEW\", \"sequence\": 19, \"source\": \"PDP\", \"target_runtime_id\": \"execute_transfer\", \"timestamp\": \"2026-08-27T00:23:34.512836+00:00\", \"trace_id\": \"trace-native-ea906d1c-423f-4f0a-95fa-321d92eb2597\", \"workflow_id\": \"workflow.front_office.customer_transaction\", \"workflow_instance_id\": \"workflow-native-114eef47-a24e-4eb4-a6da-4f24c57dc2d2\", \"would_block\": true}",
         "precondition": false
       }
     ],
@@ -89,13 +89,31 @@
       {
         "description": "root -> mid_office_router handoff was authorized",
         "passed": true,
-        "detail": "{\"allowed\": true, \"authorization_latency_ms\": 9.8162, \"caller_runtime_id\": \"user_proxy_agent\", \"decision\": \"ALLOW_WITH_OBLIGATIONS\", \"event_type\": \"AGENT_ROUTE_AUTHORIZATION\", \"mode\": \"enforce\", \"parameter_summary\": {\"bytes\": 37, \"keys\": [\"target_agent\"], \"sha256\": \"20a202c97b91d12ea7c0fb7a32650a302f16238996e66b639da4032fbe6ed094\"}, \"permit_id\": \"ef6334c7-d3fd-42af-a537-a48ce518e6ba\", \"physical_pep_id\": \"physical_pep.agent_route_enforce_closed_boundary_agent_agent\", \"placement_id\": \"pep.native.route_user_proxy_agent_mid_office_router\", \"policy_version\": \"a9f375f41a28ee0c\", \"reason\": \"VALID_PERMIT_LEASE\", \"sequence\": 4, \"source\": \"PDP\", \"target_runtime_id\": \"mid_office_router\", \"timestamp\": \"2026-08-26T02:44:03.014426+00:00\", \"trace_id\": \"trace-native-2405069b-9b59-4c9d-8723-09b1b2dd112a\", \"workflow_id\": \"\", \"workflow_instance_id\": \"workflow-native-d593ef10-e018-424e-b23e-59481b039d95\", \"would_block\": false}",
+        "detail": "{\"allowed\": true, \"authorization_latency_ms\": 10.7042, \"caller_runtime_id\": \"user_proxy_agent\", \"decision\": \"ALLOW_WITH_OBLIGATIONS\", \"event_type\": \"AGENT_ROUTE_AUTHORIZATION\", \"mode\": \"enforce\", \"parameter_summary\": {\"bytes\": 37, \"keys\": [\"target_agent\"], \"sha256\": \"20a202c97b91d12ea7c0fb7a32650a302f16238996e66b639da4032fbe6ed094\"}, \"permit_id\": \"1d4e9e00-2366-4e2b-bed5-9e45dd2d9818\", \"physical_pep_id\": \"physical_pep.agent_route_enforce_closed_boundary_agent_agent\", \"placement_id\": \"pep.native.route_user_proxy_agent_mid_office_router\", \"policy_version\": \"a9f375f41a28ee0c\", \"reason\": \"VALID_PERMIT_LEASE\", \"sequence\": 4, \"source\": \"PDP\", \"target_runtime_id\": \"mid_office_router\", \"timestamp\": \"2026-08-27T00:23:38.088398+00:00\", \"trace_id\": \"trace-native-3a127b5d-7d2c-49f3-b5c5-f85265f69e10\", \"workflow_id\": \"\", \"workflow_instance_id\": \"workflow-native-b1411577-3890-4620-9dc6-79057e706792\", \"would_block\": false}",
         "precondition": false
+      },
+      {
+        "description": "mid_office_router chose the representative-assist workflow (otherwise this scenario proves nothing about that path)",
+        "passed": true,
+        "detail": "",
+        "precondition": true
+      },
+      {
+        "description": "mid_office_router -> representative_assistant_workflow handoff was authorized",
+        "passed": true,
+        "detail": "{\"allowed\": true, \"authorization_latency_ms\": 9.884, \"caller_runtime_id\": \"mid_office_router\", \"decision\": \"ALLOW_WITH_OBLIGATIONS\", \"event_type\": \"AGENT_ROUTE_AUTHORIZATION\", \"mode\": \"enforce\", \"parameter_summary\": {\"bytes\": 53, \"keys\": [\"target_agent\"], \"sha256\": \"073ce5c73729b98ca39680b824bbe3fbf10fa9f818475683ab335f3c17ecd898\"}, \"permit_id\": \"070f7ea8-3e8a-41a7-a59b-d9ef89e31045\", \"physical_pep_id\": \"physical_pep.agent_route_enforce_open_for_noncritical_boundary_agent_agent\", \"placement_id\": \"pep.scanner.scan_edge_082_mid_office_router_representative_assistant_workflow\", \"policy_version\": \"a9f375f41a28ee0c\", \"reason\": \"VALID_PERMIT_LEASE\", \"sequence\": 8, \"source\": \"PDP\", \"target_runtime_id\": \"representative_assistant_workflow\", \"timestamp\": \"2026-08-27T00:23:38.521709+00:00\", \"trace_id\": \"trace-native-3a127b5d-7d2c-49f3-b5c5-f85265f69e10\", \"workflow_id\": \"\", \"workflow_instance_id\": \"workflow-native-b1411577-3890-4620-9dc6-79057e706792\", \"would_block\": false}",
+        "precondition": false
+      },
+      {
+        "description": "financial_data_agent actually called get_customer_financial_profile (otherwise this scenario proves nothing)",
+        "passed": true,
+        "detail": "",
+        "precondition": true
       },
       {
         "description": "real get_customer_financial_profile tool call was authorized",
         "passed": true,
-        "detail": "{\"allowed\": true, \"authorization_latency_ms\": 9.3094, \"caller_runtime_id\": \"financial_data_agent\", \"decision\": \"ALLOW_WITH_OBLIGATIONS\", \"event_type\": \"TOOL_AUTHORIZATION\", \"mode\": \"enforce\", \"parameter_summary\": {\"bytes\": 27, \"keys\": [\"customer_id\"], \"sha256\": \"fea281f6040cf6d782f164e6a14857728a28426a41cf4108c4316799540d2a55\"}, \"permit_id\": \"d8e7d4a2-10fa-440a-b845-3af0941983fb\", \"physical_pep_id\": \"physical_pep.tool_enforce_closed_python_function\", \"placement_id\": \"pep.mid_office.financial_data.read_profile\", \"policy_version\": \"a9f375f41a28ee0c\", \"reason\": \"VALID_PERMIT_LEASE\", \"sequence\": 23, \"source\": \"PDP\", \"target_runtime_id\": \"get_customer_financial_profile\", \"timestamp\": \"2026-08-26T02:44:05.679936+00:00\", \"trace_id\": \"trace-native-2405069b-9b59-4c9d-8723-09b1b2dd112a\", \"workflow_id\": \"\", \"workflow_instance_id\": \"workflow-native-d593ef10-e018-424e-b23e-59481b039d95\", \"would_block\": false}",
+        "detail": "{\"allowed\": true, \"authorization_latency_ms\": 10.2025, \"caller_runtime_id\": \"financial_data_agent\", \"decision\": \"ALLOW_WITH_OBLIGATIONS\", \"event_type\": \"TOOL_AUTHORIZATION\", \"mode\": \"enforce\", \"parameter_summary\": {\"bytes\": 27, \"keys\": [\"customer_id\"], \"sha256\": \"fea281f6040cf6d782f164e6a14857728a28426a41cf4108c4316799540d2a55\"}, \"permit_id\": \"fdb63cad-5f99-4228-902e-079e57ad455e\", \"physical_pep_id\": \"physical_pep.tool_enforce_closed_python_function\", \"placement_id\": \"pep.mid_office.financial_data.read_profile\", \"policy_version\": \"a9f375f41a28ee0c\", \"reason\": \"VALID_PERMIT_LEASE\", \"sequence\": 26, \"source\": \"PDP\", \"target_runtime_id\": \"get_customer_financial_profile\", \"timestamp\": \"2026-08-27T00:23:41.992510+00:00\", \"trace_id\": \"trace-native-3a127b5d-7d2c-49f3-b5c5-f85265f69e10\", \"workflow_id\": \"\", \"workflow_instance_id\": \"workflow-native-b1411577-3890-4620-9dc6-79057e706792\", \"would_block\": false}",
         "precondition": false
       },
       {
@@ -105,7 +123,7 @@
         "precondition": false
       }
     ],
-    "audit_event_count": 41
+    "audit_event_count": 44
   },
   {
     "scenario": "back_office_eod_unauthorized",
@@ -133,7 +151,7 @@
       {
         "description": "the critical ledger write was blocked without human approval + secondary authorization + change ticket",
         "passed": true,
-        "detail": "{\"allowed\": false, \"authorization_latency_ms\": 11.0396, \"caller_runtime_id\": \"ledger_update_agent\", \"decision\": \"MANUAL_REVIEW\", \"event_type\": \"TOOL_AUTHORIZATION\", \"mode\": \"enforce\", \"parameter_summary\": {\"bytes\": 238, \"keys\": [\"batch_id\", \"posting_instructions\"], \"sha256\": \"d59b649709388545bbfc452e56752d3b577e211c3ddaee81e9af2d3804772464\"}, \"permit_id\": null, \"physical_pep_id\": \"physical_pep.mcp_enforce_closed_shared_mcp_gateway\", \"placement_id\": \"pep.ledger_update.apply_ledger_updates\", \"policy_version\": \"a9f375f41a28ee0c\", \"reason\": \"TASK4_MANUAL_REVIEW\", \"sequence\": 25, \"source\": \"PDP\", \"target_runtime_id\": \"apply_ledger_updates\", \"timestamp\": \"2026-08-26T02:44:19.773147+00:00\", \"trace_id\": \"trace-native-6c1528e0-716f-423c-bfa6-222fe0d8d8fb\", \"workflow_id\": \"workflow.back_office.eod_processing\", \"workflow_instance_id\": \"workflow-native-0590d8c5-de43-4837-9d0d-96d388f1a39d\", \"would_block\": true}",
+        "detail": "{\"allowed\": false, \"authorization_latency_ms\": 9.8962, \"caller_runtime_id\": \"ledger_update_agent\", \"decision\": \"MANUAL_REVIEW\", \"event_type\": \"TOOL_AUTHORIZATION\", \"mode\": \"enforce\", \"parameter_summary\": {\"bytes\": 173, \"keys\": [\"batch_id\", \"posting_instructions\"], \"sha256\": \"9de6d09566cf8d0bcfd79c9b922f6d75f757a2d48c6f7157d474df710d9a9b30\"}, \"permit_id\": null, \"physical_pep_id\": \"physical_pep.mcp_enforce_closed_shared_mcp_gateway\", \"placement_id\": \"pep.ledger_update.apply_ledger_updates\", \"policy_version\": \"a9f375f41a28ee0c\", \"reason\": \"TASK4_MANUAL_REVIEW\", \"sequence\": 25, \"source\": \"PDP\", \"target_runtime_id\": \"apply_ledger_updates\", \"timestamp\": \"2026-08-27T00:23:56.720453+00:00\", \"trace_id\": \"trace-native-62dc621e-48f6-4a42-abe1-95b8ee3d71c3\", \"workflow_id\": \"workflow.back_office.eod_processing\", \"workflow_instance_id\": \"workflow-native-f576d461-abe8-4d40-9b61-9a50e78a1091\", \"would_block\": true}",
         "precondition": false
       }
     ],
@@ -171,7 +189,7 @@
       {
         "description": "the critical ledger write was ALLOWED with a real signed permit once human approval + secondary authorization + change ticket were supplied",
         "passed": true,
-        "detail": "{\"allowed\": true, \"authorization_latency_ms\": 10.7592, \"caller_runtime_id\": \"ledger_update_agent\", \"decision\": \"ALLOW_WITH_OBLIGATIONS\", \"event_type\": \"TOOL_AUTHORIZATION\", \"mode\": \"enforce\", \"parameter_summary\": {\"bytes\": 156, \"keys\": [\"batch_id\", \"posting_instructions\"], \"sha256\": \"9fadb2126fc6f712e61d9fcf8525af2b25daa5abb6180a3ed80b91075acc4169\"}, \"permit_id\": \"7709b362-36e3-4b25-9bd8-8de9b49313c2\", \"physical_pep_id\": \"physical_pep.mcp_enforce_closed_shared_mcp_gateway\", \"placement_id\": \"pep.ledger_update.apply_ledger_updates\", \"policy_version\": \"a9f375f41a28ee0c\", \"reason\": \"VALID_PERMIT_LEASE\", \"sequence\": 25, \"source\": \"PDP\", \"target_runtime_id\": \"apply_ledger_updates\", \"timestamp\": \"2026-08-26T02:44:36.931490+00:00\", \"trace_id\": \"trace-native-26873f9c-055b-4f53-9b8c-f23da154de67\", \"workflow_id\": \"workflow.back_office.eod_processing\", \"workflow_instance_id\": \"workflow-native-8bced124-59c6-4ac5-b567-e5988c16fdbd\", \"would_block\": false}",
+        "detail": "{\"allowed\": true, \"authorization_latency_ms\": 10.9101, \"caller_runtime_id\": \"ledger_update_agent\", \"decision\": \"ALLOW_WITH_OBLIGATIONS\", \"event_type\": \"TOOL_AUTHORIZATION\", \"mode\": \"enforce\", \"parameter_summary\": {\"bytes\": 180, \"keys\": [\"batch_id\", \"posting_instructions\"], \"sha256\": \"9b9e79b8f57d65b47c25f11cc54f4f9908f7018f8c325419a554b94f2010a9d7\"}, \"permit_id\": \"33d80dfb-a5b3-4d86-8bd0-b775bb608e2b\", \"physical_pep_id\": \"physical_pep.mcp_enforce_closed_shared_mcp_gateway\", \"placement_id\": \"pep.ledger_update.apply_ledger_updates\", \"policy_version\": \"a9f375f41a28ee0c\", \"reason\": \"VALID_PERMIT_LEASE\", \"sequence\": 25, \"source\": \"PDP\", \"target_runtime_id\": \"apply_ledger_updates\", \"timestamp\": \"2026-08-27T00:24:16.302525+00:00\", \"trace_id\": \"trace-native-882912f5-e519-4e18-979a-5dba54c6910e\", \"workflow_id\": \"workflow.back_office.eod_processing\", \"workflow_instance_id\": \"workflow-native-446d138e-b049-4928-9bb8-54fc3bb51862\", \"would_block\": false}",
         "precondition": false
       },
       {
