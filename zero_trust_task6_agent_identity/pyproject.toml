@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "zero-trust-task6-agent-identity"
+version = "0.1.0"
+description = "Ed25519 agent identity bootstrap for the Zero Trust Backplane"
+requires-python = ">=3.10"
+dependencies = [
+  "cryptography>=41",
+  "PyYAML>=6",
+]
+
+[project.optional-dependencies]
+test = ["pytest>=8"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+addopts = "-q"
