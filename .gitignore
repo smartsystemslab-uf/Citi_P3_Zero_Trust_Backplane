@@ -1,6 +1,11 @@
 zero_trust_task6_agent_identity/keys/
 .venv-steven/
+.venv-authn2/
 .pytest_cache/
 __pycache__/
 *.pyc
 zero_trust_task6_agent_identity/public_keys.yaml
+zero_trust_task6_agent_identity/registry.yaml
+zero_trust_task6_agent_identity/.registry-*.tmp
+.coverage*
+htmlcov/

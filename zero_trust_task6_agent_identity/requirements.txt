@@ -1,3 +1,4 @@
 cryptography>=41
 PyYAML>=6
 pytest>=8
+pytest-cov>=5
