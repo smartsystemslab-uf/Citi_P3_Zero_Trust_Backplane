@@ -71,6 +71,10 @@ class NativeMasBackplane:
         change_ticket: str | None = None,
         shadow_allow_critical: bool = False,
         runtime_agent_edges: list[tuple[str, str]] | None = None,
+        identity_registry_path: str | Path | None = None,
+        identity_registry_root_public_key_path: str | Path | None = None,
+        identity_registry_root_key_id: str | None = None,
+        identity_max_age_seconds: int = 60,
     ) -> None:
         self.backplane_root = Path(backplane_root).resolve()
         self.mas_repo_root = Path(mas_repo_root).resolve()
@@ -84,6 +88,35 @@ class NativeMasBackplane:
         self.change_ticket = change_ticket
         self.shadow_allow_critical = bool(shadow_allow_critical)
         self.runtime_agent_edges = list(runtime_agent_edges or [])
+        self.identity_registry_path = (
+            Path(identity_registry_path).resolve()
+            if identity_registry_path is not None
+            else None
+        )
+
+        self.identity_registry_root_public_key_path = (
+            Path(identity_registry_root_public_key_path).resolve()
+            if identity_registry_root_public_key_path is not None
+            else None
+        )
+
+        self.identity_registry_root_key_id = identity_registry_root_key_id
+        self.identity_max_age_seconds = identity_max_age_seconds
+        self.identity_verifier = None
+
+        identity_config = (
+            self.identity_registry_path,
+            self.identity_registry_root_public_key_path,
+            self.identity_registry_root_key_id,
+        )
+        if any(value is not None for value in identity_config) and not all(
+            value is not None for value in identity_config
+        ):
+            raise ValueError(
+                "identity_registry_path, "
+                "identity_registry_root_public_key_path, and "
+                "identity_registry_root_key_id must be configured together"
+            )
 
         self.task2_root = self.backplane_root / "zero_trust_task2"
         self.task3_root = (
@@ -93,10 +126,28 @@ class NativeMasBackplane:
         )
         self.task4_root = self.backplane_root / "zero_trust_pdp_task4_secure"
         self.task5_root = self.backplane_root / "zero_trust_task5"
+        self.task6_root = (
+            self.backplane_root
+            / "zero_trust_task6_agent_identity"
+        )
         self.interface_root = self.backplane_root / "interface_standard"
         self.integrated_root = self.backplane_root / "integrated_demo"
         self._validate_roots()
         self._install_import_paths()
+        if self.identity_registry_path is not None:
+            from zt_task6.registry import PublicKeyRegistry
+            from zt_task6.verification import RequestVerifier
+
+            identity_registry = PublicKeyRegistry.from_yaml(
+                self.identity_registry_path,
+                root_public_key_path=self.identity_registry_root_public_key_path,
+                expected_root_key_id=self.identity_registry_root_key_id,
+            )
+            self.identity_verifier = RequestVerifier(
+                identity_registry,
+                max_age_seconds=self.identity_max_age_seconds,
+            )
+
         self.output_dir.mkdir(parents=True, exist_ok=True)
 
         self.plan_json: dict[str, Any] = {}
@@ -121,6 +172,7 @@ class NativeMasBackplane:
             self.task3_root / "src",
             self.task4_root / "src",
             self.task5_root / "src",
+            self.task6_root / "src",
             self.interface_root / "src",
         ]
         missing = [str(path) for path in required if not path.exists()]
@@ -139,6 +191,7 @@ class NativeMasBackplane:
             self.task3_root / "src",
             self.task4_root / "src",
             self.task5_root / "src",
+            self.task6_root / "src",
             self.interface_root / "src",
             self.integrated_root,
         ):
@@ -978,6 +1031,38 @@ class NativeMasBackplane:
         )
         return auth
 
+    def _identity_verification_failure(
+        self,
+        *,
+        placement: dict[str, Any] | None,
+        trace_id: str,
+        workflow_instance_id: str,
+        caller_runtime_id: str,
+        tool_name: str,
+        detail: str,
+    ) -> PendingNativeTool:
+        auth = NativeAuthorization(
+            allowed=False,
+            would_block=True,
+            mode=self.mode,
+            reason="IDENTITY_VERIFICATION_FAILED",
+            source="AUTHN-3",
+            placement=placement,
+            request=None,
+            runtime_authorization=None,
+            authorization_latency_ms=0.0,
+            decision="DENY",
+        )
+        self.append_runtime_event(
+            "IDENTITY_VERIFICATION_FAILED",
+            trace_id=trace_id,
+            workflow_instance_id=workflow_instance_id,
+            caller_runtime_id=caller_runtime_id,
+            target_runtime_id=tool_name,
+            reason=detail,
+        )
+        return PendingNativeTool(auth, None, None, [], False)
+
     def begin_tool(
         self,
         placement: dict[str, Any] | None,
@@ -989,7 +1074,54 @@ class NativeMasBackplane:
         idempotency_key: str,
         caller_runtime_id: str,
         tool_name: str,
+        signed_identity_request: dict[str, str] | None = None,
     ) -> PendingNativeTool:
+        if self.identity_verifier is None:
+            return self._identity_verification_failure(
+                placement=placement,
+                trace_id=trace_id,
+                workflow_instance_id=workflow_instance_id,
+                caller_runtime_id=caller_runtime_id,
+                tool_name=tool_name,
+                detail="Identity verifier is not configured",
+            )
+        if signed_identity_request is None:
+            return self._identity_verification_failure(
+                placement=placement,
+                trace_id=trace_id,
+                workflow_instance_id=workflow_instance_id,
+                caller_runtime_id=caller_runtime_id,
+                tool_name=tool_name,
+                detail="Signed identity request is missing",
+            )
+        if (
+            signed_identity_request.get("caller_runtime_id") != caller_runtime_id
+            or signed_identity_request.get("target_tool") != tool_name
+        ):
+            return self._identity_verification_failure(
+                placement=placement,
+                trace_id=trace_id,
+                workflow_instance_id=workflow_instance_id,
+                caller_runtime_id=caller_runtime_id,
+                tool_name=tool_name,
+                detail="Signed request does not match runtime caller or target",
+            )
+
+        from zt_task6.registry import RegistryError
+        from zt_task6.verification import IdentityVerificationError
+
+        try:
+            self.identity_verifier.verify(signed_identity_request)
+        except (IdentityVerificationError, RegistryError, OSError) as exc:
+            return self._identity_verification_failure(
+                placement=placement,
+                trace_id=trace_id,
+                workflow_instance_id=workflow_instance_id,
+                caller_runtime_id=caller_runtime_id,
+                tool_name=tool_name,
+                detail=str(exc),
+            )
+
         auth = self.authorize(
             placement,
             parameters=tool_args,
@@ -1060,6 +1192,9 @@ class NativeMasBackplane:
         return mask_json_string(result)
 
     def should_execute(self, auth: NativeAuthorization, *, critical: bool = False) -> bool:
+        # Authentication is mandatory even when policy denials are shadowed.
+        if auth.reason == "IDENTITY_VERIFICATION_FAILED":
+            return False
         if auth.allowed:
             return True
         if self.mode == "enforce":
