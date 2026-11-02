@@ -329,6 +329,26 @@ resources:
   attributes:
     manifest_status: provisional
     scanner_target_type: tool
+- id: fetch_transaction_history
+  canonical_id: resource.shared.tool_fetch_transaction_history
+  actions:
+  - read
+  domain: shared
+  classification: confidential
+  critical: false
+  attributes:
+    manifest_status: provisional
+    scanner_target_type: tool
+- id: screen_against_sanctions
+  canonical_id: resource.shared.tool_screen_against_sanctions
+  actions:
+  - read
+  domain: shared
+  classification: internal
+  critical: false
+  attributes:
+    manifest_status: provisional
+    scanner_target_type: tool
 - id: get_transaction
   canonical_id: resource.shared.api_get_transaction
   actions:
@@ -789,6 +809,36 @@ resources:
   actions:
   - read
   domain: mid_office
+  classification: internal
+  critical: false
+  attributes:
+    manifest_status: provisional
+    scanner_target_type: subject
+- id: aml_investigator
+  canonical_id: resource.shared.other_aml_investigator
+  actions:
+  - read
+  domain: shared
+  classification: internal
+  critical: false
+  attributes:
+    manifest_status: provisional
+    scanner_target_type: subject
+- id: aml_reporter
+  canonical_id: resource.shared.other_aml_reporter
+  actions:
+  - read
+  domain: shared
+  classification: internal
+  critical: false
+  attributes:
+    manifest_status: provisional
+    scanner_target_type: subject
+- id: aml_investigation_workflow
+  canonical_id: resource.shared.other_aml_investigation_workflow
+  actions:
+  - read
+  domain: shared
   classification: internal
   critical: false
   attributes:

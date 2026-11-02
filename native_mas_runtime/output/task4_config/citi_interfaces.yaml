@@ -507,6 +507,50 @@ interfaces:
   response_schema_ref: null
   timeout_ms: 5000
   status: provisional
+- canonical_id: interface.python_function.fetch_transaction_history
+  type: python_function
+  runtime:
+    runtime_id: fetch_transaction_history
+    endpoint: null
+    function_name: fetch_transaction_history
+    service_name: null
+    namespace: null
+    secret_refs: []
+    extensions: {}
+  authentication:
+    method: placeholder
+    issuer: null
+    audience: null
+    subject_claim: null
+    credential_ref: null
+    jwks_uri: null
+    extensions: {}
+  request_schema_ref: null
+  response_schema_ref: null
+  timeout_ms: 5000
+  status: provisional
+- canonical_id: interface.python_function.screen_against_sanctions
+  type: python_function
+  runtime:
+    runtime_id: screen_against_sanctions
+    endpoint: null
+    function_name: screen_against_sanctions
+    service_name: null
+    namespace: null
+    secret_refs: []
+    extensions: {}
+  authentication:
+    method: placeholder
+    issuer: null
+    audience: null
+    subject_claim: null
+    credential_ref: null
+    jwks_uri: null
+    extensions: {}
+  request_schema_ref: null
+  response_schema_ref: null
+  timeout_ms: 5000
+  status: provisional
 - canonical_id: interface.http.get_transaction
   type: http
   runtime:

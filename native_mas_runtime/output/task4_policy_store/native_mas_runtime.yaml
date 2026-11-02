@@ -598,7 +598,39 @@ policies:
     parameters:
       reason: native_mas_runtime
   enabled: true
-- id: policy.native.pep.scanner.scan_edge_027_get_transaction_get_transaction.allow
+- id: policy.native.pep.scanner.scan_edge_027_aml_investigator_fetch_transaction_history.allow
+  description: Generated allow for one discovered native MAS edge.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - agent.shared.aml_investigator
+    resources:
+    - resource.shared.tool_fetch_transaction_history
+    actions:
+    - read
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_runtime
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_028_aml_investigator_screen_against_sanctions.allow
+  description: Generated allow for one discovered native MAS edge.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - agent.shared.aml_investigator
+    resources:
+    - resource.shared.tool_screen_against_sanctions
+    actions:
+    - read
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_runtime
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_029_get_transaction_get_transaction.allow
   description: Generated allow for one discovered native MAS edge.
   priority: 120
   effect: ALLOW_WITH_OBLIGATIONS
@@ -614,7 +646,7 @@ policies:
     parameters:
       reason: native_mas_runtime
   enabled: true
-- id: policy.native.pep.scanner.scan_edge_028_run_fraud_and_compliance_workflow_monitoring_evaluate_transaction.pending_review
+- id: policy.native.pep.scanner.scan_edge_030_run_fraud_and_compliance_workflow_monitoring_evaluate_transaction.pending_review
   description: Generated native-runtime critical operation gate.
   priority: 280
   effect: MANUAL_REVIEW
@@ -627,7 +659,7 @@ policies:
     - update
   obligations: []
   enabled: true
-- id: policy.native.pep.scanner.scan_edge_028_run_fraud_and_compliance_workflow_monitoring_evaluate_transaction.approved
+- id: policy.native.pep.scanner.scan_edge_030_run_fraud_and_compliance_workflow_monitoring_evaluate_transaction.approved
   description: Generated native-runtime approved critical operation.
   priority: 340
   effect: ALLOW_WITH_OBLIGATIONS
@@ -644,7 +676,7 @@ policies:
     parameters:
       reason: native_mas_critical
   enabled: true
-- id: policy.native.pep.scanner.scan_edge_029_update_transaction_status_update_transaction_status.pending_review
+- id: policy.native.pep.scanner.scan_edge_031_update_transaction_status_update_transaction_status.pending_review
   description: Generated native-runtime critical operation gate.
   priority: 280
   effect: MANUAL_REVIEW
@@ -657,7 +689,7 @@ policies:
     - update
   obligations: []
   enabled: true
-- id: policy.native.pep.scanner.scan_edge_029_update_transaction_status_update_transaction_status.approved
+- id: policy.native.pep.scanner.scan_edge_031_update_transaction_status_update_transaction_status.approved
   description: Generated native-runtime approved critical operation.
   priority: 340
   effect: ALLOW_WITH_OBLIGATIONS
@@ -674,7 +706,7 @@ policies:
     parameters:
       reason: native_mas_critical
   enabled: true
-- id: policy.native.pep.scanner.scan_edge_030_get_branch_workload_get_branch_workload.allow
+- id: policy.native.pep.scanner.scan_edge_032_get_branch_workload_get_branch_workload.allow
   description: Generated allow for one discovered native MAS edge.
   priority: 120
   effect: ALLOW_WITH_OBLIGATIONS
@@ -690,7 +722,7 @@ policies:
     parameters:
       reason: native_mas_runtime
   enabled: true
-- id: policy.native.pep.scanner.scan_edge_031_propose_staffing_adjustment_propose_staffing_adjustment.allow
+- id: policy.native.pep.scanner.scan_edge_033_propose_staffing_adjustment_propose_staffing_adjustment.allow
   description: Generated allow for one discovered native MAS edge.
   priority: 120
   effect: ALLOW_WITH_OBLIGATIONS
@@ -706,7 +738,7 @@ policies:
     parameters:
       reason: native_mas_runtime
   enabled: true
-- id: policy.native.pep.scanner.scan_edge_032_get_customer_product_affinity_get_customer_product_affinity.allow
+- id: policy.native.pep.scanner.scan_edge_034_get_customer_product_affinity_get_customer_product_affinity.allow
   description: Generated allow for one discovered native MAS edge.
   priority: 120
   effect: ALLOW_WITH_OBLIGATIONS
@@ -722,7 +754,7 @@ policies:
     parameters:
       reason: native_mas_runtime
   enabled: true
-- id: policy.native.pep.scanner.scan_edge_033_trigger_eod_reconciliation_trigger_eod_reconciliation.pending_review
+- id: policy.native.pep.scanner.scan_edge_035_trigger_eod_reconciliation_trigger_eod_reconciliation.pending_review
   description: Generated native-runtime critical operation gate.
   priority: 280
   effect: MANUAL_REVIEW
@@ -735,7 +767,7 @@ policies:
     - update
   obligations: []
   enabled: true
-- id: policy.native.pep.scanner.scan_edge_033_trigger_eod_reconciliation_trigger_eod_reconciliation.approved
+- id: policy.native.pep.scanner.scan_edge_035_trigger_eod_reconciliation_trigger_eod_reconciliation.approved
   description: Generated native-runtime approved critical operation.
   priority: 340
   effect: ALLOW_WITH_OBLIGATIONS
@@ -752,7 +784,7 @@ policies:
     parameters:
       reason: native_mas_critical
   enabled: true
-- id: policy.native.pep.scanner.scan_edge_034_get_reconciliation_mismatches_get_reconciliation_mismatches.allow
+- id: policy.native.pep.scanner.scan_edge_036_get_reconciliation_mismatches_get_reconciliation_mismatches.allow
   description: Generated allow for one discovered native MAS edge.
   priority: 120
   effect: ALLOW_WITH_OBLIGATIONS
@@ -768,7 +800,7 @@ policies:
     parameters:
       reason: native_mas_runtime
   enabled: true
-- id: policy.native.pep.scanner.scan_edge_035_resolve_ledger_entry_resolve_ledger_entry.pending_review
+- id: policy.native.pep.scanner.scan_edge_037_resolve_ledger_entry_resolve_ledger_entry.pending_review
   description: Generated native-runtime critical operation gate.
   priority: 280
   effect: MANUAL_REVIEW
@@ -781,7 +813,7 @@ policies:
     - update
   obligations: []
   enabled: true
-- id: policy.native.pep.scanner.scan_edge_035_resolve_ledger_entry_resolve_ledger_entry.approved
+- id: policy.native.pep.scanner.scan_edge_037_resolve_ledger_entry_resolve_ledger_entry.approved
   description: Generated native-runtime approved critical operation.
   priority: 340
   effect: ALLOW_WITH_OBLIGATIONS
@@ -798,7 +830,7 @@ policies:
     parameters:
       reason: native_mas_critical
   enabled: true
-- id: policy.native.pep.scanner.scan_edge_036_create_customer_customers.allow
+- id: policy.native.pep.scanner.scan_edge_038_create_customer_customers.allow
   description: Generated allow for one discovered native MAS edge.
   priority: 120
   effect: ALLOW_WITH_OBLIGATIONS
@@ -814,7 +846,7 @@ policies:
     parameters:
       reason: native_mas_runtime
   enabled: true
-- id: policy.native.pep.scanner.scan_edge_037_create_customer_customers.pending_review
+- id: policy.native.pep.scanner.scan_edge_039_create_customer_customers.pending_review
   description: Generated native-runtime critical operation gate.
   priority: 280
   effect: MANUAL_REVIEW
@@ -827,7 +859,7 @@ policies:
     - update
   obligations: []
   enabled: true
-- id: policy.native.pep.scanner.scan_edge_037_create_customer_customers.approved
+- id: policy.native.pep.scanner.scan_edge_039_create_customer_customers.approved
   description: Generated native-runtime approved critical operation.
   priority: 340
   effect: ALLOW_WITH_OBLIGATIONS
@@ -844,7 +876,7 @@ policies:
     parameters:
       reason: native_mas_critical
   enabled: true
-- id: policy.native.pep.scanner.scan_edge_038_get_customer_customers.allow
+- id: policy.native.pep.scanner.scan_edge_040_get_customer_customers.allow
   description: Generated allow for one discovered native MAS edge.
   priority: 120
   effect: ALLOW_WITH_OBLIGATIONS
@@ -860,7 +892,7 @@ policies:
     parameters:
       reason: native_mas_runtime
   enabled: true
-- id: policy.native.pep.scanner.scan_edge_039_list_customer_accounts_accounts.allow
+- id: policy.native.pep.scanner.scan_edge_041_list_customer_accounts_accounts.allow
   description: Generated allow for one discovered native MAS edge.
   priority: 120
   effect: ALLOW_WITH_OBLIGATIONS
@@ -876,7 +908,7 @@ policies:
     parameters:
       reason: native_mas_runtime
   enabled: true
-- id: policy.native.pep.scanner.scan_edge_040_get_customer_context_customers.allow
+- id: policy.native.pep.scanner.scan_edge_042_get_customer_context_customers.allow
   description: Generated allow for one discovered native MAS edge.
   priority: 120
   effect: ALLOW_WITH_OBLIGATIONS
@@ -892,7 +924,7 @@ policies:
     parameters:
       reason: native_mas_runtime
   enabled: true
-- id: policy.native.pep.scanner.scan_edge_041_list_customer_transactions_accounts.allow
+- id: policy.native.pep.scanner.scan_edge_043_list_customer_transactions_accounts.allow
   description: Generated allow for one discovered native MAS edge.
   priority: 120
   effect: ALLOW_WITH_OBLIGATIONS
@@ -908,7 +940,7 @@ policies:
     parameters:
       reason: native_mas_runtime
   enabled: true
-- id: policy.native.pep.scanner.scan_edge_042_list_customer_transactions_transactions.allow
+- id: policy.native.pep.scanner.scan_edge_044_list_customer_transactions_transactions.allow
   description: Generated allow for one discovered native MAS edge.
   priority: 120
   effect: ALLOW_WITH_OBLIGATIONS
@@ -924,7 +956,7 @@ policies:
     parameters:
       reason: native_mas_runtime
   enabled: true
-- id: policy.native.pep.scanner.scan_edge_043_create_account_customers.allow
+- id: policy.native.pep.scanner.scan_edge_045_create_account_customers.allow
   description: Generated allow for one discovered native MAS edge.
   priority: 120
   effect: ALLOW_WITH_OBLIGATIONS
@@ -940,7 +972,7 @@ policies:
     parameters:
       reason: native_mas_runtime
   enabled: true
-- id: policy.native.pep.scanner.scan_edge_044_create_account_accounts.allow
+- id: policy.native.pep.scanner.scan_edge_046_create_account_accounts.allow
   description: Generated allow for one discovered native MAS edge.
   priority: 120
   effect: ALLOW_WITH_OBLIGATIONS
@@ -956,7 +988,7 @@ policies:
     parameters:
       reason: native_mas_runtime
   enabled: true
-- id: policy.native.pep.scanner.scan_edge_045_create_account_accounts.pending_review
+- id: policy.native.pep.scanner.scan_edge_047_create_account_accounts.pending_review
   description: Generated native-runtime critical operation gate.
   priority: 280
   effect: MANUAL_REVIEW
@@ -969,7 +1001,7 @@ policies:
     - update
   obligations: []
   enabled: true
-- id: policy.native.pep.scanner.scan_edge_045_create_account_accounts.approved
+- id: policy.native.pep.scanner.scan_edge_047_create_account_accounts.approved
   description: Generated native-runtime approved critical operation.
   priority: 340
   effect: ALLOW_WITH_OBLIGATIONS
@@ -986,7 +1018,7 @@ policies:
     parameters:
       reason: native_mas_critical
   enabled: true
-- id: policy.native.pep.scanner.scan_edge_046_get_account_accounts.allow
+- id: policy.native.pep.scanner.scan_edge_048_get_account_accounts.allow
   description: Generated allow for one discovered native MAS edge.
   priority: 120
   effect: ALLOW_WITH_OBLIGATIONS
@@ -1002,7 +1034,7 @@ policies:
     parameters:
       reason: native_mas_runtime
   enabled: true
-- id: policy.native.pep.scanner.scan_edge_047_get_transaction_transactions.allow
+- id: policy.native.pep.scanner.scan_edge_049_get_transaction_transactions.allow
   description: Generated allow for one discovered native MAS edge.
   priority: 120
   effect: ALLOW_WITH_OBLIGATIONS
@@ -1018,7 +1050,7 @@ policies:
     parameters:
       reason: native_mas_runtime
   enabled: true
-- id: policy.native.pep.scanner.scan_edge_048_list_transactions_transactions.allow
+- id: policy.native.pep.scanner.scan_edge_050_list_transactions_transactions.allow
   description: Generated allow for one discovered native MAS edge.
   priority: 120
   effect: ALLOW_WITH_OBLIGATIONS
@@ -1034,7 +1066,7 @@ policies:
     parameters:
       reason: native_mas_runtime
   enabled: true
-- id: policy.native.pep.scanner.scan_edge_049_create_policy_policies.allow
+- id: policy.native.pep.scanner.scan_edge_051_create_policy_policies.allow
   description: Generated allow for one discovered native MAS edge.
   priority: 120
   effect: ALLOW_WITH_OBLIGATIONS
@@ -1050,7 +1082,7 @@ policies:
     parameters:
       reason: native_mas_runtime
   enabled: true
-- id: policy.native.pep.scanner.scan_edge_050_create_policy_policies.pending_review
+- id: policy.native.pep.scanner.scan_edge_052_create_policy_policies.pending_review
   description: Generated native-runtime critical operation gate.
   priority: 280
   effect: MANUAL_REVIEW
@@ -1063,7 +1095,7 @@ policies:
     - update
   obligations: []
   enabled: true
-- id: policy.native.pep.scanner.scan_edge_050_create_policy_policies.approved
+- id: policy.native.pep.scanner.scan_edge_052_create_policy_policies.approved
   description: Generated native-runtime approved critical operation.
   priority: 340
   effect: ALLOW_WITH_OBLIGATIONS
@@ -1080,7 +1112,7 @@ policies:
     parameters:
       reason: native_mas_critical
   enabled: true
-- id: policy.native.pep.scanner.scan_edge_051_list_policies_policies.allow
+- id: policy.native.pep.scanner.scan_edge_053_list_policies_policies.allow
   description: Generated allow for one discovered native MAS edge.
   priority: 120
   effect: ALLOW_WITH_OBLIGATIONS
@@ -1096,7 +1128,7 @@ policies:
     parameters:
       reason: native_mas_runtime
   enabled: true
-- id: policy.native.pep.scanner.scan_edge_052_search_policies_policies.allow
+- id: policy.native.pep.scanner.scan_edge_054_search_policies_policies.allow
   description: Generated allow for one discovered native MAS edge.
   priority: 120
   effect: ALLOW_WITH_OBLIGATIONS
@@ -1112,7 +1144,7 @@ policies:
     parameters:
       reason: native_mas_runtime
   enabled: true
-- id: policy.native.pep.scanner.scan_edge_053_create_rule_rules.allow
+- id: policy.native.pep.scanner.scan_edge_055_create_rule_rules.allow
   description: Generated allow for one discovered native MAS edge.
   priority: 120
   effect: ALLOW_WITH_OBLIGATIONS
@@ -1128,7 +1160,7 @@ policies:
     parameters:
       reason: native_mas_runtime
   enabled: true
-- id: policy.native.pep.scanner.scan_edge_054_create_rule_rules.pending_review
+- id: policy.native.pep.scanner.scan_edge_056_create_rule_rules.pending_review
   description: Generated native-runtime critical operation gate.
   priority: 280
   effect: MANUAL_REVIEW
@@ -1141,7 +1173,7 @@ policies:
     - update
   obligations: []
   enabled: true
-- id: policy.native.pep.scanner.scan_edge_054_create_rule_rules.approved
+- id: policy.native.pep.scanner.scan_edge_056_create_rule_rules.approved
   description: Generated native-runtime approved critical operation.
   priority: 340
   effect: ALLOW_WITH_OBLIGATIONS
@@ -1158,7 +1190,7 @@ policies:
     parameters:
       reason: native_mas_critical
   enabled: true
-- id: policy.native.pep.scanner.scan_edge_055_list_rules_rules.allow
+- id: policy.native.pep.scanner.scan_edge_057_list_rules_rules.allow
   description: Generated allow for one discovered native MAS edge.
   priority: 120
   effect: ALLOW_WITH_OBLIGATIONS
@@ -1174,7 +1206,7 @@ policies:
     parameters:
       reason: native_mas_runtime
   enabled: true
-- id: policy.native.pep.scanner.scan_edge_056_update_transaction_status_transactions.allow
+- id: policy.native.pep.scanner.scan_edge_058_update_transaction_status_transactions.allow
   description: Generated allow for one discovered native MAS edge.
   priority: 120
   effect: ALLOW_WITH_OBLIGATIONS
@@ -1190,7 +1222,7 @@ policies:
     parameters:
       reason: native_mas_runtime
   enabled: true
-- id: policy.native.pep.scanner.scan_edge_057_get_customer_product_affinity_customers.allow
+- id: policy.native.pep.scanner.scan_edge_059_get_customer_product_affinity_customers.allow
   description: Generated allow for one discovered native MAS edge.
   priority: 120
   effect: ALLOW_WITH_OBLIGATIONS
@@ -1206,7 +1238,7 @@ policies:
     parameters:
       reason: native_mas_runtime
   enabled: true
-- id: policy.native.pep.scanner.scan_edge_058_get_customer_product_affinity_accounts.allow
+- id: policy.native.pep.scanner.scan_edge_060_get_customer_product_affinity_accounts.allow
   description: Generated allow for one discovered native MAS edge.
   priority: 120
   effect: ALLOW_WITH_OBLIGATIONS
@@ -1222,7 +1254,7 @@ policies:
     parameters:
       reason: native_mas_runtime
   enabled: true
-- id: policy.native.pep.scanner.scan_edge_059_trigger_eod_reconciliation_transactions.allow
+- id: policy.native.pep.scanner.scan_edge_061_trigger_eod_reconciliation_transactions.allow
   description: Generated allow for one discovered native MAS edge.
   priority: 120
   effect: ALLOW_WITH_OBLIGATIONS
@@ -1238,7 +1270,7 @@ policies:
     parameters:
       reason: native_mas_runtime
   enabled: true
-- id: policy.native.pep.scanner.scan_edge_060_trigger_eod_reconciliation_audit_logs.pending_review
+- id: policy.native.pep.scanner.scan_edge_062_trigger_eod_reconciliation_audit_logs.pending_review
   description: Generated native-runtime critical operation gate.
   priority: 280
   effect: MANUAL_REVIEW
@@ -1251,7 +1283,7 @@ policies:
     - update
   obligations: []
   enabled: true
-- id: policy.native.pep.scanner.scan_edge_060_trigger_eod_reconciliation_audit_logs.approved
+- id: policy.native.pep.scanner.scan_edge_062_trigger_eod_reconciliation_audit_logs.approved
   description: Generated native-runtime approved critical operation.
   priority: 340
   effect: ALLOW_WITH_OBLIGATIONS
@@ -1268,7 +1300,7 @@ policies:
     parameters:
       reason: native_mas_critical
   enabled: true
-- id: policy.native.pep.scanner.scan_edge_061_get_reconciliation_mismatches_audit_logs.pending_review
+- id: policy.native.pep.scanner.scan_edge_063_get_reconciliation_mismatches_audit_logs.pending_review
   description: Generated native-runtime critical operation gate.
   priority: 280
   effect: MANUAL_REVIEW
@@ -1281,7 +1313,7 @@ policies:
     - read
   obligations: []
   enabled: true
-- id: policy.native.pep.scanner.scan_edge_061_get_reconciliation_mismatches_audit_logs.approved
+- id: policy.native.pep.scanner.scan_edge_063_get_reconciliation_mismatches_audit_logs.approved
   description: Generated native-runtime approved critical operation.
   priority: 340
   effect: ALLOW_WITH_OBLIGATIONS
@@ -1298,7 +1330,7 @@ policies:
     parameters:
       reason: native_mas_critical
   enabled: true
-- id: policy.native.pep.scanner.scan_edge_062_resolve_ledger_entry_transactions.allow
+- id: policy.native.pep.scanner.scan_edge_064_resolve_ledger_entry_transactions.allow
   description: Generated allow for one discovered native MAS edge.
   priority: 120
   effect: ALLOW_WITH_OBLIGATIONS
@@ -1314,7 +1346,7 @@ policies:
     parameters:
       reason: native_mas_runtime
   enabled: true
-- id: policy.native.pep.scanner.scan_edge_063_resolve_ledger_entry_audit_logs.pending_review
+- id: policy.native.pep.scanner.scan_edge_065_resolve_ledger_entry_audit_logs.pending_review
   description: Generated native-runtime critical operation gate.
   priority: 280
   effect: MANUAL_REVIEW
@@ -1327,7 +1359,7 @@ policies:
     - update
   obligations: []
   enabled: true
-- id: policy.native.pep.scanner.scan_edge_063_resolve_ledger_entry_audit_logs.approved
+- id: policy.native.pep.scanner.scan_edge_065_resolve_ledger_entry_audit_logs.approved
   description: Generated native-runtime approved critical operation.
   priority: 340
   effect: ALLOW_WITH_OBLIGATIONS
@@ -1344,7 +1376,7 @@ policies:
     parameters:
       reason: native_mas_critical
   enabled: true
-- id: policy.native.pep.scanner.scan_edge_064_back_office_eod_workflow_validation_checkpoint_agent.allow
+- id: policy.native.pep.scanner.scan_edge_066_back_office_eod_workflow_validation_checkpoint_agent.allow
   description: Generated allow for one discovered native MAS edge.
   priority: 120
   effect: ALLOW_WITH_OBLIGATIONS
@@ -1360,7 +1392,7 @@ policies:
     parameters:
       reason: native_mas_runtime
   enabled: true
-- id: policy.native.pep.scanner.scan_edge_065_back_office_eod_workflow_eod_processing_agent.allow
+- id: policy.native.pep.scanner.scan_edge_067_back_office_eod_workflow_eod_processing_agent.allow
   description: Generated allow for one discovered native MAS edge.
   priority: 120
   effect: ALLOW_WITH_OBLIGATIONS
@@ -1376,7 +1408,7 @@ policies:
     parameters:
       reason: native_mas_runtime
   enabled: true
-- id: policy.native.pep.scanner.scan_edge_066_back_office_eod_workflow_ledger_update_agent.allow
+- id: policy.native.pep.scanner.scan_edge_068_back_office_eod_workflow_ledger_update_agent.allow
   description: Generated allow for one discovered native MAS edge.
   priority: 120
   effect: ALLOW_WITH_OBLIGATIONS
@@ -1392,7 +1424,7 @@ policies:
     parameters:
       reason: native_mas_runtime
   enabled: true
-- id: policy.native.pep.scanner.scan_edge_067_back_office_eod_workflow_reconciliation_agent.allow
+- id: policy.native.pep.scanner.scan_edge_069_back_office_eod_workflow_reconciliation_agent.allow
   description: Generated allow for one discovered native MAS edge.
   priority: 120
   effect: ALLOW_WITH_OBLIGATIONS
@@ -1408,7 +1440,7 @@ policies:
     parameters:
       reason: native_mas_runtime
   enabled: true
-- id: policy.native.pep.scanner.scan_edge_068_back_office_eod_workflow_report_writing_agent.allow
+- id: policy.native.pep.scanner.scan_edge_070_back_office_eod_workflow_report_writing_agent.allow
   description: Generated allow for one discovered native MAS edge.
   priority: 120
   effect: ALLOW_WITH_OBLIGATIONS
@@ -1424,7 +1456,7 @@ policies:
     parameters:
       reason: native_mas_runtime
   enabled: true
-- id: policy.native.pep.scanner.scan_edge_069_back_office_eod_workflow_exception_agent.allow
+- id: policy.native.pep.scanner.scan_edge_071_back_office_eod_workflow_exception_agent.allow
   description: Generated allow for one discovered native MAS edge.
   priority: 120
   effect: ALLOW_WITH_OBLIGATIONS
@@ -1440,7 +1472,7 @@ policies:
     parameters:
       reason: native_mas_runtime
   enabled: true
-- id: policy.native.pep.scanner.scan_edge_070_back_office_router_back_office_eod_workflow.allow
+- id: policy.native.pep.scanner.scan_edge_072_back_office_router_back_office_eod_workflow.allow
   description: Generated allow for one discovered native MAS edge.
   priority: 120
   effect: ALLOW_WITH_OBLIGATIONS
@@ -1456,7 +1488,7 @@ policies:
     parameters:
       reason: native_mas_runtime
   enabled: true
-- id: policy.native.pep.scanner.scan_edge_071_front_office_transaction_workflow_transaction_monitoring_agent.allow
+- id: policy.native.pep.scanner.scan_edge_073_front_office_transaction_workflow_transaction_monitoring_agent.allow
   description: Generated allow for one discovered native MAS edge.
   priority: 120
   effect: ALLOW_WITH_OBLIGATIONS
@@ -1472,7 +1504,7 @@ policies:
     parameters:
       reason: native_mas_runtime
   enabled: true
-- id: policy.native.pep.scanner.scan_edge_072_front_office_transaction_workflow_fraud_detection_agent.allow
+- id: policy.native.pep.scanner.scan_edge_074_front_office_transaction_workflow_fraud_detection_agent.allow
   description: Generated allow for one discovered native MAS edge.
   priority: 120
   effect: ALLOW_WITH_OBLIGATIONS
@@ -1488,7 +1520,7 @@ policies:
     parameters:
       reason: native_mas_runtime
   enabled: true
-- id: policy.native.pep.scanner.scan_edge_073_front_office_transaction_workflow_compliance_agent.allow
+- id: policy.native.pep.scanner.scan_edge_075_front_office_transaction_workflow_compliance_agent.allow
   description: Generated allow for one discovered native MAS edge.
   priority: 120
   effect: ALLOW_WITH_OBLIGATIONS
@@ -1504,7 +1536,7 @@ policies:
     parameters:
       reason: native_mas_runtime
   enabled: true
-- id: policy.native.pep.scanner.scan_edge_074_front_office_transaction_workflow_decision_making_agent.allow
+- id: policy.native.pep.scanner.scan_edge_076_front_office_transaction_workflow_decision_making_agent.allow
   description: Generated allow for one discovered native MAS edge.
   priority: 120
   effect: ALLOW_WITH_OBLIGATIONS
@@ -1520,7 +1552,7 @@ policies:
     parameters:
       reason: native_mas_runtime
   enabled: true
-- id: policy.native.pep.scanner.scan_edge_075_customer_service_chatbot_workflow_chatbot_intent_agent.allow
+- id: policy.native.pep.scanner.scan_edge_077_customer_service_chatbot_workflow_chatbot_intent_agent.allow
   description: Generated allow for one discovered native MAS edge.
   priority: 120
   effect: ALLOW_WITH_OBLIGATIONS
@@ -1536,7 +1568,7 @@ policies:
     parameters:
       reason: native_mas_runtime
   enabled: true
-- id: policy.native.pep.scanner.scan_edge_076_customer_service_chatbot_workflow_knowledge_base_agent.allow
+- id: policy.native.pep.scanner.scan_edge_078_customer_service_chatbot_workflow_knowledge_base_agent.allow
   description: Generated allow for one discovered native MAS edge.
   priority: 120
   effect: ALLOW_WITH_OBLIGATIONS
@@ -1552,7 +1584,7 @@ policies:
     parameters:
       reason: native_mas_runtime
   enabled: true
-- id: policy.native.pep.scanner.scan_edge_077_customer_service_chatbot_workflow_customer_service_agent.allow
+- id: policy.native.pep.scanner.scan_edge_079_customer_service_chatbot_workflow_customer_service_agent.allow
   description: Generated allow for one discovered native MAS edge.
   priority: 120
   effect: ALLOW_WITH_OBLIGATIONS
@@ -1568,7 +1600,7 @@ policies:
     parameters:
       reason: native_mas_runtime
   enabled: true
-- id: policy.native.pep.scanner.scan_edge_078_customer_service_chatbot_workflow_transaction_processing_agent.allow
+- id: policy.native.pep.scanner.scan_edge_080_customer_service_chatbot_workflow_transaction_processing_agent.allow
   description: Generated allow for one discovered native MAS edge.
   priority: 120
   effect: ALLOW_WITH_OBLIGATIONS
@@ -1584,7 +1616,7 @@ policies:
     parameters:
       reason: native_mas_runtime
   enabled: true
-- id: policy.native.pep.scanner.scan_edge_079_front_office_router_front_office_transaction_workflow.allow
+- id: policy.native.pep.scanner.scan_edge_081_front_office_router_front_office_transaction_workflow.allow
   description: Generated allow for one discovered native MAS edge.
   priority: 120
   effect: ALLOW_WITH_OBLIGATIONS
@@ -1600,7 +1632,7 @@ policies:
     parameters:
       reason: native_mas_runtime
   enabled: true
-- id: policy.native.pep.scanner.scan_edge_080_front_office_router_customer_service_chatbot_workflow.allow
+- id: policy.native.pep.scanner.scan_edge_082_front_office_router_customer_service_chatbot_workflow.allow
   description: Generated allow for one discovered native MAS edge.
   priority: 120
   effect: ALLOW_WITH_OBLIGATIONS
@@ -1616,7 +1648,7 @@ policies:
     parameters:
       reason: native_mas_runtime
   enabled: true
-- id: policy.native.pep.scanner.scan_edge_081_mid_office_router_mid_office_planning_workflow.allow
+- id: policy.native.pep.scanner.scan_edge_083_mid_office_router_mid_office_planning_workflow.allow
   description: Generated allow for one discovered native MAS edge.
   priority: 120
   effect: ALLOW_WITH_OBLIGATIONS
@@ -1632,7 +1664,7 @@ policies:
     parameters:
       reason: native_mas_runtime
   enabled: true
-- id: policy.native.pep.scanner.scan_edge_082_mid_office_router_representative_assistant_workflow.allow
+- id: policy.native.pep.scanner.scan_edge_084_mid_office_router_representative_assistant_workflow.allow
   description: Generated allow for one discovered native MAS edge.
   priority: 120
   effect: ALLOW_WITH_OBLIGATIONS
@@ -1648,7 +1680,7 @@ policies:
     parameters:
       reason: native_mas_runtime
   enabled: true
-- id: policy.native.pep.scanner.scan_edge_083_mid_office_planning_parallel_validation_agent.allow
+- id: policy.native.pep.scanner.scan_edge_085_mid_office_planning_parallel_validation_agent.allow
   description: Generated allow for one discovered native MAS edge.
   priority: 120
   effect: ALLOW_WITH_OBLIGATIONS
@@ -1664,7 +1696,7 @@ policies:
     parameters:
       reason: native_mas_runtime
   enabled: true
-- id: policy.native.pep.scanner.scan_edge_084_mid_office_planning_parallel_support_guidance_agent.allow
+- id: policy.native.pep.scanner.scan_edge_086_mid_office_planning_parallel_support_guidance_agent.allow
   description: Generated allow for one discovered native MAS edge.
   priority: 120
   effect: ALLOW_WITH_OBLIGATIONS
@@ -1680,7 +1712,7 @@ policies:
     parameters:
       reason: native_mas_runtime
   enabled: true
-- id: policy.native.pep.scanner.scan_edge_085_mid_office_planning_workflow_data_analysis_agent.allow
+- id: policy.native.pep.scanner.scan_edge_087_mid_office_planning_workflow_data_analysis_agent.allow
   description: Generated allow for one discovered native MAS edge.
   priority: 120
   effect: ALLOW_WITH_OBLIGATIONS
@@ -1696,7 +1728,7 @@ policies:
     parameters:
       reason: native_mas_runtime
   enabled: true
-- id: policy.native.pep.scanner.scan_edge_086_mid_office_planning_workflow_forecasting_agent.allow
+- id: policy.native.pep.scanner.scan_edge_088_mid_office_planning_workflow_forecasting_agent.allow
   description: Generated allow for one discovered native MAS edge.
   priority: 120
   effect: ALLOW_WITH_OBLIGATIONS
@@ -1712,7 +1744,7 @@ policies:
     parameters:
       reason: native_mas_runtime
   enabled: true
-- id: policy.native.pep.scanner.scan_edge_087_mid_office_planning_workflow_staff_scheduling_agent.allow
+- id: policy.native.pep.scanner.scan_edge_089_mid_office_planning_workflow_staff_scheduling_agent.allow
   description: Generated allow for one discovered native MAS edge.
   priority: 120
   effect: ALLOW_WITH_OBLIGATIONS
@@ -1728,7 +1760,7 @@ policies:
     parameters:
       reason: native_mas_runtime
   enabled: true
-- id: policy.native.pep.scanner.scan_edge_088_mid_office_planning_workflow_mid_office_planning_parallel.allow
+- id: policy.native.pep.scanner.scan_edge_090_mid_office_planning_workflow_mid_office_planning_parallel.allow
   description: Generated allow for one discovered native MAS edge.
   priority: 120
   effect: ALLOW_WITH_OBLIGATIONS
@@ -1744,7 +1776,7 @@ policies:
     parameters:
       reason: native_mas_runtime
   enabled: true
-- id: policy.native.pep.scanner.scan_edge_089_mid_office_planning_workflow_planning_summary_agent.allow
+- id: policy.native.pep.scanner.scan_edge_091_mid_office_planning_workflow_planning_summary_agent.allow
   description: Generated allow for one discovered native MAS edge.
   priority: 120
   effect: ALLOW_WITH_OBLIGATIONS
@@ -1760,7 +1792,7 @@ policies:
     parameters:
       reason: native_mas_runtime
   enabled: true
-- id: policy.native.pep.scanner.scan_edge_090_representative_assist_parallel_financial_data_agent.allow
+- id: policy.native.pep.scanner.scan_edge_092_representative_assist_parallel_financial_data_agent.allow
   description: Generated allow for one discovered native MAS edge.
   priority: 120
   effect: ALLOW_WITH_OBLIGATIONS
@@ -1776,7 +1808,7 @@ policies:
     parameters:
       reason: native_mas_runtime
   enabled: true
-- id: policy.native.pep.scanner.scan_edge_091_representative_assist_parallel_recommender_agent.allow
+- id: policy.native.pep.scanner.scan_edge_093_representative_assist_parallel_recommender_agent.allow
   description: Generated allow for one discovered native MAS edge.
   priority: 120
   effect: ALLOW_WITH_OBLIGATIONS
@@ -1792,7 +1824,7 @@ policies:
     parameters:
       reason: native_mas_runtime
   enabled: true
-- id: policy.native.pep.scanner.scan_edge_092_representative_assist_parallel_loan_agent.allow
+- id: policy.native.pep.scanner.scan_edge_094_representative_assist_parallel_loan_agent.allow
   description: Generated allow for one discovered native MAS edge.
   priority: 120
   effect: ALLOW_WITH_OBLIGATIONS
@@ -1808,7 +1840,7 @@ policies:
     parameters:
       reason: native_mas_runtime
   enabled: true
-- id: policy.native.pep.scanner.scan_edge_093_representative_assist_parallel_risk_compliance_agent.allow
+- id: policy.native.pep.scanner.scan_edge_095_representative_assist_parallel_risk_compliance_agent.allow
   description: Generated allow for one discovered native MAS edge.
   priority: 120
   effect: ALLOW_WITH_OBLIGATIONS
@@ -1824,7 +1856,7 @@ policies:
     parameters:
       reason: native_mas_runtime
   enabled: true
-- id: policy.native.pep.scanner.scan_edge_094_representative_assistant_workflow_representative_assist_parallel.allow
+- id: policy.native.pep.scanner.scan_edge_096_representative_assistant_workflow_representative_assist_parallel.allow
   description: Generated allow for one discovered native MAS edge.
   priority: 120
   effect: ALLOW_WITH_OBLIGATIONS
@@ -1840,7 +1872,7 @@ policies:
     parameters:
       reason: native_mas_runtime
   enabled: true
-- id: policy.native.pep.scanner.scan_edge_095_representative_assistant_workflow_representative_merge_agent.allow
+- id: policy.native.pep.scanner.scan_edge_097_representative_assistant_workflow_representative_merge_agent.allow
   description: Generated allow for one discovered native MAS edge.
   priority: 120
   effect: ALLOW_WITH_OBLIGATIONS
@@ -1849,6 +1881,54 @@ policies:
     - agent.shared.representative_assistant_workflow
     resources:
     - resource.mid_office.other_representative_merge_agent
+    actions:
+    - read
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_runtime
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_098_aml_investigation_workflow_aml_investigator.allow
+  description: Generated allow for one discovered native MAS edge.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - agent.shared.aml_investigation_workflow
+    resources:
+    - resource.shared.other_aml_investigator
+    actions:
+    - read
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_runtime
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_099_aml_investigation_workflow_aml_reporter.allow
+  description: Generated allow for one discovered native MAS edge.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - agent.shared.aml_investigation_workflow
+    resources:
+    - resource.shared.other_aml_reporter
+    actions:
+    - read
+  obligations:
+  - type: enhanced_logging
+    parameters:
+      reason: native_mas_runtime
+  enabled: true
+- id: policy.native.pep.scanner.scan_edge_100_aml_office_router_aml_investigation_workflow.allow
+  description: Generated allow for one discovered native MAS edge.
+  priority: 120
+  effect: ALLOW_WITH_OBLIGATIONS
+  match:
+    subjects:
+    - agent.shared.aml_office_router
+    resources:
+    - resource.shared.other_aml_investigation_workflow
     actions:
     - read
   obligations:

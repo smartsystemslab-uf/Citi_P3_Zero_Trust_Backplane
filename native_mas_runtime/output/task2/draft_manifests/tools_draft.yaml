@@ -434,6 +434,48 @@ tools:
   operation_class: read
   status: provisional
   detection_method: tool_module
+- tool_id: fetch_transaction_history
+  display_name: Fetches the last 30 days of transaction history for AML review.
+  source_type: python
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_adk_mlflow_observability\bank_adk\tools\aml_tools.py:1
+  domain: shared
+  action_type: read
+  has_side_effects: false
+  risk_level: 3
+  requires_live_decision: false
+  audit_required: false
+  allowed_callers: []
+  calls_api: []
+  calls_api_methods: []
+  pii_fields: []
+  compliance_tags: []
+  idempotency_key: null
+  operation_class: read
+  status: provisional
+  detection_method: agent_reference
+- tool_id: screen_against_sanctions
+  display_name: Checks customer details against global sanctions lists.
+  source_type: python
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_adk_mlflow_observability\bank_adk\tools\aml_tools.py:6
+  domain: shared
+  action_type: compute
+  has_side_effects: false
+  risk_level: 2
+  requires_live_decision: false
+  audit_required: false
+  allowed_callers: []
+  calls_api: []
+  calls_api_methods: []
+  pii_fields: []
+  compliance_tags: []
+  idempotency_key: null
+  operation_class: read
+  status: provisional
+  detection_method: agent_reference
 - tool_id: get_transaction
   display_name: Fetches the full details of a transaction from the database.
   source_type: mcp

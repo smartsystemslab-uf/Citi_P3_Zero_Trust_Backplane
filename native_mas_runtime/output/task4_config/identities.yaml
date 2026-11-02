@@ -255,6 +255,16 @@ identities:
   attributes:
     manifest_status: provisional
     scanner_source_type: subject
+- id: aml_investigator
+  canonical_id: agent.shared.aml_investigator
+  type: agent
+  roles:
+  - specialist
+  domain: shared
+  enabled: true
+  attributes:
+    manifest_status: provisional
+    scanner_source_type: subject
 - id: get_transaction
   canonical_id: service.shared.get_transaction
   type: service
@@ -570,6 +580,26 @@ identities:
   type: agent
   roles:
   - workflow
+  domain: shared
+  enabled: true
+  attributes:
+    manifest_status: provisional
+    scanner_source_type: subject
+- id: aml_investigation_workflow
+  canonical_id: agent.shared.aml_investigation_workflow
+  type: agent
+  roles:
+  - workflow
+  domain: shared
+  enabled: true
+  attributes:
+    manifest_status: provisional
+    scanner_source_type: subject
+- id: aml_office_router
+  canonical_id: agent.shared.aml_office_router
+  type: agent
+  roles:
+  - router
   domain: shared
   enabled: true
   attributes:

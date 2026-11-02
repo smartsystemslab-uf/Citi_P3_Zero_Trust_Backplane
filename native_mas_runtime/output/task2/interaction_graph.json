@@ -979,6 +979,113 @@
           "provided_by": "task2_scanner",
           "reference": "citi_banking_adk\\bank_adk\\agents\\workflow_agents.py:258"
         }
+      },
+      {
+        "agent_id": "aml_investigator",
+        "symbol_name": "aml_investigator",
+        "description": "Analyzes customer transactions for structuring or sanctions hits.",
+        "domain": "shared",
+        "role": "specialist",
+        "agent_type": "LlmAgent",
+        "detection_method": "known_constructor",
+        "risk_tier": "medium",
+        "authorized_tools": [
+          "fetch_transaction_history",
+          "screen_against_sanctions"
+        ],
+        "authorized_transfers": [],
+        "dynamic_tool_sources": [],
+        "dynamic_agent_sources": [],
+        "reads_from": [],
+        "writes_to": [],
+        "requires_prior_steps": [],
+        "pep_type": "tool_pep",
+        "trust_level": "low_trust",
+        "status": "provisional",
+        "source": {
+          "provided_by": "task2_scanner",
+          "reference": "citi_banking_adk_mlflow_observability\\bank_adk\\agents\\aml_office.py:9"
+        }
+      },
+      {
+        "agent_id": "aml_reporter",
+        "symbol_name": "aml_reporter",
+        "description": "Drafts a Suspicious Activity Report (SAR) based on investigation findings.",
+        "domain": "shared",
+        "role": "specialist",
+        "agent_type": "LlmAgent",
+        "detection_method": "known_constructor",
+        "risk_tier": "medium",
+        "authorized_tools": [],
+        "authorized_transfers": [],
+        "dynamic_tool_sources": [],
+        "dynamic_agent_sources": [],
+        "reads_from": [],
+        "writes_to": [],
+        "requires_prior_steps": [],
+        "pep_type": "tool_pep",
+        "trust_level": "low_trust",
+        "status": "provisional",
+        "source": {
+          "provided_by": "task2_scanner",
+          "reference": "citi_banking_adk_mlflow_observability\\bank_adk\\agents\\aml_office.py:19"
+        }
+      },
+      {
+        "agent_id": "aml_investigation_workflow",
+        "symbol_name": "aml_workflow_agent",
+        "description": "Auto-discovered agent",
+        "domain": "shared",
+        "role": "workflow",
+        "agent_type": "AmlInvestigationWorkflowAgent",
+        "detection_method": "generic_agent_constructor",
+        "risk_tier": "medium",
+        "authorized_tools": [],
+        "authorized_transfers": [
+          "aml_investigator",
+          "aml_reporter"
+        ],
+        "dynamic_tool_sources": [],
+        "dynamic_agent_sources": [],
+        "reads_from": [],
+        "writes_to": [],
+        "requires_prior_steps": [],
+        "pep_type": "none",
+        "trust_level": "low_trust",
+        "status": "provisional",
+        "source": {
+          "provided_by": "task2_scanner",
+          "reference": "citi_banking_adk_mlflow_observability\\bank_adk\\agents\\aml_office.py:29"
+        },
+        "aliases": [
+          "aml_workflow_agent"
+        ]
+      },
+      {
+        "agent_id": "aml_office_router",
+        "symbol_name": "aml_office_router",
+        "description": "Routes compliance, fraud, and suspicious activity requests into the AML investigation workflow.",
+        "domain": "shared",
+        "role": "router",
+        "agent_type": "LlmAgent",
+        "detection_method": "known_constructor",
+        "risk_tier": "medium",
+        "authorized_tools": [],
+        "authorized_transfers": [
+          "aml_workflow_agent"
+        ],
+        "dynamic_tool_sources": [],
+        "dynamic_agent_sources": [],
+        "reads_from": [],
+        "writes_to": [],
+        "requires_prior_steps": [],
+        "pep_type": "route_pep",
+        "trust_level": "low_trust",
+        "status": "provisional",
+        "source": {
+          "provided_by": "task2_scanner",
+          "reference": "citi_banking_adk_mlflow_observability\\bank_adk\\agents\\aml_office.py:35"
+        }
       }
     ],
     "tools": [
@@ -1461,6 +1568,54 @@
         "operation_class": "read",
         "status": "provisional",
         "detection_method": "tool_module"
+      },
+      {
+        "tool_id": "fetch_transaction_history",
+        "display_name": "Fetches the last 30 days of transaction history for AML review.",
+        "source_type": "python",
+        "source": {
+          "provided_by": "task2_scanner",
+          "reference": "citi_banking_adk_mlflow_observability\\bank_adk\\tools\\aml_tools.py:1"
+        },
+        "domain": "shared",
+        "action_type": "read",
+        "has_side_effects": false,
+        "risk_level": 3,
+        "requires_live_decision": false,
+        "audit_required": false,
+        "allowed_callers": [],
+        "calls_api": [],
+        "calls_api_methods": [],
+        "pii_fields": [],
+        "compliance_tags": [],
+        "idempotency_key": null,
+        "operation_class": "read",
+        "status": "provisional",
+        "detection_method": "agent_reference"
+      },
+      {
+        "tool_id": "screen_against_sanctions",
+        "display_name": "Checks customer details against global sanctions lists.",
+        "source_type": "python",
+        "source": {
+          "provided_by": "task2_scanner",
+          "reference": "citi_banking_adk_mlflow_observability\\bank_adk\\tools\\aml_tools.py:6"
+        },
+        "domain": "shared",
+        "action_type": "compute",
+        "has_side_effects": false,
+        "risk_level": 2,
+        "requires_live_decision": false,
+        "audit_required": false,
+        "allowed_callers": [],
+        "calls_api": [],
+        "calls_api_methods": [],
+        "pii_fields": [],
+        "compliance_tags": [],
+        "idempotency_key": null,
+        "operation_class": "read",
+        "status": "provisional",
+        "detection_method": "agent_reference"
       },
       {
         "tool_id": "get_transaction",
@@ -3413,6 +3568,60 @@
     },
     {
       "edge_id": "edge_027",
+      "edge_type": "agent_to_tool",
+      "from_id": "aml_investigator",
+      "from_type": "subject",
+      "to_id": "fetch_transaction_history",
+      "to_type": "tool",
+      "action": "call_tool",
+      "data_type": "operational",
+      "risk_level": 3,
+      "side_effects": false,
+      "authentication_method": "in_process_identity",
+      "trust_boundary": "agent_tool_boundary",
+      "workflow_context": "transaction",
+      "pep_required": true,
+      "pep_type": "tool_pep",
+      "trigger": null,
+      "required_state": [],
+      "http_method": null,
+      "db_operation": null,
+      "operation_class": "read",
+      "status": "provisional",
+      "source": {
+        "provided_by": "task2_scanner",
+        "reference": "task2_scanner"
+      }
+    },
+    {
+      "edge_id": "edge_028",
+      "edge_type": "agent_to_tool",
+      "from_id": "aml_investigator",
+      "from_type": "subject",
+      "to_id": "screen_against_sanctions",
+      "to_type": "tool",
+      "action": "call_tool",
+      "data_type": "service",
+      "risk_level": 2,
+      "side_effects": false,
+      "authentication_method": "in_process_identity",
+      "trust_boundary": "agent_tool_boundary",
+      "workflow_context": "workflow_shared",
+      "pep_required": true,
+      "pep_type": "tool_pep",
+      "trigger": null,
+      "required_state": [],
+      "http_method": null,
+      "db_operation": null,
+      "operation_class": "read",
+      "status": "provisional",
+      "source": {
+        "provided_by": "task2_scanner",
+        "reference": "task2_scanner"
+      }
+    },
+    {
+      "edge_id": "edge_029",
       "edge_type": "tool_to_api",
       "from_id": "get_transaction",
       "from_type": "tool",
@@ -3439,7 +3648,7 @@
       }
     },
     {
-      "edge_id": "edge_028",
+      "edge_id": "edge_030",
       "edge_type": "tool_to_api",
       "from_id": "run_fraud_and_compliance_workflow",
       "from_type": "tool",
@@ -3466,7 +3675,7 @@
       }
     },
     {
-      "edge_id": "edge_029",
+      "edge_id": "edge_031",
       "edge_type": "tool_to_api",
       "from_id": "update_transaction_status",
       "from_type": "tool",
@@ -3493,7 +3702,7 @@
       }
     },
     {
-      "edge_id": "edge_030",
+      "edge_id": "edge_032",
       "edge_type": "tool_to_api",
       "from_id": "get_branch_workload",
       "from_type": "tool",
@@ -3520,7 +3729,7 @@
       }
     },
     {
-      "edge_id": "edge_031",
+      "edge_id": "edge_033",
       "edge_type": "tool_to_api",
       "from_id": "propose_staffing_adjustment",
       "from_type": "tool",
@@ -3547,7 +3756,7 @@
       }
     },
     {
-      "edge_id": "edge_032",
+      "edge_id": "edge_034",
       "edge_type": "tool_to_api",
       "from_id": "get_customer_product_affinity",
       "from_type": "tool",
@@ -3574,7 +3783,7 @@
       }
     },
     {
-      "edge_id": "edge_033",
+      "edge_id": "edge_035",
       "edge_type": "tool_to_api",
       "from_id": "trigger_eod_reconciliation",
       "from_type": "tool",
@@ -3601,7 +3810,7 @@
       }
     },
     {
-      "edge_id": "edge_034",
+      "edge_id": "edge_036",
       "edge_type": "tool_to_api",
       "from_id": "get_reconciliation_mismatches",
       "from_type": "tool",
@@ -3628,7 +3837,7 @@
       }
     },
     {
-      "edge_id": "edge_035",
+      "edge_id": "edge_037",
       "edge_type": "tool_to_api",
       "from_id": "resolve_ledger_entry",
       "from_type": "tool",
@@ -3655,7 +3864,7 @@
       }
     },
     {
-      "edge_id": "edge_036",
+      "edge_id": "edge_038",
       "edge_type": "api_to_database",
       "from_id": "create_customer",
       "from_type": "api",
@@ -3682,7 +3891,7 @@
       }
     },
     {
-      "edge_id": "edge_037",
+      "edge_id": "edge_039",
       "edge_type": "api_to_database",
       "from_id": "create_customer",
       "from_type": "api",
@@ -3709,7 +3918,7 @@
       }
     },
     {
-      "edge_id": "edge_038",
+      "edge_id": "edge_040",
       "edge_type": "api_to_database",
       "from_id": "get_customer",
       "from_type": "api",
@@ -3736,7 +3945,7 @@
       }
     },
     {
-      "edge_id": "edge_039",
+      "edge_id": "edge_041",
       "edge_type": "api_to_database",
       "from_id": "list_customer_accounts",
       "from_type": "api",
@@ -3763,7 +3972,7 @@
       }
     },
     {
-      "edge_id": "edge_040",
+      "edge_id": "edge_042",
       "edge_type": "api_to_database",
       "from_id": "get_customer_context",
       "from_type": "api",
@@ -3790,7 +3999,7 @@
       }
     },
     {
-      "edge_id": "edge_041",
+      "edge_id": "edge_043",
       "edge_type": "api_to_database",
       "from_id": "list_customer_transactions",
       "from_type": "api",
@@ -3817,7 +4026,7 @@
       }
     },
     {
-      "edge_id": "edge_042",
+      "edge_id": "edge_044",
       "edge_type": "api_to_database",
       "from_id": "list_customer_transactions",
       "from_type": "api",
@@ -3844,7 +4053,7 @@
       }
     },
     {
-      "edge_id": "edge_043",
+      "edge_id": "edge_045",
       "edge_type": "api_to_database",
       "from_id": "create_account",
       "from_type": "api",
@@ -3871,7 +4080,7 @@
       }
     },
     {
-      "edge_id": "edge_044",
+      "edge_id": "edge_046",
       "edge_type": "api_to_database",
       "from_id": "create_account",
       "from_type": "api",
@@ -3898,7 +4107,7 @@
       }
     },
     {
-      "edge_id": "edge_045",
+      "edge_id": "edge_047",
       "edge_type": "api_to_database",
       "from_id": "create_account",
       "from_type": "api",
@@ -3925,7 +4134,7 @@
       }
     },
     {
-      "edge_id": "edge_046",
+      "edge_id": "edge_048",
       "edge_type": "api_to_database",
       "from_id": "get_account",
       "from_type": "api",
@@ -3952,7 +4161,7 @@
       }
     },
     {
-      "edge_id": "edge_047",
+      "edge_id": "edge_049",
       "edge_type": "api_to_database",
       "from_id": "get_transaction",
       "from_type": "api",
@@ -3979,7 +4188,7 @@
       }
     },
     {
-      "edge_id": "edge_048",
+      "edge_id": "edge_050",
       "edge_type": "api_to_database",
       "from_id": "list_transactions",
       "from_type": "api",
@@ -4006,7 +4215,7 @@
       }
     },
     {
-      "edge_id": "edge_049",
+      "edge_id": "edge_051",
       "edge_type": "api_to_database",
       "from_id": "create_policy",
       "from_type": "api",
@@ -4033,7 +4242,7 @@
       }
     },
     {
-      "edge_id": "edge_050",
+      "edge_id": "edge_052",
       "edge_type": "api_to_database",
       "from_id": "create_policy",
       "from_type": "api",
@@ -4060,7 +4269,7 @@
       }
     },
     {
-      "edge_id": "edge_051",
+      "edge_id": "edge_053",
       "edge_type": "api_to_database",
       "from_id": "list_policies",
       "from_type": "api",
@@ -4087,7 +4296,7 @@
       }
     },
     {
-      "edge_id": "edge_052",
+      "edge_id": "edge_054",
       "edge_type": "api_to_database",
       "from_id": "search_policies",
       "from_type": "api",
@@ -4114,7 +4323,7 @@
       }
     },
     {
-      "edge_id": "edge_053",
+      "edge_id": "edge_055",
       "edge_type": "api_to_database",
       "from_id": "create_rule",
       "from_type": "api",
@@ -4141,7 +4350,7 @@
       }
     },
     {
-      "edge_id": "edge_054",
+      "edge_id": "edge_056",
       "edge_type": "api_to_database",
       "from_id": "create_rule",
       "from_type": "api",
@@ -4168,7 +4377,7 @@
       }
     },
     {
-      "edge_id": "edge_055",
+      "edge_id": "edge_057",
       "edge_type": "api_to_database",
       "from_id": "list_rules",
       "from_type": "api",
@@ -4195,7 +4404,7 @@
       }
     },
     {
-      "edge_id": "edge_056",
+      "edge_id": "edge_058",
       "edge_type": "api_to_database",
       "from_id": "update_transaction_status",
       "from_type": "api",
@@ -4222,7 +4431,7 @@
       }
     },
     {
-      "edge_id": "edge_057",
+      "edge_id": "edge_059",
       "edge_type": "api_to_database",
       "from_id": "get_customer_product_affinity",
       "from_type": "api",
@@ -4249,7 +4458,7 @@
       }
     },
     {
-      "edge_id": "edge_058",
+      "edge_id": "edge_060",
       "edge_type": "api_to_database",
       "from_id": "get_customer_product_affinity",
       "from_type": "api",
@@ -4276,7 +4485,7 @@
       }
     },
     {
-      "edge_id": "edge_059",
+      "edge_id": "edge_061",
       "edge_type": "api_to_database",
       "from_id": "trigger_eod_reconciliation",
       "from_type": "api",
@@ -4303,7 +4512,7 @@
       }
     },
     {
-      "edge_id": "edge_060",
+      "edge_id": "edge_062",
       "edge_type": "api_to_database",
       "from_id": "trigger_eod_reconciliation",
       "from_type": "api",
@@ -4330,7 +4539,7 @@
       }
     },
     {
-      "edge_id": "edge_061",
+      "edge_id": "edge_063",
       "edge_type": "api_to_database",
       "from_id": "get_reconciliation_mismatches",
       "from_type": "api",
@@ -4357,7 +4566,7 @@
       }
     },
     {
-      "edge_id": "edge_062",
+      "edge_id": "edge_064",
       "edge_type": "api_to_database",
       "from_id": "resolve_ledger_entry",
       "from_type": "api",
@@ -4384,7 +4593,7 @@
       }
     },
     {
-      "edge_id": "edge_063",
+      "edge_id": "edge_065",
       "edge_type": "api_to_database",
       "from_id": "resolve_ledger_entry",
       "from_type": "api",
@@ -4411,7 +4620,7 @@
       }
     },
     {
-      "edge_id": "edge_064",
+      "edge_id": "edge_066",
       "edge_type": "agent_to_agent",
       "from_id": "back_office_eod_workflow",
       "from_type": "subject",
@@ -4438,7 +4647,7 @@
       }
     },
     {
-      "edge_id": "edge_065",
+      "edge_id": "edge_067",
       "edge_type": "agent_to_agent",
       "from_id": "back_office_eod_workflow",
       "from_type": "subject",
@@ -4465,7 +4674,7 @@
       }
     },
     {
-      "edge_id": "edge_066",
+      "edge_id": "edge_068",
       "edge_type": "agent_to_agent",
       "from_id": "back_office_eod_workflow",
       "from_type": "subject",
@@ -4492,7 +4701,7 @@
       }
     },
     {
-      "edge_id": "edge_067",
+      "edge_id": "edge_069",
       "edge_type": "agent_to_agent",
       "from_id": "back_office_eod_workflow",
       "from_type": "subject",
@@ -4519,7 +4728,7 @@
       }
     },
     {
-      "edge_id": "edge_068",
+      "edge_id": "edge_070",
       "edge_type": "agent_to_agent",
       "from_id": "back_office_eod_workflow",
       "from_type": "subject",
@@ -4546,7 +4755,7 @@
       }
     },
     {
-      "edge_id": "edge_069",
+      "edge_id": "edge_071",
       "edge_type": "agent_to_agent",
       "from_id": "back_office_eod_workflow",
       "from_type": "subject",
@@ -4573,7 +4782,7 @@
       }
     },
     {
-      "edge_id": "edge_070",
+      "edge_id": "edge_072",
       "edge_type": "agent_to_agent",
       "from_id": "back_office_router",
       "from_type": "subject",
@@ -4600,7 +4809,7 @@
       }
     },
     {
-      "edge_id": "edge_071",
+      "edge_id": "edge_073",
       "edge_type": "agent_to_agent",
       "from_id": "front_office_transaction_workflow",
       "from_type": "subject",
@@ -4627,7 +4836,7 @@
       }
     },
     {
-      "edge_id": "edge_072",
+      "edge_id": "edge_074",
       "edge_type": "agent_to_agent",
       "from_id": "front_office_transaction_workflow",
       "from_type": "subject",
@@ -4654,7 +4863,7 @@
       }
     },
     {
-      "edge_id": "edge_073",
+      "edge_id": "edge_075",
       "edge_type": "agent_to_agent",
       "from_id": "front_office_transaction_workflow",
       "from_type": "subject",
@@ -4681,7 +4890,7 @@
       }
     },
     {
-      "edge_id": "edge_074",
+      "edge_id": "edge_076",
       "edge_type": "agent_to_agent",
       "from_id": "front_office_transaction_workflow",
       "from_type": "subject",
@@ -4708,7 +4917,7 @@
       }
     },
     {
-      "edge_id": "edge_075",
+      "edge_id": "edge_077",
       "edge_type": "agent_to_agent",
       "from_id": "customer_service_chatbot_workflow",
       "from_type": "subject",
@@ -4735,7 +4944,7 @@
       }
     },
     {
-      "edge_id": "edge_076",
+      "edge_id": "edge_078",
       "edge_type": "agent_to_agent",
       "from_id": "customer_service_chatbot_workflow",
       "from_type": "subject",
@@ -4762,7 +4971,7 @@
       }
     },
     {
-      "edge_id": "edge_077",
+      "edge_id": "edge_079",
       "edge_type": "agent_to_agent",
       "from_id": "customer_service_chatbot_workflow",
       "from_type": "subject",
@@ -4789,7 +4998,7 @@
       }
     },
     {
-      "edge_id": "edge_078",
+      "edge_id": "edge_080",
       "edge_type": "agent_to_agent",
       "from_id": "customer_service_chatbot_workflow",
       "from_type": "subject",
@@ -4816,7 +5025,7 @@
       }
     },
     {
-      "edge_id": "edge_079",
+      "edge_id": "edge_081",
       "edge_type": "agent_to_agent",
       "from_id": "front_office_router",
       "from_type": "subject",
@@ -4843,7 +5052,7 @@
       }
     },
     {
-      "edge_id": "edge_080",
+      "edge_id": "edge_082",
       "edge_type": "agent_to_agent",
       "from_id": "front_office_router",
       "from_type": "subject",
@@ -4870,7 +5079,7 @@
       }
     },
     {
-      "edge_id": "edge_081",
+      "edge_id": "edge_083",
       "edge_type": "agent_to_agent",
       "from_id": "mid_office_router",
       "from_type": "subject",
@@ -4897,7 +5106,7 @@
       }
     },
     {
-      "edge_id": "edge_082",
+      "edge_id": "edge_084",
       "edge_type": "agent_to_agent",
       "from_id": "mid_office_router",
       "from_type": "subject",
@@ -4924,7 +5133,7 @@
       }
     },
     {
-      "edge_id": "edge_083",
+      "edge_id": "edge_085",
       "edge_type": "agent_to_agent",
       "from_id": "mid_office_planning_parallel",
       "from_type": "subject",
@@ -4951,7 +5160,7 @@
       }
     },
     {
-      "edge_id": "edge_084",
+      "edge_id": "edge_086",
       "edge_type": "agent_to_agent",
       "from_id": "mid_office_planning_parallel",
       "from_type": "subject",
@@ -4978,7 +5187,7 @@
       }
     },
     {
-      "edge_id": "edge_085",
+      "edge_id": "edge_087",
       "edge_type": "agent_to_agent",
       "from_id": "mid_office_planning_workflow",
       "from_type": "subject",
@@ -5005,7 +5214,7 @@
       }
     },
     {
-      "edge_id": "edge_086",
+      "edge_id": "edge_088",
       "edge_type": "agent_to_agent",
       "from_id": "mid_office_planning_workflow",
       "from_type": "subject",
@@ -5032,7 +5241,7 @@
       }
     },
     {
-      "edge_id": "edge_087",
+      "edge_id": "edge_089",
       "edge_type": "agent_to_agent",
       "from_id": "mid_office_planning_workflow",
       "from_type": "subject",
@@ -5059,7 +5268,7 @@
       }
     },
     {
-      "edge_id": "edge_088",
+      "edge_id": "edge_090",
       "edge_type": "agent_to_agent",
       "from_id": "mid_office_planning_workflow",
       "from_type": "subject",
@@ -5086,7 +5295,7 @@
       }
     },
     {
-      "edge_id": "edge_089",
+      "edge_id": "edge_091",
       "edge_type": "agent_to_agent",
       "from_id": "mid_office_planning_workflow",
       "from_type": "subject",
@@ -5113,7 +5322,7 @@
       }
     },
     {
-      "edge_id": "edge_090",
+      "edge_id": "edge_092",
       "edge_type": "agent_to_agent",
       "from_id": "representative_assist_parallel",
       "from_type": "subject",
@@ -5140,7 +5349,7 @@
       }
     },
     {
-      "edge_id": "edge_091",
+      "edge_id": "edge_093",
       "edge_type": "agent_to_agent",
       "from_id": "representative_assist_parallel",
       "from_type": "subject",
@@ -5167,7 +5376,7 @@
       }
     },
     {
-      "edge_id": "edge_092",
+      "edge_id": "edge_094",
       "edge_type": "agent_to_agent",
       "from_id": "representative_assist_parallel",
       "from_type": "subject",
@@ -5194,7 +5403,7 @@
       }
     },
     {
-      "edge_id": "edge_093",
+      "edge_id": "edge_095",
       "edge_type": "agent_to_agent",
       "from_id": "representative_assist_parallel",
       "from_type": "subject",
@@ -5221,7 +5430,7 @@
       }
     },
     {
-      "edge_id": "edge_094",
+      "edge_id": "edge_096",
       "edge_type": "agent_to_agent",
       "from_id": "representative_assistant_workflow",
       "from_type": "subject",
@@ -5248,11 +5457,92 @@
       }
     },
     {
-      "edge_id": "edge_095",
+      "edge_id": "edge_097",
       "edge_type": "agent_to_agent",
       "from_id": "representative_assistant_workflow",
       "from_type": "subject",
       "to_id": "representative_merge_agent",
+      "to_type": "subject",
+      "action": "transfer_control",
+      "data_type": "workflow_control",
+      "risk_level": 2,
+      "side_effects": false,
+      "authentication_method": "workload_identity",
+      "trust_boundary": "agent_boundary",
+      "workflow_context": "workflow_shared",
+      "pep_required": true,
+      "pep_type": "route_pep",
+      "trigger": null,
+      "required_state": [],
+      "http_method": null,
+      "db_operation": null,
+      "operation_class": "read",
+      "status": "provisional",
+      "source": {
+        "provided_by": "task2_scanner",
+        "reference": "task2_scanner"
+      }
+    },
+    {
+      "edge_id": "edge_098",
+      "edge_type": "agent_to_agent",
+      "from_id": "aml_investigation_workflow",
+      "from_type": "subject",
+      "to_id": "aml_investigator",
+      "to_type": "subject",
+      "action": "transfer_control",
+      "data_type": "workflow_control",
+      "risk_level": 2,
+      "side_effects": false,
+      "authentication_method": "workload_identity",
+      "trust_boundary": "agent_boundary",
+      "workflow_context": "workflow_shared",
+      "pep_required": true,
+      "pep_type": "route_pep",
+      "trigger": null,
+      "required_state": [],
+      "http_method": null,
+      "db_operation": null,
+      "operation_class": "read",
+      "status": "provisional",
+      "source": {
+        "provided_by": "task2_scanner",
+        "reference": "task2_scanner"
+      }
+    },
+    {
+      "edge_id": "edge_099",
+      "edge_type": "agent_to_agent",
+      "from_id": "aml_investigation_workflow",
+      "from_type": "subject",
+      "to_id": "aml_reporter",
+      "to_type": "subject",
+      "action": "transfer_control",
+      "data_type": "workflow_control",
+      "risk_level": 2,
+      "side_effects": false,
+      "authentication_method": "workload_identity",
+      "trust_boundary": "agent_boundary",
+      "workflow_context": "workflow_shared",
+      "pep_required": true,
+      "pep_type": "route_pep",
+      "trigger": null,
+      "required_state": [],
+      "http_method": null,
+      "db_operation": null,
+      "operation_class": "read",
+      "status": "provisional",
+      "source": {
+        "provided_by": "task2_scanner",
+        "reference": "task2_scanner"
+      }
+    },
+    {
+      "edge_id": "edge_100",
+      "edge_type": "agent_to_agent",
+      "from_id": "aml_office_router",
+      "from_type": "subject",
+      "to_id": "aml_investigation_workflow",
       "to_type": "subject",
       "action": "transfer_control",
       "data_type": "workflow_control",

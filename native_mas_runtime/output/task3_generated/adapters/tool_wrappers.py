@@ -55,3 +55,9 @@ def protect_pep_scanner_scan_edge_024_recommender_agent_search_product_catalog(e
 
 def protect_pep_scanner_scan_edge_025_loan_agent_search_loan_playbooks(enforcer: PEPEnforcer, operation: Callable[..., Any]) -> Callable[..., Any]:
     return protect(enforcer, 'pep.scanner.scan_edge_025_loan_agent_search_loan_playbooks', operation)
+
+def protect_pep_scanner_scan_edge_027_aml_investigator_fetch_transaction_history(enforcer: PEPEnforcer, operation: Callable[..., Any]) -> Callable[..., Any]:
+    return protect(enforcer, 'pep.scanner.scan_edge_027_aml_investigator_fetch_transaction_history', operation)
+
+def protect_pep_scanner_scan_edge_028_aml_investigator_screen_against_sanctions(enforcer: PEPEnforcer, operation: Callable[..., Any]) -> Callable[..., Any]:
+    return protect(enforcer, 'pep.scanner.scan_edge_028_aml_investigator_screen_against_sanctions', operation)

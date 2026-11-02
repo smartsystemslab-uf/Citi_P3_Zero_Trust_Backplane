@@ -5,7 +5,7 @@ metadata:
   manifest_version: 1.0.0-alpha.1
   environment: prototype
   created_at: '2026-07-26T00:00:00Z'
-  updated_at: '2026-08-27T00:37:56.395354Z'
+  updated_at: '2026-09-06T06:01:26.891564Z'
   owner: zero_trust_backplane_team
   source_revision: task1+task2-runtime-graph-reconciled
   description: Project-wide baseline containing current provisional architecture and
@@ -1027,6 +1027,36 @@ spec:
         extensions: {}
     attributes:
       scanner_source_type: subject
+  - id: agent.shared.aml_investigator
+    type: agent
+    roles:
+    - specialist
+    domain: shared
+    enabled: true
+    metadata:
+      display_name: aml_investigator
+      description: Task 2 discovered subject aml_investigator.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: citi_banking_adk_mlflow_observability\bank_adk\agents\aml_office.py:9
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: aml_investigator
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    attributes:
+      scanner_source_type: subject
   - id: service.shared.get_transaction
     type: service
     roles:
@@ -1979,6 +2009,66 @@ spec:
     bindings:
       prototype:
         runtime_id: representative_assistant_workflow
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    attributes:
+      scanner_source_type: subject
+  - id: agent.shared.aml_investigation_workflow
+    type: agent
+    roles:
+    - workflow
+    domain: shared
+    enabled: true
+    metadata:
+      display_name: aml_investigation_workflow
+      description: Task 2 discovered subject aml_investigation_workflow.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: citi_banking_adk_mlflow_observability\bank_adk\agents\aml_office.py:29
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: aml_investigation_workflow
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    attributes:
+      scanner_source_type: subject
+  - id: agent.shared.aml_office_router
+    type: agent
+    roles:
+    - router
+    domain: shared
+    enabled: true
+    metadata:
+      display_name: aml_office_router
+      description: Task 2 discovered subject aml_office_router.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: citi_banking_adk_mlflow_observability\bank_adk\agents\aml_office.py:35
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: aml_office_router
         endpoint: null
         function_name: null
         service_name: null
@@ -3415,6 +3505,76 @@ spec:
     bindings:
       prototype:
         runtime_id: search_policies
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    attributes:
+      scanner_target_type: tool
+  - id: resource.shared.tool_fetch_transaction_history
+    type: tool
+    domain: shared
+    classification: confidential
+    actions:
+    - name: read
+      side_effect: false
+      criticality: high
+      requires_human_approval: false
+      idempotent: true
+      parameter_schema_ref: null
+    metadata:
+      display_name: fetch_transaction_history
+      description: Task 2 discovered tool resource fetch_transaction_history.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: citi_banking_adk_mlflow_observability\bank_adk\tools\aml_tools.py:1
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: fetch_transaction_history
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    attributes:
+      scanner_target_type: tool
+  - id: resource.shared.tool_screen_against_sanctions
+    type: tool
+    domain: shared
+    classification: internal
+    actions:
+    - name: read
+      side_effect: false
+      criticality: medium
+      requires_human_approval: false
+      idempotent: true
+      parameter_schema_ref: null
+    metadata:
+      display_name: screen_against_sanctions
+      description: Task 2 discovered tool resource screen_against_sanctions.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: citi_banking_adk_mlflow_observability\bank_adk\tools\aml_tools.py:6
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: screen_against_sanctions
         endpoint: null
         function_name: null
         service_name: null
@@ -5063,6 +5223,111 @@ spec:
         extensions: {}
     attributes:
       scanner_target_type: subject
+  - id: resource.shared.other_aml_investigator
+    type: other
+    domain: shared
+    classification: internal
+    actions:
+    - name: read
+      side_effect: false
+      criticality: medium
+      requires_human_approval: false
+      idempotent: true
+      parameter_schema_ref: null
+    metadata:
+      display_name: aml_investigator
+      description: Task 2 discovered subject resource aml_investigator.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: citi_banking_adk_mlflow_observability\bank_adk\agents\aml_office.py:9
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: aml_investigator
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    attributes:
+      scanner_target_type: subject
+  - id: resource.shared.other_aml_reporter
+    type: other
+    domain: shared
+    classification: internal
+    actions:
+    - name: read
+      side_effect: false
+      criticality: medium
+      requires_human_approval: false
+      idempotent: true
+      parameter_schema_ref: null
+    metadata:
+      display_name: aml_reporter
+      description: Task 2 discovered subject resource aml_reporter.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: citi_banking_adk_mlflow_observability\bank_adk\agents\aml_office.py:19
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: aml_reporter
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    attributes:
+      scanner_target_type: subject
+  - id: resource.shared.other_aml_investigation_workflow
+    type: other
+    domain: shared
+    classification: internal
+    actions:
+    - name: read
+      side_effect: false
+      criticality: medium
+      requires_human_approval: false
+      idempotent: true
+      parameter_schema_ref: null
+    metadata:
+      display_name: aml_investigation_workflow
+      description: Task 2 discovered subject resource aml_investigation_workflow.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: citi_banking_adk_mlflow_observability\bank_adk\agents\aml_office.py:29
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: aml_investigation_workflow
+        endpoint: null
+        function_name: null
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    attributes:
+      scanner_target_type: subject
   - id: resource.shared.mas_input
     type: other
     domain: shared
@@ -6197,6 +6462,84 @@ spec:
         runtime_id: search_loan_playbooks
         endpoint: null
         function_name: search_loan_playbooks
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    authentication:
+      method: placeholder
+      issuer: null
+      audience: null
+      subject_claim: null
+      credential_ref: null
+      jwks_uri: null
+      extensions: {}
+    request_schema_ref: null
+    response_schema_ref: null
+    timeout_ms: 5000
+    retry_policy:
+      max_attempts: 1
+    extensions:
+      scanner_discovered: true
+  - id: interface.python_function.fetch_transaction_history
+    type: python_function
+    metadata:
+      display_name: fetch_transaction_history
+      description: Task 2 discovered tool interface fetch_transaction_history.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: citi_banking_adk_mlflow_observability\bank_adk\tools\aml_tools.py:1
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: fetch_transaction_history
+        endpoint: null
+        function_name: fetch_transaction_history
+        service_name: null
+        namespace: null
+        secret_refs: []
+        extensions: {}
+    authentication:
+      method: placeholder
+      issuer: null
+      audience: null
+      subject_claim: null
+      credential_ref: null
+      jwks_uri: null
+      extensions: {}
+    request_schema_ref: null
+    response_schema_ref: null
+    timeout_ms: 5000
+    retry_policy:
+      max_attempts: 1
+    extensions:
+      scanner_discovered: true
+  - id: interface.python_function.screen_against_sanctions
+    type: python_function
+    metadata:
+      display_name: screen_against_sanctions
+      description: Task 2 discovered tool interface screen_against_sanctions.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: citi_banking_adk_mlflow_observability\bank_adk\tools\aml_tools.py:6
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    bindings:
+      prototype:
+        runtime_id: screen_against_sanctions
+        endpoint: null
+        function_name: screen_against_sanctions
         service_name: null
         namespace: null
         secret_refs: []
@@ -7701,7 +8044,83 @@ spec:
       task2_to_id: search_policies
       task2_operation_class: read
       banking_repo: D:\Lab\Citi_P3
-  - id: edge.scanner.scan_edge_027_get_transaction_get_transaction
+  - id: edge.scanner.scan_edge_027_aml_investigator_fetch_transaction_history
+    caller_id: agent.shared.aml_investigator
+    target_id: resource.shared.tool_fetch_transaction_history
+    resource_id: resource.shared.tool_fetch_transaction_history
+    action: read
+    workflow_id: null
+    interface_id: interface.python_function.fetch_transaction_history
+    trust_boundary_id: null
+    risk: high
+    data_types:
+    - operational
+    side_effect: false
+    pep:
+      required: true
+      type: tool
+      mode: enforce
+      placement_id: pep.scanner.scan_edge_027_aml_investigator_fetch_transaction_history
+      fail_mode: closed
+    metadata:
+      display_name: Scanner Edge aml_investigator -> fetch_transaction_history
+      description: Task 2 discovered agent_to_tool edge.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: task2_scanner
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    attributes:
+      task2_edge_id: edge_027
+      task2_edge_type: agent_to_tool
+      task2_from_id: aml_investigator
+      task2_to_id: fetch_transaction_history
+      task2_operation_class: read
+      banking_repo: D:\Lab\Citi_P3
+  - id: edge.scanner.scan_edge_028_aml_investigator_screen_against_sanctions
+    caller_id: agent.shared.aml_investigator
+    target_id: resource.shared.tool_screen_against_sanctions
+    resource_id: resource.shared.tool_screen_against_sanctions
+    action: read
+    workflow_id: null
+    interface_id: interface.python_function.screen_against_sanctions
+    trust_boundary_id: null
+    risk: medium
+    data_types:
+    - service
+    side_effect: false
+    pep:
+      required: true
+      type: tool
+      mode: enforce
+      placement_id: pep.scanner.scan_edge_028_aml_investigator_screen_against_sanctions
+      fail_mode: open_for_noncritical
+    metadata:
+      display_name: Scanner Edge aml_investigator -> screen_against_sanctions
+      description: Task 2 discovered agent_to_tool edge.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: task2_scanner
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    attributes:
+      task2_edge_id: edge_028
+      task2_edge_type: agent_to_tool
+      task2_from_id: aml_investigator
+      task2_to_id: screen_against_sanctions
+      task2_operation_class: read
+      banking_repo: D:\Lab\Citi_P3
+  - id: edge.scanner.scan_edge_029_get_transaction_get_transaction
     caller_id: service.shared.get_transaction
     target_id: resource.shared.api_get_transaction
     resource_id: resource.shared.api_get_transaction
@@ -7717,7 +8136,7 @@ spec:
       required: true
       type: api
       mode: enforce
-      placement_id: pep.scanner.scan_edge_027_get_transaction_get_transaction
+      placement_id: pep.scanner.scan_edge_029_get_transaction_get_transaction
       fail_mode: closed
     metadata:
       display_name: Scanner Edge get_transaction -> get_transaction
@@ -7733,13 +8152,13 @@ spec:
       - task2_discovered
       extensions: {}
     attributes:
-      task2_edge_id: edge_027
+      task2_edge_id: edge_029
       task2_edge_type: tool_to_api
       task2_from_id: get_transaction
       task2_to_id: get_transaction
       task2_operation_class: read
       banking_repo: D:\Lab\Citi_P3
-  - id: edge.scanner.scan_edge_028_run_fraud_and_compliance_workflow_monitoring_evaluate_transaction
+  - id: edge.scanner.scan_edge_030_run_fraud_and_compliance_workflow_monitoring_evaluate_transaction
     caller_id: service.shared.run_fraud_and_compliance_workflow
     target_id: resource.shared.api_monitoring_evaluate_transaction
     resource_id: resource.shared.api_monitoring_evaluate_transaction
@@ -7755,7 +8174,7 @@ spec:
       required: true
       type: api
       mode: enforce
-      placement_id: pep.scanner.scan_edge_028_run_fraud_and_compliance_workflow_monitoring_evaluate_transaction
+      placement_id: pep.scanner.scan_edge_030_run_fraud_and_compliance_workflow_monitoring_evaluate_transaction
       fail_mode: closed
     metadata:
       display_name: Scanner Edge run_fraud_and_compliance_workflow -> monitoring_evaluate_transaction
@@ -7771,13 +8190,13 @@ spec:
       - task2_discovered
       extensions: {}
     attributes:
-      task2_edge_id: edge_028
+      task2_edge_id: edge_030
       task2_edge_type: tool_to_api
       task2_from_id: run_fraud_and_compliance_workflow
       task2_to_id: monitoring_evaluate_transaction
       task2_operation_class: write
       banking_repo: D:\Lab\Citi_P3
-  - id: edge.scanner.scan_edge_029_update_transaction_status_update_transaction_status
+  - id: edge.scanner.scan_edge_031_update_transaction_status_update_transaction_status
     caller_id: service.shared.update_transaction_status
     target_id: resource.shared.api_update_transaction_status
     resource_id: resource.shared.api_update_transaction_status
@@ -7793,7 +8212,7 @@ spec:
       required: true
       type: api
       mode: enforce
-      placement_id: pep.scanner.scan_edge_029_update_transaction_status_update_transaction_status
+      placement_id: pep.scanner.scan_edge_031_update_transaction_status_update_transaction_status
       fail_mode: closed
     metadata:
       display_name: Scanner Edge update_transaction_status -> update_transaction_status
@@ -7809,13 +8228,13 @@ spec:
       - task2_discovered
       extensions: {}
     attributes:
-      task2_edge_id: edge_029
+      task2_edge_id: edge_031
       task2_edge_type: tool_to_api
       task2_from_id: update_transaction_status
       task2_to_id: update_transaction_status
       task2_operation_class: write
       banking_repo: D:\Lab\Citi_P3
-  - id: edge.scanner.scan_edge_030_get_branch_workload_get_branch_workload
+  - id: edge.scanner.scan_edge_032_get_branch_workload_get_branch_workload
     caller_id: service.shared.get_branch_workload
     target_id: resource.shared.api_get_branch_workload
     resource_id: resource.shared.api_get_branch_workload
@@ -7831,7 +8250,7 @@ spec:
       required: true
       type: api
       mode: enforce
-      placement_id: pep.scanner.scan_edge_030_get_branch_workload_get_branch_workload
+      placement_id: pep.scanner.scan_edge_032_get_branch_workload_get_branch_workload
       fail_mode: open_for_noncritical
     metadata:
       display_name: Scanner Edge get_branch_workload -> get_branch_workload
@@ -7847,13 +8266,13 @@ spec:
       - task2_discovered
       extensions: {}
     attributes:
-      task2_edge_id: edge_030
+      task2_edge_id: edge_032
       task2_edge_type: tool_to_api
       task2_from_id: get_branch_workload
       task2_to_id: get_branch_workload
       task2_operation_class: read
       banking_repo: D:\Lab\Citi_P3
-  - id: edge.scanner.scan_edge_031_propose_staffing_adjustment_propose_staffing_adjustment
+  - id: edge.scanner.scan_edge_033_propose_staffing_adjustment_propose_staffing_adjustment
     caller_id: service.shared.propose_staffing_adjustment
     target_id: resource.shared.api_propose_staffing_adjustment
     resource_id: resource.shared.api_propose_staffing_adjustment
@@ -7869,7 +8288,7 @@ spec:
       required: true
       type: api
       mode: enforce
-      placement_id: pep.scanner.scan_edge_031_propose_staffing_adjustment_propose_staffing_adjustment
+      placement_id: pep.scanner.scan_edge_033_propose_staffing_adjustment_propose_staffing_adjustment
       fail_mode: open_for_noncritical
     metadata:
       display_name: Scanner Edge propose_staffing_adjustment -> propose_staffing_adjustment
@@ -7885,13 +8304,13 @@ spec:
       - task2_discovered
       extensions: {}
     attributes:
-      task2_edge_id: edge_031
+      task2_edge_id: edge_033
       task2_edge_type: tool_to_api
       task2_from_id: propose_staffing_adjustment
       task2_to_id: propose_staffing_adjustment
       task2_operation_class: read
       banking_repo: D:\Lab\Citi_P3
-  - id: edge.scanner.scan_edge_032_get_customer_product_affinity_get_customer_product_affinity
+  - id: edge.scanner.scan_edge_034_get_customer_product_affinity_get_customer_product_affinity
     caller_id: service.shared.get_customer_product_affinity
     target_id: resource.shared.api_get_customer_product_affinity
     resource_id: resource.shared.api_get_customer_product_affinity
@@ -7907,7 +8326,7 @@ spec:
       required: true
       type: api
       mode: enforce
-      placement_id: pep.scanner.scan_edge_032_get_customer_product_affinity_get_customer_product_affinity
+      placement_id: pep.scanner.scan_edge_034_get_customer_product_affinity_get_customer_product_affinity
       fail_mode: closed
     metadata:
       display_name: Scanner Edge get_customer_product_affinity -> get_customer_product_affinity
@@ -7923,13 +8342,13 @@ spec:
       - task2_discovered
       extensions: {}
     attributes:
-      task2_edge_id: edge_032
+      task2_edge_id: edge_034
       task2_edge_type: tool_to_api
       task2_from_id: get_customer_product_affinity
       task2_to_id: get_customer_product_affinity
       task2_operation_class: read
       banking_repo: D:\Lab\Citi_P3
-  - id: edge.scanner.scan_edge_033_trigger_eod_reconciliation_trigger_eod_reconciliation
+  - id: edge.scanner.scan_edge_035_trigger_eod_reconciliation_trigger_eod_reconciliation
     caller_id: service.shared.trigger_eod_reconciliation
     target_id: resource.shared.api_trigger_eod_reconciliation
     resource_id: resource.shared.api_trigger_eod_reconciliation
@@ -7945,7 +8364,7 @@ spec:
       required: true
       type: api
       mode: enforce
-      placement_id: pep.scanner.scan_edge_033_trigger_eod_reconciliation_trigger_eod_reconciliation
+      placement_id: pep.scanner.scan_edge_035_trigger_eod_reconciliation_trigger_eod_reconciliation
       fail_mode: closed
     metadata:
       display_name: Scanner Edge trigger_eod_reconciliation -> trigger_eod_reconciliation
@@ -7961,13 +8380,13 @@ spec:
       - task2_discovered
       extensions: {}
     attributes:
-      task2_edge_id: edge_033
+      task2_edge_id: edge_035
       task2_edge_type: tool_to_api
       task2_from_id: trigger_eod_reconciliation
       task2_to_id: trigger_eod_reconciliation
       task2_operation_class: write
       banking_repo: D:\Lab\Citi_P3
-  - id: edge.scanner.scan_edge_034_get_reconciliation_mismatches_get_reconciliation_mismatches
+  - id: edge.scanner.scan_edge_036_get_reconciliation_mismatches_get_reconciliation_mismatches
     caller_id: service.shared.get_reconciliation_mismatches
     target_id: resource.shared.api_get_reconciliation_mismatches
     resource_id: resource.shared.api_get_reconciliation_mismatches
@@ -7983,7 +8402,7 @@ spec:
       required: true
       type: api
       mode: enforce
-      placement_id: pep.scanner.scan_edge_034_get_reconciliation_mismatches_get_reconciliation_mismatches
+      placement_id: pep.scanner.scan_edge_036_get_reconciliation_mismatches_get_reconciliation_mismatches
       fail_mode: open_for_noncritical
     metadata:
       display_name: Scanner Edge get_reconciliation_mismatches -> get_reconciliation_mismatches
@@ -7999,13 +8418,13 @@ spec:
       - task2_discovered
       extensions: {}
     attributes:
-      task2_edge_id: edge_034
+      task2_edge_id: edge_036
       task2_edge_type: tool_to_api
       task2_from_id: get_reconciliation_mismatches
       task2_to_id: get_reconciliation_mismatches
       task2_operation_class: read
       banking_repo: D:\Lab\Citi_P3
-  - id: edge.scanner.scan_edge_035_resolve_ledger_entry_resolve_ledger_entry
+  - id: edge.scanner.scan_edge_037_resolve_ledger_entry_resolve_ledger_entry
     caller_id: service.shared.resolve_ledger_entry
     target_id: resource.shared.api_resolve_ledger_entry
     resource_id: resource.shared.api_resolve_ledger_entry
@@ -8021,7 +8440,7 @@ spec:
       required: true
       type: api
       mode: enforce
-      placement_id: pep.scanner.scan_edge_035_resolve_ledger_entry_resolve_ledger_entry
+      placement_id: pep.scanner.scan_edge_037_resolve_ledger_entry_resolve_ledger_entry
       fail_mode: closed
     metadata:
       display_name: Scanner Edge resolve_ledger_entry -> resolve_ledger_entry
@@ -8037,13 +8456,13 @@ spec:
       - task2_discovered
       extensions: {}
     attributes:
-      task2_edge_id: edge_035
+      task2_edge_id: edge_037
       task2_edge_type: tool_to_api
       task2_from_id: resolve_ledger_entry
       task2_to_id: resolve_ledger_entry
       task2_operation_class: financial
       banking_repo: D:\Lab\Citi_P3
-  - id: edge.scanner.scan_edge_036_create_customer_customers
+  - id: edge.scanner.scan_edge_038_create_customer_customers
     caller_id: service.shared.create_customer
     target_id: resource.shared.database_customers
     resource_id: resource.shared.database_customers
@@ -8059,7 +8478,7 @@ spec:
       required: true
       type: data
       mode: enforce
-      placement_id: pep.scanner.scan_edge_036_create_customer_customers
+      placement_id: pep.scanner.scan_edge_038_create_customer_customers
       fail_mode: closed
     metadata:
       display_name: Scanner Edge create_customer -> customers
@@ -8075,13 +8494,13 @@ spec:
       - task2_discovered
       extensions: {}
     attributes:
-      task2_edge_id: edge_036
+      task2_edge_id: edge_038
       task2_edge_type: api_to_database
       task2_from_id: create_customer
       task2_to_id: customers
       task2_operation_class: read
       banking_repo: D:\Lab\Citi_P3
-  - id: edge.scanner.scan_edge_037_create_customer_customers
+  - id: edge.scanner.scan_edge_039_create_customer_customers
     caller_id: service.shared.create_customer
     target_id: resource.shared.database_customers
     resource_id: resource.shared.database_customers
@@ -8097,7 +8516,7 @@ spec:
       required: true
       type: data
       mode: enforce
-      placement_id: pep.scanner.scan_edge_037_create_customer_customers
+      placement_id: pep.scanner.scan_edge_039_create_customer_customers
       fail_mode: closed
     metadata:
       display_name: Scanner Edge create_customer -> customers
@@ -8113,13 +8532,13 @@ spec:
       - task2_discovered
       extensions: {}
     attributes:
-      task2_edge_id: edge_037
+      task2_edge_id: edge_039
       task2_edge_type: api_to_database
       task2_from_id: create_customer
       task2_to_id: customers
       task2_operation_class: write
       banking_repo: D:\Lab\Citi_P3
-  - id: edge.scanner.scan_edge_038_get_customer_customers
+  - id: edge.scanner.scan_edge_040_get_customer_customers
     caller_id: service.shared.get_customer
     target_id: resource.shared.database_customers
     resource_id: resource.shared.database_customers
@@ -8135,7 +8554,7 @@ spec:
       required: true
       type: data
       mode: enforce
-      placement_id: pep.scanner.scan_edge_038_get_customer_customers
+      placement_id: pep.scanner.scan_edge_040_get_customer_customers
       fail_mode: closed
     metadata:
       display_name: Scanner Edge get_customer -> customers
@@ -8151,13 +8570,13 @@ spec:
       - task2_discovered
       extensions: {}
     attributes:
-      task2_edge_id: edge_038
+      task2_edge_id: edge_040
       task2_edge_type: api_to_database
       task2_from_id: get_customer
       task2_to_id: customers
       task2_operation_class: read
       banking_repo: D:\Lab\Citi_P3
-  - id: edge.scanner.scan_edge_039_list_customer_accounts_accounts
+  - id: edge.scanner.scan_edge_041_list_customer_accounts_accounts
     caller_id: service.shared.list_customer_accounts
     target_id: resource.shared.database_accounts
     resource_id: resource.shared.database_accounts
@@ -8173,7 +8592,7 @@ spec:
       required: true
       type: data
       mode: enforce
-      placement_id: pep.scanner.scan_edge_039_list_customer_accounts_accounts
+      placement_id: pep.scanner.scan_edge_041_list_customer_accounts_accounts
       fail_mode: closed
     metadata:
       display_name: Scanner Edge list_customer_accounts -> accounts
@@ -8189,13 +8608,13 @@ spec:
       - task2_discovered
       extensions: {}
     attributes:
-      task2_edge_id: edge_039
+      task2_edge_id: edge_041
       task2_edge_type: api_to_database
       task2_from_id: list_customer_accounts
       task2_to_id: accounts
       task2_operation_class: read
       banking_repo: D:\Lab\Citi_P3
-  - id: edge.scanner.scan_edge_040_get_customer_context_customers
+  - id: edge.scanner.scan_edge_042_get_customer_context_customers
     caller_id: service.shared.get_customer_context
     target_id: resource.shared.database_customers
     resource_id: resource.shared.database_customers
@@ -8211,7 +8630,7 @@ spec:
       required: true
       type: data
       mode: enforce
-      placement_id: pep.scanner.scan_edge_040_get_customer_context_customers
+      placement_id: pep.scanner.scan_edge_042_get_customer_context_customers
       fail_mode: closed
     metadata:
       display_name: Scanner Edge get_customer_context -> customers
@@ -8227,13 +8646,13 @@ spec:
       - task2_discovered
       extensions: {}
     attributes:
-      task2_edge_id: edge_040
+      task2_edge_id: edge_042
       task2_edge_type: api_to_database
       task2_from_id: get_customer_context
       task2_to_id: customers
       task2_operation_class: read
       banking_repo: D:\Lab\Citi_P3
-  - id: edge.scanner.scan_edge_041_list_customer_transactions_accounts
+  - id: edge.scanner.scan_edge_043_list_customer_transactions_accounts
     caller_id: service.shared.list_customer_transactions
     target_id: resource.shared.database_accounts
     resource_id: resource.shared.database_accounts
@@ -8249,7 +8668,7 @@ spec:
       required: true
       type: data
       mode: enforce
-      placement_id: pep.scanner.scan_edge_041_list_customer_transactions_accounts
+      placement_id: pep.scanner.scan_edge_043_list_customer_transactions_accounts
       fail_mode: closed
     metadata:
       display_name: Scanner Edge list_customer_transactions -> accounts
@@ -8265,13 +8684,13 @@ spec:
       - task2_discovered
       extensions: {}
     attributes:
-      task2_edge_id: edge_041
+      task2_edge_id: edge_043
       task2_edge_type: api_to_database
       task2_from_id: list_customer_transactions
       task2_to_id: accounts
       task2_operation_class: read
       banking_repo: D:\Lab\Citi_P3
-  - id: edge.scanner.scan_edge_042_list_customer_transactions_transactions
+  - id: edge.scanner.scan_edge_044_list_customer_transactions_transactions
     caller_id: service.shared.list_customer_transactions
     target_id: resource.front_office.transaction_history
     resource_id: resource.front_office.transaction_history
@@ -8287,7 +8706,7 @@ spec:
       required: true
       type: data
       mode: enforce
-      placement_id: pep.scanner.scan_edge_042_list_customer_transactions_transactions
+      placement_id: pep.scanner.scan_edge_044_list_customer_transactions_transactions
       fail_mode: closed
     metadata:
       display_name: Scanner Edge list_customer_transactions -> transactions
@@ -8303,13 +8722,13 @@ spec:
       - task2_discovered
       extensions: {}
     attributes:
-      task2_edge_id: edge_042
+      task2_edge_id: edge_044
       task2_edge_type: api_to_database
       task2_from_id: list_customer_transactions
       task2_to_id: transactions
       task2_operation_class: read
       banking_repo: D:\Lab\Citi_P3
-  - id: edge.scanner.scan_edge_043_create_account_customers
+  - id: edge.scanner.scan_edge_045_create_account_customers
     caller_id: service.shared.create_account
     target_id: resource.shared.database_customers
     resource_id: resource.shared.database_customers
@@ -8325,7 +8744,7 @@ spec:
       required: true
       type: data
       mode: enforce
-      placement_id: pep.scanner.scan_edge_043_create_account_customers
+      placement_id: pep.scanner.scan_edge_045_create_account_customers
       fail_mode: closed
     metadata:
       display_name: Scanner Edge create_account -> customers
@@ -8341,13 +8760,13 @@ spec:
       - task2_discovered
       extensions: {}
     attributes:
-      task2_edge_id: edge_043
+      task2_edge_id: edge_045
       task2_edge_type: api_to_database
       task2_from_id: create_account
       task2_to_id: customers
       task2_operation_class: read
       banking_repo: D:\Lab\Citi_P3
-  - id: edge.scanner.scan_edge_044_create_account_accounts
+  - id: edge.scanner.scan_edge_046_create_account_accounts
     caller_id: service.shared.create_account
     target_id: resource.shared.database_accounts
     resource_id: resource.shared.database_accounts
@@ -8363,7 +8782,7 @@ spec:
       required: true
       type: data
       mode: enforce
-      placement_id: pep.scanner.scan_edge_044_create_account_accounts
+      placement_id: pep.scanner.scan_edge_046_create_account_accounts
       fail_mode: closed
     metadata:
       display_name: Scanner Edge create_account -> accounts
@@ -8379,13 +8798,13 @@ spec:
       - task2_discovered
       extensions: {}
     attributes:
-      task2_edge_id: edge_044
+      task2_edge_id: edge_046
       task2_edge_type: api_to_database
       task2_from_id: create_account
       task2_to_id: accounts
       task2_operation_class: read
       banking_repo: D:\Lab\Citi_P3
-  - id: edge.scanner.scan_edge_045_create_account_accounts
+  - id: edge.scanner.scan_edge_047_create_account_accounts
     caller_id: service.shared.create_account
     target_id: resource.shared.database_accounts
     resource_id: resource.shared.database_accounts
@@ -8401,7 +8820,7 @@ spec:
       required: true
       type: data
       mode: enforce
-      placement_id: pep.scanner.scan_edge_045_create_account_accounts
+      placement_id: pep.scanner.scan_edge_047_create_account_accounts
       fail_mode: closed
     metadata:
       display_name: Scanner Edge create_account -> accounts
@@ -8417,13 +8836,13 @@ spec:
       - task2_discovered
       extensions: {}
     attributes:
-      task2_edge_id: edge_045
+      task2_edge_id: edge_047
       task2_edge_type: api_to_database
       task2_from_id: create_account
       task2_to_id: accounts
       task2_operation_class: write
       banking_repo: D:\Lab\Citi_P3
-  - id: edge.scanner.scan_edge_046_get_account_accounts
+  - id: edge.scanner.scan_edge_048_get_account_accounts
     caller_id: service.shared.get_account
     target_id: resource.shared.database_accounts
     resource_id: resource.shared.database_accounts
@@ -8439,7 +8858,7 @@ spec:
       required: true
       type: data
       mode: enforce
-      placement_id: pep.scanner.scan_edge_046_get_account_accounts
+      placement_id: pep.scanner.scan_edge_048_get_account_accounts
       fail_mode: closed
     metadata:
       display_name: Scanner Edge get_account -> accounts
@@ -8455,13 +8874,13 @@ spec:
       - task2_discovered
       extensions: {}
     attributes:
-      task2_edge_id: edge_046
+      task2_edge_id: edge_048
       task2_edge_type: api_to_database
       task2_from_id: get_account
       task2_to_id: accounts
       task2_operation_class: read
       banking_repo: D:\Lab\Citi_P3
-  - id: edge.scanner.scan_edge_047_get_transaction_transactions
+  - id: edge.scanner.scan_edge_049_get_transaction_transactions
     caller_id: service.shared.get_transaction
     target_id: resource.front_office.transaction_history
     resource_id: resource.front_office.transaction_history
@@ -8477,7 +8896,7 @@ spec:
       required: true
       type: data
       mode: enforce
-      placement_id: pep.scanner.scan_edge_047_get_transaction_transactions
+      placement_id: pep.scanner.scan_edge_049_get_transaction_transactions
       fail_mode: closed
     metadata:
       display_name: Scanner Edge get_transaction -> transactions
@@ -8493,13 +8912,13 @@ spec:
       - task2_discovered
       extensions: {}
     attributes:
-      task2_edge_id: edge_047
+      task2_edge_id: edge_049
       task2_edge_type: api_to_database
       task2_from_id: get_transaction
       task2_to_id: transactions
       task2_operation_class: read
       banking_repo: D:\Lab\Citi_P3
-  - id: edge.scanner.scan_edge_048_list_transactions_transactions
+  - id: edge.scanner.scan_edge_050_list_transactions_transactions
     caller_id: service.shared.list_transactions
     target_id: resource.front_office.transaction_history
     resource_id: resource.front_office.transaction_history
@@ -8515,7 +8934,7 @@ spec:
       required: true
       type: data
       mode: enforce
-      placement_id: pep.scanner.scan_edge_048_list_transactions_transactions
+      placement_id: pep.scanner.scan_edge_050_list_transactions_transactions
       fail_mode: closed
     metadata:
       display_name: Scanner Edge list_transactions -> transactions
@@ -8531,13 +8950,13 @@ spec:
       - task2_discovered
       extensions: {}
     attributes:
-      task2_edge_id: edge_048
+      task2_edge_id: edge_050
       task2_edge_type: api_to_database
       task2_from_id: list_transactions
       task2_to_id: transactions
       task2_operation_class: read
       banking_repo: D:\Lab\Citi_P3
-  - id: edge.scanner.scan_edge_049_create_policy_policies
+  - id: edge.scanner.scan_edge_051_create_policy_policies
     caller_id: service.shared.create_policy
     target_id: resource.shared.database_policies
     resource_id: resource.shared.database_policies
@@ -8553,7 +8972,7 @@ spec:
       required: true
       type: data
       mode: enforce
-      placement_id: pep.scanner.scan_edge_049_create_policy_policies
+      placement_id: pep.scanner.scan_edge_051_create_policy_policies
       fail_mode: open_for_noncritical
     metadata:
       display_name: Scanner Edge create_policy -> policies
@@ -8569,13 +8988,13 @@ spec:
       - task2_discovered
       extensions: {}
     attributes:
-      task2_edge_id: edge_049
+      task2_edge_id: edge_051
       task2_edge_type: api_to_database
       task2_from_id: create_policy
       task2_to_id: policies
       task2_operation_class: read
       banking_repo: D:\Lab\Citi_P3
-  - id: edge.scanner.scan_edge_050_create_policy_policies
+  - id: edge.scanner.scan_edge_052_create_policy_policies
     caller_id: service.shared.create_policy
     target_id: resource.shared.database_policies
     resource_id: resource.shared.database_policies
@@ -8591,7 +9010,7 @@ spec:
       required: true
       type: data
       mode: enforce
-      placement_id: pep.scanner.scan_edge_050_create_policy_policies
+      placement_id: pep.scanner.scan_edge_052_create_policy_policies
       fail_mode: closed
     metadata:
       display_name: Scanner Edge create_policy -> policies
@@ -8607,13 +9026,13 @@ spec:
       - task2_discovered
       extensions: {}
     attributes:
-      task2_edge_id: edge_050
+      task2_edge_id: edge_052
       task2_edge_type: api_to_database
       task2_from_id: create_policy
       task2_to_id: policies
       task2_operation_class: write
       banking_repo: D:\Lab\Citi_P3
-  - id: edge.scanner.scan_edge_051_list_policies_policies
+  - id: edge.scanner.scan_edge_053_list_policies_policies
     caller_id: service.shared.list_policies
     target_id: resource.shared.database_policies
     resource_id: resource.shared.database_policies
@@ -8629,7 +9048,7 @@ spec:
       required: true
       type: data
       mode: enforce
-      placement_id: pep.scanner.scan_edge_051_list_policies_policies
+      placement_id: pep.scanner.scan_edge_053_list_policies_policies
       fail_mode: open_for_noncritical
     metadata:
       display_name: Scanner Edge list_policies -> policies
@@ -8645,13 +9064,13 @@ spec:
       - task2_discovered
       extensions: {}
     attributes:
-      task2_edge_id: edge_051
+      task2_edge_id: edge_053
       task2_edge_type: api_to_database
       task2_from_id: list_policies
       task2_to_id: policies
       task2_operation_class: read
       banking_repo: D:\Lab\Citi_P3
-  - id: edge.scanner.scan_edge_052_search_policies_policies
+  - id: edge.scanner.scan_edge_054_search_policies_policies
     caller_id: service.shared.search_policies
     target_id: resource.shared.database_policies
     resource_id: resource.shared.database_policies
@@ -8667,7 +9086,7 @@ spec:
       required: true
       type: data
       mode: enforce
-      placement_id: pep.scanner.scan_edge_052_search_policies_policies
+      placement_id: pep.scanner.scan_edge_054_search_policies_policies
       fail_mode: open_for_noncritical
     metadata:
       display_name: Scanner Edge search_policies -> policies
@@ -8683,13 +9102,13 @@ spec:
       - task2_discovered
       extensions: {}
     attributes:
-      task2_edge_id: edge_052
+      task2_edge_id: edge_054
       task2_edge_type: api_to_database
       task2_from_id: search_policies
       task2_to_id: policies
       task2_operation_class: read
       banking_repo: D:\Lab\Citi_P3
-  - id: edge.scanner.scan_edge_053_create_rule_rules
+  - id: edge.scanner.scan_edge_055_create_rule_rules
     caller_id: service.shared.create_rule
     target_id: resource.shared.database_rules
     resource_id: resource.shared.database_rules
@@ -8705,7 +9124,7 @@ spec:
       required: true
       type: data
       mode: enforce
-      placement_id: pep.scanner.scan_edge_053_create_rule_rules
+      placement_id: pep.scanner.scan_edge_055_create_rule_rules
       fail_mode: open_for_noncritical
     metadata:
       display_name: Scanner Edge create_rule -> rules
@@ -8721,13 +9140,13 @@ spec:
       - task2_discovered
       extensions: {}
     attributes:
-      task2_edge_id: edge_053
+      task2_edge_id: edge_055
       task2_edge_type: api_to_database
       task2_from_id: create_rule
       task2_to_id: rules
       task2_operation_class: read
       banking_repo: D:\Lab\Citi_P3
-  - id: edge.scanner.scan_edge_054_create_rule_rules
+  - id: edge.scanner.scan_edge_056_create_rule_rules
     caller_id: service.shared.create_rule
     target_id: resource.shared.database_rules
     resource_id: resource.shared.database_rules
@@ -8743,7 +9162,7 @@ spec:
       required: true
       type: data
       mode: enforce
-      placement_id: pep.scanner.scan_edge_054_create_rule_rules
+      placement_id: pep.scanner.scan_edge_056_create_rule_rules
       fail_mode: closed
     metadata:
       display_name: Scanner Edge create_rule -> rules
@@ -8759,13 +9178,13 @@ spec:
       - task2_discovered
       extensions: {}
     attributes:
-      task2_edge_id: edge_054
+      task2_edge_id: edge_056
       task2_edge_type: api_to_database
       task2_from_id: create_rule
       task2_to_id: rules
       task2_operation_class: write
       banking_repo: D:\Lab\Citi_P3
-  - id: edge.scanner.scan_edge_055_list_rules_rules
+  - id: edge.scanner.scan_edge_057_list_rules_rules
     caller_id: service.shared.list_rules
     target_id: resource.shared.database_rules
     resource_id: resource.shared.database_rules
@@ -8781,7 +9200,7 @@ spec:
       required: true
       type: data
       mode: enforce
-      placement_id: pep.scanner.scan_edge_055_list_rules_rules
+      placement_id: pep.scanner.scan_edge_057_list_rules_rules
       fail_mode: open_for_noncritical
     metadata:
       display_name: Scanner Edge list_rules -> rules
@@ -8797,13 +9216,13 @@ spec:
       - task2_discovered
       extensions: {}
     attributes:
-      task2_edge_id: edge_055
+      task2_edge_id: edge_057
       task2_edge_type: api_to_database
       task2_from_id: list_rules
       task2_to_id: rules
       task2_operation_class: read
       banking_repo: D:\Lab\Citi_P3
-  - id: edge.scanner.scan_edge_056_update_transaction_status_transactions
+  - id: edge.scanner.scan_edge_058_update_transaction_status_transactions
     caller_id: service.shared.update_transaction_status
     target_id: resource.front_office.transaction_history
     resource_id: resource.front_office.transaction_history
@@ -8819,7 +9238,7 @@ spec:
       required: true
       type: data
       mode: enforce
-      placement_id: pep.scanner.scan_edge_056_update_transaction_status_transactions
+      placement_id: pep.scanner.scan_edge_058_update_transaction_status_transactions
       fail_mode: closed
     metadata:
       display_name: Scanner Edge update_transaction_status -> transactions
@@ -8835,13 +9254,13 @@ spec:
       - task2_discovered
       extensions: {}
     attributes:
-      task2_edge_id: edge_056
+      task2_edge_id: edge_058
       task2_edge_type: api_to_database
       task2_from_id: update_transaction_status
       task2_to_id: transactions
       task2_operation_class: read
       banking_repo: D:\Lab\Citi_P3
-  - id: edge.scanner.scan_edge_057_get_customer_product_affinity_customers
+  - id: edge.scanner.scan_edge_059_get_customer_product_affinity_customers
     caller_id: service.shared.get_customer_product_affinity
     target_id: resource.shared.database_customers
     resource_id: resource.shared.database_customers
@@ -8857,7 +9276,7 @@ spec:
       required: true
       type: data
       mode: enforce
-      placement_id: pep.scanner.scan_edge_057_get_customer_product_affinity_customers
+      placement_id: pep.scanner.scan_edge_059_get_customer_product_affinity_customers
       fail_mode: closed
     metadata:
       display_name: Scanner Edge get_customer_product_affinity -> customers
@@ -8873,13 +9292,13 @@ spec:
       - task2_discovered
       extensions: {}
     attributes:
-      task2_edge_id: edge_057
+      task2_edge_id: edge_059
       task2_edge_type: api_to_database
       task2_from_id: get_customer_product_affinity
       task2_to_id: customers
       task2_operation_class: read
       banking_repo: D:\Lab\Citi_P3
-  - id: edge.scanner.scan_edge_058_get_customer_product_affinity_accounts
+  - id: edge.scanner.scan_edge_060_get_customer_product_affinity_accounts
     caller_id: service.shared.get_customer_product_affinity
     target_id: resource.shared.database_accounts
     resource_id: resource.shared.database_accounts
@@ -8895,7 +9314,7 @@ spec:
       required: true
       type: data
       mode: enforce
-      placement_id: pep.scanner.scan_edge_058_get_customer_product_affinity_accounts
+      placement_id: pep.scanner.scan_edge_060_get_customer_product_affinity_accounts
       fail_mode: closed
     metadata:
       display_name: Scanner Edge get_customer_product_affinity -> accounts
@@ -8911,13 +9330,13 @@ spec:
       - task2_discovered
       extensions: {}
     attributes:
-      task2_edge_id: edge_058
+      task2_edge_id: edge_060
       task2_edge_type: api_to_database
       task2_from_id: get_customer_product_affinity
       task2_to_id: accounts
       task2_operation_class: read
       banking_repo: D:\Lab\Citi_P3
-  - id: edge.scanner.scan_edge_059_trigger_eod_reconciliation_transactions
+  - id: edge.scanner.scan_edge_061_trigger_eod_reconciliation_transactions
     caller_id: service.shared.trigger_eod_reconciliation
     target_id: resource.front_office.transaction_history
     resource_id: resource.front_office.transaction_history
@@ -8933,7 +9352,7 @@ spec:
       required: true
       type: data
       mode: enforce
-      placement_id: pep.scanner.scan_edge_059_trigger_eod_reconciliation_transactions
+      placement_id: pep.scanner.scan_edge_061_trigger_eod_reconciliation_transactions
       fail_mode: closed
     metadata:
       display_name: Scanner Edge trigger_eod_reconciliation -> transactions
@@ -8949,13 +9368,13 @@ spec:
       - task2_discovered
       extensions: {}
     attributes:
-      task2_edge_id: edge_059
+      task2_edge_id: edge_061
       task2_edge_type: api_to_database
       task2_from_id: trigger_eod_reconciliation
       task2_to_id: transactions
       task2_operation_class: read
       banking_repo: D:\Lab\Citi_P3
-  - id: edge.scanner.scan_edge_060_trigger_eod_reconciliation_audit_logs
+  - id: edge.scanner.scan_edge_062_trigger_eod_reconciliation_audit_logs
     caller_id: service.shared.trigger_eod_reconciliation
     target_id: resource.shared.database_audit_logs
     resource_id: resource.shared.database_audit_logs
@@ -8971,7 +9390,7 @@ spec:
       required: true
       type: data
       mode: enforce
-      placement_id: pep.scanner.scan_edge_060_trigger_eod_reconciliation_audit_logs
+      placement_id: pep.scanner.scan_edge_062_trigger_eod_reconciliation_audit_logs
       fail_mode: closed
     metadata:
       display_name: Scanner Edge trigger_eod_reconciliation -> audit_logs
@@ -8987,13 +9406,13 @@ spec:
       - task2_discovered
       extensions: {}
     attributes:
-      task2_edge_id: edge_060
+      task2_edge_id: edge_062
       task2_edge_type: api_to_database
       task2_from_id: trigger_eod_reconciliation
       task2_to_id: audit_logs
       task2_operation_class: write
       banking_repo: D:\Lab\Citi_P3
-  - id: edge.scanner.scan_edge_061_get_reconciliation_mismatches_audit_logs
+  - id: edge.scanner.scan_edge_063_get_reconciliation_mismatches_audit_logs
     caller_id: service.shared.get_reconciliation_mismatches
     target_id: resource.shared.database_audit_logs
     resource_id: resource.shared.database_audit_logs
@@ -9009,7 +9428,7 @@ spec:
       required: true
       type: data
       mode: enforce
-      placement_id: pep.scanner.scan_edge_061_get_reconciliation_mismatches_audit_logs
+      placement_id: pep.scanner.scan_edge_063_get_reconciliation_mismatches_audit_logs
       fail_mode: closed
     metadata:
       display_name: Scanner Edge get_reconciliation_mismatches -> audit_logs
@@ -9025,13 +9444,13 @@ spec:
       - task2_discovered
       extensions: {}
     attributes:
-      task2_edge_id: edge_061
+      task2_edge_id: edge_063
       task2_edge_type: api_to_database
       task2_from_id: get_reconciliation_mismatches
       task2_to_id: audit_logs
       task2_operation_class: read
       banking_repo: D:\Lab\Citi_P3
-  - id: edge.scanner.scan_edge_062_resolve_ledger_entry_transactions
+  - id: edge.scanner.scan_edge_064_resolve_ledger_entry_transactions
     caller_id: service.shared.resolve_ledger_entry
     target_id: resource.front_office.transaction_history
     resource_id: resource.front_office.transaction_history
@@ -9047,7 +9466,7 @@ spec:
       required: true
       type: data
       mode: enforce
-      placement_id: pep.scanner.scan_edge_062_resolve_ledger_entry_transactions
+      placement_id: pep.scanner.scan_edge_064_resolve_ledger_entry_transactions
       fail_mode: closed
     metadata:
       display_name: Scanner Edge resolve_ledger_entry -> transactions
@@ -9063,13 +9482,13 @@ spec:
       - task2_discovered
       extensions: {}
     attributes:
-      task2_edge_id: edge_062
+      task2_edge_id: edge_064
       task2_edge_type: api_to_database
       task2_from_id: resolve_ledger_entry
       task2_to_id: transactions
       task2_operation_class: read
       banking_repo: D:\Lab\Citi_P3
-  - id: edge.scanner.scan_edge_063_resolve_ledger_entry_audit_logs
+  - id: edge.scanner.scan_edge_065_resolve_ledger_entry_audit_logs
     caller_id: service.shared.resolve_ledger_entry
     target_id: resource.shared.database_audit_logs
     resource_id: resource.shared.database_audit_logs
@@ -9085,7 +9504,7 @@ spec:
       required: true
       type: data
       mode: enforce
-      placement_id: pep.scanner.scan_edge_063_resolve_ledger_entry_audit_logs
+      placement_id: pep.scanner.scan_edge_065_resolve_ledger_entry_audit_logs
       fail_mode: closed
     metadata:
       display_name: Scanner Edge resolve_ledger_entry -> audit_logs
@@ -9101,13 +9520,13 @@ spec:
       - task2_discovered
       extensions: {}
     attributes:
-      task2_edge_id: edge_063
+      task2_edge_id: edge_065
       task2_edge_type: api_to_database
       task2_from_id: resolve_ledger_entry
       task2_to_id: audit_logs
       task2_operation_class: write
       banking_repo: D:\Lab\Citi_P3
-  - id: edge.scanner.scan_edge_064_back_office_eod_workflow_validation_checkpoint_agent
+  - id: edge.scanner.scan_edge_066_back_office_eod_workflow_validation_checkpoint_agent
     caller_id: agent.back_office.back_office_eod_workflow
     target_id: resource.back_office.other_validation_checkpoint_agent
     resource_id: resource.back_office.other_validation_checkpoint_agent
@@ -9123,7 +9542,7 @@ spec:
       required: true
       type: agent_route
       mode: enforce
-      placement_id: pep.scanner.scan_edge_064_back_office_eod_workflow_validation_checkpoint_agent
+      placement_id: pep.scanner.scan_edge_066_back_office_eod_workflow_validation_checkpoint_agent
       fail_mode: open_for_noncritical
     metadata:
       display_name: Scanner Edge back_office_eod_workflow -> validation_checkpoint_agent
@@ -9139,13 +9558,13 @@ spec:
       - task2_discovered
       extensions: {}
     attributes:
-      task2_edge_id: edge_064
+      task2_edge_id: edge_066
       task2_edge_type: agent_to_agent
       task2_from_id: back_office_eod_workflow
       task2_to_id: validation_checkpoint_agent
       task2_operation_class: read
       banking_repo: D:\Lab\Citi_P3
-  - id: edge.scanner.scan_edge_065_back_office_eod_workflow_eod_processing_agent
+  - id: edge.scanner.scan_edge_067_back_office_eod_workflow_eod_processing_agent
     caller_id: agent.back_office.back_office_eod_workflow
     target_id: resource.back_office.other_eod_processing_agent
     resource_id: resource.back_office.other_eod_processing_agent
@@ -9161,7 +9580,7 @@ spec:
       required: true
       type: agent_route
       mode: enforce
-      placement_id: pep.scanner.scan_edge_065_back_office_eod_workflow_eod_processing_agent
+      placement_id: pep.scanner.scan_edge_067_back_office_eod_workflow_eod_processing_agent
       fail_mode: open_for_noncritical
     metadata:
       display_name: Scanner Edge back_office_eod_workflow -> eod_processing_agent
@@ -9177,13 +9596,13 @@ spec:
       - task2_discovered
       extensions: {}
     attributes:
-      task2_edge_id: edge_065
+      task2_edge_id: edge_067
       task2_edge_type: agent_to_agent
       task2_from_id: back_office_eod_workflow
       task2_to_id: eod_processing_agent
       task2_operation_class: read
       banking_repo: D:\Lab\Citi_P3
-  - id: edge.scanner.scan_edge_066_back_office_eod_workflow_ledger_update_agent
+  - id: edge.scanner.scan_edge_068_back_office_eod_workflow_ledger_update_agent
     caller_id: agent.back_office.back_office_eod_workflow
     target_id: resource.back_office.other_ledger_update_agent
     resource_id: resource.back_office.other_ledger_update_agent
@@ -9199,7 +9618,7 @@ spec:
       required: true
       type: agent_route
       mode: enforce
-      placement_id: pep.scanner.scan_edge_066_back_office_eod_workflow_ledger_update_agent
+      placement_id: pep.scanner.scan_edge_068_back_office_eod_workflow_ledger_update_agent
       fail_mode: open_for_noncritical
     metadata:
       display_name: Scanner Edge back_office_eod_workflow -> ledger_update_agent
@@ -9215,13 +9634,13 @@ spec:
       - task2_discovered
       extensions: {}
     attributes:
-      task2_edge_id: edge_066
+      task2_edge_id: edge_068
       task2_edge_type: agent_to_agent
       task2_from_id: back_office_eod_workflow
       task2_to_id: ledger_update_agent
       task2_operation_class: read
       banking_repo: D:\Lab\Citi_P3
-  - id: edge.scanner.scan_edge_067_back_office_eod_workflow_reconciliation_agent
+  - id: edge.scanner.scan_edge_069_back_office_eod_workflow_reconciliation_agent
     caller_id: agent.back_office.back_office_eod_workflow
     target_id: resource.back_office.other_reconciliation_agent
     resource_id: resource.back_office.other_reconciliation_agent
@@ -9237,7 +9656,7 @@ spec:
       required: true
       type: agent_route
       mode: enforce
-      placement_id: pep.scanner.scan_edge_067_back_office_eod_workflow_reconciliation_agent
+      placement_id: pep.scanner.scan_edge_069_back_office_eod_workflow_reconciliation_agent
       fail_mode: open_for_noncritical
     metadata:
       display_name: Scanner Edge back_office_eod_workflow -> reconciliation_agent
@@ -9253,13 +9672,13 @@ spec:
       - task2_discovered
       extensions: {}
     attributes:
-      task2_edge_id: edge_067
+      task2_edge_id: edge_069
       task2_edge_type: agent_to_agent
       task2_from_id: back_office_eod_workflow
       task2_to_id: reconciliation_agent
       task2_operation_class: read
       banking_repo: D:\Lab\Citi_P3
-  - id: edge.scanner.scan_edge_068_back_office_eod_workflow_report_writing_agent
+  - id: edge.scanner.scan_edge_070_back_office_eod_workflow_report_writing_agent
     caller_id: agent.back_office.back_office_eod_workflow
     target_id: resource.back_office.other_report_writing_agent
     resource_id: resource.back_office.other_report_writing_agent
@@ -9275,7 +9694,7 @@ spec:
       required: true
       type: agent_route
       mode: enforce
-      placement_id: pep.scanner.scan_edge_068_back_office_eod_workflow_report_writing_agent
+      placement_id: pep.scanner.scan_edge_070_back_office_eod_workflow_report_writing_agent
       fail_mode: open_for_noncritical
     metadata:
       display_name: Scanner Edge back_office_eod_workflow -> report_writing_agent
@@ -9291,13 +9710,13 @@ spec:
       - task2_discovered
       extensions: {}
     attributes:
-      task2_edge_id: edge_068
+      task2_edge_id: edge_070
       task2_edge_type: agent_to_agent
       task2_from_id: back_office_eod_workflow
       task2_to_id: report_writing_agent
       task2_operation_class: read
       banking_repo: D:\Lab\Citi_P3
-  - id: edge.scanner.scan_edge_069_back_office_eod_workflow_exception_agent
+  - id: edge.scanner.scan_edge_071_back_office_eod_workflow_exception_agent
     caller_id: agent.back_office.back_office_eod_workflow
     target_id: resource.back_office.other_exception_agent
     resource_id: resource.back_office.other_exception_agent
@@ -9313,7 +9732,7 @@ spec:
       required: true
       type: agent_route
       mode: enforce
-      placement_id: pep.scanner.scan_edge_069_back_office_eod_workflow_exception_agent
+      placement_id: pep.scanner.scan_edge_071_back_office_eod_workflow_exception_agent
       fail_mode: open_for_noncritical
     metadata:
       display_name: Scanner Edge back_office_eod_workflow -> exception_agent
@@ -9329,13 +9748,13 @@ spec:
       - task2_discovered
       extensions: {}
     attributes:
-      task2_edge_id: edge_069
+      task2_edge_id: edge_071
       task2_edge_type: agent_to_agent
       task2_from_id: back_office_eod_workflow
       task2_to_id: exception_agent
       task2_operation_class: read
       banking_repo: D:\Lab\Citi_P3
-  - id: edge.scanner.scan_edge_070_back_office_router_back_office_eod_workflow
+  - id: edge.scanner.scan_edge_072_back_office_router_back_office_eod_workflow
     caller_id: agent.back_office.back_office_router
     target_id: resource.back_office.other_back_office_eod_workflow
     resource_id: resource.back_office.other_back_office_eod_workflow
@@ -9351,7 +9770,7 @@ spec:
       required: true
       type: agent_route
       mode: enforce
-      placement_id: pep.scanner.scan_edge_070_back_office_router_back_office_eod_workflow
+      placement_id: pep.scanner.scan_edge_072_back_office_router_back_office_eod_workflow
       fail_mode: open_for_noncritical
     metadata:
       display_name: Scanner Edge back_office_router -> back_office_eod_workflow
@@ -9367,13 +9786,13 @@ spec:
       - task2_discovered
       extensions: {}
     attributes:
-      task2_edge_id: edge_070
+      task2_edge_id: edge_072
       task2_edge_type: agent_to_agent
       task2_from_id: back_office_router
       task2_to_id: back_office_eod_workflow
       task2_operation_class: read
       banking_repo: D:\Lab\Citi_P3
-  - id: edge.scanner.scan_edge_071_front_office_transaction_workflow_transaction_monitoring_agent
+  - id: edge.scanner.scan_edge_073_front_office_transaction_workflow_transaction_monitoring_agent
     caller_id: agent.front_office.front_office_transaction_workflow
     target_id: resource.front_office.other_transaction_monitoring_agent
     resource_id: resource.front_office.other_transaction_monitoring_agent
@@ -9389,7 +9808,7 @@ spec:
       required: true
       type: agent_route
       mode: enforce
-      placement_id: pep.scanner.scan_edge_071_front_office_transaction_workflow_transaction_monitoring_agent
+      placement_id: pep.scanner.scan_edge_073_front_office_transaction_workflow_transaction_monitoring_agent
       fail_mode: open_for_noncritical
     metadata:
       display_name: Scanner Edge front_office_transaction_workflow -> transaction_monitoring_agent
@@ -9405,13 +9824,13 @@ spec:
       - task2_discovered
       extensions: {}
     attributes:
-      task2_edge_id: edge_071
+      task2_edge_id: edge_073
       task2_edge_type: agent_to_agent
       task2_from_id: front_office_transaction_workflow
       task2_to_id: transaction_monitoring_agent
       task2_operation_class: read
       banking_repo: D:\Lab\Citi_P3
-  - id: edge.scanner.scan_edge_072_front_office_transaction_workflow_fraud_detection_agent
+  - id: edge.scanner.scan_edge_074_front_office_transaction_workflow_fraud_detection_agent
     caller_id: agent.front_office.front_office_transaction_workflow
     target_id: resource.front_office.other_fraud_detection_agent
     resource_id: resource.front_office.other_fraud_detection_agent
@@ -9427,7 +9846,7 @@ spec:
       required: true
       type: agent_route
       mode: enforce
-      placement_id: pep.scanner.scan_edge_072_front_office_transaction_workflow_fraud_detection_agent
+      placement_id: pep.scanner.scan_edge_074_front_office_transaction_workflow_fraud_detection_agent
       fail_mode: open_for_noncritical
     metadata:
       display_name: Scanner Edge front_office_transaction_workflow -> fraud_detection_agent
@@ -9443,13 +9862,13 @@ spec:
       - task2_discovered
       extensions: {}
     attributes:
-      task2_edge_id: edge_072
+      task2_edge_id: edge_074
       task2_edge_type: agent_to_agent
       task2_from_id: front_office_transaction_workflow
       task2_to_id: fraud_detection_agent
       task2_operation_class: read
       banking_repo: D:\Lab\Citi_P3
-  - id: edge.scanner.scan_edge_073_front_office_transaction_workflow_compliance_agent
+  - id: edge.scanner.scan_edge_075_front_office_transaction_workflow_compliance_agent
     caller_id: agent.front_office.front_office_transaction_workflow
     target_id: resource.front_office.other_compliance_agent
     resource_id: resource.front_office.other_compliance_agent
@@ -9465,7 +9884,7 @@ spec:
       required: true
       type: agent_route
       mode: enforce
-      placement_id: pep.scanner.scan_edge_073_front_office_transaction_workflow_compliance_agent
+      placement_id: pep.scanner.scan_edge_075_front_office_transaction_workflow_compliance_agent
       fail_mode: open_for_noncritical
     metadata:
       display_name: Scanner Edge front_office_transaction_workflow -> compliance_agent
@@ -9481,13 +9900,13 @@ spec:
       - task2_discovered
       extensions: {}
     attributes:
-      task2_edge_id: edge_073
+      task2_edge_id: edge_075
       task2_edge_type: agent_to_agent
       task2_from_id: front_office_transaction_workflow
       task2_to_id: compliance_agent
       task2_operation_class: read
       banking_repo: D:\Lab\Citi_P3
-  - id: edge.scanner.scan_edge_074_front_office_transaction_workflow_decision_making_agent
+  - id: edge.scanner.scan_edge_076_front_office_transaction_workflow_decision_making_agent
     caller_id: agent.front_office.front_office_transaction_workflow
     target_id: resource.front_office.other_decision_making_agent
     resource_id: resource.front_office.other_decision_making_agent
@@ -9503,7 +9922,7 @@ spec:
       required: true
       type: agent_route
       mode: enforce
-      placement_id: pep.scanner.scan_edge_074_front_office_transaction_workflow_decision_making_agent
+      placement_id: pep.scanner.scan_edge_076_front_office_transaction_workflow_decision_making_agent
       fail_mode: open_for_noncritical
     metadata:
       display_name: Scanner Edge front_office_transaction_workflow -> decision_making_agent
@@ -9519,13 +9938,13 @@ spec:
       - task2_discovered
       extensions: {}
     attributes:
-      task2_edge_id: edge_074
+      task2_edge_id: edge_076
       task2_edge_type: agent_to_agent
       task2_from_id: front_office_transaction_workflow
       task2_to_id: decision_making_agent
       task2_operation_class: read
       banking_repo: D:\Lab\Citi_P3
-  - id: edge.scanner.scan_edge_075_customer_service_chatbot_workflow_chatbot_intent_agent
+  - id: edge.scanner.scan_edge_077_customer_service_chatbot_workflow_chatbot_intent_agent
     caller_id: agent.front_office.customer_service_chatbot_workflow
     target_id: resource.front_office.other_chatbot_intent_agent
     resource_id: resource.front_office.other_chatbot_intent_agent
@@ -9541,7 +9960,7 @@ spec:
       required: true
       type: agent_route
       mode: enforce
-      placement_id: pep.scanner.scan_edge_075_customer_service_chatbot_workflow_chatbot_intent_agent
+      placement_id: pep.scanner.scan_edge_077_customer_service_chatbot_workflow_chatbot_intent_agent
       fail_mode: open_for_noncritical
     metadata:
       display_name: Scanner Edge customer_service_chatbot_workflow -> chatbot_intent_agent
@@ -9557,13 +9976,13 @@ spec:
       - task2_discovered
       extensions: {}
     attributes:
-      task2_edge_id: edge_075
+      task2_edge_id: edge_077
       task2_edge_type: agent_to_agent
       task2_from_id: customer_service_chatbot_workflow
       task2_to_id: chatbot_intent_agent
       task2_operation_class: read
       banking_repo: D:\Lab\Citi_P3
-  - id: edge.scanner.scan_edge_076_customer_service_chatbot_workflow_knowledge_base_agent
+  - id: edge.scanner.scan_edge_078_customer_service_chatbot_workflow_knowledge_base_agent
     caller_id: agent.front_office.customer_service_chatbot_workflow
     target_id: resource.front_office.other_knowledge_base_agent
     resource_id: resource.front_office.other_knowledge_base_agent
@@ -9579,7 +9998,7 @@ spec:
       required: true
       type: agent_route
       mode: enforce
-      placement_id: pep.scanner.scan_edge_076_customer_service_chatbot_workflow_knowledge_base_agent
+      placement_id: pep.scanner.scan_edge_078_customer_service_chatbot_workflow_knowledge_base_agent
       fail_mode: open_for_noncritical
     metadata:
       display_name: Scanner Edge customer_service_chatbot_workflow -> knowledge_base_agent
@@ -9595,13 +10014,13 @@ spec:
       - task2_discovered
       extensions: {}
     attributes:
-      task2_edge_id: edge_076
+      task2_edge_id: edge_078
       task2_edge_type: agent_to_agent
       task2_from_id: customer_service_chatbot_workflow
       task2_to_id: knowledge_base_agent
       task2_operation_class: read
       banking_repo: D:\Lab\Citi_P3
-  - id: edge.scanner.scan_edge_077_customer_service_chatbot_workflow_customer_service_agent
+  - id: edge.scanner.scan_edge_079_customer_service_chatbot_workflow_customer_service_agent
     caller_id: agent.front_office.customer_service_chatbot_workflow
     target_id: resource.front_office.other_customer_service_agent
     resource_id: resource.front_office.other_customer_service_agent
@@ -9617,7 +10036,7 @@ spec:
       required: true
       type: agent_route
       mode: enforce
-      placement_id: pep.scanner.scan_edge_077_customer_service_chatbot_workflow_customer_service_agent
+      placement_id: pep.scanner.scan_edge_079_customer_service_chatbot_workflow_customer_service_agent
       fail_mode: open_for_noncritical
     metadata:
       display_name: Scanner Edge customer_service_chatbot_workflow -> customer_service_agent
@@ -9633,13 +10052,13 @@ spec:
       - task2_discovered
       extensions: {}
     attributes:
-      task2_edge_id: edge_077
+      task2_edge_id: edge_079
       task2_edge_type: agent_to_agent
       task2_from_id: customer_service_chatbot_workflow
       task2_to_id: customer_service_agent
       task2_operation_class: read
       banking_repo: D:\Lab\Citi_P3
-  - id: edge.scanner.scan_edge_078_customer_service_chatbot_workflow_transaction_processing_agent
+  - id: edge.scanner.scan_edge_080_customer_service_chatbot_workflow_transaction_processing_agent
     caller_id: agent.front_office.customer_service_chatbot_workflow
     target_id: resource.front_office.other_transaction_processing_agent
     resource_id: resource.front_office.other_transaction_processing_agent
@@ -9655,7 +10074,7 @@ spec:
       required: true
       type: agent_route
       mode: enforce
-      placement_id: pep.scanner.scan_edge_078_customer_service_chatbot_workflow_transaction_processing_agent
+      placement_id: pep.scanner.scan_edge_080_customer_service_chatbot_workflow_transaction_processing_agent
       fail_mode: open_for_noncritical
     metadata:
       display_name: Scanner Edge customer_service_chatbot_workflow -> transaction_processing_agent
@@ -9671,13 +10090,13 @@ spec:
       - task2_discovered
       extensions: {}
     attributes:
-      task2_edge_id: edge_078
+      task2_edge_id: edge_080
       task2_edge_type: agent_to_agent
       task2_from_id: customer_service_chatbot_workflow
       task2_to_id: transaction_processing_agent
       task2_operation_class: read
       banking_repo: D:\Lab\Citi_P3
-  - id: edge.scanner.scan_edge_079_front_office_router_front_office_transaction_workflow
+  - id: edge.scanner.scan_edge_081_front_office_router_front_office_transaction_workflow
     caller_id: agent.front_office.front_office_router
     target_id: resource.front_office.other_front_office_transaction_workflow
     resource_id: resource.front_office.other_front_office_transaction_workflow
@@ -9693,7 +10112,7 @@ spec:
       required: true
       type: agent_route
       mode: enforce
-      placement_id: pep.scanner.scan_edge_079_front_office_router_front_office_transaction_workflow
+      placement_id: pep.scanner.scan_edge_081_front_office_router_front_office_transaction_workflow
       fail_mode: open_for_noncritical
     metadata:
       display_name: Scanner Edge front_office_router -> front_office_transaction_workflow
@@ -9709,13 +10128,13 @@ spec:
       - task2_discovered
       extensions: {}
     attributes:
-      task2_edge_id: edge_079
+      task2_edge_id: edge_081
       task2_edge_type: agent_to_agent
       task2_from_id: front_office_router
       task2_to_id: front_office_transaction_workflow
       task2_operation_class: read
       banking_repo: D:\Lab\Citi_P3
-  - id: edge.scanner.scan_edge_080_front_office_router_customer_service_chatbot_workflow
+  - id: edge.scanner.scan_edge_082_front_office_router_customer_service_chatbot_workflow
     caller_id: agent.front_office.front_office_router
     target_id: resource.front_office.other_customer_service_chatbot_workflow
     resource_id: resource.front_office.other_customer_service_chatbot_workflow
@@ -9731,7 +10150,7 @@ spec:
       required: true
       type: agent_route
       mode: enforce
-      placement_id: pep.scanner.scan_edge_080_front_office_router_customer_service_chatbot_workflow
+      placement_id: pep.scanner.scan_edge_082_front_office_router_customer_service_chatbot_workflow
       fail_mode: open_for_noncritical
     metadata:
       display_name: Scanner Edge front_office_router -> customer_service_chatbot_workflow
@@ -9747,13 +10166,13 @@ spec:
       - task2_discovered
       extensions: {}
     attributes:
-      task2_edge_id: edge_080
+      task2_edge_id: edge_082
       task2_edge_type: agent_to_agent
       task2_from_id: front_office_router
       task2_to_id: customer_service_chatbot_workflow
       task2_operation_class: read
       banking_repo: D:\Lab\Citi_P3
-  - id: edge.scanner.scan_edge_081_mid_office_router_mid_office_planning_workflow
+  - id: edge.scanner.scan_edge_083_mid_office_router_mid_office_planning_workflow
     caller_id: agent.mid_office.mid_office_router
     target_id: resource.shared.other_mid_office_planning_workflow
     resource_id: resource.shared.other_mid_office_planning_workflow
@@ -9769,7 +10188,7 @@ spec:
       required: true
       type: agent_route
       mode: enforce
-      placement_id: pep.scanner.scan_edge_081_mid_office_router_mid_office_planning_workflow
+      placement_id: pep.scanner.scan_edge_083_mid_office_router_mid_office_planning_workflow
       fail_mode: open_for_noncritical
     metadata:
       display_name: Scanner Edge mid_office_router -> mid_office_planning_workflow
@@ -9785,13 +10204,13 @@ spec:
       - task2_discovered
       extensions: {}
     attributes:
-      task2_edge_id: edge_081
+      task2_edge_id: edge_083
       task2_edge_type: agent_to_agent
       task2_from_id: mid_office_router
       task2_to_id: mid_office_planning_workflow
       task2_operation_class: read
       banking_repo: D:\Lab\Citi_P3
-  - id: edge.scanner.scan_edge_082_mid_office_router_representative_assistant_workflow
+  - id: edge.scanner.scan_edge_084_mid_office_router_representative_assistant_workflow
     caller_id: agent.mid_office.mid_office_router
     target_id: resource.shared.other_representative_assistant_workflow
     resource_id: resource.shared.other_representative_assistant_workflow
@@ -9807,7 +10226,7 @@ spec:
       required: true
       type: agent_route
       mode: enforce
-      placement_id: pep.scanner.scan_edge_082_mid_office_router_representative_assistant_workflow
+      placement_id: pep.scanner.scan_edge_084_mid_office_router_representative_assistant_workflow
       fail_mode: open_for_noncritical
     metadata:
       display_name: Scanner Edge mid_office_router -> representative_assistant_workflow
@@ -9823,13 +10242,13 @@ spec:
       - task2_discovered
       extensions: {}
     attributes:
-      task2_edge_id: edge_082
+      task2_edge_id: edge_084
       task2_edge_type: agent_to_agent
       task2_from_id: mid_office_router
       task2_to_id: representative_assistant_workflow
       task2_operation_class: read
       banking_repo: D:\Lab\Citi_P3
-  - id: edge.scanner.scan_edge_083_mid_office_planning_parallel_validation_agent
+  - id: edge.scanner.scan_edge_085_mid_office_planning_parallel_validation_agent
     caller_id: agent.shared.mid_office_planning_parallel
     target_id: resource.mid_office.other_validation_agent
     resource_id: resource.mid_office.other_validation_agent
@@ -9845,7 +10264,7 @@ spec:
       required: true
       type: agent_route
       mode: enforce
-      placement_id: pep.scanner.scan_edge_083_mid_office_planning_parallel_validation_agent
+      placement_id: pep.scanner.scan_edge_085_mid_office_planning_parallel_validation_agent
       fail_mode: open_for_noncritical
     metadata:
       display_name: Scanner Edge mid_office_planning_parallel -> validation_agent
@@ -9861,13 +10280,13 @@ spec:
       - task2_discovered
       extensions: {}
     attributes:
-      task2_edge_id: edge_083
+      task2_edge_id: edge_085
       task2_edge_type: agent_to_agent
       task2_from_id: mid_office_planning_parallel
       task2_to_id: validation_agent
       task2_operation_class: read
       banking_repo: D:\Lab\Citi_P3
-  - id: edge.scanner.scan_edge_084_mid_office_planning_parallel_support_guidance_agent
+  - id: edge.scanner.scan_edge_086_mid_office_planning_parallel_support_guidance_agent
     caller_id: agent.shared.mid_office_planning_parallel
     target_id: resource.mid_office.other_support_guidance_agent
     resource_id: resource.mid_office.other_support_guidance_agent
@@ -9883,7 +10302,7 @@ spec:
       required: true
       type: agent_route
       mode: enforce
-      placement_id: pep.scanner.scan_edge_084_mid_office_planning_parallel_support_guidance_agent
+      placement_id: pep.scanner.scan_edge_086_mid_office_planning_parallel_support_guidance_agent
       fail_mode: open_for_noncritical
     metadata:
       display_name: Scanner Edge mid_office_planning_parallel -> support_guidance_agent
@@ -9899,13 +10318,13 @@ spec:
       - task2_discovered
       extensions: {}
     attributes:
-      task2_edge_id: edge_084
+      task2_edge_id: edge_086
       task2_edge_type: agent_to_agent
       task2_from_id: mid_office_planning_parallel
       task2_to_id: support_guidance_agent
       task2_operation_class: read
       banking_repo: D:\Lab\Citi_P3
-  - id: edge.scanner.scan_edge_085_mid_office_planning_workflow_data_analysis_agent
+  - id: edge.scanner.scan_edge_087_mid_office_planning_workflow_data_analysis_agent
     caller_id: agent.shared.mid_office_planning_workflow
     target_id: resource.mid_office.other_data_analysis_agent
     resource_id: resource.mid_office.other_data_analysis_agent
@@ -9921,7 +10340,7 @@ spec:
       required: true
       type: agent_route
       mode: enforce
-      placement_id: pep.scanner.scan_edge_085_mid_office_planning_workflow_data_analysis_agent
+      placement_id: pep.scanner.scan_edge_087_mid_office_planning_workflow_data_analysis_agent
       fail_mode: open_for_noncritical
     metadata:
       display_name: Scanner Edge mid_office_planning_workflow -> data_analysis_agent
@@ -9937,13 +10356,13 @@ spec:
       - task2_discovered
       extensions: {}
     attributes:
-      task2_edge_id: edge_085
+      task2_edge_id: edge_087
       task2_edge_type: agent_to_agent
       task2_from_id: mid_office_planning_workflow
       task2_to_id: data_analysis_agent
       task2_operation_class: read
       banking_repo: D:\Lab\Citi_P3
-  - id: edge.scanner.scan_edge_086_mid_office_planning_workflow_forecasting_agent
+  - id: edge.scanner.scan_edge_088_mid_office_planning_workflow_forecasting_agent
     caller_id: agent.shared.mid_office_planning_workflow
     target_id: resource.mid_office.other_forecasting_agent
     resource_id: resource.mid_office.other_forecasting_agent
@@ -9959,7 +10378,7 @@ spec:
       required: true
       type: agent_route
       mode: enforce
-      placement_id: pep.scanner.scan_edge_086_mid_office_planning_workflow_forecasting_agent
+      placement_id: pep.scanner.scan_edge_088_mid_office_planning_workflow_forecasting_agent
       fail_mode: open_for_noncritical
     metadata:
       display_name: Scanner Edge mid_office_planning_workflow -> forecasting_agent
@@ -9975,13 +10394,13 @@ spec:
       - task2_discovered
       extensions: {}
     attributes:
-      task2_edge_id: edge_086
+      task2_edge_id: edge_088
       task2_edge_type: agent_to_agent
       task2_from_id: mid_office_planning_workflow
       task2_to_id: forecasting_agent
       task2_operation_class: read
       banking_repo: D:\Lab\Citi_P3
-  - id: edge.scanner.scan_edge_087_mid_office_planning_workflow_staff_scheduling_agent
+  - id: edge.scanner.scan_edge_089_mid_office_planning_workflow_staff_scheduling_agent
     caller_id: agent.shared.mid_office_planning_workflow
     target_id: resource.mid_office.other_staff_scheduling_agent
     resource_id: resource.mid_office.other_staff_scheduling_agent
@@ -9997,7 +10416,7 @@ spec:
       required: true
       type: agent_route
       mode: enforce
-      placement_id: pep.scanner.scan_edge_087_mid_office_planning_workflow_staff_scheduling_agent
+      placement_id: pep.scanner.scan_edge_089_mid_office_planning_workflow_staff_scheduling_agent
       fail_mode: open_for_noncritical
     metadata:
       display_name: Scanner Edge mid_office_planning_workflow -> staff_scheduling_agent
@@ -10013,13 +10432,13 @@ spec:
       - task2_discovered
       extensions: {}
     attributes:
-      task2_edge_id: edge_087
+      task2_edge_id: edge_089
       task2_edge_type: agent_to_agent
       task2_from_id: mid_office_planning_workflow
       task2_to_id: staff_scheduling_agent
       task2_operation_class: read
       banking_repo: D:\Lab\Citi_P3
-  - id: edge.scanner.scan_edge_088_mid_office_planning_workflow_mid_office_planning_parallel
+  - id: edge.scanner.scan_edge_090_mid_office_planning_workflow_mid_office_planning_parallel
     caller_id: agent.shared.mid_office_planning_workflow
     target_id: resource.shared.other_mid_office_planning_parallel
     resource_id: resource.shared.other_mid_office_planning_parallel
@@ -10035,7 +10454,7 @@ spec:
       required: true
       type: agent_route
       mode: enforce
-      placement_id: pep.scanner.scan_edge_088_mid_office_planning_workflow_mid_office_planning_parallel
+      placement_id: pep.scanner.scan_edge_090_mid_office_planning_workflow_mid_office_planning_parallel
       fail_mode: open_for_noncritical
     metadata:
       display_name: Scanner Edge mid_office_planning_workflow -> mid_office_planning_parallel
@@ -10051,13 +10470,13 @@ spec:
       - task2_discovered
       extensions: {}
     attributes:
-      task2_edge_id: edge_088
+      task2_edge_id: edge_090
       task2_edge_type: agent_to_agent
       task2_from_id: mid_office_planning_workflow
       task2_to_id: mid_office_planning_parallel
       task2_operation_class: read
       banking_repo: D:\Lab\Citi_P3
-  - id: edge.scanner.scan_edge_089_mid_office_planning_workflow_planning_summary_agent
+  - id: edge.scanner.scan_edge_091_mid_office_planning_workflow_planning_summary_agent
     caller_id: agent.shared.mid_office_planning_workflow
     target_id: resource.mid_office.other_planning_summary_agent
     resource_id: resource.mid_office.other_planning_summary_agent
@@ -10073,7 +10492,7 @@ spec:
       required: true
       type: agent_route
       mode: enforce
-      placement_id: pep.scanner.scan_edge_089_mid_office_planning_workflow_planning_summary_agent
+      placement_id: pep.scanner.scan_edge_091_mid_office_planning_workflow_planning_summary_agent
       fail_mode: open_for_noncritical
     metadata:
       display_name: Scanner Edge mid_office_planning_workflow -> planning_summary_agent
@@ -10089,13 +10508,13 @@ spec:
       - task2_discovered
       extensions: {}
     attributes:
-      task2_edge_id: edge_089
+      task2_edge_id: edge_091
       task2_edge_type: agent_to_agent
       task2_from_id: mid_office_planning_workflow
       task2_to_id: planning_summary_agent
       task2_operation_class: read
       banking_repo: D:\Lab\Citi_P3
-  - id: edge.scanner.scan_edge_090_representative_assist_parallel_financial_data_agent
+  - id: edge.scanner.scan_edge_092_representative_assist_parallel_financial_data_agent
     caller_id: agent.shared.representative_assist_parallel
     target_id: resource.mid_office.other_financial_data_agent
     resource_id: resource.mid_office.other_financial_data_agent
@@ -10111,7 +10530,7 @@ spec:
       required: true
       type: agent_route
       mode: enforce
-      placement_id: pep.scanner.scan_edge_090_representative_assist_parallel_financial_data_agent
+      placement_id: pep.scanner.scan_edge_092_representative_assist_parallel_financial_data_agent
       fail_mode: open_for_noncritical
     metadata:
       display_name: Scanner Edge representative_assist_parallel -> financial_data_agent
@@ -10127,13 +10546,13 @@ spec:
       - task2_discovered
       extensions: {}
     attributes:
-      task2_edge_id: edge_090
+      task2_edge_id: edge_092
       task2_edge_type: agent_to_agent
       task2_from_id: representative_assist_parallel
       task2_to_id: financial_data_agent
       task2_operation_class: read
       banking_repo: D:\Lab\Citi_P3
-  - id: edge.scanner.scan_edge_091_representative_assist_parallel_recommender_agent
+  - id: edge.scanner.scan_edge_093_representative_assist_parallel_recommender_agent
     caller_id: agent.shared.representative_assist_parallel
     target_id: resource.mid_office.other_recommender_agent
     resource_id: resource.mid_office.other_recommender_agent
@@ -10149,7 +10568,7 @@ spec:
       required: true
       type: agent_route
       mode: enforce
-      placement_id: pep.scanner.scan_edge_091_representative_assist_parallel_recommender_agent
+      placement_id: pep.scanner.scan_edge_093_representative_assist_parallel_recommender_agent
       fail_mode: open_for_noncritical
     metadata:
       display_name: Scanner Edge representative_assist_parallel -> recommender_agent
@@ -10165,13 +10584,13 @@ spec:
       - task2_discovered
       extensions: {}
     attributes:
-      task2_edge_id: edge_091
+      task2_edge_id: edge_093
       task2_edge_type: agent_to_agent
       task2_from_id: representative_assist_parallel
       task2_to_id: recommender_agent
       task2_operation_class: read
       banking_repo: D:\Lab\Citi_P3
-  - id: edge.scanner.scan_edge_092_representative_assist_parallel_loan_agent
+  - id: edge.scanner.scan_edge_094_representative_assist_parallel_loan_agent
     caller_id: agent.shared.representative_assist_parallel
     target_id: resource.mid_office.other_loan_agent
     resource_id: resource.mid_office.other_loan_agent
@@ -10187,7 +10606,7 @@ spec:
       required: true
       type: agent_route
       mode: enforce
-      placement_id: pep.scanner.scan_edge_092_representative_assist_parallel_loan_agent
+      placement_id: pep.scanner.scan_edge_094_representative_assist_parallel_loan_agent
       fail_mode: open_for_noncritical
     metadata:
       display_name: Scanner Edge representative_assist_parallel -> loan_agent
@@ -10203,13 +10622,13 @@ spec:
       - task2_discovered
       extensions: {}
     attributes:
-      task2_edge_id: edge_092
+      task2_edge_id: edge_094
       task2_edge_type: agent_to_agent
       task2_from_id: representative_assist_parallel
       task2_to_id: loan_agent
       task2_operation_class: read
       banking_repo: D:\Lab\Citi_P3
-  - id: edge.scanner.scan_edge_093_representative_assist_parallel_risk_compliance_agent
+  - id: edge.scanner.scan_edge_095_representative_assist_parallel_risk_compliance_agent
     caller_id: agent.shared.representative_assist_parallel
     target_id: resource.mid_office.other_risk_compliance_agent
     resource_id: resource.mid_office.other_risk_compliance_agent
@@ -10225,7 +10644,7 @@ spec:
       required: true
       type: agent_route
       mode: enforce
-      placement_id: pep.scanner.scan_edge_093_representative_assist_parallel_risk_compliance_agent
+      placement_id: pep.scanner.scan_edge_095_representative_assist_parallel_risk_compliance_agent
       fail_mode: open_for_noncritical
     metadata:
       display_name: Scanner Edge representative_assist_parallel -> risk_compliance_agent
@@ -10241,13 +10660,13 @@ spec:
       - task2_discovered
       extensions: {}
     attributes:
-      task2_edge_id: edge_093
+      task2_edge_id: edge_095
       task2_edge_type: agent_to_agent
       task2_from_id: representative_assist_parallel
       task2_to_id: risk_compliance_agent
       task2_operation_class: read
       banking_repo: D:\Lab\Citi_P3
-  - id: edge.scanner.scan_edge_094_representative_assistant_workflow_representative_assist_parallel
+  - id: edge.scanner.scan_edge_096_representative_assistant_workflow_representative_assist_parallel
     caller_id: agent.shared.representative_assistant_workflow
     target_id: resource.shared.other_representative_assist_parallel
     resource_id: resource.shared.other_representative_assist_parallel
@@ -10263,7 +10682,7 @@ spec:
       required: true
       type: agent_route
       mode: enforce
-      placement_id: pep.scanner.scan_edge_094_representative_assistant_workflow_representative_assist_parallel
+      placement_id: pep.scanner.scan_edge_096_representative_assistant_workflow_representative_assist_parallel
       fail_mode: open_for_noncritical
     metadata:
       display_name: Scanner Edge representative_assistant_workflow -> representative_assist_parallel
@@ -10279,13 +10698,13 @@ spec:
       - task2_discovered
       extensions: {}
     attributes:
-      task2_edge_id: edge_094
+      task2_edge_id: edge_096
       task2_edge_type: agent_to_agent
       task2_from_id: representative_assistant_workflow
       task2_to_id: representative_assist_parallel
       task2_operation_class: read
       banking_repo: D:\Lab\Citi_P3
-  - id: edge.scanner.scan_edge_095_representative_assistant_workflow_representative_merge_agent
+  - id: edge.scanner.scan_edge_097_representative_assistant_workflow_representative_merge_agent
     caller_id: agent.shared.representative_assistant_workflow
     target_id: resource.mid_office.other_representative_merge_agent
     resource_id: resource.mid_office.other_representative_merge_agent
@@ -10301,7 +10720,7 @@ spec:
       required: true
       type: agent_route
       mode: enforce
-      placement_id: pep.scanner.scan_edge_095_representative_assistant_workflow_representative_merge_agent
+      placement_id: pep.scanner.scan_edge_097_representative_assistant_workflow_representative_merge_agent
       fail_mode: open_for_noncritical
     metadata:
       display_name: Scanner Edge representative_assistant_workflow -> representative_merge_agent
@@ -10317,10 +10736,124 @@ spec:
       - task2_discovered
       extensions: {}
     attributes:
-      task2_edge_id: edge_095
+      task2_edge_id: edge_097
       task2_edge_type: agent_to_agent
       task2_from_id: representative_assistant_workflow
       task2_to_id: representative_merge_agent
+      task2_operation_class: read
+      banking_repo: D:\Lab\Citi_P3
+  - id: edge.scanner.scan_edge_098_aml_investigation_workflow_aml_investigator
+    caller_id: agent.shared.aml_investigation_workflow
+    target_id: resource.shared.other_aml_investigator
+    resource_id: resource.shared.other_aml_investigator
+    action: read
+    workflow_id: null
+    interface_id: null
+    trust_boundary_id: boundary.agent.agent
+    risk: medium
+    data_types:
+    - workflow_control
+    side_effect: false
+    pep:
+      required: true
+      type: agent_route
+      mode: enforce
+      placement_id: pep.scanner.scan_edge_098_aml_investigation_workflow_aml_investigator
+      fail_mode: open_for_noncritical
+    metadata:
+      display_name: Scanner Edge aml_investigation_workflow -> aml_investigator
+      description: Task 2 discovered agent_to_agent edge.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: task2_scanner
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    attributes:
+      task2_edge_id: edge_098
+      task2_edge_type: agent_to_agent
+      task2_from_id: aml_investigation_workflow
+      task2_to_id: aml_investigator
+      task2_operation_class: read
+      banking_repo: D:\Lab\Citi_P3
+  - id: edge.scanner.scan_edge_099_aml_investigation_workflow_aml_reporter
+    caller_id: agent.shared.aml_investigation_workflow
+    target_id: resource.shared.other_aml_reporter
+    resource_id: resource.shared.other_aml_reporter
+    action: read
+    workflow_id: null
+    interface_id: null
+    trust_boundary_id: boundary.agent.agent
+    risk: medium
+    data_types:
+    - workflow_control
+    side_effect: false
+    pep:
+      required: true
+      type: agent_route
+      mode: enforce
+      placement_id: pep.scanner.scan_edge_099_aml_investigation_workflow_aml_reporter
+      fail_mode: open_for_noncritical
+    metadata:
+      display_name: Scanner Edge aml_investigation_workflow -> aml_reporter
+      description: Task 2 discovered agent_to_agent edge.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: task2_scanner
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    attributes:
+      task2_edge_id: edge_099
+      task2_edge_type: agent_to_agent
+      task2_from_id: aml_investigation_workflow
+      task2_to_id: aml_reporter
+      task2_operation_class: read
+      banking_repo: D:\Lab\Citi_P3
+  - id: edge.scanner.scan_edge_100_aml_office_router_aml_investigation_workflow
+    caller_id: agent.shared.aml_office_router
+    target_id: resource.shared.other_aml_investigation_workflow
+    resource_id: resource.shared.other_aml_investigation_workflow
+    action: read
+    workflow_id: null
+    interface_id: null
+    trust_boundary_id: boundary.agent.agent
+    risk: medium
+    data_types:
+    - workflow_control
+    side_effect: false
+    pep:
+      required: true
+      type: agent_route
+      mode: enforce
+      placement_id: pep.scanner.scan_edge_100_aml_office_router_aml_investigation_workflow
+      fail_mode: open_for_noncritical
+    metadata:
+      display_name: Scanner Edge aml_office_router -> aml_investigation_workflow
+      description: Task 2 discovered agent_to_agent edge.
+      status: provisional
+      source:
+        provided_by: task2_scanner
+        reference: task2_scanner
+        verified_at: null
+        notes: Scanner-derived record merged by integrated_demo only.
+      owner: null
+      tags:
+      - task2_discovered
+      extensions: {}
+    attributes:
+      task2_edge_id: edge_100
+      task2_edge_type: agent_to_agent
+      task2_from_id: aml_office_router
+      task2_to_id: aml_investigation_workflow
       task2_operation_class: read
       banking_repo: D:\Lab\Citi_P3
   - id: edge.native.route_user_proxy_agent_front_office_router

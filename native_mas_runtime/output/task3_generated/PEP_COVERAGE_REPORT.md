@@ -3,14 +3,14 @@
 - Manifest: `citi-zero-trust-backplane-baseline`
 - Manifest version: `1.0.0-alpha.1`
 - Environment binding: `prototype`
-- Known interaction edges: **100**
-- Sensitive known paths: **100**
-- Protected sensitive paths: **100**
+- Known interaction edges: **105**
+- Sensitive known paths: **105**
+- Protected sensitive paths: **105**
 - Sensitive-path PEP coverage: **100.0%**
 - Known direct bypass paths: **0**
-- Logical PEPs: **100**
+- Logical PEPs: **105**
 - Physical PEP components: **12**
-- Components eliminated by safe sharing: **88**
+- Components eliminated by safe sharing: **93**
 
 ## Scope of the coverage claim
 
