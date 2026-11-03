@@ -16,7 +16,8 @@ from .decision_signing import DecisionSigner
 from .engine import PolicyEngine
 from .evidence import EvidenceVerifier, SecurityConfig, SystemClock
 from .models import ChallengeRequest, ChallengeResponse, PDPRequest
-from .policy import PolicyBundle, PolicyRollbackStore
+from .policy import PolicyRollbackStore
+from .psl_policy import PslPolicyStore
 from .registry import IdentityRegistry, ResourceCatalog
 from .replay import InMemoryReplayGuard
 
@@ -37,9 +38,6 @@ def build_runtime() -> Runtime:
     resource_file = Path(os.getenv("ZT_RESOURCE_FILE", PROJECT_ROOT / "config" / "resources.yaml"))
     trusted_issuers = Path(os.getenv("ZT_TRUSTED_ISSUERS", PROJECT_ROOT / "config" / "trusted_issuers.yaml"))
     security_config_file = Path(os.getenv("ZT_SECURITY_CONFIG", PROJECT_ROOT / "config" / "security_context.yaml"))
-    policy_schema = Path(
-        os.getenv("ZT_POLICY_SCHEMA", PROJECT_ROOT / "interface_contract" / "schemas" / "policy_bundle.schema.json")
-    )
     policy_version_store = Path(
         os.getenv("ZT_POLICY_VERSION_STORE", PROJECT_ROOT / "runtime" / "policy_versions.json")
     )
@@ -62,9 +60,8 @@ def build_runtime() -> Runtime:
         security_config=SecurityConfig(security_config_file),
         clock=SystemClock(),
     )
-    bundle = PolicyBundle.load(
+    bundle = PslPolicyStore.load(
         policy_dir,
-        schema_path=policy_schema,
         keys=keys,
         rollback_store=PolicyRollbackStore(policy_version_store),
     )
@@ -124,6 +121,8 @@ def create_app(runtime: Runtime | None = None) -> FastAPI:
             "identity_count": len(current.engine.identities),
             "resource_count": len(current.engine.resources),
             "policy_files": current.engine.bundle.source_files,
+            "policy_language": "PSL (IEEE 1850-2010), deny-overrides",
+            "policy_sets": current.engine.bundle.bundle_versions,
             "security": {
                 "signed_policy_bundles": True,
                 "signed_requests": True,
@@ -165,7 +164,7 @@ def create_app(runtime: Runtime | None = None) -> FastAPI:
         if os.getenv("ZT_ENABLE_ADMIN_RELOAD", "false").lower() != "true":
             raise HTTPException(
                 status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-                detail="hot reload disabled; deploy a verified policy bundle through the release pipeline",
+                detail="hot reload disabled; deploy signed PSL policies through the release pipeline",
             )
         expected = os.getenv("ZT_ADMIN_TOKEN")
         if not expected or not x_zt_admin_token or not secrets.compare_digest(x_zt_admin_token, expected):

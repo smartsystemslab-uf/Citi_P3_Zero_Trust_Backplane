@@ -1,0 +1,7 @@
+# generated / local-only
+runtime/
+results/
+deploy/compose.yaml
+# SPIRE release tarball (64 MB, verified by sha256 in the Dockerfile; see deploy/vendor/README.md)
+deploy/vendor/*.tar.gz
+__pycache__/

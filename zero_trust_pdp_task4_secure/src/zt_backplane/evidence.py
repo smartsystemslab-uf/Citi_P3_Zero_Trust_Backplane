@@ -167,6 +167,10 @@ class EvidenceVerifier:
             auth_verified=True,
             auth_issuer=self._required_string(auth, "issuer"),
             auth_strength=int(auth["strength"]),
+            auth_factors={str(k): True for k, v in auth["factors"].items() if v is True},
+            auth_scheme=self._auth_block(auth).get("auth_mode") or "",
+            auth_subject_kind=self._auth_block(auth).get("subject_kind") or "",
+            auth_agent_id=self._auth_block(auth).get("agent_id"),
             workflow_verified=workflow is not None or request.context.workflow_id is None,
             workflow_issuer=self._required_string(workflow, "issuer") if workflow else None,
             approval_valid=approval is not None,
@@ -204,6 +208,15 @@ class EvidenceVerifier:
         if request.context.auth_strength != claimed:
             raise SecurityError("context_auth_assertion_mismatch")
         return raw
+
+    @staticmethod
+    def _auth_block(auth: dict[str, Any]) -> dict[str, str]:
+        """The optional ``authentication`` block of a signature-verified auth assertion
+        (scheme and authenticated agent); text values only, anything else is ignored."""
+        raw = auth.get("authentication")
+        if not isinstance(raw, dict):
+            return {}
+        return {k: v for k, v in raw.items() if isinstance(v, str)}
 
     def _verify_workflow(self, request: PDPRequest, now: datetime) -> dict[str, Any] | None:
         if request.context.workflow_id is None:

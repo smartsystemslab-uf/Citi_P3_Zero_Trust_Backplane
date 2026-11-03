@@ -29,6 +29,7 @@ for path in (
     TASK4_ROOT / "src",
     TASK5_ROOT / "src",
     INTERFACE_ROOT / "src",
+    PROJECT_ROOT / "zero_trust_psl" / "src",
     HERE,
 ):
     sys.path.insert(0, str(path))
@@ -57,8 +58,9 @@ from zt_pep.placement import build_pep_plan
 from zt_task5.models import UnifiedAuthorizationRequest
 from zt_task5.service import build_task5_components, register_generated_pep
 from zt_task5.task3_adapter import PEPDenied, Task3PEPAdapter
-from zt_backplane.canonical import sha256_hex
-from zt_backplane.crypto import load_private_key, sign_mapping
+from zt_backplane.psl_translate import bundle_to_psl, rebind_subject
+from zt_psl.fields import FieldCatalog
+from zt_psl.signing import load_private_key, sign_file
 
 
 def banner(text: str) -> None:
@@ -156,20 +158,14 @@ def prepare_task4_compatibility_view(output: Path, config_dir: Path) -> Path:
     return view
 
 
-def _write_signed_policy_bundle(policy_path: Path, raw: dict[str, Any]) -> None:
-    policy_path.write_text(yaml.safe_dump(raw, sort_keys=False), encoding="utf-8")
-    policy_key = load_private_key(TASK4_ROOT / "security" / "dev_keys" / "policy_private.pem")
-    sidecar = {
-        "schema_version": "1.0",
-        "issuer": "policy.prototype",
-        "key_id": "policy-1",
-        "algorithm": "Ed25519",
-        "signed_at": datetime.now(timezone.utc).isoformat(),
-        "bundle_digest": sha256_hex(raw),
-        "signature": sign_mapping(policy_key, raw),
-    }
-    policy_path.with_suffix(".sig.json").write_text(
-        json.dumps(sidecar, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+def _write_signed_psl(policy_path: Path, text: str) -> None:
+    """Write a demo-specific PSL policy under output/ and sign it with the DEVELOPMENT key."""
+    policy_path.write_text(text, encoding="utf-8")
+    sign_file(
+        policy_path,
+        load_private_key(TASK4_ROOT / "security" / "dev_keys" / "policy_private.pem"),
+        issuer="policy.prototype",
+        key_id="policy-1",
     )
 
 
@@ -192,31 +188,27 @@ def prepare_real_testbed_policy_store(
     subject_ids = {item["id"] for item in manifest["spec"].get("subjects", [])}
     ledger_subject = "agent.back_office.ledger_update"
     if ledger_subject in subject_ids:
-        ledger_path = policy_dir / "ledger_access.yaml"
-        raw = yaml.safe_load(ledger_path.read_text(encoding="utf-8")) or {}
-        changed = False
-        for policy in raw.get("policies", []):
-            match = policy.get("match", {})
-            if (
-                "resource.back_office.ledger" in match.get("resources", [])
-                and "update" in match.get("actions", [])
-                and "agent.back_office.eod" in match.get("subjects", [])
-            ):
-                match["subjects"] = [ledger_subject]
-                policy["description"] = policy.get("description", "").replace(
-                    "EOD ledger update", "Ledger-update agent operation in the EOD workflow"
-                )
-                changed = True
+        ledger_path = policy_dir / "ledger_access.psl"
+        text, changed = rebind_subject(
+            ledger_path.read_text(encoding="utf-8"),
+            ["policy.ledger.eod_approved_update", "policy.ledger.eod_pending_review"],
+            "agent.back_office.eod",
+            ledger_subject,
+        )
         if changed:
-            _write_signed_policy_bundle(ledger_path, raw)
+            _write_signed_psl(ledger_path, text)
             print(
                 "Task 4 runtime policy binding: agent.back_office.ledger_update "
                 "(ledger_update_agent) may request the EOD ledger-update policy."
             )
 
     if task6_bundle is not None:
-        task6_path = policy_dir / "task6_real_workflows.yaml"
-        _write_signed_policy_bundle(task6_path, task6_bundle)
+        task6_path = policy_dir / "task6_real_workflows.psl"
+        windows = FieldCatalog.load(policy_dir / "policy_fields.yaml").windows
+        _write_signed_psl(
+            task6_path,
+            bundle_to_psl(task6_bundle, windows=windows, source="integrated_demo: build_task6_policy_bundle"),
+        )
         print(
             "Task 6 runtime policy bundle staged: "
             f"{len(task6_bundle.get('policies', []))} representative workflow policies."
@@ -497,21 +489,27 @@ def run(args: argparse.Namespace) -> int:
 
     # Scenario E: a critical financial write is blocked without signed approvals.
     if critical_demo_kind == "ledger":
+        # Arguments follow the real tool signature apply_ledger_updates(batch_id, posting_instructions);
+        # the PSL intent rule apply-ledger-updates-pipeline-gate requires posting_instructions.
         critical_parameters = {
             "batch_id": "batch-77",
+            "posting_instructions": "post batch-77 totals",
             "idempotency_key": "idem-critical-77",
             "change_ticket": "CHG-77",
         }
         approved_parameters = {
             "batch_id": "batch-78",
+            "posting_instructions": "post batch-78 totals",
             "idempotency_key": "idem-critical-78",
             "change_ticket": "CHG-78",
         }
         workflow_prefix = "eod-demo"
     else:
+        # Arguments follow the real tool signature execute_transfer(source_account, destination_account,
+        # amount, ...); the PSL intent rule execute-transfer-caller-restriction requires all three.
         critical_parameters = {
-            "from_account": "acct-demo-a",
-            "to_account": "acct-demo-b",
+            "source_account": "acct-demo-a",
+            "destination_account": "acct-demo-b",
             "amount": 100.0,
             "currency": "USD",
             "idempotency_key": "idem-critical-77",

@@ -2,14 +2,9 @@
 from __future__ import annotations
 
 import argparse
-import json
-from datetime import datetime, timezone
 from pathlib import Path
 
-import yaml
-
-from zt_backplane.canonical import sha256_hex
-from zt_backplane.crypto import generate_keypair, load_private_key, sign_mapping
+from zt_backplane.crypto import generate_keypair
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -34,22 +29,12 @@ def main() -> None:
     if args.force or not pdp_private.exists() or not pdp_public.exists():
         generate_keypair(pdp_private, pdp_public)
 
-    policy_key = load_private_key(key_dir / "policy_private.pem")
-    for path in sorted((ROOT / "policy_store").glob("*.yaml")):
-        raw = yaml.safe_load(path.read_text(encoding="utf-8"))
-        sidecar = {
-            "schema_version": "1.0",
-            "issuer": "policy.prototype",
-            "key_id": "policy-1",
-            "algorithm": "Ed25519",
-            "signed_at": datetime.now(timezone.utc).isoformat(),
-            "bundle_digest": sha256_hex(raw),
-            "signature": sign_mapping(policy_key, raw),
-        }
-        path.with_suffix(".sig.json").write_text(
-            json.dumps(sidecar, indent=2, sort_keys=True) + "\n", encoding="utf-8"
-        )
-    print("Development keys generated and policy bundles signed.")
+    from zt_psl.signing import load_private_key as load_psl_key, sign_file
+
+    psl_key = load_psl_key(key_dir / "policy_private.pem")
+    for path in sorted((ROOT / "policy_store").glob("*.psl")) + [ROOT / "policy_store" / "policy_fields.yaml"]:
+        sign_file(path, psl_key, issuer="policy.prototype", key_id="policy-1")
+    print("Development keys generated and PSL policies signed.")
 
 
 if __name__ == "__main__":

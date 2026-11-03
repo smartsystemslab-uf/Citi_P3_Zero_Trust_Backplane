@@ -1,0 +1,161 @@
+{
+ "translation": {
+  "requests": 552960,
+  "same_decision": 552960,
+  "different_decision": 0,
+  "seconds": 43.0,
+  "corpus": {
+   "subjects": 24,
+   "resource_actions": 36,
+   "workflows": [
+    "workflow.back_office.eod_processing",
+    "workflow.front_office.customer_transaction",
+    "workflow.front_office.fraud_review",
+    "",
+    "workflow.unknown.other"
+   ],
+   "risk_levels": [
+    "low",
+    "medium",
+    "high",
+    "critical"
+   ],
+   "auth_strengths": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "approval_combinations": 4,
+   "decision_times": [
+    "business_hours",
+    "night"
+   ]
+  },
+  "legacy_policy_version": "c5f7d018c019208e",
+  "psl_policy_version": "4980c3335cdb42b8",
+  "outcomes": {
+   "legacy": {
+    "DENY": 548032,
+    "ALLOW_WITH_OBLIGATIONS": 896,
+    "ALLOW": 3520,
+    "REAUTHENTICATE": 320,
+    "MANUAL_REVIEW": 192
+   },
+   "psl": {
+    "DENY": 548032,
+    "ALLOW_WITH_OBLIGATIONS": 896,
+    "ALLOW": 3520,
+    "REAUTHENTICATE": 320,
+    "MANUAL_REVIEW": 192
+   }
+  },
+  "differences": [],
+  "obligation_differences": []
+ },
+ "with_intent": {
+  "requests": 552960,
+  "same_decision": 552832,
+  "different_decision": 128,
+  "seconds": 51.5,
+  "corpus": {
+   "subjects": 24,
+   "resource_actions": 36,
+   "workflows": [
+    "workflow.back_office.eod_processing",
+    "workflow.front_office.customer_transaction",
+    "workflow.front_office.fraud_review",
+    "",
+    "workflow.unknown.other"
+   ],
+   "risk_levels": [
+    "low",
+    "medium",
+    "high",
+    "critical"
+   ],
+   "auth_strengths": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "approval_combinations": 4,
+   "decision_times": [
+    "business_hours",
+    "night"
+   ]
+  },
+  "legacy_policy_version": "c5f7d018c019208e",
+  "psl_policy_version": "d6178c43fcf2c184",
+  "outcomes": {
+   "legacy": {
+    "DENY": 548032,
+    "ALLOW_WITH_OBLIGATIONS": 896,
+    "ALLOW": 3520,
+    "REAUTHENTICATE": 320,
+    "MANUAL_REVIEW": 192
+   },
+   "psl": {
+    "DENY": 548160,
+    "ALLOW_WITH_OBLIGATIONS": 864,
+    "ALLOW": 3520,
+    "REAUTHENTICATE": 320,
+    "MANUAL_REVIEW": 96
+   }
+  },
+  "differences": [
+   {
+    "legacy": "MANUAL_REVIEW",
+    "psl": "DENY",
+    "legacy_policy": "policy.tool.transfer_pending_review",
+    "psl_policy": "intent.execute-transfer-caller-restriction",
+    "count": 96,
+    "example": {
+     "subject": "agent.front_office.transaction_processing",
+     "resource": "resource.front_office.banking_transfer",
+     "action": "execute",
+     "workflow": "workflow.front_office.customer_transaction",
+     "risk": "low",
+     "auth_strength": 0,
+     "approval": false,
+     "secondary": false,
+     "time": "business_hours",
+     "legacy_reason": "matched_policy:policy.tool.transfer_pending_review",
+     "psl_reason": "psl_violation:core.critical_write_requires_dual_approval,intent.execute-transfer-caller-restriction,policy.tool.transfer_pending_review",
+     "psl_matched": [
+      "policy.tool.transfer_approved",
+      "core.critical_write_requires_dual_approval",
+      "intent.execute-transfer-caller-restriction",
+      "policy.tool.transfer_pending_review"
+     ]
+    }
+   },
+   {
+    "legacy": "ALLOW_WITH_OBLIGATIONS",
+    "psl": "DENY",
+    "legacy_policy": "policy.tool.transfer_approved",
+    "psl_policy": "intent.execute-transfer-caller-restriction",
+    "count": 32,
+    "example": {
+     "subject": "agent.front_office.transaction_processing",
+     "resource": "resource.front_office.banking_transfer",
+     "action": "execute",
+     "workflow": "workflow.front_office.customer_transaction",
+     "risk": "low",
+     "auth_strength": 0,
+     "approval": true,
+     "secondary": true,
+     "time": "business_hours",
+     "legacy_reason": "matched_policy:policy.tool.transfer_approved",
+     "psl_reason": "psl_violation:intent.execute-transfer-caller-restriction",
+     "psl_matched": [
+      "policy.tool.transfer_approved",
+      "intent.execute-transfer-caller-restriction"
+     ]
+    }
+   }
+  ],
+  "obligation_differences": []
+ }
+}

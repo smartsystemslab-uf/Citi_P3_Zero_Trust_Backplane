@@ -64,7 +64,10 @@ def test_report_agent_cannot_update_ledger(runtime):
     )
     result = runtime.engine.evaluate(request)
     assert result.decision == Decision.DENY
-    assert result.policy_id == "policy.ledger.report_deny_update"
+    # deny-overrides: both bundles' explicit deny rules are violated and both are reported
+    assert result.policy_id in {"policy.ledger.report_deny_update", "policy.back_office.report_deny_ledger_update"}
+    assert {"policy.ledger.report_deny_update", "policy.back_office.report_deny_ledger_update"} <= set(
+        result.matched_policy_ids)
 
 
 def test_critical_write_requires_signed_approval_and_secondary_decision(runtime):

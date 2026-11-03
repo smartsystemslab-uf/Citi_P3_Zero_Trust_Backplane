@@ -1,0 +1,88 @@
+{
+ "environment": {
+  "platform": "Windows-10-10.0.26200-SP0",
+  "python": "3.11.5",
+  "cpus": 32,
+  "generated": "2026-11-03T02:10:51+00:00"
+ },
+ "parts": [
+  {
+   "label": "Task 4 policies, same content (PSL store without the new intent / identity rules)",
+   "requests": 69120,
+   "rounds": 3,
+   "samples_per_engine": 207360,
+   "legacy_policies": 16,
+   "psl_rules": 18,
+   "legacy": {
+    "mean_us": 29.01,
+    "p50_us": 25.7,
+    "p95_us": 45.9,
+    "p99_us": 76.3,
+    "max_us": 408.2,
+    "decisions_per_s": 34469
+   },
+   "psl": {
+    "mean_us": 28.39,
+    "p50_us": 24.4,
+    "p95_us": 52.6,
+    "p99_us": 91.1,
+    "max_us": 779.1,
+    "decisions_per_s": 35221
+   },
+   "psl_vs_legacy_mean": 0.979,
+   "psl_vs_legacy_p99": 1.194
+  },
+  {
+   "label": "Task 4 policy store as deployed (PSL incl. intent and identity rules)",
+   "requests": 69120,
+   "rounds": 3,
+   "samples_per_engine": 207360,
+   "legacy_policies": 16,
+   "psl_rules": 33,
+   "legacy": {
+    "mean_us": 27.91,
+    "p50_us": 25.4,
+    "p95_us": 44.4,
+    "p99_us": 71.1,
+    "max_us": 733.1,
+    "decisions_per_s": 35826
+   },
+   "psl": {
+    "mean_us": 44.54,
+    "p50_us": 39.5,
+    "p95_us": 74.0,
+    "p99_us": 122.0,
+    "max_us": 828.4,
+    "decisions_per_s": 22450
+   },
+   "psl_vs_legacy_mean": 1.596,
+   "psl_vs_legacy_p99": 1.716
+  },
+  {
+   "label": "Native MAS runtime store (Task 4 + generated least-privilege policies)",
+   "requests": 566800,
+   "rounds": 3,
+   "samples_per_engine": 1700400,
+   "legacy_policies": 135,
+   "psl_rules": 152,
+   "legacy": {
+    "mean_us": 177.6,
+    "p50_us": 164.1,
+    "p95_us": 263.1,
+    "p99_us": 335.4,
+    "max_us": 3936.4,
+    "decisions_per_s": 5631
+   },
+   "psl": {
+    "mean_us": 56.66,
+    "p50_us": 50.2,
+    "p95_us": 89.7,
+    "p99_us": 140.4,
+    "max_us": 980.5,
+    "decisions_per_s": 17649
+   },
+   "psl_vs_legacy_mean": 0.319,
+   "psl_vs_legacy_p99": 0.419
+  }
+ ]
+}

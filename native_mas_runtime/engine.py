@@ -39,6 +39,34 @@ class PendingNativeTool:
     request: Any
     obligations: list[Any]
     idempotency_reserved: bool = False
+    workflow_instance_id: str = ""
+    caller_runtime_id: str = ""
+    tool_name: str = ""
+
+
+WORKFLOW_SCOPE = "workflow_run"
+WORKFLOW_CAPACITY = 10000
+
+
+def _result_ready(result: Any) -> bool:
+    """True when the business function's result (dict, JSON string, or ADK's wrapped
+    {"result": "<json>"}) carries ready == true. Anything else is false."""
+    value = result
+    for _ in range(3):
+        if isinstance(value, str):
+            try:
+                value = json.loads(value)
+            except Exception:
+                return False
+            continue
+        if isinstance(value, dict):
+            if value.get("ready") is True:
+                return True
+            if "result" in value:
+                value = value["result"]
+                continue
+        return False
+    return False
 
 
 class NativeMasBackplane:
@@ -122,6 +150,7 @@ class NativeMasBackplane:
             self.task4_root / "src",
             self.task5_root / "src",
             self.interface_root / "src",
+            self.backplane_root / "zero_trust_psl" / "src",
         ]
         missing = [str(path) for path in required if not path.exists()]
         if missing:
@@ -140,6 +169,7 @@ class NativeMasBackplane:
             self.task4_root / "src",
             self.task5_root / "src",
             self.interface_root / "src",
+            self.backplane_root / "zero_trust_psl" / "src",
             self.integrated_root,
         ):
             text = str(path)
@@ -464,23 +494,17 @@ class NativeMasBackplane:
         return manifest
 
     @staticmethod
-    def _write_signed_policy_bundle(task4_root: Path, policy_path: Path, raw: dict[str, Any]) -> None:
-        from zt_backplane.canonical import sha256_hex
-        from zt_backplane.crypto import load_private_key, sign_mapping
+    def _write_signed_psl(task4_root: Path, policy_path: Path, text: str) -> None:
+        """Write a runtime-generated PSL policy and sign it with the DEVELOPMENT policy key
+        (output directory only; the source policy store is never modified)."""
+        from zt_psl.signing import load_private_key, sign_file
 
-        policy_path.write_text(yaml.safe_dump(raw, sort_keys=False), encoding="utf-8")
-        private_key = load_private_key(task4_root / "security" / "dev_keys" / "policy_private.pem")
-        sidecar = {
-            "schema_version": "1.0",
-            "issuer": "policy.prototype",
-            "key_id": "policy-1",
-            "algorithm": "Ed25519",
-            "signed_at": datetime.now(timezone.utc).isoformat(),
-            "bundle_digest": sha256_hex(raw),
-            "signature": sign_mapping(private_key, raw),
-        }
-        policy_path.with_suffix(".sig.json").write_text(
-            json.dumps(sidecar, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+        policy_path.write_text(text, encoding="utf-8")
+        sign_file(
+            policy_path,
+            load_private_key(task4_root / "security" / "dev_keys" / "policy_private.pem"),
+            issuer="policy.prototype",
+            key_id="policy-1",
         )
 
     @staticmethod
@@ -581,29 +605,32 @@ class NativeMasBackplane:
             shutil.rmtree(policy_dir)
         shutil.copytree(self.task4_root / "policy_store", policy_dir)
 
+        from zt_backplane.psl_translate import bundle_to_psl, rebind_subject
+        from zt_psl.fields import FieldCatalog
+
         # Keep the existing Task 4 intent but bind the EOD update policy to the
         # actual ledger_update_agent discovered in the real MAS.
         subject_ids = {item["id"] for item in manifest["spec"].get("subjects", [])}
         if "agent.back_office.ledger_update" in subject_ids:
-            ledger_path = policy_dir / "ledger_access.yaml"
-            raw = yaml.safe_load(ledger_path.read_text(encoding="utf-8")) or {}
-            changed = False
-            for policy in raw.get("policies", []):
-                match = policy.get("match", {})
-                if (
-                    "resource.back_office.ledger" in match.get("resources", [])
-                    and "update" in match.get("actions", [])
-                    and "agent.back_office.eod" in match.get("subjects", [])
-                ):
-                    match["subjects"] = ["agent.back_office.ledger_update"]
-                    changed = True
-            if changed:
-                self._write_signed_policy_bundle(self.task4_root, ledger_path, raw)
+            ledger_path = policy_dir / "ledger_access.psl"
+            text, changed = rebind_subject(
+                ledger_path.read_text(encoding="utf-8"),
+                ["policy.ledger.eod_approved_update", "policy.ledger.eod_pending_review"],
+                "agent.back_office.eod",
+                "agent.back_office.ledger_update",
+            )
+            if changed != 2:
+                raise RuntimeError(f"ledger_update_agent policy binding: expected 2 PSL rules, changed {changed}")
+            self._write_signed_psl(self.task4_root, ledger_path, text)
 
-        native_bundle = self._build_native_policy_bundle(plan_json)
-        self._write_signed_policy_bundle(
-            self.task4_root, policy_dir / "native_mas_runtime.yaml", native_bundle
+        # Generated least-privilege policies for the discovered placements, as PSL.
+        windows = FieldCatalog.load(policy_dir / "policy_fields.yaml").windows
+        native_psl = bundle_to_psl(
+            self._build_native_policy_bundle(plan_json),
+            windows=windows,
+            source="native_mas_runtime: Task 3 generated_pep_plan.json",
         )
+        self._write_signed_psl(self.task4_root, policy_dir / "native_mas_runtime.psl", native_psl)
         return policy_dir
 
     def _bootstrap(self) -> None:
@@ -686,6 +713,14 @@ class NativeMasBackplane:
 
         task4_runtime = build_runtime()
         task4_client = TestClient(create_app(task4_runtime))
+        # Temporal PSL rules (workflow_run scope, runtime "native") from the same signed policy store.
+        from zt_psl.runtime import MonitorRuntime
+
+        self.workflow_monitor = MonitorRuntime.from_policy_set(
+            task4_runtime.engine.bundle.policy_set,
+            "native",
+            capacity={WORKFLOW_SCOPE: WORKFLOW_CAPACITY},
+        )
         health = task4_client.get("/health")
         if health.status_code >= 400:
             raise RuntimeError(f"Task 4 PDP health failed: {health.text}")
@@ -966,6 +1001,15 @@ class NativeMasBackplane:
             policy_version=policy_version,
             decision=decision or ("ALLOW" if runtime_auth.allowed else "DENY"),
         )
+        if auth.allowed:
+            self._workflow_admission(
+                auth,
+                event_type=event_type,
+                workflow_instance_id=workflow_instance_id,
+                caller_runtime_id=caller_runtime_id,
+                target_runtime_id=target_runtime_id,
+            )
+            auth.authorization_latency_ms = (time.perf_counter_ns() - started) / 1_000_000
         self._append_audit(
             event_type=event_type,
             auth=auth,
@@ -1012,19 +1056,85 @@ class NativeMasBackplane:
                 auth.request.request_hash(),
                 required=auth.request.critical,
             )
-            return PendingNativeTool(auth, pep, auth.request, obligations, True)
-        return PendingNativeTool(auth, pep, auth.request, obligations, False)
+            return PendingNativeTool(auth, pep, auth.request, obligations, True,
+                                     workflow_instance_id, caller_runtime_id, tool_name)
+        return PendingNativeTool(auth, pep, auth.request, obligations, False,
+                                 workflow_instance_id, caller_runtime_id, tool_name)
 
     def finish_tool(self, pending: PendingNativeTool, result: Any) -> Any:
         if pending.pep is None or pending.request is None:
             return result
         if pending.idempotency_reserved:
             pending.pep.idempotency_guard.commit(pending.request.idempotency_key)
+            self._workflow_observe(pending, "tool_succeeded", ready=_result_ready(result))
         return self._apply_post_obligations(pending.pep, result, pending.obligations)
 
     def abort_tool(self, pending: PendingNativeTool | None) -> None:
         if pending and pending.idempotency_reserved and pending.pep is not None:
             pending.pep.idempotency_guard.abort(pending.request.idempotency_key)
+            self._workflow_observe(pending, "tool_failed")
+
+    # ------------------------------------------------------------------
+    # Temporal PSL rules of the workflow_run scope (intent prerequisites):
+    # routes and tool calls are ADMITTED only if no temporal rule would be
+    # violated; tool results are OBSERVED from the business function's return.
+    # ------------------------------------------------------------------
+    def _workflow_admission(
+        self,
+        auth: NativeAuthorization,
+        *,
+        event_type: str,
+        workflow_instance_id: str,
+        caller_runtime_id: str | None,
+        target_runtime_id: str | None,
+    ) -> None:
+        monitor = getattr(self, "workflow_monitor", None)
+        if monitor is None or WORKFLOW_SCOPE not in monitor.machines:
+            return
+        if event_type == "AGENT_ROUTE_AUTHORIZATION":
+            event, fields = "agent_routed", {"route.from": str(caller_runtime_id or ""),
+                                             "route.to": str(target_runtime_id or "")}
+        elif event_type == "TOOL_AUTHORIZATION":
+            event, fields = "tool_admitted", {"tool.agent": str(caller_runtime_id or ""),
+                                              "tool.name": str(target_runtime_id or "")}
+        else:
+            return
+        from zt_psl.runtime import CapacityExceeded
+
+        key = (str(workflow_instance_id),)
+        try:
+            result = monitor.admit([(WORKFLOW_SCOPE, key, event, monitor.bind(WORKFLOW_SCOPE, event, fields))])
+        except CapacityExceeded as exc:
+            self._deny_by_workflow_monitor(auth, f"psl_workflow_capacity:{exc}")
+            return
+        if not result.ok:
+            ids = ",".join(sorted({v.property_id for v in result.violations}))
+            self._deny_by_workflow_monitor(auth, f"psl_workflow_violation:{ids}")
+
+    @staticmethod
+    def _deny_by_workflow_monitor(auth: NativeAuthorization, reason: str) -> None:
+        auth.allowed = False
+        auth.would_block = True
+        auth.reason = reason
+        auth.source = "PSL_WORKFLOW_MONITOR"
+        auth.decision = "DENY"
+
+    def _workflow_observe(self, pending: PendingNativeTool, event: str, *, ready: bool = False) -> None:
+        monitor = getattr(self, "workflow_monitor", None)
+        if monitor is None or WORKFLOW_SCOPE not in monitor.machines or not pending.workflow_instance_id:
+            return
+        fields: dict[str, Any] = {"tool.agent": pending.caller_runtime_id, "tool.name": pending.tool_name}
+        if event == "tool_succeeded":
+            fields["result.ready"] = bool(ready)
+        monitor.observe([(WORKFLOW_SCOPE, (pending.workflow_instance_id,), event,
+                          monitor.bind(WORKFLOW_SCOPE, event, fields))])
+
+    def close_workflow(self, workflow_instance_id: str) -> list[Any]:
+        """End a workflow run: final verdicts of its temporal rules, state released."""
+        monitor = getattr(self, "workflow_monitor", None)
+        if monitor is None or WORKFLOW_SCOPE not in monitor.machines:
+            return []
+        return monitor.close(WORKFLOW_SCOPE, (str(workflow_instance_id),))
 
     @staticmethod
     def _apply_post_obligations(pep: Any, result: Any, obligations: list[Any]) -> Any:

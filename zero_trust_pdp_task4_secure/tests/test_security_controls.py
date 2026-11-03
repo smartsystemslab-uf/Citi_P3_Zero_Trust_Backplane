@@ -12,7 +12,8 @@ from zt_backplane.canonical import assertion_payload
 from zt_backplane.crypto import TrustedKeyStore, load_private_key, sign_mapping
 from zt_backplane.evidence import FixedClock
 from zt_backplane.models import Decision, RiskLevel
-from zt_backplane.policy import PolicyBundle, PolicyRollbackStore
+from zt_backplane.policy import PolicyRollbackStore
+from zt_backplane.psl_policy import PslPolicyStore
 
 from .conftest import make_runtime
 from .helpers import ROOT, resign_request, signed_request
@@ -161,7 +162,7 @@ def test_request_timestamp_cannot_override_pdp_server_time(tmp_path):
     resign_request(request)
     result = runtime.engine.evaluate(request)
     assert result.decision == Decision.DENY
-    assert result.reason == "default_deny_no_matching_policy"
+    assert result.reason == "psl_violation:R_default_deny"
 
 
 def test_unknown_subject_binding_is_denied(runtime):
@@ -180,30 +181,47 @@ def test_unknown_subject_binding_is_denied(runtime):
     assert "unknown_or_mismatched_subject" in result.reason
 
 
-def test_tampered_policy_bundle_is_rejected(tmp_path):
+def test_tampered_psl_policy_is_rejected(tmp_path):
     copied = tmp_path / "policies"
     shutil.copytree(ROOT / "policy_store", copied)
-    path = copied / "front_office.yaml"
-    raw = yaml.safe_load(path.read_text(encoding="utf-8"))
-    raw["policies"][0]["effect"] = "ALLOW"
-    path.write_text(yaml.safe_dump(raw, sort_keys=False), encoding="utf-8")
+    path = copied / "front_office.psl"
+    text = path.read_text(encoding="utf-8")
+    # drop the fraud agent's transfer ban: the signature must no longer verify
+    path.write_text(text.replace('&& (action == "execute" || action == "cancel")', '&& action == "noop"'),
+                    encoding="utf-8")
     keys = TrustedKeyStore(ROOT / "config" / "trusted_issuers.yaml")
-    with pytest.raises(ValueError, match="digest mismatch"):
-        PolicyBundle.load(
-            copied,
-            schema_path=ROOT / "interface_contract" / "schemas" / "policy_bundle.schema.json",
-            keys=keys,
-        )
+    with pytest.raises(ValueError, match="changed after signing"):
+        PslPolicyStore.load(copied, keys=keys)
+
+
+def test_tampered_field_catalogue_is_rejected(tmp_path):
+    copied = tmp_path / "policies"
+    shutil.copytree(ROOT / "policy_store", copied)
+    path = copied / "policy_fields.yaml"
+    path.write_text(path.read_text(encoding="utf-8").replace('start: "08:00"', 'start: "00:00"'), encoding="utf-8")
+    with pytest.raises(ValueError, match="changed after signing"):
+        PslPolicyStore.load(copied, keys=TrustedKeyStore(ROOT / "config" / "trusted_issuers.yaml"))
+
+
+def test_unsigned_psl_policy_and_legacy_yaml_bundles_are_rejected(tmp_path):
+    keys = TrustedKeyStore(ROOT / "config" / "trusted_issuers.yaml")
+    copied = tmp_path / "policies"
+    shutil.copytree(ROOT / "policy_store", copied)
+    (copied / "extra.psl").write_text(
+        "// @policy_set extra\n// @version 1.0.0\nvunit extra (pdp_request) {\n  // @permit\n"
+        "  property all = true;\n}\n", encoding="utf-8")
+    with pytest.raises(ValueError, match="missing signature"):
+        PslPolicyStore.load(copied, keys=keys)
+    copied2 = tmp_path / "policies2"
+    shutil.copytree(ROOT / "policy_store", copied2)
+    shutil.copy(ROOT / "legacy_policy_store" / "tool_access.yaml", copied2 / "tool_access.yaml")
+    with pytest.raises(ValueError, match="no longer evaluated"):
+        PslPolicyStore.load(copied2, keys=keys)
 
 
 def test_policy_rollback_is_rejected(tmp_path):
     store = tmp_path / "versions.json"
-    store.write_text(json.dumps({"bundle.front_office": "2.0.0"}), encoding="utf-8")
+    store.write_text(json.dumps({"bundle.front_office": "3.0.0"}), encoding="utf-8")
     keys = TrustedKeyStore(ROOT / "config" / "trusted_issuers.yaml")
     with pytest.raises(ValueError, match="policy rollback rejected"):
-        PolicyBundle.load(
-            ROOT / "policy_store",
-            schema_path=ROOT / "interface_contract" / "schemas" / "policy_bundle.schema.json",
-            keys=keys,
-            rollback_store=PolicyRollbackStore(store),
-        )
+        PslPolicyStore.load(ROOT / "policy_store", keys=keys, rollback_store=PolicyRollbackStore(store))

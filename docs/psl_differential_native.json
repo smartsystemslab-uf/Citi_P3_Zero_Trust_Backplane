@@ -1,0 +1,140 @@
+{
+ "requests": 566800,
+ "same_decision": 566704,
+ "different_decision": 96,
+ "seconds": 161.3,
+ "corpus": {
+  "subjects": 65,
+  "resource_actions": 109,
+  "workflows": [
+   "workflow.back_office.eod_processing",
+   "workflow.front_office.customer_transaction",
+   "workflow.front_office.fraud_review",
+   "",
+   "workflow.unknown.other"
+  ],
+  "risk_levels": [
+   "low",
+   "critical"
+  ],
+  "auth_strengths": [
+   1,
+   2
+  ],
+  "approval_combinations": 2,
+  "decision_times": [
+   "business_hours",
+   "night"
+  ]
+ },
+ "legacy_policy_version": "0722345c6277b54b",
+ "psl_policy_version": "fb7bf10db912c7a2",
+ "outcomes": {
+  "legacy": {
+   "DENY": 558520,
+   "ALLOW_WITH_OBLIGATIONS": 7184,
+   "ALLOW": 440,
+   "REAUTHENTICATE": 40,
+   "MANUAL_REVIEW": 616
+  },
+  "psl": {
+   "DENY": 558520,
+   "ALLOW_WITH_OBLIGATIONS": 7280,
+   "ALLOW": 344,
+   "REAUTHENTICATE": 40,
+   "MANUAL_REVIEW": 616
+  }
+ },
+ "differences": [
+  {
+   "legacy": "ALLOW",
+   "psl": "ALLOW_WITH_OBLIGATIONS",
+   "legacy_policy": "policy.mid_office.operations_read",
+   "psl_policy": "policy.mid_office.operations_read",
+   "count": 80,
+   "example": {
+    "subject": "agent.mid_office.data_analysis",
+    "resource": "resource.mid_office.internal_operations_data",
+    "action": "read",
+    "workflow": "workflow.back_office.eod_processing",
+    "risk": "low",
+    "auth_strength": 1,
+    "approval": false,
+    "secondary": false,
+    "time": "business_hours",
+    "legacy_reason": "matched_policy:policy.mid_office.operations_read",
+    "psl_reason": "psl_permit:policy.mid_office.operations_read,policy.native.pep.mid_office.operations.read_snapshot.allow",
+    "psl_matched": [
+     "policy.mid_office.operations_read",
+     "policy.native.pep.mid_office.operations.read_snapshot.allow"
+    ]
+   }
+  },
+  {
+   "legacy": "ALLOW",
+   "psl": "ALLOW_WITH_OBLIGATIONS",
+   "legacy_policy": "policy.tool.knowledge_search",
+   "psl_policy": "policy.native.pep.fraud_review.policy_search.allow",
+   "count": 16,
+   "example": {
+    "subject": "agent.front_office.compliance",
+    "resource": "resource.front_office.policy_knowledge_base",
+    "action": "search",
+    "workflow": "workflow.front_office.fraud_review",
+    "risk": "low",
+    "auth_strength": 1,
+    "approval": false,
+    "secondary": false,
+    "time": "business_hours",
+    "legacy_reason": "matched_policy:policy.tool.knowledge_search",
+    "psl_reason": "psl_permit:policy.native.pep.fraud_review.policy_search.allow,policy.tool.knowledge_search",
+    "psl_matched": [
+     "policy.native.pep.fraud_review.policy_search.allow",
+     "policy.tool.knowledge_search"
+    ]
+   }
+  }
+ ],
+ "obligation_differences": [
+  {
+   "legacy_policy": "policy.mid_office.financial_data_read",
+   "psl_permits_and_violations": [
+    "policy.mid_office.financial_data_read",
+    "policy.native.pep.mid_office.financial_data.read_profile.allow"
+   ],
+   "count": 20
+  },
+  {
+   "legacy_policy": "policy.back_office.eod_read_batches",
+   "psl_permits_and_violations": [
+    "policy.back_office.eod_read_batches",
+    "policy.native.pep.eod_processing.get_batches.allow"
+   ],
+   "count": 16
+  },
+  {
+   "legacy_policy": "policy.front_office.fraud_read_transaction_history",
+   "psl_permits_and_violations": [
+    "policy.front_office.fraud_read_transaction_history",
+    "policy.native.pep.fraud_review.read_history.allow"
+   ],
+   "count": 8
+  },
+  {
+   "legacy_policy": "policy.tool.transfer_approved",
+   "psl_permits_and_violations": [
+    "policy.native.pep.customer_transaction.execute_transfer.approved",
+    "policy.tool.transfer_approved"
+   ],
+   "count": 8
+  },
+  {
+   "legacy_policy": "policy.ledger.eod_approved_update",
+   "psl_permits_and_violations": [
+    "policy.ledger.eod_approved_update",
+    "policy.native.pep.ledger_update.apply_ledger_updates.approved"
+   ],
+   "count": 8
+  }
+ ]
+}
