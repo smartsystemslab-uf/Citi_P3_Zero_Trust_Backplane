@@ -1,0 +1,9 @@
+# Python build artifacts: regenerated automatically, never committed.
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+
+# The root virtual environment. Files committed on main before this rule stay tracked; new files
+# (packages installed later, editable installs such as zero_trust_psl / zt-psl.exe) are ignored.
+.venv/
