@@ -113,11 +113,9 @@ prerequisites:
   "session_state.fo_compliance_report is present":
     {workflow_run: 'tool_succeeded && tool.agent == "compliance_agent"'}
 
-# rules translated but not enabled, with the reason (reported, never silently dropped)
-disabled:
-  no-cross-domain-transfers: >
-    Enabling it would deny 13 legitimate routes of the real MAS: the Task 2 scanner assigns the
-    mid-office workflow agents (mid_office_planning_workflow, mid_office_planning_parallel,
-    representative_assistant_workflow, representative_assist_parallel) to domain 'shared'
-    instead of 'mid_office'. Fix the domain data (or the rule), then remove this entry.
-    Evidence: zt_psl intent consistency check against generated_pep_plan.json.
+# rules translated but not enabled, with the reason (reported, never silently dropped).
+# History: no-cross-domain-transfers was disabled until 2026-11-03 because the Task 2 scanner put
+# the factory-built mid-office workflow agents into domain 'shared' (13 conflicting legitimate
+# routes). The scanner now gives such agents the office domain of the router that attaches them
+# (zt_scan.inherit_agent_domains); the consistency check reports 0 conflicts, so it is enabled.
+disabled: {}

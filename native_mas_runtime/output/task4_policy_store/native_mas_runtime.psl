@@ -1,0 +1,740 @@
+// GENERATED from policy bundle bundle.native_mas_runtime 1.0.0 by zt_backplane.psl_translate
+// (deny-overrides). Do not edit; regenerate from the source.
+
+// @policy_set bundle.native_mas_runtime
+// @version 1.0.0
+// @source native_mas_runtime: Task 3 generated_pep_plan.json
+vunit bundle_native_mas_runtime (pdp_request) {
+
+  // @rule policy.native.pep.customer_transaction.execute_transfer.approved
+  // @nl Generated native-runtime approved critical operation.
+  // @permit
+  // @obligation require_idempotency_key
+  // @obligation enhanced_logging(reason=native_mas_critical)
+  property policy_native_pep_customer_transaction_execute_transfer_approved = action == "execute" && resource.id == "resource.front_office.banking_transfer" && subject.id == "agent.front_office.transaction_processing" && workflow.id == "workflow.front_office.customer_transaction";
+
+  // @rule policy.native.pep.customer_transaction.execute_transfer.pending_review
+  // @nl Generated native-runtime critical operation gate.
+  // @on_violation MANUAL_REVIEW
+  policy_native_pep_customer_transaction_execute_transfer_pending_review: assert always (authz_request && action == "execute" && resource.id == "resource.front_office.banking_transfer" && subject.id == "agent.front_office.transaction_processing" && workflow.id == "workflow.front_office.customer_transaction" -> approval.valid && approval.secondary_valid);
+
+  // @rule policy.native.pep.ledger_update.apply_ledger_updates.approved
+  // @nl Generated native-runtime approved critical operation.
+  // @permit
+  // @obligation require_idempotency_key
+  // @obligation enhanced_logging(reason=native_mas_critical)
+  property policy_native_pep_ledger_update_apply_ledger_updates_approved = action == "update" && resource.id == "resource.back_office.ledger" && subject.id == "agent.back_office.ledger_update" && workflow.id == "workflow.back_office.eod_processing";
+
+  // @rule policy.native.pep.ledger_update.apply_ledger_updates.pending_review
+  // @nl Generated native-runtime critical operation gate.
+  // @on_violation MANUAL_REVIEW
+  policy_native_pep_ledger_update_apply_ledger_updates_pending_review: assert always (authz_request && action == "update" && resource.id == "resource.back_office.ledger" && subject.id == "agent.back_office.ledger_update" && workflow.id == "workflow.back_office.eod_processing" -> approval.valid && approval.secondary_valid);
+
+  // @rule policy.native.pep.scanner.scan_edge_005_report_writing_agent_store_report.approved
+  // @nl Generated native-runtime approved critical operation.
+  // @permit
+  // @obligation require_idempotency_key
+  // @obligation enhanced_logging(reason=native_mas_critical)
+  property policy_native_pep_scanner_scan_edge_005_report_writing_agent_store_report_approved = action == "store" && resource.id == "resource.back_office.tool_store_report" && subject.id == "agent.back_office.report_writing_agent";
+
+  // @rule policy.native.pep.scanner.scan_edge_005_report_writing_agent_store_report.pending_review
+  // @nl Generated native-runtime critical operation gate.
+  // @on_violation MANUAL_REVIEW
+  policy_native_pep_scanner_scan_edge_005_report_writing_agent_store_report_pending_review: assert always (authz_request && action == "store" && resource.id == "resource.back_office.tool_store_report" && subject.id == "agent.back_office.report_writing_agent" -> approval.valid && approval.secondary_valid);
+
+  // @rule policy.native.pep.scanner.scan_edge_006_exception_agent_create_exception_case.approved
+  // @nl Generated native-runtime approved critical operation.
+  // @permit
+  // @obligation require_idempotency_key
+  // @obligation enhanced_logging(reason=native_mas_critical)
+  property policy_native_pep_scanner_scan_edge_006_exception_agent_create_exception_case_approved = action == "create" && resource.id == "resource.back_office.tool_create_exception_case" && subject.id == "agent.back_office.exception";
+
+  // @rule policy.native.pep.scanner.scan_edge_006_exception_agent_create_exception_case.pending_review
+  // @nl Generated native-runtime critical operation gate.
+  // @on_violation MANUAL_REVIEW
+  policy_native_pep_scanner_scan_edge_006_exception_agent_create_exception_case_pending_review: assert always (authz_request && action == "create" && resource.id == "resource.back_office.tool_create_exception_case" && subject.id == "agent.back_office.exception" -> approval.valid && approval.secondary_valid);
+
+  // @rule policy.native.pep.scanner.scan_edge_016_decision_making_agent_submit_manual_review.approved
+  // @nl Generated native-runtime approved critical operation.
+  // @permit
+  // @obligation require_idempotency_key
+  // @obligation enhanced_logging(reason=native_mas_critical)
+  property policy_native_pep_scanner_scan_edge_016_decision_making_agent_submit_manual_review_approved = action == "create" && resource.id == "resource.shared.tool_submit_manual_review" && subject.id == "agent.front_office.decision_making_agent";
+
+  // @rule policy.native.pep.scanner.scan_edge_016_decision_making_agent_submit_manual_review.pending_review
+  // @nl Generated native-runtime critical operation gate.
+  // @on_violation MANUAL_REVIEW
+  policy_native_pep_scanner_scan_edge_016_decision_making_agent_submit_manual_review_pending_review: assert always (authz_request && action == "create" && resource.id == "resource.shared.tool_submit_manual_review" && subject.id == "agent.front_office.decision_making_agent" -> approval.valid && approval.secondary_valid);
+
+  // @rule policy.native.pep.scanner.scan_edge_021_validation_agent_persist_validated_schedule.approved
+  // @nl Generated native-runtime approved critical operation.
+  // @permit
+  // @obligation require_idempotency_key
+  // @obligation enhanced_logging(reason=native_mas_critical)
+  property policy_native_pep_scanner_scan_edge_021_validation_agent_persist_validated_schedule_approved = action == "update" && resource.id == "resource.shared.tool_persist_validated_schedule" && subject.id == "agent.mid_office.validation";
+
+  // @rule policy.native.pep.scanner.scan_edge_021_validation_agent_persist_validated_schedule.pending_review
+  // @nl Generated native-runtime critical operation gate.
+  // @on_violation MANUAL_REVIEW
+  policy_native_pep_scanner_scan_edge_021_validation_agent_persist_validated_schedule_pending_review: assert always (authz_request && action == "update" && resource.id == "resource.shared.tool_persist_validated_schedule" && subject.id == "agent.mid_office.validation" -> approval.valid && approval.secondary_valid);
+
+  // @rule policy.native.pep.scanner.scan_edge_030_run_fraud_and_compliance_workflow_monitoring_evaluate_transaction.approved
+  // @nl Generated native-runtime approved critical operation.
+  // @permit
+  // @obligation require_idempotency_key
+  // @obligation enhanced_logging(reason=native_mas_critical)
+  property policy_native_pep_scanner_scan_edge_030_run_fraud_and_compliance_workflow_monitoring_evaluate_transaction_approved = action == "update" && resource.id == "resource.shared.api_monitoring_evaluate_transaction" && subject.id == "service.shared.run_fraud_and_compliance_workflow";
+
+  // @rule policy.native.pep.scanner.scan_edge_030_run_fraud_and_compliance_workflow_monitoring_evaluate_transaction.pending_review
+  // @nl Generated native-runtime critical operation gate.
+  // @on_violation MANUAL_REVIEW
+  policy_native_pep_scanner_scan_edge_030_run_fraud_and_compliance_workflow_monitoring_evaluate_transaction_pending_review: assert always (authz_request && action == "update" && resource.id == "resource.shared.api_monitoring_evaluate_transaction" && subject.id == "service.shared.run_fraud_and_compliance_workflow" -> approval.valid && approval.secondary_valid);
+
+  // @rule policy.native.pep.scanner.scan_edge_031_update_transaction_status_update_transaction_status.approved
+  // @nl Generated native-runtime approved critical operation.
+  // @permit
+  // @obligation require_idempotency_key
+  // @obligation enhanced_logging(reason=native_mas_critical)
+  property policy_native_pep_scanner_scan_edge_031_update_transaction_status_update_transaction_status_approved = action == "update" && resource.id == "resource.shared.api_update_transaction_status" && subject.id == "service.shared.update_transaction_status";
+
+  // @rule policy.native.pep.scanner.scan_edge_031_update_transaction_status_update_transaction_status.pending_review
+  // @nl Generated native-runtime critical operation gate.
+  // @on_violation MANUAL_REVIEW
+  policy_native_pep_scanner_scan_edge_031_update_transaction_status_update_transaction_status_pending_review: assert always (authz_request && action == "update" && resource.id == "resource.shared.api_update_transaction_status" && subject.id == "service.shared.update_transaction_status" -> approval.valid && approval.secondary_valid);
+
+  // @rule policy.native.pep.scanner.scan_edge_035_trigger_eod_reconciliation_trigger_eod_reconciliation.approved
+  // @nl Generated native-runtime approved critical operation.
+  // @permit
+  // @obligation require_idempotency_key
+  // @obligation enhanced_logging(reason=native_mas_critical)
+  property policy_native_pep_scanner_scan_edge_035_trigger_eod_reconciliation_trigger_eod_reconciliation_approved = action == "update" && resource.id == "resource.shared.api_trigger_eod_reconciliation" && subject.id == "service.shared.trigger_eod_reconciliation";
+
+  // @rule policy.native.pep.scanner.scan_edge_035_trigger_eod_reconciliation_trigger_eod_reconciliation.pending_review
+  // @nl Generated native-runtime critical operation gate.
+  // @on_violation MANUAL_REVIEW
+  policy_native_pep_scanner_scan_edge_035_trigger_eod_reconciliation_trigger_eod_reconciliation_pending_review: assert always (authz_request && action == "update" && resource.id == "resource.shared.api_trigger_eod_reconciliation" && subject.id == "service.shared.trigger_eod_reconciliation" -> approval.valid && approval.secondary_valid);
+
+  // @rule policy.native.pep.scanner.scan_edge_037_resolve_ledger_entry_resolve_ledger_entry.approved
+  // @nl Generated native-runtime approved critical operation.
+  // @permit
+  // @obligation require_idempotency_key
+  // @obligation enhanced_logging(reason=native_mas_critical)
+  property policy_native_pep_scanner_scan_edge_037_resolve_ledger_entry_resolve_ledger_entry_approved = action == "update" && resource.id == "resource.shared.api_resolve_ledger_entry" && subject.id == "service.shared.resolve_ledger_entry";
+
+  // @rule policy.native.pep.scanner.scan_edge_037_resolve_ledger_entry_resolve_ledger_entry.pending_review
+  // @nl Generated native-runtime critical operation gate.
+  // @on_violation MANUAL_REVIEW
+  policy_native_pep_scanner_scan_edge_037_resolve_ledger_entry_resolve_ledger_entry_pending_review: assert always (authz_request && action == "update" && resource.id == "resource.shared.api_resolve_ledger_entry" && subject.id == "service.shared.resolve_ledger_entry" -> approval.valid && approval.secondary_valid);
+
+  // @rule policy.native.pep.scanner.scan_edge_039_create_customer_customers.approved
+  // @nl Generated native-runtime approved critical operation.
+  // @permit
+  // @obligation require_idempotency_key
+  // @obligation enhanced_logging(reason=native_mas_critical)
+  property policy_native_pep_scanner_scan_edge_039_create_customer_customers_approved = action == "update" && resource.id == "resource.shared.database_customers" && subject.id == "service.shared.create_customer";
+
+  // @rule policy.native.pep.scanner.scan_edge_039_create_customer_customers.pending_review
+  // @nl Generated native-runtime critical operation gate.
+  // @on_violation MANUAL_REVIEW
+  policy_native_pep_scanner_scan_edge_039_create_customer_customers_pending_review: assert always (authz_request && action == "update" && resource.id == "resource.shared.database_customers" && subject.id == "service.shared.create_customer" -> approval.valid && approval.secondary_valid);
+
+  // @rule policy.native.pep.scanner.scan_edge_047_create_account_accounts.approved
+  // @nl Generated native-runtime approved critical operation.
+  // @permit
+  // @obligation require_idempotency_key
+  // @obligation enhanced_logging(reason=native_mas_critical)
+  property policy_native_pep_scanner_scan_edge_047_create_account_accounts_approved = action == "update" && resource.id == "resource.shared.database_accounts" && subject.id == "service.shared.create_account";
+
+  // @rule policy.native.pep.scanner.scan_edge_047_create_account_accounts.pending_review
+  // @nl Generated native-runtime critical operation gate.
+  // @on_violation MANUAL_REVIEW
+  policy_native_pep_scanner_scan_edge_047_create_account_accounts_pending_review: assert always (authz_request && action == "update" && resource.id == "resource.shared.database_accounts" && subject.id == "service.shared.create_account" -> approval.valid && approval.secondary_valid);
+
+  // @rule policy.native.pep.scanner.scan_edge_052_create_policy_policies.approved
+  // @nl Generated native-runtime approved critical operation.
+  // @permit
+  // @obligation require_idempotency_key
+  // @obligation enhanced_logging(reason=native_mas_critical)
+  property policy_native_pep_scanner_scan_edge_052_create_policy_policies_approved = action == "update" && resource.id == "resource.shared.database_policies" && subject.id == "service.shared.create_policy";
+
+  // @rule policy.native.pep.scanner.scan_edge_052_create_policy_policies.pending_review
+  // @nl Generated native-runtime critical operation gate.
+  // @on_violation MANUAL_REVIEW
+  policy_native_pep_scanner_scan_edge_052_create_policy_policies_pending_review: assert always (authz_request && action == "update" && resource.id == "resource.shared.database_policies" && subject.id == "service.shared.create_policy" -> approval.valid && approval.secondary_valid);
+
+  // @rule policy.native.pep.scanner.scan_edge_056_create_rule_rules.approved
+  // @nl Generated native-runtime approved critical operation.
+  // @permit
+  // @obligation require_idempotency_key
+  // @obligation enhanced_logging(reason=native_mas_critical)
+  property policy_native_pep_scanner_scan_edge_056_create_rule_rules_approved = action == "update" && resource.id == "resource.shared.database_rules" && subject.id == "service.shared.create_rule";
+
+  // @rule policy.native.pep.scanner.scan_edge_056_create_rule_rules.pending_review
+  // @nl Generated native-runtime critical operation gate.
+  // @on_violation MANUAL_REVIEW
+  policy_native_pep_scanner_scan_edge_056_create_rule_rules_pending_review: assert always (authz_request && action == "update" && resource.id == "resource.shared.database_rules" && subject.id == "service.shared.create_rule" -> approval.valid && approval.secondary_valid);
+
+  // @rule policy.native.pep.scanner.scan_edge_062_trigger_eod_reconciliation_audit_logs.approved
+  // @nl Generated native-runtime approved critical operation.
+  // @permit
+  // @obligation require_idempotency_key
+  // @obligation enhanced_logging(reason=native_mas_critical)
+  property policy_native_pep_scanner_scan_edge_062_trigger_eod_reconciliation_audit_logs_approved = action == "update" && resource.id == "resource.shared.database_audit_logs" && subject.id == "service.shared.trigger_eod_reconciliation";
+
+  // @rule policy.native.pep.scanner.scan_edge_062_trigger_eod_reconciliation_audit_logs.pending_review
+  // @nl Generated native-runtime critical operation gate.
+  // @on_violation MANUAL_REVIEW
+  policy_native_pep_scanner_scan_edge_062_trigger_eod_reconciliation_audit_logs_pending_review: assert always (authz_request && action == "update" && resource.id == "resource.shared.database_audit_logs" && subject.id == "service.shared.trigger_eod_reconciliation" -> approval.valid && approval.secondary_valid);
+
+  // @rule policy.native.pep.scanner.scan_edge_063_get_reconciliation_mismatches_audit_logs.approved
+  // @nl Generated native-runtime approved critical operation.
+  // @permit
+  // @obligation require_idempotency_key
+  // @obligation enhanced_logging(reason=native_mas_critical)
+  property policy_native_pep_scanner_scan_edge_063_get_reconciliation_mismatches_audit_logs_approved = action == "read" && resource.id == "resource.shared.database_audit_logs" && subject.id == "service.shared.get_reconciliation_mismatches";
+
+  // @rule policy.native.pep.scanner.scan_edge_063_get_reconciliation_mismatches_audit_logs.pending_review
+  // @nl Generated native-runtime critical operation gate.
+  // @on_violation MANUAL_REVIEW
+  policy_native_pep_scanner_scan_edge_063_get_reconciliation_mismatches_audit_logs_pending_review: assert always (authz_request && action == "read" && resource.id == "resource.shared.database_audit_logs" && subject.id == "service.shared.get_reconciliation_mismatches" -> approval.valid && approval.secondary_valid);
+
+  // @rule policy.native.pep.scanner.scan_edge_065_resolve_ledger_entry_audit_logs.approved
+  // @nl Generated native-runtime approved critical operation.
+  // @permit
+  // @obligation require_idempotency_key
+  // @obligation enhanced_logging(reason=native_mas_critical)
+  property policy_native_pep_scanner_scan_edge_065_resolve_ledger_entry_audit_logs_approved = action == "update" && resource.id == "resource.shared.database_audit_logs" && subject.id == "service.shared.resolve_ledger_entry";
+
+  // @rule policy.native.pep.scanner.scan_edge_065_resolve_ledger_entry_audit_logs.pending_review
+  // @nl Generated native-runtime critical operation gate.
+  // @on_violation MANUAL_REVIEW
+  policy_native_pep_scanner_scan_edge_065_resolve_ledger_entry_audit_logs_pending_review: assert always (authz_request && action == "update" && resource.id == "resource.shared.database_audit_logs" && subject.id == "service.shared.resolve_ledger_entry" -> approval.valid && approval.secondary_valid);
+
+  // @rule policy.native.pep.eod_processing.get_batches.allow
+  // @nl Generated allow for one discovered native MAS edge.
+  // @permit
+  // @obligation enhanced_logging(reason=native_mas_runtime)
+  property policy_native_pep_eod_processing_get_batches_allow = action == "read" && resource.id == "resource.back_office.eod_batches" && subject.id == "agent.back_office.eod" && workflow.id == "workflow.back_office.eod_processing";
+
+  // @rule policy.native.pep.fraud_review.policy_search.allow
+  // @nl Generated allow for one discovered native MAS edge.
+  // @permit
+  // @obligation enhanced_logging(reason=native_mas_runtime)
+  property policy_native_pep_fraud_review_policy_search_allow = action == "search" && resource.id == "resource.front_office.policy_knowledge_base" && subject.id == "agent.front_office.compliance" && workflow.id == "workflow.front_office.fraud_review";
+
+  // @rule policy.native.pep.fraud_review.read_history.allow
+  // @nl Generated allow for one discovered native MAS edge.
+  // @permit
+  // @obligation enhanced_logging(reason=native_mas_runtime)
+  property policy_native_pep_fraud_review_read_history_allow = action == "read" && resource.id == "resource.front_office.transaction_history" && subject.id == "agent.front_office.fraud" && workflow.id == "workflow.front_office.fraud_review";
+
+  // @rule policy.native.pep.mid_office.financial_data.read_profile.allow
+  // @nl Generated allow for one discovered native MAS edge.
+  // @permit
+  // @obligation enhanced_logging(reason=native_mas_runtime)
+  property policy_native_pep_mid_office_financial_data_read_profile_allow = action == "read" && resource.id == "resource.mid_office.financial_customer_data" && subject.id == "agent.mid_office.financial_data";
+
+  // @rule policy.native.pep.mid_office.operations.read_snapshot.allow
+  // @nl Generated allow for one discovered native MAS edge.
+  // @permit
+  // @obligation enhanced_logging(reason=native_mas_runtime)
+  property policy_native_pep_mid_office_operations_read_snapshot_allow = action == "read" && resource.id == "resource.mid_office.internal_operations_data" && subject.id == "agent.mid_office.data_analysis";
+
+  // @rule policy.native.pep.native.cli_input.allow
+  // @nl Generated allow for one discovered native MAS edge.
+  // @permit
+  // @obligation enhanced_logging(reason=native_mas_runtime)
+  property policy_native_pep_native_cli_input_allow = action == "invoke" && resource.id == "resource.shared.mas_input" && subject.id == "service.external.cli_user";
+
+  // @rule policy.native.pep.native.cli_output.allow
+  // @nl Generated allow for one discovered native MAS edge.
+  // @permit
+  // @obligation enhanced_logging(reason=native_mas_runtime)
+  property policy_native_pep_native_cli_output_allow = action == "emit" && resource.id == "resource.shared.mas_output" && subject.id == "agent.shared.user_proxy_agent";
+
+  // @rule policy.native.pep.native.route_user_proxy_agent_back_office_router.allow
+  // @nl Generated allow for one discovered native MAS edge.
+  // @permit
+  // @obligation enhanced_logging(reason=native_mas_runtime)
+  property policy_native_pep_native_route_user_proxy_agent_back_office_router_allow = action == "invoke" && resource.id == "resource.back_office.agent_back_office_router" && subject.id == "agent.shared.user_proxy_agent";
+
+  // @rule policy.native.pep.native.route_user_proxy_agent_front_office_router.allow
+  // @nl Generated allow for one discovered native MAS edge.
+  // @permit
+  // @obligation enhanced_logging(reason=native_mas_runtime)
+  property policy_native_pep_native_route_user_proxy_agent_front_office_router_allow = action == "invoke" && resource.id == "resource.front_office.agent_front_office_router" && subject.id == "agent.shared.user_proxy_agent";
+
+  // @rule policy.native.pep.native.route_user_proxy_agent_mid_office_router.allow
+  // @nl Generated allow for one discovered native MAS edge.
+  // @permit
+  // @obligation enhanced_logging(reason=native_mas_runtime)
+  property policy_native_pep_native_route_user_proxy_agent_mid_office_router_allow = action == "invoke" && resource.id == "resource.mid_office.agent_mid_office_router" && subject.id == "agent.shared.user_proxy_agent";
+
+  // @rule policy.native.pep.scanner.scan_edge_001_validation_checkpoint_agent_validate_eod_readiness.allow
+  // @nl Generated allow for one discovered native MAS edge.
+  // @permit
+  // @obligation enhanced_logging(reason=native_mas_runtime)
+  property policy_native_pep_scanner_scan_edge_001_validation_checkpoint_agent_validate_eod_readiness_allow = action == "read" && resource.id == "resource.back_office.tool_validate_eod_readiness" && subject.id == "agent.back_office.validation_checkpoint_agent";
+
+  // @rule policy.native.pep.scanner.scan_edge_004_reconciliation_agent_get_reconciliation_data.allow
+  // @nl Generated allow for one discovered native MAS edge.
+  // @permit
+  // @obligation enhanced_logging(reason=native_mas_runtime)
+  property policy_native_pep_scanner_scan_edge_004_reconciliation_agent_get_reconciliation_data_allow = action == "read" && resource.id == "resource.back_office.tool_get_reconciliation_data" && subject.id == "agent.back_office.reconciliation";
+
+  // @rule policy.native.pep.scanner.scan_edge_007_transaction_monitoring_agent_get_customer_context.allow
+  // @nl Generated allow for one discovered native MAS edge.
+  // @permit
+  // @obligation enhanced_logging(reason=native_mas_runtime)
+  property policy_native_pep_scanner_scan_edge_007_transaction_monitoring_agent_get_customer_context_allow = action == "read" && resource.id == "resource.shared.tool_get_customer_context" && subject.id == "agent.front_office.transaction_monitoring";
+
+  // @rule policy.native.pep.scanner.scan_edge_008_transaction_monitoring_agent_get_transaction_context.allow
+  // @nl Generated allow for one discovered native MAS edge.
+  // @permit
+  // @obligation enhanced_logging(reason=native_mas_runtime)
+  property policy_native_pep_scanner_scan_edge_008_transaction_monitoring_agent_get_transaction_context_allow = action == "read" && resource.id == "resource.shared.tool_get_transaction_context" && subject.id == "agent.front_office.transaction_monitoring";
+
+  // @rule policy.native.pep.scanner.scan_edge_009_transaction_monitoring_agent_list_recent_transactions.allow
+  // @nl Generated allow for one discovered native MAS edge.
+  // @permit
+  // @obligation enhanced_logging(reason=native_mas_runtime)
+  property policy_native_pep_scanner_scan_edge_009_transaction_monitoring_agent_list_recent_transactions_allow = action == "read" && resource.id == "resource.shared.tool_list_recent_transactions" && subject.id == "agent.front_office.transaction_monitoring";
+
+  // @rule policy.native.pep.scanner.scan_edge_010_fraud_detection_agent_get_customer_context.allow
+  // @nl Generated allow for one discovered native MAS edge.
+  // @permit
+  // @obligation enhanced_logging(reason=native_mas_runtime)
+  property policy_native_pep_scanner_scan_edge_010_fraud_detection_agent_get_customer_context_allow = action == "read" && resource.id == "resource.shared.tool_get_customer_context" && subject.id == "agent.front_office.fraud";
+
+  // @rule policy.native.pep.scanner.scan_edge_012_fraud_detection_agent_list_recent_transactions.allow
+  // @nl Generated allow for one discovered native MAS edge.
+  // @permit
+  // @obligation enhanced_logging(reason=native_mas_runtime)
+  property policy_native_pep_scanner_scan_edge_012_fraud_detection_agent_list_recent_transactions_allow = action == "read" && resource.id == "resource.shared.tool_list_recent_transactions" && subject.id == "agent.front_office.fraud";
+
+  // @rule policy.native.pep.scanner.scan_edge_014_compliance_agent_get_customer_context.allow
+  // @nl Generated allow for one discovered native MAS edge.
+  // @permit
+  // @obligation enhanced_logging(reason=native_mas_runtime)
+  property policy_native_pep_scanner_scan_edge_014_compliance_agent_get_customer_context_allow = action == "read" && resource.id == "resource.shared.tool_get_customer_context" && subject.id == "agent.front_office.compliance";
+
+  // @rule policy.native.pep.scanner.scan_edge_015_compliance_agent_get_transaction_context.allow
+  // @nl Generated allow for one discovered native MAS edge.
+  // @permit
+  // @obligation enhanced_logging(reason=native_mas_runtime)
+  property policy_native_pep_scanner_scan_edge_015_compliance_agent_get_transaction_context_allow = action == "read" && resource.id == "resource.shared.tool_get_transaction_context" && subject.id == "agent.front_office.compliance";
+
+  // @rule policy.native.pep.scanner.scan_edge_017_knowledge_base_agent_search_faqs.allow
+  // @nl Generated allow for one discovered native MAS edge.
+  // @permit
+  // @obligation enhanced_logging(reason=native_mas_runtime)
+  property policy_native_pep_scanner_scan_edge_017_knowledge_base_agent_search_faqs_allow = action == "search" && resource.id == "resource.shared.tool_search_faqs" && subject.id == "agent.front_office.knowledge_base";
+
+  // @rule policy.native.pep.scanner.scan_edge_020_forecasting_agent_get_operations_snapshot.allow
+  // @nl Generated allow for one discovered native MAS edge.
+  // @permit
+  // @obligation enhanced_logging(reason=native_mas_runtime)
+  property policy_native_pep_scanner_scan_edge_020_forecasting_agent_get_operations_snapshot_allow = action == "read" && resource.id == "resource.shared.tool_get_operations_snapshot" && subject.id == "agent.mid_office.forecasting";
+
+  // @rule policy.native.pep.scanner.scan_edge_022_support_guidance_agent_get_support_playbooks.allow
+  // @nl Generated allow for one discovered native MAS edge.
+  // @permit
+  // @obligation enhanced_logging(reason=native_mas_runtime)
+  property policy_native_pep_scanner_scan_edge_022_support_guidance_agent_get_support_playbooks_allow = action == "read" && resource.id == "resource.shared.tool_get_support_playbooks" && subject.id == "agent.mid_office.support_guidance";
+
+  // @rule policy.native.pep.scanner.scan_edge_024_recommender_agent_search_product_catalog.allow
+  // @nl Generated allow for one discovered native MAS edge.
+  // @permit
+  // @obligation enhanced_logging(reason=native_mas_runtime)
+  property policy_native_pep_scanner_scan_edge_024_recommender_agent_search_product_catalog_allow = action == "search" && resource.id == "resource.shared.tool_search_product_catalog" && subject.id == "agent.mid_office.recommender";
+
+  // @rule policy.native.pep.scanner.scan_edge_025_loan_agent_search_loan_playbooks.allow
+  // @nl Generated allow for one discovered native MAS edge.
+  // @permit
+  // @obligation enhanced_logging(reason=native_mas_runtime)
+  property policy_native_pep_scanner_scan_edge_025_loan_agent_search_loan_playbooks_allow = action == "search" && resource.id == "resource.shared.tool_search_loan_playbooks" && subject.id == "agent.mid_office.loan";
+
+  // @rule policy.native.pep.scanner.scan_edge_026_risk_compliance_agent_search_policies.allow
+  // @nl Generated allow for one discovered native MAS edge.
+  // @permit
+  // @obligation enhanced_logging(reason=native_mas_runtime)
+  property policy_native_pep_scanner_scan_edge_026_risk_compliance_agent_search_policies_allow = action == "search" && resource.id == "resource.shared.tool_search_policies" && subject.id == "agent.mid_office.risk_compliance";
+
+  // @rule policy.native.pep.scanner.scan_edge_027_aml_investigator_fetch_transaction_history.allow
+  // @nl Generated allow for one discovered native MAS edge.
+  // @permit
+  // @obligation enhanced_logging(reason=native_mas_runtime)
+  property policy_native_pep_scanner_scan_edge_027_aml_investigator_fetch_transaction_history_allow = action == "read" && resource.id == "resource.shared.tool_fetch_transaction_history" && subject.id == "agent.shared.aml_investigator";
+
+  // @rule policy.native.pep.scanner.scan_edge_028_aml_investigator_screen_against_sanctions.allow
+  // @nl Generated allow for one discovered native MAS edge.
+  // @permit
+  // @obligation enhanced_logging(reason=native_mas_runtime)
+  property policy_native_pep_scanner_scan_edge_028_aml_investigator_screen_against_sanctions_allow = action == "read" && resource.id == "resource.shared.tool_screen_against_sanctions" && subject.id == "agent.shared.aml_investigator";
+
+  // @rule policy.native.pep.scanner.scan_edge_029_get_transaction_get_transaction.allow
+  // @nl Generated allow for one discovered native MAS edge.
+  // @permit
+  // @obligation enhanced_logging(reason=native_mas_runtime)
+  property policy_native_pep_scanner_scan_edge_029_get_transaction_get_transaction_allow = action == "read" && resource.id == "resource.shared.api_get_transaction" && subject.id == "service.shared.get_transaction";
+
+  // @rule policy.native.pep.scanner.scan_edge_032_get_branch_workload_get_branch_workload.allow
+  // @nl Generated allow for one discovered native MAS edge.
+  // @permit
+  // @obligation enhanced_logging(reason=native_mas_runtime)
+  property policy_native_pep_scanner_scan_edge_032_get_branch_workload_get_branch_workload_allow = action == "read" && resource.id == "resource.shared.api_get_branch_workload" && subject.id == "service.shared.get_branch_workload";
+
+  // @rule policy.native.pep.scanner.scan_edge_033_propose_staffing_adjustment_propose_staffing_adjustment.allow
+  // @nl Generated allow for one discovered native MAS edge.
+  // @permit
+  // @obligation enhanced_logging(reason=native_mas_runtime)
+  property policy_native_pep_scanner_scan_edge_033_propose_staffing_adjustment_propose_staffing_adjustment_allow = action == "read" && resource.id == "resource.shared.api_propose_staffing_adjustment" && subject.id == "service.shared.propose_staffing_adjustment";
+
+  // @rule policy.native.pep.scanner.scan_edge_034_get_customer_product_affinity_get_customer_product_affinity.allow
+  // @nl Generated allow for one discovered native MAS edge.
+  // @permit
+  // @obligation enhanced_logging(reason=native_mas_runtime)
+  property policy_native_pep_scanner_scan_edge_034_get_customer_product_affinity_get_customer_product_affinity_allow = action == "read" && resource.id == "resource.shared.api_get_customer_product_affinity" && subject.id == "service.shared.get_customer_product_affinity";
+
+  // @rule policy.native.pep.scanner.scan_edge_036_get_reconciliation_mismatches_get_reconciliation_mismatches.allow
+  // @nl Generated allow for one discovered native MAS edge.
+  // @permit
+  // @obligation enhanced_logging(reason=native_mas_runtime)
+  property policy_native_pep_scanner_scan_edge_036_get_reconciliation_mismatches_get_reconciliation_mismatches_allow = action == "read" && resource.id == "resource.shared.api_get_reconciliation_mismatches" && subject.id == "service.shared.get_reconciliation_mismatches";
+
+  // @rule policy.native.pep.scanner.scan_edge_038_create_customer_customers.allow
+  // @nl Generated allow for one discovered native MAS edge.
+  // @permit
+  // @obligation enhanced_logging(reason=native_mas_runtime)
+  property policy_native_pep_scanner_scan_edge_038_create_customer_customers_allow = action == "read" && resource.id == "resource.shared.database_customers" && subject.id == "service.shared.create_customer";
+
+  // @rule policy.native.pep.scanner.scan_edge_040_get_customer_customers.allow
+  // @nl Generated allow for one discovered native MAS edge.
+  // @permit
+  // @obligation enhanced_logging(reason=native_mas_runtime)
+  property policy_native_pep_scanner_scan_edge_040_get_customer_customers_allow = action == "read" && resource.id == "resource.shared.database_customers" && subject.id == "service.shared.get_customer";
+
+  // @rule policy.native.pep.scanner.scan_edge_041_list_customer_accounts_accounts.allow
+  // @nl Generated allow for one discovered native MAS edge.
+  // @permit
+  // @obligation enhanced_logging(reason=native_mas_runtime)
+  property policy_native_pep_scanner_scan_edge_041_list_customer_accounts_accounts_allow = action == "read" && resource.id == "resource.shared.database_accounts" && subject.id == "service.shared.list_customer_accounts";
+
+  // @rule policy.native.pep.scanner.scan_edge_042_get_customer_context_customers.allow
+  // @nl Generated allow for one discovered native MAS edge.
+  // @permit
+  // @obligation enhanced_logging(reason=native_mas_runtime)
+  property policy_native_pep_scanner_scan_edge_042_get_customer_context_customers_allow = action == "read" && resource.id == "resource.shared.database_customers" && subject.id == "service.shared.get_customer_context";
+
+  // @rule policy.native.pep.scanner.scan_edge_043_list_customer_transactions_accounts.allow
+  // @nl Generated allow for one discovered native MAS edge.
+  // @permit
+  // @obligation enhanced_logging(reason=native_mas_runtime)
+  property policy_native_pep_scanner_scan_edge_043_list_customer_transactions_accounts_allow = action == "read" && resource.id == "resource.shared.database_accounts" && subject.id == "service.shared.list_customer_transactions";
+
+  // @rule policy.native.pep.scanner.scan_edge_044_list_customer_transactions_transactions.allow
+  // @nl Generated allow for one discovered native MAS edge.
+  // @permit
+  // @obligation enhanced_logging(reason=native_mas_runtime)
+  property policy_native_pep_scanner_scan_edge_044_list_customer_transactions_transactions_allow = action == "read" && resource.id == "resource.front_office.transaction_history" && subject.id == "service.shared.list_customer_transactions";
+
+  // @rule policy.native.pep.scanner.scan_edge_045_create_account_customers.allow
+  // @nl Generated allow for one discovered native MAS edge.
+  // @permit
+  // @obligation enhanced_logging(reason=native_mas_runtime)
+  property policy_native_pep_scanner_scan_edge_045_create_account_customers_allow = action == "read" && resource.id == "resource.shared.database_customers" && subject.id == "service.shared.create_account";
+
+  // @rule policy.native.pep.scanner.scan_edge_046_create_account_accounts.allow
+  // @nl Generated allow for one discovered native MAS edge.
+  // @permit
+  // @obligation enhanced_logging(reason=native_mas_runtime)
+  property policy_native_pep_scanner_scan_edge_046_create_account_accounts_allow = action == "read" && resource.id == "resource.shared.database_accounts" && subject.id == "service.shared.create_account";
+
+  // @rule policy.native.pep.scanner.scan_edge_048_get_account_accounts.allow
+  // @nl Generated allow for one discovered native MAS edge.
+  // @permit
+  // @obligation enhanced_logging(reason=native_mas_runtime)
+  property policy_native_pep_scanner_scan_edge_048_get_account_accounts_allow = action == "read" && resource.id == "resource.shared.database_accounts" && subject.id == "service.shared.get_account";
+
+  // @rule policy.native.pep.scanner.scan_edge_049_get_transaction_transactions.allow
+  // @nl Generated allow for one discovered native MAS edge.
+  // @permit
+  // @obligation enhanced_logging(reason=native_mas_runtime)
+  property policy_native_pep_scanner_scan_edge_049_get_transaction_transactions_allow = action == "read" && resource.id == "resource.front_office.transaction_history" && subject.id == "service.shared.get_transaction";
+
+  // @rule policy.native.pep.scanner.scan_edge_050_list_transactions_transactions.allow
+  // @nl Generated allow for one discovered native MAS edge.
+  // @permit
+  // @obligation enhanced_logging(reason=native_mas_runtime)
+  property policy_native_pep_scanner_scan_edge_050_list_transactions_transactions_allow = action == "read" && resource.id == "resource.front_office.transaction_history" && subject.id == "service.shared.list_transactions";
+
+  // @rule policy.native.pep.scanner.scan_edge_051_create_policy_policies.allow
+  // @nl Generated allow for one discovered native MAS edge.
+  // @permit
+  // @obligation enhanced_logging(reason=native_mas_runtime)
+  property policy_native_pep_scanner_scan_edge_051_create_policy_policies_allow = action == "read" && resource.id == "resource.shared.database_policies" && subject.id == "service.shared.create_policy";
+
+  // @rule policy.native.pep.scanner.scan_edge_053_list_policies_policies.allow
+  // @nl Generated allow for one discovered native MAS edge.
+  // @permit
+  // @obligation enhanced_logging(reason=native_mas_runtime)
+  property policy_native_pep_scanner_scan_edge_053_list_policies_policies_allow = action == "read" && resource.id == "resource.shared.database_policies" && subject.id == "service.shared.list_policies";
+
+  // @rule policy.native.pep.scanner.scan_edge_054_search_policies_policies.allow
+  // @nl Generated allow for one discovered native MAS edge.
+  // @permit
+  // @obligation enhanced_logging(reason=native_mas_runtime)
+  property policy_native_pep_scanner_scan_edge_054_search_policies_policies_allow = action == "read" && resource.id == "resource.shared.database_policies" && subject.id == "service.shared.search_policies";
+
+  // @rule policy.native.pep.scanner.scan_edge_055_create_rule_rules.allow
+  // @nl Generated allow for one discovered native MAS edge.
+  // @permit
+  // @obligation enhanced_logging(reason=native_mas_runtime)
+  property policy_native_pep_scanner_scan_edge_055_create_rule_rules_allow = action == "read" && resource.id == "resource.shared.database_rules" && subject.id == "service.shared.create_rule";
+
+  // @rule policy.native.pep.scanner.scan_edge_057_list_rules_rules.allow
+  // @nl Generated allow for one discovered native MAS edge.
+  // @permit
+  // @obligation enhanced_logging(reason=native_mas_runtime)
+  property policy_native_pep_scanner_scan_edge_057_list_rules_rules_allow = action == "read" && resource.id == "resource.shared.database_rules" && subject.id == "service.shared.list_rules";
+
+  // @rule policy.native.pep.scanner.scan_edge_058_update_transaction_status_transactions.allow
+  // @nl Generated allow for one discovered native MAS edge.
+  // @permit
+  // @obligation enhanced_logging(reason=native_mas_runtime)
+  property policy_native_pep_scanner_scan_edge_058_update_transaction_status_transactions_allow = action == "read" && resource.id == "resource.front_office.transaction_history" && subject.id == "service.shared.update_transaction_status";
+
+  // @rule policy.native.pep.scanner.scan_edge_059_get_customer_product_affinity_customers.allow
+  // @nl Generated allow for one discovered native MAS edge.
+  // @permit
+  // @obligation enhanced_logging(reason=native_mas_runtime)
+  property policy_native_pep_scanner_scan_edge_059_get_customer_product_affinity_customers_allow = action == "read" && resource.id == "resource.shared.database_customers" && subject.id == "service.shared.get_customer_product_affinity";
+
+  // @rule policy.native.pep.scanner.scan_edge_060_get_customer_product_affinity_accounts.allow
+  // @nl Generated allow for one discovered native MAS edge.
+  // @permit
+  // @obligation enhanced_logging(reason=native_mas_runtime)
+  property policy_native_pep_scanner_scan_edge_060_get_customer_product_affinity_accounts_allow = action == "read" && resource.id == "resource.shared.database_accounts" && subject.id == "service.shared.get_customer_product_affinity";
+
+  // @rule policy.native.pep.scanner.scan_edge_061_trigger_eod_reconciliation_transactions.allow
+  // @nl Generated allow for one discovered native MAS edge.
+  // @permit
+  // @obligation enhanced_logging(reason=native_mas_runtime)
+  property policy_native_pep_scanner_scan_edge_061_trigger_eod_reconciliation_transactions_allow = action == "read" && resource.id == "resource.front_office.transaction_history" && subject.id == "service.shared.trigger_eod_reconciliation";
+
+  // @rule policy.native.pep.scanner.scan_edge_064_resolve_ledger_entry_transactions.allow
+  // @nl Generated allow for one discovered native MAS edge.
+  // @permit
+  // @obligation enhanced_logging(reason=native_mas_runtime)
+  property policy_native_pep_scanner_scan_edge_064_resolve_ledger_entry_transactions_allow = action == "read" && resource.id == "resource.front_office.transaction_history" && subject.id == "service.shared.resolve_ledger_entry";
+
+  // @rule policy.native.pep.scanner.scan_edge_066_back_office_eod_workflow_validation_checkpoint_agent.allow
+  // @nl Generated allow for one discovered native MAS edge.
+  // @permit
+  // @obligation enhanced_logging(reason=native_mas_runtime)
+  property policy_native_pep_scanner_scan_edge_066_back_office_eod_workflow_validation_checkpoint_agent_allow = action == "read" && resource.id == "resource.back_office.other_validation_checkpoint_agent" && subject.id == "agent.back_office.back_office_eod_workflow";
+
+  // @rule policy.native.pep.scanner.scan_edge_067_back_office_eod_workflow_eod_processing_agent.allow
+  // @nl Generated allow for one discovered native MAS edge.
+  // @permit
+  // @obligation enhanced_logging(reason=native_mas_runtime)
+  property policy_native_pep_scanner_scan_edge_067_back_office_eod_workflow_eod_processing_agent_allow = action == "read" && resource.id == "resource.back_office.other_eod_processing_agent" && subject.id == "agent.back_office.back_office_eod_workflow";
+
+  // @rule policy.native.pep.scanner.scan_edge_068_back_office_eod_workflow_ledger_update_agent.allow
+  // @nl Generated allow for one discovered native MAS edge.
+  // @permit
+  // @obligation enhanced_logging(reason=native_mas_runtime)
+  property policy_native_pep_scanner_scan_edge_068_back_office_eod_workflow_ledger_update_agent_allow = action == "read" && resource.id == "resource.back_office.other_ledger_update_agent" && subject.id == "agent.back_office.back_office_eod_workflow";
+
+  // @rule policy.native.pep.scanner.scan_edge_069_back_office_eod_workflow_reconciliation_agent.allow
+  // @nl Generated allow for one discovered native MAS edge.
+  // @permit
+  // @obligation enhanced_logging(reason=native_mas_runtime)
+  property policy_native_pep_scanner_scan_edge_069_back_office_eod_workflow_reconciliation_agent_allow = action == "read" && resource.id == "resource.back_office.other_reconciliation_agent" && subject.id == "agent.back_office.back_office_eod_workflow";
+
+  // @rule policy.native.pep.scanner.scan_edge_070_back_office_eod_workflow_report_writing_agent.allow
+  // @nl Generated allow for one discovered native MAS edge.
+  // @permit
+  // @obligation enhanced_logging(reason=native_mas_runtime)
+  property policy_native_pep_scanner_scan_edge_070_back_office_eod_workflow_report_writing_agent_allow = action == "read" && resource.id == "resource.back_office.other_report_writing_agent" && subject.id == "agent.back_office.back_office_eod_workflow";
+
+  // @rule policy.native.pep.scanner.scan_edge_071_back_office_eod_workflow_exception_agent.allow
+  // @nl Generated allow for one discovered native MAS edge.
+  // @permit
+  // @obligation enhanced_logging(reason=native_mas_runtime)
+  property policy_native_pep_scanner_scan_edge_071_back_office_eod_workflow_exception_agent_allow = action == "read" && resource.id == "resource.back_office.other_exception_agent" && subject.id == "agent.back_office.back_office_eod_workflow";
+
+  // @rule policy.native.pep.scanner.scan_edge_072_back_office_router_back_office_eod_workflow.allow
+  // @nl Generated allow for one discovered native MAS edge.
+  // @permit
+  // @obligation enhanced_logging(reason=native_mas_runtime)
+  property policy_native_pep_scanner_scan_edge_072_back_office_router_back_office_eod_workflow_allow = action == "read" && resource.id == "resource.back_office.other_back_office_eod_workflow" && subject.id == "agent.back_office.back_office_router";
+
+  // @rule policy.native.pep.scanner.scan_edge_073_front_office_transaction_workflow_transaction_monitoring_agent.allow
+  // @nl Generated allow for one discovered native MAS edge.
+  // @permit
+  // @obligation enhanced_logging(reason=native_mas_runtime)
+  property policy_native_pep_scanner_scan_edge_073_front_office_transaction_workflow_transaction_monitoring_agent_allow = action == "read" && resource.id == "resource.front_office.other_transaction_monitoring_agent" && subject.id == "agent.front_office.front_office_transaction_workflow";
+
+  // @rule policy.native.pep.scanner.scan_edge_074_front_office_transaction_workflow_fraud_detection_agent.allow
+  // @nl Generated allow for one discovered native MAS edge.
+  // @permit
+  // @obligation enhanced_logging(reason=native_mas_runtime)
+  property policy_native_pep_scanner_scan_edge_074_front_office_transaction_workflow_fraud_detection_agent_allow = action == "read" && resource.id == "resource.front_office.other_fraud_detection_agent" && subject.id == "agent.front_office.front_office_transaction_workflow";
+
+  // @rule policy.native.pep.scanner.scan_edge_075_front_office_transaction_workflow_compliance_agent.allow
+  // @nl Generated allow for one discovered native MAS edge.
+  // @permit
+  // @obligation enhanced_logging(reason=native_mas_runtime)
+  property policy_native_pep_scanner_scan_edge_075_front_office_transaction_workflow_compliance_agent_allow = action == "read" && resource.id == "resource.front_office.other_compliance_agent" && subject.id == "agent.front_office.front_office_transaction_workflow";
+
+  // @rule policy.native.pep.scanner.scan_edge_076_front_office_transaction_workflow_decision_making_agent.allow
+  // @nl Generated allow for one discovered native MAS edge.
+  // @permit
+  // @obligation enhanced_logging(reason=native_mas_runtime)
+  property policy_native_pep_scanner_scan_edge_076_front_office_transaction_workflow_decision_making_agent_allow = action == "read" && resource.id == "resource.front_office.other_decision_making_agent" && subject.id == "agent.front_office.front_office_transaction_workflow";
+
+  // @rule policy.native.pep.scanner.scan_edge_077_customer_service_chatbot_workflow_chatbot_intent_agent.allow
+  // @nl Generated allow for one discovered native MAS edge.
+  // @permit
+  // @obligation enhanced_logging(reason=native_mas_runtime)
+  property policy_native_pep_scanner_scan_edge_077_customer_service_chatbot_workflow_chatbot_intent_agent_allow = action == "read" && resource.id == "resource.front_office.other_chatbot_intent_agent" && subject.id == "agent.front_office.customer_service_chatbot_workflow";
+
+  // @rule policy.native.pep.scanner.scan_edge_078_customer_service_chatbot_workflow_knowledge_base_agent.allow
+  // @nl Generated allow for one discovered native MAS edge.
+  // @permit
+  // @obligation enhanced_logging(reason=native_mas_runtime)
+  property policy_native_pep_scanner_scan_edge_078_customer_service_chatbot_workflow_knowledge_base_agent_allow = action == "read" && resource.id == "resource.front_office.other_knowledge_base_agent" && subject.id == "agent.front_office.customer_service_chatbot_workflow";
+
+  // @rule policy.native.pep.scanner.scan_edge_079_customer_service_chatbot_workflow_customer_service_agent.allow
+  // @nl Generated allow for one discovered native MAS edge.
+  // @permit
+  // @obligation enhanced_logging(reason=native_mas_runtime)
+  property policy_native_pep_scanner_scan_edge_079_customer_service_chatbot_workflow_customer_service_agent_allow = action == "read" && resource.id == "resource.front_office.other_customer_service_agent" && subject.id == "agent.front_office.customer_service_chatbot_workflow";
+
+  // @rule policy.native.pep.scanner.scan_edge_080_customer_service_chatbot_workflow_transaction_processing_agent.allow
+  // @nl Generated allow for one discovered native MAS edge.
+  // @permit
+  // @obligation enhanced_logging(reason=native_mas_runtime)
+  property policy_native_pep_scanner_scan_edge_080_customer_service_chatbot_workflow_transaction_processing_agent_allow = action == "read" && resource.id == "resource.front_office.other_transaction_processing_agent" && subject.id == "agent.front_office.customer_service_chatbot_workflow";
+
+  // @rule policy.native.pep.scanner.scan_edge_081_front_office_router_front_office_transaction_workflow.allow
+  // @nl Generated allow for one discovered native MAS edge.
+  // @permit
+  // @obligation enhanced_logging(reason=native_mas_runtime)
+  property policy_native_pep_scanner_scan_edge_081_front_office_router_front_office_transaction_workflow_allow = action == "read" && resource.id == "resource.front_office.other_front_office_transaction_workflow" && subject.id == "agent.front_office.front_office_router";
+
+  // @rule policy.native.pep.scanner.scan_edge_082_front_office_router_customer_service_chatbot_workflow.allow
+  // @nl Generated allow for one discovered native MAS edge.
+  // @permit
+  // @obligation enhanced_logging(reason=native_mas_runtime)
+  property policy_native_pep_scanner_scan_edge_082_front_office_router_customer_service_chatbot_workflow_allow = action == "read" && resource.id == "resource.front_office.other_customer_service_chatbot_workflow" && subject.id == "agent.front_office.front_office_router";
+
+  // @rule policy.native.pep.scanner.scan_edge_083_mid_office_router_mid_office_planning_workflow.allow
+  // @nl Generated allow for one discovered native MAS edge.
+  // @permit
+  // @obligation enhanced_logging(reason=native_mas_runtime)
+  property policy_native_pep_scanner_scan_edge_083_mid_office_router_mid_office_planning_workflow_allow = action == "read" && resource.id == "resource.mid_office.other_mid_office_planning_workflow" && subject.id == "agent.mid_office.mid_office_router";
+
+  // @rule policy.native.pep.scanner.scan_edge_084_mid_office_router_representative_assistant_workflow.allow
+  // @nl Generated allow for one discovered native MAS edge.
+  // @permit
+  // @obligation enhanced_logging(reason=native_mas_runtime)
+  property policy_native_pep_scanner_scan_edge_084_mid_office_router_representative_assistant_workflow_allow = action == "read" && resource.id == "resource.mid_office.other_representative_assistant_workflow" && subject.id == "agent.mid_office.mid_office_router";
+
+  // @rule policy.native.pep.scanner.scan_edge_085_mid_office_planning_parallel_validation_agent.allow
+  // @nl Generated allow for one discovered native MAS edge.
+  // @permit
+  // @obligation enhanced_logging(reason=native_mas_runtime)
+  property policy_native_pep_scanner_scan_edge_085_mid_office_planning_parallel_validation_agent_allow = action == "read" && resource.id == "resource.mid_office.other_validation_agent" && subject.id == "agent.mid_office.mid_office_planning_parallel";
+
+  // @rule policy.native.pep.scanner.scan_edge_086_mid_office_planning_parallel_support_guidance_agent.allow
+  // @nl Generated allow for one discovered native MAS edge.
+  // @permit
+  // @obligation enhanced_logging(reason=native_mas_runtime)
+  property policy_native_pep_scanner_scan_edge_086_mid_office_planning_parallel_support_guidance_agent_allow = action == "read" && resource.id == "resource.mid_office.other_support_guidance_agent" && subject.id == "agent.mid_office.mid_office_planning_parallel";
+
+  // @rule policy.native.pep.scanner.scan_edge_087_mid_office_planning_workflow_data_analysis_agent.allow
+  // @nl Generated allow for one discovered native MAS edge.
+  // @permit
+  // @obligation enhanced_logging(reason=native_mas_runtime)
+  property policy_native_pep_scanner_scan_edge_087_mid_office_planning_workflow_data_analysis_agent_allow = action == "read" && resource.id == "resource.mid_office.other_data_analysis_agent" && subject.id == "agent.mid_office.mid_office_planning_workflow";
+
+  // @rule policy.native.pep.scanner.scan_edge_088_mid_office_planning_workflow_forecasting_agent.allow
+  // @nl Generated allow for one discovered native MAS edge.
+  // @permit
+  // @obligation enhanced_logging(reason=native_mas_runtime)
+  property policy_native_pep_scanner_scan_edge_088_mid_office_planning_workflow_forecasting_agent_allow = action == "read" && resource.id == "resource.mid_office.other_forecasting_agent" && subject.id == "agent.mid_office.mid_office_planning_workflow";
+
+  // @rule policy.native.pep.scanner.scan_edge_089_mid_office_planning_workflow_staff_scheduling_agent.allow
+  // @nl Generated allow for one discovered native MAS edge.
+  // @permit
+  // @obligation enhanced_logging(reason=native_mas_runtime)
+  property policy_native_pep_scanner_scan_edge_089_mid_office_planning_workflow_staff_scheduling_agent_allow = action == "read" && resource.id == "resource.mid_office.other_staff_scheduling_agent" && subject.id == "agent.mid_office.mid_office_planning_workflow";
+
+  // @rule policy.native.pep.scanner.scan_edge_090_mid_office_planning_workflow_mid_office_planning_parallel.allow
+  // @nl Generated allow for one discovered native MAS edge.
+  // @permit
+  // @obligation enhanced_logging(reason=native_mas_runtime)
+  property policy_native_pep_scanner_scan_edge_090_mid_office_planning_workflow_mid_office_planning_parallel_allow = action == "read" && resource.id == "resource.mid_office.other_mid_office_planning_parallel" && subject.id == "agent.mid_office.mid_office_planning_workflow";
+
+  // @rule policy.native.pep.scanner.scan_edge_091_mid_office_planning_workflow_planning_summary_agent.allow
+  // @nl Generated allow for one discovered native MAS edge.
+  // @permit
+  // @obligation enhanced_logging(reason=native_mas_runtime)
+  property policy_native_pep_scanner_scan_edge_091_mid_office_planning_workflow_planning_summary_agent_allow = action == "read" && resource.id == "resource.mid_office.other_planning_summary_agent" && subject.id == "agent.mid_office.mid_office_planning_workflow";
+
+  // @rule policy.native.pep.scanner.scan_edge_092_representative_assist_parallel_financial_data_agent.allow
+  // @nl Generated allow for one discovered native MAS edge.
+  // @permit
+  // @obligation enhanced_logging(reason=native_mas_runtime)
+  property policy_native_pep_scanner_scan_edge_092_representative_assist_parallel_financial_data_agent_allow = action == "read" && resource.id == "resource.mid_office.other_financial_data_agent" && subject.id == "agent.mid_office.representative_assist_parallel";
+
+  // @rule policy.native.pep.scanner.scan_edge_093_representative_assist_parallel_recommender_agent.allow
+  // @nl Generated allow for one discovered native MAS edge.
+  // @permit
+  // @obligation enhanced_logging(reason=native_mas_runtime)
+  property policy_native_pep_scanner_scan_edge_093_representative_assist_parallel_recommender_agent_allow = action == "read" && resource.id == "resource.mid_office.other_recommender_agent" && subject.id == "agent.mid_office.representative_assist_parallel";
+
+  // @rule policy.native.pep.scanner.scan_edge_094_representative_assist_parallel_loan_agent.allow
+  // @nl Generated allow for one discovered native MAS edge.
+  // @permit
+  // @obligation enhanced_logging(reason=native_mas_runtime)
+  property policy_native_pep_scanner_scan_edge_094_representative_assist_parallel_loan_agent_allow = action == "read" && resource.id == "resource.mid_office.other_loan_agent" && subject.id == "agent.mid_office.representative_assist_parallel";
+
+  // @rule policy.native.pep.scanner.scan_edge_095_representative_assist_parallel_risk_compliance_agent.allow
+  // @nl Generated allow for one discovered native MAS edge.
+  // @permit
+  // @obligation enhanced_logging(reason=native_mas_runtime)
+  property policy_native_pep_scanner_scan_edge_095_representative_assist_parallel_risk_compliance_agent_allow = action == "read" && resource.id == "resource.mid_office.other_risk_compliance_agent" && subject.id == "agent.mid_office.representative_assist_parallel";
+
+  // @rule policy.native.pep.scanner.scan_edge_096_representative_assistant_workflow_representative_assist_parallel.allow
+  // @nl Generated allow for one discovered native MAS edge.
+  // @permit
+  // @obligation enhanced_logging(reason=native_mas_runtime)
+  property policy_native_pep_scanner_scan_edge_096_representative_assistant_workflow_representative_assist_parallel_allow = action == "read" && resource.id == "resource.mid_office.other_representative_assist_parallel" && subject.id == "agent.mid_office.representative_assistant_workflow";
+
+  // @rule policy.native.pep.scanner.scan_edge_097_representative_assistant_workflow_representative_merge_agent.allow
+  // @nl Generated allow for one discovered native MAS edge.
+  // @permit
+  // @obligation enhanced_logging(reason=native_mas_runtime)
+  property policy_native_pep_scanner_scan_edge_097_representative_assistant_workflow_representative_merge_agent_allow = action == "read" && resource.id == "resource.mid_office.other_representative_merge_agent" && subject.id == "agent.mid_office.representative_assistant_workflow";
+
+  // @rule policy.native.pep.scanner.scan_edge_098_aml_investigation_workflow_aml_investigator.allow
+  // @nl Generated allow for one discovered native MAS edge.
+  // @permit
+  // @obligation enhanced_logging(reason=native_mas_runtime)
+  property policy_native_pep_scanner_scan_edge_098_aml_investigation_workflow_aml_investigator_allow = action == "read" && resource.id == "resource.shared.other_aml_investigator" && subject.id == "agent.shared.aml_investigation_workflow";
+
+  // @rule policy.native.pep.scanner.scan_edge_099_aml_investigation_workflow_aml_reporter.allow
+  // @nl Generated allow for one discovered native MAS edge.
+  // @permit
+  // @obligation enhanced_logging(reason=native_mas_runtime)
+  property policy_native_pep_scanner_scan_edge_099_aml_investigation_workflow_aml_reporter_allow = action == "read" && resource.id == "resource.shared.other_aml_reporter" && subject.id == "agent.shared.aml_investigation_workflow";
+
+  // @rule policy.native.pep.scanner.scan_edge_100_aml_office_router_aml_investigation_workflow.allow
+  // @nl Generated allow for one discovered native MAS edge.
+  // @permit
+  // @obligation enhanced_logging(reason=native_mas_runtime)
+  property policy_native_pep_scanner_scan_edge_100_aml_office_router_aml_investigation_workflow_allow = action == "read" && resource.id == "resource.shared.other_aml_investigation_workflow" && subject.id == "agent.shared.aml_office_router";
+}

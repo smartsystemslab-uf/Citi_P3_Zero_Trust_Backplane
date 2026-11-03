@@ -861,7 +861,7 @@
       "agent_id": "mid_office_planning_parallel",
       "symbol_name": "guidance_parallel",
       "description": "Runs schedule validation and support guidance in parallel after the schedule draft exists.",
-      "domain": "shared",
+      "domain": "mid",
       "role": "workflow",
       "agent_type": "ParallelAgent",
       "detection_method": "known_constructor",
@@ -885,13 +885,14 @@
       },
       "aliases": [
         "guidance_parallel"
-      ]
+      ],
+      "domain_source": "inherited from parent agent(s): mid_office_planning_workflow"
     },
     {
       "agent_id": "mid_office_planning_workflow",
       "symbol_name": "mid_office_planning_workflow",
       "description": "Strict planning pipeline with deterministic execution order and LLM specialists.",
-      "domain": "shared",
+      "domain": "mid",
       "role": "workflow",
       "agent_type": "SequentialAgent",
       "detection_method": "known_constructor",
@@ -918,13 +919,14 @@
       },
       "aliases": [
         "planning_workflow_agent"
-      ]
+      ],
+      "domain_source": "inherited from parent agent(s): mid_office_router"
     },
     {
       "agent_id": "representative_assist_parallel",
       "symbol_name": "specialist_fanout",
       "description": "Runs representative-assist specialists in parallel.",
-      "domain": "shared",
+      "domain": "mid",
       "role": "workflow",
       "agent_type": "ParallelAgent",
       "detection_method": "known_constructor",
@@ -950,13 +952,14 @@
       },
       "aliases": [
         "specialist_fanout"
-      ]
+      ],
+      "domain_source": "inherited from parent agent(s): representative_assistant_workflow"
     },
     {
       "agent_id": "representative_assistant_workflow",
       "symbol_name": "representative_assistant_workflow",
       "description": "Fan-out/fan-in representative assist workflow.",
-      "domain": "shared",
+      "domain": "mid",
       "role": "workflow",
       "agent_type": "SequentialAgent",
       "detection_method": "known_constructor",
@@ -977,7 +980,8 @@
       "source": {
         "provided_by": "task2_scanner",
         "reference": "citi_banking_adk\\bank_adk\\agents\\workflow_agents.py:258"
-      }
+      },
+      "domain_source": "inherited from parent agent(s): mid_office_router"
     },
     {
       "agent_id": "aml_investigator",

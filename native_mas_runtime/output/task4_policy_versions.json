@@ -1,8 +1,20 @@
 {
-  "bundle.back_office": "1.0.0",
-  "bundle.front_office": "1.0.0",
-  "bundle.ledger_access": "1.0.0",
-  "bundle.mid_office": "1.0.0",
+  "bundle.back_office": "2.0.0",
+  "bundle.front_office": "2.0.0",
+  "bundle.ledger_access": "2.0.0",
+  "bundle.mid_office": "2.0.0",
   "bundle.native_mas_runtime": "1.0.0",
-  "bundle.tool_access": "1.0.0"
+  "bundle.tool_access": "2.0.0",
+  "core": "1.0.0",
+  "gateway.runtime": "1.0.0",
+  "gateway.runtime.eod_batch": "1.0.0",
+  "gateway.runtime.operation": "1.0.0",
+  "gateway.runtime.participation": "1.0.0",
+  "identity": "1.1.0",
+  "intent.gateway_input": "1.0.0",
+  "intent.gateway_output": "1.0.0",
+  "intent.gateway_tool": "1.0.0",
+  "intent.harness_output": "1.0.0",
+  "intent.pdp_request": "1.0.0",
+  "intent.workflow_run": "1.0.0"
 }

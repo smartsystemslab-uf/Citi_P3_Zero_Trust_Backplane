@@ -1,0 +1,53 @@
+// Front-office access policies (PSL, IEEE 1850-2010, Verilog flavour).
+// Translated from legacy_policy_store/front_office.yaml (bundle.front_office 1.0.0).
+// Semantics: deny-overrides -- every rule must hold; @permit properties grant access;
+// anything not permitted is denied (generated rule R_default_deny).
+
+// @policy_set bundle.front_office
+// @version 2.0.0
+// @source legacy_policy_store/front_office.yaml
+vunit front_office (pdp_request) {
+
+  // @rule policy.front_office.fraud_read_transaction_history
+  // @nl Fraud agent may read transaction history only in the verified fraud-review workflow.
+  // @permit
+  // @obligation enhanced_logging(reason=fraud_data_access)
+  // @obligation data_masking(fields=[full_account_number, ssn])
+  property fraud_read_transaction_history =
+      subject.id == "agent.front_office.fraud"
+      && resource.id == "resource.front_office.transaction_history"
+      && action == "read"
+      && workflow.id == "workflow.front_office.fraud_review"
+      && (risk.level == "low" || risk.level == "medium" || risk.level == "high");
+
+  // @rule policy.front_office.fraud_deny_transfer
+  // @nl Fraud-analysis agents must never execute banking transfers.
+  fraud_deny_transfer: assert never (authz_request
+      && subject.id == "agent.front_office.fraud"
+      && resource.id == "resource.front_office.banking_transfer"
+      && (action == "execute" || action == "cancel"));
+
+  // Customer profile: the customer-service agent may read the profile; weak
+  // authentication (strength <= 1) is answered with step-up authentication.
+  // (Legacy: REAUTHENTICATE policy with auth_strength_lte 1 + ALLOW policy with
+  // auth_strength_gte 2 -- same decisions as permission + REAUTHENTICATE constraint.)
+
+  // @rule policy.front_office.customer_profile_read
+  // @nl Strongly authenticated customer-service agent may read masked customer profile data.
+  // @permit
+  // @obligation data_masking(fields=[ssn, full_account_number])
+  // @obligation enhanced_logging(reason=restricted_customer_profile)
+  property customer_profile_read =
+      subject.id == "agent.front_office.customer_service"
+      && resource.id == "resource.front_office.customer_profile"
+      && action == "read";
+
+  // @rule policy.front_office.customer_profile_reauthenticate
+  // @nl Weakly authenticated customer-service access requires step-up authentication.
+  // @on_violation REAUTHENTICATE
+  customer_profile_reauthenticate: assert never (authz_request
+      && subject.id == "agent.front_office.customer_service"
+      && resource.id == "resource.front_office.customer_profile"
+      && action == "read"
+      && auth.strength <= 1);
+}

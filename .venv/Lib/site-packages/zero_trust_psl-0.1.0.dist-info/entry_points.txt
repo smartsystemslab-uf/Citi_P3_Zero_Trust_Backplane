@@ -1,2 +1,0 @@
-[console_scripts]
-zt-psl = zt_psl.cli:main

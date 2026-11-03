@@ -1,9 +1,11 @@
 {
   "algorithm": "Ed25519",
-  "bundle_digest": "b99f518efb96bf61c4a35685f6aacccc4f27a6e6bdf514b3003690cc476ae92e",
+  "file": "tool_access.psl",
+  "file_sha256": "8ca5af528e65f4a56ae3a80e4994673c70d27b595ac0ddc2c448b5055c456ad3",
   "issuer": "policy.prototype",
   "key_id": "policy-1",
+  "kind": "zt_psl_policy",
   "schema_version": "1.0",
-  "signature": "T8rdKwOyIMRjFNgG976EYoZ3u3Bm6aDOGQUk8_Icn6rOLICx-F4PFRyQTDz2qzhD_O6nhIZ6VwE8MeuDm9I8Bw",
-  "signed_at": "2026-07-26T22:03:35.421614+00:00"
+  "signature": "JFVSnhWpWtISn_2b8i935iUBAf0s9EnMbhdwJcWheGXFNVx6b1XjGstxv313atz9v7knGIxGS6SuSNbXI42WBw",
+  "signed_at": "2026-11-03T01:37:45.828841+00:00"
 }

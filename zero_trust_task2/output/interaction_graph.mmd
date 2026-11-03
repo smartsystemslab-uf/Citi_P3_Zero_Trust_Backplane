@@ -71,19 +71,19 @@ flowchart LR
 (agent)"]
     agent_representative_assistant_workflow["representative_assistant_workflow
 (agent)"]
-    tool_get_customer_context["get_customer_context
-(tool)"]
-    tool_list_recent_transactions["list_recent_transactions
-(tool)"]
-    tool_search_policies["search_policies
-(tool)"]
-    tool_execute_transfer["execute_transfer
+    agent_aml_investigator["aml_investigator
+(agent)"]
+    agent_aml_reporter["aml_reporter
+(agent)"]
+    agent_aml_investigation_workflow["aml_investigation_workflow
+(agent)"]
+    agent_aml_office_router["aml_office_router
+(agent)"]
+    tool_validate_eod_readiness["validate_eod_readiness
 (tool)"]
     tool_get_eod_batch["get_eod_batch
 (tool)"]
     tool_apply_ledger_updates["apply_ledger_updates
-(tool)"]
-    tool_validate_eod_readiness["validate_eod_readiness
 (tool)"]
     tool_get_reconciliation_data["get_reconciliation_data
 (tool)"]
@@ -97,9 +97,17 @@ flowchart LR
 (tool)"]
     tool_search_loan_playbooks["search_loan_playbooks
 (tool)"]
+    tool_get_customer_context["get_customer_context
+(tool)"]
     tool_get_transaction_context["get_transaction_context
 (tool)"]
+    tool_list_recent_transactions["list_recent_transactions
+(tool)"]
     tool_submit_manual_review["submit_manual_review
+(tool)"]
+    tool_execute_transfer["execute_transfer
+(tool)"]
+    tool_search_policies["search_policies
 (tool)"]
     tool_search_faqs["search_faqs
 (tool)"]
@@ -110,6 +118,10 @@ flowchart LR
     tool_get_support_playbooks["get_support_playbooks
 (tool)"]
     tool_rank_records["rank_records
+(tool)"]
+    tool_fetch_transaction_history["fetch_transaction_history
+(tool)"]
+    tool_screen_against_sanctions["screen_against_sanctions
 (tool)"]
     tool_get_transaction["get_transaction
 (tool)"]
@@ -219,6 +231,8 @@ flowchart LR
     agent_recommender_agent -->|agent_to_tool| tool_search_product_catalog
     agent_loan_agent -->|agent_to_tool| tool_search_loan_playbooks
     agent_risk_compliance_agent -->|agent_to_tool| tool_search_policies
+    agent_aml_investigator -->|agent_to_tool| tool_fetch_transaction_history
+    agent_aml_investigator -->|agent_to_tool| tool_screen_against_sanctions
     tool_get_transaction -->|tool_to_api| api_get_transaction
     tool_run_fraud_and_compliance_workflow -->|tool_to_api| api_monitoring_evaluate_transaction
     tool_update_transaction_status -->|tool_to_api| api_update_transaction_status
@@ -288,3 +302,6 @@ flowchart LR
     agent_representative_assist_parallel -->|agent_to_agent| agent_risk_compliance_agent
     agent_representative_assistant_workflow -->|agent_to_agent| agent_representative_assist_parallel
     agent_representative_assistant_workflow -->|agent_to_agent| agent_representative_merge_agent
+    agent_aml_investigation_workflow -->|agent_to_agent| agent_aml_investigator
+    agent_aml_investigation_workflow -->|agent_to_agent| agent_aml_reporter
+    agent_aml_office_router -->|agent_to_agent| agent_aml_investigation_workflow

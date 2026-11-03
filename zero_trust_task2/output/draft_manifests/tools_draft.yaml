@@ -1,132 +1,6 @@
 zt_ir_version: '1.0'
 manifest_type: tools_draft
 tools:
-- tool_id: get_customer_context
-  display_name: Auto-discovered tool get_customer_context
-  source_type: python
-  source:
-    provided_by: task2_scanner
-    reference: citi_banking_adk\bank_adk\infra\api_client.py:43
-  domain: shared
-  action_type: read
-  has_side_effects: false
-  risk_level: 3
-  requires_live_decision: false
-  audit_required: false
-  allowed_callers: []
-  calls_api: []
-  calls_api_methods: []
-  pii_fields: []
-  compliance_tags: []
-  idempotency_key: null
-  operation_class: read
-  status: provisional
-  detection_method: agent_reference
-- tool_id: list_recent_transactions
-  display_name: Auto-discovered tool list_recent_transactions
-  source_type: python
-  source:
-    provided_by: task2_scanner
-    reference: citi_banking_adk\bank_adk\infra\api_client.py:55
-  domain: shared
-  action_type: read
-  has_side_effects: false
-  risk_level: 3
-  requires_live_decision: false
-  audit_required: false
-  allowed_callers: []
-  calls_api: []
-  calls_api_methods: []
-  pii_fields: []
-  compliance_tags: []
-  idempotency_key: null
-  operation_class: read
-  status: provisional
-  detection_method: agent_reference
-- tool_id: search_policies
-  display_name: Auto-discovered tool search_policies
-  source_type: python
-  source:
-    provided_by: task2_scanner
-    reference: citi_banking_adk\bank_adk\infra\api_client.py:58
-  domain: shared
-  action_type: read
-  has_side_effects: false
-  risk_level: 2
-  requires_live_decision: false
-  audit_required: false
-  allowed_callers: []
-  calls_api: []
-  calls_api_methods: []
-  pii_fields: []
-  compliance_tags: []
-  idempotency_key: null
-  operation_class: read
-  status: provisional
-  detection_method: agent_reference
-- tool_id: execute_transfer
-  display_name: Auto-discovered tool execute_transfer
-  source_type: python
-  source:
-    provided_by: task2_scanner
-    reference: citi_banking_adk\bank_adk\infra\api_client.py:77
-  domain: shared
-  action_type: financial_write
-  has_side_effects: true
-  risk_level: 4
-  requires_live_decision: true
-  audit_required: true
-  allowed_callers: []
-  calls_api: []
-  calls_api_methods: []
-  pii_fields: []
-  compliance_tags: []
-  idempotency_key: null
-  operation_class: financial
-  status: provisional
-  detection_method: agent_reference
-- tool_id: get_eod_batch
-  display_name: Auto-discovered tool get_eod_batch
-  source_type: python
-  source:
-    provided_by: task2_scanner
-    reference: citi_banking_adk\bank_adk\infra\repository.py:147
-  domain: shared
-  action_type: read
-  has_side_effects: false
-  risk_level: 2
-  requires_live_decision: false
-  audit_required: false
-  allowed_callers: []
-  calls_api: []
-  calls_api_methods: []
-  pii_fields: []
-  compliance_tags: []
-  idempotency_key: null
-  operation_class: read
-  status: provisional
-  detection_method: agent_reference
-- tool_id: apply_ledger_updates
-  display_name: Auto-discovered tool apply_ledger_updates
-  source_type: python
-  source:
-    provided_by: task2_scanner
-    reference: citi_banking_adk\bank_adk\infra\repository.py:153
-  domain: shared
-  action_type: financial_write
-  has_side_effects: true
-  risk_level: 4
-  requires_live_decision: true
-  audit_required: true
-  allowed_callers: []
-  calls_api: []
-  calls_api_methods: []
-  pii_fields: []
-  compliance_tags: []
-  idempotency_key: null
-  operation_class: financial
-  status: provisional
-  detection_method: agent_reference
 - tool_id: validate_eod_readiness
   display_name: Check whether a batch is ready for end-of-day processing and return
     readiness evidence.
@@ -147,6 +21,49 @@ tools:
   compliance_tags: []
   idempotency_key: null
   operation_class: read
+  status: provisional
+  detection_method: agent_reference
+- tool_id: get_eod_batch
+  display_name: Return the batch payload and expected totals for EOD processing.
+  source_type: python
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_adk\bank_adk\tools\back_office_tools.py:11
+  domain: back
+  action_type: read
+  has_side_effects: false
+  risk_level: 2
+  requires_live_decision: false
+  audit_required: false
+  allowed_callers: []
+  calls_api: []
+  calls_api_methods: []
+  pii_fields: []
+  compliance_tags: []
+  idempotency_key: null
+  operation_class: read
+  status: provisional
+  detection_method: agent_reference
+- tool_id: apply_ledger_updates
+  display_name: Apply ledger updates and mark the batch as ledger-updated in the system
+    of record.
+  source_type: python
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_adk\bank_adk\tools\back_office_tools.py:15
+  domain: back
+  action_type: financial_write
+  has_side_effects: true
+  risk_level: 4
+  requires_live_decision: true
+  audit_required: true
+  allowed_callers: []
+  calls_api: []
+  calls_api_methods: []
+  pii_fields: []
+  compliance_tags: []
+  idempotency_key: null
+  operation_class: financial
   status: provisional
   detection_method: agent_reference
 - tool_id: get_reconciliation_data
@@ -278,6 +195,28 @@ tools:
   operation_class: read
   status: provisional
   detection_method: agent_reference
+- tool_id: get_customer_context
+  display_name: Return full customer context, profile, linked accounts, and recent
+    transactions for a customer id.
+  source_type: python
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_adk\bank_adk\tools\customer_tools.py:8
+  domain: shared
+  action_type: read
+  has_side_effects: false
+  risk_level: 3
+  requires_live_decision: false
+  audit_required: false
+  allowed_callers: []
+  calls_api: []
+  calls_api_methods: []
+  pii_fields: []
+  compliance_tags: []
+  idempotency_key: null
+  operation_class: read
+  status: provisional
+  detection_method: agent_reference
 - tool_id: get_transaction_context
   display_name: Return transaction details, metadata, channel, current status, and
     decision context for a transaction id.
@@ -285,6 +224,28 @@ tools:
   source:
     provided_by: task2_scanner
     reference: citi_banking_adk\bank_adk\tools\customer_tools.py:23
+  domain: shared
+  action_type: read
+  has_side_effects: false
+  risk_level: 3
+  requires_live_decision: false
+  audit_required: false
+  allowed_callers: []
+  calls_api: []
+  calls_api_methods: []
+  pii_fields: []
+  compliance_tags: []
+  idempotency_key: null
+  operation_class: read
+  status: provisional
+  detection_method: agent_reference
+- tool_id: list_recent_transactions
+  display_name: Return recent transactions for a customer to support anomaly screening
+    and fraud investigation.
+  source_type: python
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_adk\bank_adk\tools\customer_tools.py:37
   domain: shared
   action_type: read
   has_side_effects: false
@@ -320,6 +281,50 @@ tools:
   compliance_tags: []
   idempotency_key: null
   operation_class: write
+  status: provisional
+  detection_method: agent_reference
+- tool_id: execute_transfer
+  display_name: Execute a banking transfer through the external banking API layer
+    and return the posting result.
+  source_type: python
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_adk\bank_adk\tools\customer_tools.py:56
+  domain: shared
+  action_type: financial_write
+  has_side_effects: true
+  risk_level: 4
+  requires_live_decision: true
+  audit_required: true
+  allowed_callers: []
+  calls_api: []
+  calls_api_methods: []
+  pii_fields: []
+  compliance_tags: []
+  idempotency_key: null
+  operation_class: financial
+  status: provisional
+  detection_method: agent_reference
+- tool_id: search_policies
+  display_name: Search the banking policy and compliance knowledge base for rules
+    relevant to the current case.
+  source_type: python
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_adk\bank_adk\tools\knowledge_tools.py:13
+  domain: shared
+  action_type: read
+  has_side_effects: false
+  risk_level: 2
+  requires_live_decision: false
+  audit_required: false
+  allowed_callers: []
+  calls_api: []
+  calls_api_methods: []
+  pii_fields: []
+  compliance_tags: []
+  idempotency_key: null
+  operation_class: read
   status: provisional
   detection_method: agent_reference
 - tool_id: search_faqs
@@ -429,6 +434,48 @@ tools:
   operation_class: read
   status: provisional
   detection_method: tool_module
+- tool_id: fetch_transaction_history
+  display_name: Fetches the last 30 days of transaction history for AML review.
+  source_type: python
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_adk_mlflow_observability\bank_adk\tools\aml_tools.py:1
+  domain: shared
+  action_type: read
+  has_side_effects: false
+  risk_level: 3
+  requires_live_decision: false
+  audit_required: false
+  allowed_callers: []
+  calls_api: []
+  calls_api_methods: []
+  pii_fields: []
+  compliance_tags: []
+  idempotency_key: null
+  operation_class: read
+  status: provisional
+  detection_method: agent_reference
+- tool_id: screen_against_sanctions
+  display_name: Checks customer details against global sanctions lists.
+  source_type: python
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_adk_mlflow_observability\bank_adk\tools\aml_tools.py:6
+  domain: shared
+  action_type: compute
+  has_side_effects: false
+  risk_level: 2
+  requires_live_decision: false
+  audit_required: false
+  allowed_callers: []
+  calls_api: []
+  calls_api_methods: []
+  pii_fields: []
+  compliance_tags: []
+  idempotency_key: null
+  operation_class: read
+  status: provisional
+  detection_method: agent_reference
 - tool_id: get_transaction
   display_name: Fetches the full details of a transaction from the database.
   source_type: mcp
