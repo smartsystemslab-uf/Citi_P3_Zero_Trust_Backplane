@@ -107,6 +107,17 @@ This prevents a local Python variable name from being incorrectly treated as a d
 
 The scanner also resolves unique factory-parameter bindings when possible.
 
+**Domain of factory-built agents.** An agent's domain (`front` / `mid` / `back` / `root` /
+`shared`) comes from its source path. Factory-built workflow agents usually live in a generic
+module (for example `agents/workflow_agents.py`), so the path alone says `shared` even though one
+office's router attaches them. After alias resolution the scanner therefore gives such an agent
+the office domain of its parents when it has at least one parent and **all** of its parents are
+in the same office domain; this is iterated so nested workflows (router -> workflow -> parallel
+agent) follow their parent. Parents in different domains, or only the root / `shared` parents,
+leave the agent `shared` -- nothing is guessed. Every inherited domain is recorded on the agent
+as `domain_source` ("inherited from parent agent(s): ..."). The PSL rule
+`intent.no-cross-domain-transfers` depends on these domains.
+
 ### 4. Tool discovery
 
 A public function can be recognized as a tool when it is:

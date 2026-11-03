@@ -155,23 +155,42 @@ rule that causes it.
 6. Controlled security cases (identity and policy layer).
 7. Performance: old PDP vs PSL PDP decision latency; end-to-end overhead.
 
-## 6. Status (2026-11-02, branch `feature/spiffe-psl`, not committed)
+## 6. Status (2026-11-03, branch `feature/spiffe-psl`)
 
 | check | result |
 |---|---|
 | zero_trust_psl | 143 passed (incl. guard-index equivalence vs exhaustive evaluation) |
 | Task 4 PDP | 36 passed (incl. differential equivalence and 7 SPIFFE identity-rule tests) |
-| Task 2 / Task 3 / Task 5 / interface / integrated_demo / native runtime | 11 / 12 / 16 / 4 / 5 / 6 passed |
+| Task 2 / Task 3 / Task 5 / interface / integrated_demo / native runtime | 13 / 12 / 16 / 4 / 5 / 14 passed (incl. scanner domain inheritance; cross-domain rule on the real agent tree; stale scan cache rescanned) |
 | zero_trust_identity | 25 passed inside the runtime image (10 workload-layer tests also on the host) |
 | distributed_runtime unit (host) | 60 passed (gateway monitors from the signed store, PSL guard, content checks) |
 | distributed_runtime end to end (Docker, SPIRE) | 15 passed: identities, separate agent CA, read, transfer via customer-service path, direct transfer refused (`intent.execute-transfer-caller-restriction.order`), approval required, EOD clean + mismatch, EOD not ready, direct ledger post refused, knowledge path, 3 input-rule refusals, disable/enable with lease revocation, SVID + agent-certificate rotation |
-| integrated demo modes 1 and 2 | ALL TASKS 1-5 INTEGRATED: PASS |
+| integrated demo | modes 1 and 2: ALL TASKS 1-5 INTEGRATED: PASS; Task 6 real workflows (on a staged copy of the MAS, so the MAS database is not written): ALL TASKS 1-6 INTEGRATED: PASS |
 | differential (552,960 requests) | translated store: 0 differences; with intent rules: 128 stricter (all `intent.execute-transfer-caller-restriction`), 0 more permissive |
-| performance | `docs/PSL_PERFORMANCE_REPORT.md`: same content x0.98 of legacy; deployed store (15 more rules) x1.6; native store (135 policies) x0.32, i.e. 3.1x faster |
+| native differential (582,400 requests, real MAS store) | 128 different decisions, none more permissive: 96 ALLOW -> ALLOW_WITH_OBLIGATIONS, 32 MANUAL_REVIEW / ALLOW_WITH_OBLIGATIONS -> DENY (transfer caller restriction, ledger pipeline gate); obligation differences only add obligations (`audit_log` from the enabled cross-domain rule on every agent route, `enhanced_logging`), none removed |
+| intent consistency (105 placements of the real MAS) | 0 conflicts for all 12 `pdp_request` intent rules, none disabled |
+| performance | `docs/PSL_PERFORMANCE_REPORT.md`: same content x0.99 of legacy; deployed store (intent + identity rules) x1.59; native store x0.33, i.e. 3.0x faster |
 
-Open items, decided by the project owner later:
+Resolved 2026-11-03:
 
-* `intent.no-cross-domain-transfers` stays `@disabled` (13 conflicting routes: the Task 2 scanner
-  puts mid-office workflow agents into domain `shared`); enabling it needs a data decision.
+* `intent.no-cross-domain-transfers` is **enabled**. It had been `@disabled` because the Task 2
+  scanner put the factory-built mid-office workflow agents (`mid_office_planning_workflow`,
+  `mid_office_planning_parallel`, `representative_assistant_workflow`,
+  `representative_assist_parallel`, built in the generic `agents/workflow_agents.py`) into domain
+  `shared`, so 13 legitimate mid-office routes looked cross-domain. The scanner now gives an agent
+  whose path names no office the office of its parents when all of them agree
+  (`zt_scan.inherit_agent_domains`, recorded as `domain_source`); the consistency check over the
+  105 placements of the real MAS (incl. the 3 routes only the ADK tree shows) reports 0 conflicts.
+* Found on the way and fixed: (1) the native runtime reused a cached Task 2 scan regardless of
+  the scanner version -- the MAS plugin and the gateway (`gwout` volume) start with
+  `refresh=False`, so they would have kept the old `shared` domains; the cache now carries a
+  scanner fingerprint and is rescanned when it differs. (2) Route targets that only the
+  instantiated ADK tree shows had no `scanner_target_type`, so no route intent rule applied to
+  them; they are now marked as agent route targets. (3) A runtime route to an agent the scanner
+  already catalogued made the unified manifest invalid (action `invoke` undeclared) and failed the
+  whole bootstrap; the action is now added.
+
+Open items:
+
 * The MAS repository tracks `citi_banking_adk/.env` and a `.venv`; the distributed runtime never
   copies them (staging excludes them, the image build fails if they appear).

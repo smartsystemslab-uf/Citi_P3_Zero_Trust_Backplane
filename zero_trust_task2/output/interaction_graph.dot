@@ -73,19 +73,19 @@ digraph Task2InteractionGraph {
 (agent)"];
   agent_representative_assistant_workflow [label="representative_assistant_workflow
 (agent)"];
-  tool_get_customer_context [label="get_customer_context
-(tool)"];
-  tool_list_recent_transactions [label="list_recent_transactions
-(tool)"];
-  tool_search_policies [label="search_policies
-(tool)"];
-  tool_execute_transfer [label="execute_transfer
+  agent_aml_investigator [label="aml_investigator
+(agent)"];
+  agent_aml_reporter [label="aml_reporter
+(agent)"];
+  agent_aml_investigation_workflow [label="aml_investigation_workflow
+(agent)"];
+  agent_aml_office_router [label="aml_office_router
+(agent)"];
+  tool_validate_eod_readiness [label="validate_eod_readiness
 (tool)"];
   tool_get_eod_batch [label="get_eod_batch
 (tool)"];
   tool_apply_ledger_updates [label="apply_ledger_updates
-(tool)"];
-  tool_validate_eod_readiness [label="validate_eod_readiness
 (tool)"];
   tool_get_reconciliation_data [label="get_reconciliation_data
 (tool)"];
@@ -99,9 +99,17 @@ digraph Task2InteractionGraph {
 (tool)"];
   tool_search_loan_playbooks [label="search_loan_playbooks
 (tool)"];
+  tool_get_customer_context [label="get_customer_context
+(tool)"];
   tool_get_transaction_context [label="get_transaction_context
 (tool)"];
+  tool_list_recent_transactions [label="list_recent_transactions
+(tool)"];
   tool_submit_manual_review [label="submit_manual_review
+(tool)"];
+  tool_execute_transfer [label="execute_transfer
+(tool)"];
+  tool_search_policies [label="search_policies
 (tool)"];
   tool_search_faqs [label="search_faqs
 (tool)"];
@@ -112,6 +120,10 @@ digraph Task2InteractionGraph {
   tool_get_support_playbooks [label="get_support_playbooks
 (tool)"];
   tool_rank_records [label="rank_records
+(tool)"];
+  tool_fetch_transaction_history [label="fetch_transaction_history
+(tool)"];
+  tool_screen_against_sanctions [label="screen_against_sanctions
 (tool)"];
   tool_get_transaction [label="get_transaction
 (tool)"];
@@ -221,6 +233,8 @@ digraph Task2InteractionGraph {
   agent_recommender_agent -> tool_search_product_catalog [label="agent_to_tool"];
   agent_loan_agent -> tool_search_loan_playbooks [label="agent_to_tool"];
   agent_risk_compliance_agent -> tool_search_policies [label="agent_to_tool"];
+  agent_aml_investigator -> tool_fetch_transaction_history [label="agent_to_tool"];
+  agent_aml_investigator -> tool_screen_against_sanctions [label="agent_to_tool"];
   tool_get_transaction -> api_get_transaction [label="tool_to_api"];
   tool_run_fraud_and_compliance_workflow -> api_monitoring_evaluate_transaction [label="tool_to_api"];
   tool_update_transaction_status -> api_update_transaction_status [label="tool_to_api"];
@@ -290,4 +304,7 @@ digraph Task2InteractionGraph {
   agent_representative_assist_parallel -> agent_risk_compliance_agent [label="agent_to_agent"];
   agent_representative_assistant_workflow -> agent_representative_assist_parallel [label="agent_to_agent"];
   agent_representative_assistant_workflow -> agent_representative_merge_agent [label="agent_to_agent"];
+  agent_aml_investigation_workflow -> agent_aml_investigator [label="agent_to_agent"];
+  agent_aml_investigation_workflow -> agent_aml_reporter [label="agent_to_agent"];
+  agent_aml_office_router -> agent_aml_investigation_workflow [label="agent_to_agent"];
 }

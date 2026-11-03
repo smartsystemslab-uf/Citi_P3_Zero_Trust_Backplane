@@ -36,7 +36,9 @@ def test_every_intent_rule_translates_and_compiles():
             by_scope[r.scope] = by_scope.get(r.scope, 0) + 1
     assert by_scope == {"pdp_request": 12, "gateway_input": 2, "gateway_tool": 1, "gateway_output": 5,
                         "harness_output": 2, "workflow_run": 6}
-    assert [r.rule_id for r in ps.rules if r.disabled] == ["intent.no-cross-domain-transfers"]
+    # no-cross-domain-transfers was disabled until the Task 2 scanner's domain fix (2026-11-03)
+    assert [r.rule_id for r in ps.rules if r.disabled] == []
+    assert ps.rule("intent.no-cross-domain-transfers").scope == "pdp_request"
     realized = [t for t in trs if not t.parts]
     assert [t.intent_id for t in realized] == ["forbidden-tool-block"] and realized[0].realized_by
     # every intent rule is traceable from the PSL (@source) and keeps its natural-language text (@nl)

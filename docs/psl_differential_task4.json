@@ -3,7 +3,7 @@
   "requests": 552960,
   "same_decision": 552960,
   "different_decision": 0,
-  "seconds": 43.0,
+  "seconds": 42.4,
   "corpus": {
    "subjects": 24,
    "resource_actions": 36,
@@ -57,7 +57,7 @@
   "requests": 552960,
   "same_decision": 552832,
   "different_decision": 128,
-  "seconds": 51.5,
+  "seconds": 49.2,
   "corpus": {
    "subjects": 24,
    "resource_actions": 36,
@@ -87,7 +87,7 @@
    ]
   },
   "legacy_policy_version": "c5f7d018c019208e",
-  "psl_policy_version": "d6178c43fcf2c184",
+  "psl_policy_version": "6ddcf1b28ad5e95e",
   "outcomes": {
    "legacy": {
     "DENY": 548032,

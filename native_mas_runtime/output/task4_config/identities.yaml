@@ -546,41 +546,41 @@ identities:
     manifest_status: provisional
     scanner_source_type: subject
 - id: mid_office_planning_parallel
-  canonical_id: agent.shared.mid_office_planning_parallel
+  canonical_id: agent.mid_office.mid_office_planning_parallel
   type: agent
   roles:
   - workflow
-  domain: shared
+  domain: mid_office
   enabled: true
   attributes:
     manifest_status: provisional
     scanner_source_type: subject
 - id: mid_office_planning_workflow
-  canonical_id: agent.shared.mid_office_planning_workflow
+  canonical_id: agent.mid_office.mid_office_planning_workflow
   type: agent
   roles:
   - workflow
-  domain: shared
+  domain: mid_office
   enabled: true
   attributes:
     manifest_status: provisional
     scanner_source_type: subject
 - id: representative_assist_parallel
-  canonical_id: agent.shared.representative_assist_parallel
+  canonical_id: agent.mid_office.representative_assist_parallel
   type: agent
   roles:
   - workflow
-  domain: shared
+  domain: mid_office
   enabled: true
   attributes:
     manifest_status: provisional
     scanner_source_type: subject
 - id: representative_assistant_workflow
-  canonical_id: agent.shared.representative_assistant_workflow
+  canonical_id: agent.mid_office.representative_assistant_workflow
   type: agent
   roles:
   - workflow
-  domain: shared
+  domain: mid_office
   enabled: true
   attributes:
     manifest_status: provisional

@@ -665,20 +665,20 @@ resources:
     manifest_status: provisional
     scanner_target_type: subject
 - id: mid_office_planning_workflow
-  canonical_id: resource.shared.other_mid_office_planning_workflow
+  canonical_id: resource.mid_office.other_mid_office_planning_workflow
   actions:
   - read
-  domain: shared
+  domain: mid_office
   classification: internal
   critical: false
   attributes:
     manifest_status: provisional
     scanner_target_type: subject
 - id: representative_assistant_workflow
-  canonical_id: resource.shared.other_representative_assistant_workflow
+  canonical_id: resource.mid_office.other_representative_assistant_workflow
   actions:
   - read
-  domain: shared
+  domain: mid_office
   classification: internal
   critical: false
   attributes:
@@ -735,10 +735,10 @@ resources:
     manifest_status: provisional
     scanner_target_type: subject
 - id: mid_office_planning_parallel
-  canonical_id: resource.shared.other_mid_office_planning_parallel
+  canonical_id: resource.mid_office.other_mid_office_planning_parallel
   actions:
   - read
-  domain: shared
+  domain: mid_office
   classification: internal
   critical: false
   attributes:
@@ -795,10 +795,10 @@ resources:
     manifest_status: provisional
     scanner_target_type: subject
 - id: representative_assist_parallel
-  canonical_id: resource.shared.other_representative_assist_parallel
+  canonical_id: resource.mid_office.other_representative_assist_parallel
   actions:
   - read
-  domain: shared
+  domain: mid_office
   classification: internal
   critical: false
   attributes:
@@ -875,6 +875,7 @@ resources:
     manifest_status: provisional
     native_runtime_tree: true
     resource_kind: agent
+    scanner_target_type: subject
 - id: mid_office_router
   canonical_id: resource.mid_office.agent_mid_office_router
   actions:
@@ -886,6 +887,7 @@ resources:
     manifest_status: provisional
     native_runtime_tree: true
     resource_kind: agent
+    scanner_target_type: subject
 - id: back_office_router
   canonical_id: resource.back_office.agent_back_office_router
   actions:
@@ -897,3 +899,4 @@ resources:
     manifest_status: provisional
     native_runtime_tree: true
     resource_kind: agent
+    scanner_target_type: subject
