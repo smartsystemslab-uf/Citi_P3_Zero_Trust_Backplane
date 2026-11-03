@@ -1,0 +1,5 @@
+# Signed policy files: the detached signatures (zt_psl.signing, *.sig.json) cover the exact file
+# bytes. Git must store and check them out unchanged -- with core.autocrlf an LF file comes back
+# as CRLF (or a CRLF file is stored as LF) and every signature check fails on a fresh clone.
+*.psl -text
+policy_fields.yaml -text
