@@ -2197,7 +2197,7 @@ interaction_edges:
   side_effects: false
   authentication_method: workload_identity
   trust_boundary: agent_boundary
-  workflow_context: workflow_shared
+  workflow_context: workflow_mid
   pep_required: true
   pep_type: route_pep
   trigger: null
@@ -2221,7 +2221,7 @@ interaction_edges:
   side_effects: false
   authentication_method: workload_identity
   trust_boundary: agent_boundary
-  workflow_context: workflow_shared
+  workflow_context: workflow_mid
   pep_required: true
   pep_type: route_pep
   trigger: null
@@ -2245,7 +2245,7 @@ interaction_edges:
   side_effects: false
   authentication_method: workload_identity
   trust_boundary: agent_boundary
-  workflow_context: workflow_shared
+  workflow_context: workflow_mid
   pep_required: true
   pep_type: route_pep
   trigger: null
@@ -2269,7 +2269,7 @@ interaction_edges:
   side_effects: false
   authentication_method: workload_identity
   trust_boundary: agent_boundary
-  workflow_context: workflow_shared
+  workflow_context: workflow_mid
   pep_required: true
   pep_type: route_pep
   trigger: null
@@ -2293,7 +2293,7 @@ interaction_edges:
   side_effects: false
   authentication_method: workload_identity
   trust_boundary: agent_boundary
-  workflow_context: workflow_shared
+  workflow_context: workflow_mid
   pep_required: true
   pep_type: route_pep
   trigger: null
@@ -2317,7 +2317,7 @@ interaction_edges:
   side_effects: false
   authentication_method: workload_identity
   trust_boundary: agent_boundary
-  workflow_context: workflow_shared
+  workflow_context: workflow_mid
   pep_required: true
   pep_type: route_pep
   trigger: null

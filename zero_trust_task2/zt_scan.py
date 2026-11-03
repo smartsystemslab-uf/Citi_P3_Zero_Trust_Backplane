@@ -250,6 +250,54 @@ def infer_domain_from_path(path: Path) -> str:
     return "shared"
 
 
+OFFICE_DOMAINS = ("front", "mid", "back")
+
+
+def inherit_agent_domains(agents: List["DraftEntity"]) -> List[Dict[str, Any]]:
+    """Give path-less agents the office domain of the agents that attach them.
+
+    ``infer_domain_from_path`` only sees the file. Factory-built workflow agents live in
+    generic modules (e.g. ``agents/workflow_agents.py``) and are attached as sub-agents by
+    one office's router, so the path says "shared" although every caller is in one office.
+    An agent whose path gave "shared" takes domain D when it has at least one parent and
+    ALL of its parents are in the same office domain D. Parents in different domains, or a
+    root/shared parent, leave it "shared" -- the scanner never guesses. Iterated to a
+    fixpoint so nested workflows (router -> workflow -> parallel) follow their parent; the
+    rule is monotone (shared -> office only), so the result does not depend on order.
+    Returns one record per changed agent (also stored on the agent as ``domain_source``).
+    """
+    by_alias: Dict[str, DraftEntity] = {}
+    for agent in agents:
+        for alias in (agent.payload.get("agent_id"), agent.payload.get("symbol_name"), *agent.payload.get("aliases", [])):
+            if alias:
+                by_alias.setdefault(str(alias), agent)
+    parents: Dict[str, List[DraftEntity]] = {}
+    for agent in agents:
+        for target in agent.payload.get("authorized_transfers", []):
+            child = by_alias.get(str(target))
+            if child is not None and child is not agent:
+                bucket = parents.setdefault(str(child.payload["agent_id"]), [])
+                if all(p is not agent for p in bucket):
+                    bucket.append(agent)
+    changes: List[Dict[str, Any]] = []
+    changed = True
+    while changed:
+        changed = False
+        for agent in agents:
+            if agent.payload.get("domain") != "shared":
+                continue
+            ps = parents.get(str(agent.payload["agent_id"]), [])
+            domains = {p.payload.get("domain") for p in ps}
+            if len(domains) == 1 and next(iter(domains)) in OFFICE_DOMAINS:
+                domain = next(iter(domains))
+                parent_ids = sorted(str(p.payload["agent_id"]) for p in ps)
+                agent.payload["domain"] = domain
+                agent.payload["domain_source"] = f"inherited from parent agent(s): {', '.join(parent_ids)}"
+                changes.append({"agent_id": agent.payload["agent_id"], "domain": domain, "parents": parent_ids})
+                changed = True
+    return changes
+
+
 def infer_action_type(name: str, method: Optional[str] = None, path: Optional[str] = None) -> str:
     lowered = name.lower()
     method_u = (method or "").upper()
@@ -2001,6 +2049,7 @@ def run_scan(
 
     agents = scan_agents(sources.python_files, repo_root, collector)
     agent_aliases = discover_agent_aliases(sources.python_files, repo_root, agents, collector)
+    inherit_agent_domains(agents)
     referenced_tools = {tool for agent in agents for tool in agent.payload.get("authorized_tools", [])}
     python_tools = scan_tools(sources.python_files, repo_root, referenced_tools, collector)
     manifest_tools = scan_mcp_manifest_files(sources.mcp_manifest_files, repo_root, collector)

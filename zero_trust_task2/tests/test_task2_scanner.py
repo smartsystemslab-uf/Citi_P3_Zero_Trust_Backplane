@@ -334,3 +334,68 @@ worker = LlmAgent(name="eod_processing_agent", tools=[get_eod_batch])
     assert "get_eod_batch" in tools
     reference = tools["get_eod_batch"]["source"]["reference"].replace("\\", "/")
     assert reference.startswith("tools/back_office_tools.py:")
+
+
+def test_router_attached_factory_agents_inherit_office_domain(tmp_path: Path) -> None:
+    """Factory-built workflow agents in a generic module take the office of the router that
+    attaches them (the real MAS builds mid-office workflows in agents/workflow_agents.py)."""
+    repo = tmp_path / "bankrepo"
+    write(
+        repo / "agents" / "workflow_agents.py",
+        '''
+def build_ops_flow(analysis_agent, merge_agent):
+    fan_out = ParallelAgent(name="ops_fan_out", sub_agents=[analysis_agent])
+    return SequentialAgent(name="ops_flow", sub_agents=[fan_out, merge_agent])
+''',
+    )
+    write(
+        repo / "agents" / "mid_office.py",
+        '''
+from .workflow_agents import build_ops_flow
+
+analysis = LlmAgent(name="analysis_agent", description="Analyses")
+merger = LlmAgent(name="merge_agent", description="Merges")
+ops = build_ops_flow(analysis_agent=analysis, merge_agent=merger)
+mid_office_router = LlmAgent(name="mid_office_router", description="Routes", sub_agents=[ops])
+''',
+    )
+    out = tmp_path / "out" / "draft_manifests"
+    result = run_scan(repo, out)
+    agents = {x.payload["agent_id"]: x.payload for x in result["agents"]}
+    assert agents["mid_office_router"]["domain"] == "mid"
+    assert agents["ops_flow"]["domain"] == "mid"                     # parent: mid_office_router
+    assert agents["ops_fan_out"]["domain"] == "mid"                  # parent: ops_flow (fixpoint)
+    assert agents["ops_flow"]["domain_source"] == "inherited from parent agent(s): mid_office_router"
+    assert "domain_source" not in agents["analysis_agent"]           # path-derived domain is kept as is
+    drafted = {a["agent_id"]: a for a in yaml.safe_load((out / "agents_draft.yaml").read_text(encoding="utf-8"))["agents"]}
+    assert drafted["ops_fan_out"]["domain"] == "mid" and drafted["ops_fan_out"]["domain_source"]
+
+
+def test_ambiguous_or_root_only_parents_stay_shared(tmp_path: Path) -> None:
+    """The scanner never guesses: parents in two offices, or only the root, leave 'shared'."""
+    repo = tmp_path / "bankrepo"
+    write(repo / "agents" / "common.py", '''
+helper = LlmAgent(name="helper_agent", description="Used by two offices")
+''')
+    write(repo / "agents" / "front_office.py", '''
+from .common import helper
+front_office_router = LlmAgent(name="front_office_router", description="Routes", sub_agents=[helper])
+''')
+    write(repo / "agents" / "back_office.py", '''
+from .common import helper
+back_office_router = LlmAgent(name="back_office_router", description="Routes", sub_agents=[helper])
+''')
+    write(repo / "agents" / "audit.py", '''
+audit_worker = LlmAgent(name="audit_worker", description="Works")
+audit_router = LlmAgent(name="audit_router", description="Routes", sub_agents=[audit_worker])
+''')
+    write(repo / "agents" / "root.py", '''
+from .audit import audit_router
+user_proxy_agent = LlmAgent(name="user_proxy_agent", description="Root", sub_agents=[audit_router])
+''')
+    result = run_scan(repo, tmp_path / "out" / "draft_manifests")
+    agents = {x.payload["agent_id"]: x.payload for x in result["agents"]}
+    assert agents["helper_agent"]["domain"] == "shared"              # front + back parents disagree
+    assert agents["audit_router"]["domain"] == "shared"              # only parent is the root
+    assert agents["audit_worker"]["domain"] == "shared"              # parent stays shared
+    assert not any("domain_source" in a for a in agents.values())

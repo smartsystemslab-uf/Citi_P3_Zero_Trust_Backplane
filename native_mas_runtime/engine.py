@@ -389,11 +389,33 @@ class NativeMasBackplane:
                     ],
                     "metadata": self._metadata(runtime_id, "Agent invocation target from the instantiated ADK tree."),
                     "bindings": binding(runtime_id),
-                    "attributes": {"native_runtime_tree": True, "resource_kind": "agent"},
+                    # scanner_target_type marks agent route targets (PSL field resource.target_type);
+                    # without it the route intent rules (allowed targets, no cross-domain transfers)
+                    # would silently skip routes that only the runtime tree shows.
+                    "attributes": {"native_runtime_tree": True, "resource_kind": "agent",
+                                   "scanner_target_type": "subject"},
                 }
             )
             resource_by_runtime[runtime_id] = canonical
             return canonical
+
+        def ensure_invoke_action(resource_id: str) -> None:
+            # Runtime-tree routes use action "invoke". A route to an agent the scanner already
+            # catalogued reuses that resource, whose declared actions may lack "invoke"; without
+            # it the unified manifest is invalid and the whole bootstrap fails.
+            resource = next(r for r in spec.get("resources", []) if r["id"] == resource_id)
+            actions = resource.setdefault("actions", [])
+            if not any(a.get("name") == "invoke" for a in actions):
+                actions.append(
+                    {
+                        "name": "invoke",
+                        "side_effect": False,
+                        "criticality": "medium",
+                        "requires_human_approval": False,
+                        "idempotent": True,
+                        "parameter_schema_ref": None,
+                    }
+                )
 
         interaction_ids = {x["id"] for x in spec.get("interactions", [])}
         existing_runtime_routes = {
@@ -409,6 +431,7 @@ class NativeMasBackplane:
                 continue
             caller_id = ensure_runtime_subject(caller_runtime)
             target_resource = ensure_agent_resource(target_runtime)
+            ensure_invoke_action(target_resource)
             edge_id = f"edge.native.route_{caller_runtime}_{target_runtime}".lower()
             placement_id = f"pep.native.route_{caller_runtime}_{target_runtime}".lower()
             if edge_id in interaction_ids:
@@ -633,6 +656,15 @@ class NativeMasBackplane:
         self._write_signed_psl(self.task4_root, policy_dir / "native_mas_runtime.psl", native_psl)
         return policy_dir
 
+    def _scan_fingerprint(self) -> dict[str, str]:
+        """Identity of the cached Task 2 scan: scanner code hash + scanned MAS root."""
+        scanner = self.task2_root / "zt_scan.py"
+        return {
+            # line endings normalised: a CRLF checkout of the same scanner is the same scanner
+            "scanner_sha256": hashlib.sha256(scanner.read_bytes().replace(b"\r\n", b"\n")).hexdigest(),
+            "mas_repo_root": self.mas_repo_root.as_posix(),
+        }
+
     def _bootstrap(self) -> None:
         from reconcile import reconcile_task1_task2_to_unified
         from scanner_merge import merge_task2_graph_into_unified
@@ -650,7 +682,21 @@ class NativeMasBackplane:
         task3_generated = self.output_dir / "task3_generated"
         task4_config = self.output_dir / "task4_config"
 
-        if self.refresh or not (task2_output / "interaction_edges_draft.yaml").exists():
+        # The Task 2 scan is cached in the output directory. The cache is only valid for the
+        # scanner and MAS root that produced it: a changed scanner (e.g. corrected domain
+        # inference) must not keep serving the old inventory, or identities keep stale
+        # domains. Source edits in the MAS itself still need refresh=True (--zt-refresh).
+        scan_stamp_path = self.output_dir / "task2" / "scan_fingerprint.json"
+        scan_stamp = self._scan_fingerprint()
+        try:
+            cached_stamp = json.loads(scan_stamp_path.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            cached_stamp = None
+        if (
+            self.refresh
+            or not (task2_output / "interaction_edges_draft.yaml").exists()
+            or cached_stamp != scan_stamp
+        ):
             task2_output.mkdir(parents=True, exist_ok=True)
             subprocess.run(
                 [
@@ -664,6 +710,7 @@ class NativeMasBackplane:
                 check=True,
                 stdout=subprocess.DEVNULL,
             )
+            scan_stamp_path.write_text(json.dumps(scan_stamp, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
         reconcile_task1_task2_to_unified(
             self.backplane_root,

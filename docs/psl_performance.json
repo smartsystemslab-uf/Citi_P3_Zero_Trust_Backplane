@@ -3,7 +3,7 @@
   "platform": "Windows-10-10.0.26200-SP0",
   "python": "3.11.5",
   "cpus": 32,
-  "generated": "2026-11-03T02:10:51+00:00"
+  "generated": "2026-11-03T15:33:01+00:00"
  },
  "parts": [
   {
@@ -14,23 +14,23 @@
    "legacy_policies": 16,
    "psl_rules": 18,
    "legacy": {
-    "mean_us": 29.01,
-    "p50_us": 25.7,
-    "p95_us": 45.9,
-    "p99_us": 76.3,
-    "max_us": 408.2,
-    "decisions_per_s": 34469
+    "mean_us": 27.0,
+    "p50_us": 25.3,
+    "p95_us": 31.9,
+    "p99_us": 66.8,
+    "max_us": 639.7,
+    "decisions_per_s": 37033
    },
    "psl": {
-    "mean_us": 28.39,
-    "p50_us": 24.4,
-    "p95_us": 52.6,
-    "p99_us": 91.1,
-    "max_us": 779.1,
-    "decisions_per_s": 35221
+    "mean_us": 26.66,
+    "p50_us": 24.0,
+    "p95_us": 45.9,
+    "p99_us": 81.1,
+    "max_us": 727.3,
+    "decisions_per_s": 37509
    },
-   "psl_vs_legacy_mean": 0.979,
-   "psl_vs_legacy_p99": 1.194
+   "psl_vs_legacy_mean": 0.987,
+   "psl_vs_legacy_p99": 1.214
   },
   {
    "label": "Task 4 policy store as deployed (PSL incl. intent and identity rules)",
@@ -40,49 +40,49 @@
    "legacy_policies": 16,
    "psl_rules": 33,
    "legacy": {
-    "mean_us": 27.91,
-    "p50_us": 25.4,
-    "p95_us": 44.4,
-    "p99_us": 71.1,
-    "max_us": 733.1,
-    "decisions_per_s": 35826
+    "mean_us": 27.73,
+    "p50_us": 25.3,
+    "p95_us": 44.0,
+    "p99_us": 72.6,
+    "max_us": 611.6,
+    "decisions_per_s": 36066
    },
    "psl": {
-    "mean_us": 44.54,
-    "p50_us": 39.5,
-    "p95_us": 74.0,
-    "p99_us": 122.0,
-    "max_us": 828.4,
-    "decisions_per_s": 22450
+    "mean_us": 44.07,
+    "p50_us": 39.7,
+    "p95_us": 70.7,
+    "p99_us": 119.7,
+    "max_us": 1146.9,
+    "decisions_per_s": 22691
    },
-   "psl_vs_legacy_mean": 1.596,
-   "psl_vs_legacy_p99": 1.716
+   "psl_vs_legacy_mean": 1.589,
+   "psl_vs_legacy_p99": 1.649
   },
   {
    "label": "Native MAS runtime store (Task 4 + generated least-privilege policies)",
-   "requests": 566800,
+   "requests": 582400,
    "rounds": 3,
-   "samples_per_engine": 1700400,
-   "legacy_policies": 135,
-   "psl_rules": 152,
+   "samples_per_engine": 1747200,
+   "legacy_policies": 138,
+   "psl_rules": 155,
    "legacy": {
-    "mean_us": 177.6,
-    "p50_us": 164.1,
-    "p95_us": 263.1,
-    "p99_us": 335.4,
-    "max_us": 3936.4,
-    "decisions_per_s": 5631
+    "mean_us": 178.28,
+    "p50_us": 165.6,
+    "p95_us": 261.7,
+    "p99_us": 329.1,
+    "max_us": 1862.8,
+    "decisions_per_s": 5609
    },
    "psl": {
-    "mean_us": 56.66,
-    "p50_us": 50.2,
-    "p95_us": 89.7,
-    "p99_us": 140.4,
-    "max_us": 980.5,
-    "decisions_per_s": 17649
+    "mean_us": 58.73,
+    "p50_us": 51.7,
+    "p95_us": 97.4,
+    "p99_us": 148.2,
+    "max_us": 2398.0,
+    "decisions_per_s": 17027
    },
-   "psl_vs_legacy_mean": 0.319,
-   "psl_vs_legacy_p99": 0.419
+   "psl_vs_legacy_mean": 0.329,
+   "psl_vs_legacy_p99": 0.45
   }
  ]
 }

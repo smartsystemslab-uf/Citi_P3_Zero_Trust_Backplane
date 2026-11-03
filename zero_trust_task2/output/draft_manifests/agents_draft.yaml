@@ -750,7 +750,7 @@ agents:
   symbol_name: guidance_parallel
   description: Runs schedule validation and support guidance in parallel after the
     schedule draft exists.
-  domain: shared
+  domain: mid
   role: workflow
   agent_type: ParallelAgent
   detection_method: known_constructor
@@ -772,11 +772,12 @@ agents:
     reference: citi_banking_adk\bank_adk\agents\workflow_agents.py:223
   aliases:
   - guidance_parallel
+  domain_source: 'inherited from parent agent(s): mid_office_planning_workflow'
 - agent_id: mid_office_planning_workflow
   symbol_name: mid_office_planning_workflow
   description: Strict planning pipeline with deterministic execution order and LLM
     specialists.
-  domain: shared
+  domain: mid
   role: workflow
   agent_type: SequentialAgent
   detection_method: known_constructor
@@ -801,10 +802,11 @@ agents:
     reference: citi_banking_adk\bank_adk\agents\workflow_agents.py:228
   aliases:
   - planning_workflow_agent
+  domain_source: 'inherited from parent agent(s): mid_office_router'
 - agent_id: representative_assist_parallel
   symbol_name: specialist_fanout
   description: Runs representative-assist specialists in parallel.
-  domain: shared
+  domain: mid
   role: workflow
   agent_type: ParallelAgent
   detection_method: known_constructor
@@ -828,10 +830,11 @@ agents:
     reference: citi_banking_adk\bank_adk\agents\workflow_agents.py:248
   aliases:
   - specialist_fanout
+  domain_source: 'inherited from parent agent(s): representative_assistant_workflow'
 - agent_id: representative_assistant_workflow
   symbol_name: representative_assistant_workflow
   description: Fan-out/fan-in representative assist workflow.
-  domain: shared
+  domain: mid
   role: workflow
   agent_type: SequentialAgent
   detection_method: known_constructor
@@ -851,3 +854,96 @@ agents:
   source:
     provided_by: task2_scanner
     reference: citi_banking_adk\bank_adk\agents\workflow_agents.py:258
+  domain_source: 'inherited from parent agent(s): mid_office_router'
+- agent_id: aml_investigator
+  symbol_name: aml_investigator
+  description: Analyzes customer transactions for structuring or sanctions hits.
+  domain: shared
+  role: specialist
+  agent_type: LlmAgent
+  detection_method: known_constructor
+  risk_tier: medium
+  authorized_tools:
+  - fetch_transaction_history
+  - screen_against_sanctions
+  authorized_transfers: []
+  dynamic_tool_sources: []
+  dynamic_agent_sources: []
+  reads_from: []
+  writes_to: []
+  requires_prior_steps: []
+  pep_type: tool_pep
+  trust_level: low_trust
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_adk_mlflow_observability\bank_adk\agents\aml_office.py:9
+- agent_id: aml_reporter
+  symbol_name: aml_reporter
+  description: Drafts a Suspicious Activity Report (SAR) based on investigation findings.
+  domain: shared
+  role: specialist
+  agent_type: LlmAgent
+  detection_method: known_constructor
+  risk_tier: medium
+  authorized_tools: []
+  authorized_transfers: []
+  dynamic_tool_sources: []
+  dynamic_agent_sources: []
+  reads_from: []
+  writes_to: []
+  requires_prior_steps: []
+  pep_type: tool_pep
+  trust_level: low_trust
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_adk_mlflow_observability\bank_adk\agents\aml_office.py:19
+- agent_id: aml_investigation_workflow
+  symbol_name: aml_workflow_agent
+  description: Auto-discovered agent
+  domain: shared
+  role: workflow
+  agent_type: AmlInvestigationWorkflowAgent
+  detection_method: generic_agent_constructor
+  risk_tier: medium
+  authorized_tools: []
+  authorized_transfers:
+  - aml_investigator
+  - aml_reporter
+  dynamic_tool_sources: []
+  dynamic_agent_sources: []
+  reads_from: []
+  writes_to: []
+  requires_prior_steps: []
+  pep_type: none
+  trust_level: low_trust
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_adk_mlflow_observability\bank_adk\agents\aml_office.py:29
+  aliases:
+  - aml_workflow_agent
+- agent_id: aml_office_router
+  symbol_name: aml_office_router
+  description: Routes compliance, fraud, and suspicious activity requests into the
+    AML investigation workflow.
+  domain: shared
+  role: router
+  agent_type: LlmAgent
+  detection_method: known_constructor
+  risk_tier: medium
+  authorized_tools: []
+  authorized_transfers:
+  - aml_workflow_agent
+  dynamic_tool_sources: []
+  dynamic_agent_sources: []
+  reads_from: []
+  writes_to: []
+  requires_prior_steps: []
+  pep_type: route_pep
+  trust_level: low_trust
+  status: provisional
+  source:
+    provided_by: task2_scanner
+    reference: citi_banking_adk_mlflow_observability\bank_adk\agents\aml_office.py:35
