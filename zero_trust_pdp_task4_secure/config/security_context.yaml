@@ -2,7 +2,7 @@
 clock_skew_seconds: 5
 max_assertion_lifetime_seconds: 300
 risk_threshold_version: prototype-risk-thresholds-1
-auth_factor_mapping_version: prototype-auth-factors-1
+auth_factor_mapping_version: prototype-auth-factors-2
 
 # The external risk engine computes a 0-1000 score. PDP validates the signed
 # score-to-level mapping; it does not independently replace Citi's fraud model.
@@ -22,3 +22,6 @@ auth_factor_weights:
   step_up_authentication: 2
   human_operator_present: 1
   managed_device: 1
+  # SPIFFE scheme B (distributed runtime): agent certificate bound to the workload SVID,
+  # RFC 9421 request signature verified by the gateway for this request
+  agent_credential: 1

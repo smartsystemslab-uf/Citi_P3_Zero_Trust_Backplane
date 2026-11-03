@@ -1,0 +1,8 @@
+PyYAML>=6
+cryptography>=41
+
+[:platform_system == "Windows"]
+tzdata
+
+[test]
+pytest>=8

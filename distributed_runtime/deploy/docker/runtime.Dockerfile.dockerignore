@@ -1,0 +1,25 @@
+# Allowlist: only the Backplane components the runtime imports.
+*
+!zero_trust_pdp_task4_secure
+!zero_trust_psl
+!zero_trust_identity
+!native_mas_runtime
+!integrated_demo
+!interface_standard
+!zero_trust_task1
+!zero_trust_task2
+!zero_trust_task5
+!Zero_Trust_Task3_PEP_Integrated
+!distributed_runtime
+**/__pycache__
+**/*.pyc
+**/.pytest_cache
+**/*.egg-info
+**/.venv
+# committed DEVELOPMENT keys never enter the image (fresh keys are mounted from /secrets)
+zero_trust_pdp_task4_secure/security/dev_keys
+zero_trust_pdp_task4_secure/runtime
+distributed_runtime/runtime
+distributed_runtime/results
+distributed_runtime/deploy/vendor
+distributed_runtime/deploy/compose.yaml

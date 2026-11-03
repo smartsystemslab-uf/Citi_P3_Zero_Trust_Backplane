@@ -11,7 +11,8 @@ from zt_backplane.decision_signing import DecisionSigner
 from zt_backplane.engine import PolicyEngine
 from zt_backplane.evidence import EvidenceVerifier, FixedClock, SecurityConfig
 from zt_backplane.pdp_service import Runtime
-from zt_backplane.policy import PolicyBundle, PolicyRollbackStore
+from zt_backplane.policy import PolicyRollbackStore
+from zt_backplane.psl_policy import PslPolicyStore
 from zt_backplane.registry import IdentityRegistry, ResourceCatalog
 from zt_backplane.replay import InMemoryReplayGuard
 
@@ -32,9 +33,8 @@ def make_runtime(tmp_path: Path, now: datetime = DEFAULT_NOW) -> Runtime:
         security_config=SecurityConfig(ROOT / "config" / "security_context.yaml"),
         clock=FixedClock(now),
     )
-    bundle = PolicyBundle.load(
+    bundle = PslPolicyStore.load(
         ROOT / "policy_store",
-        schema_path=ROOT / "interface_contract" / "schemas" / "policy_bundle.schema.json",
         keys=keys,
         rollback_store=PolicyRollbackStore(tmp_path / "policy_versions.json"),
     )

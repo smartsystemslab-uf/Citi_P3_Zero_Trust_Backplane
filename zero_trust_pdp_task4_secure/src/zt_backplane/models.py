@@ -145,6 +145,12 @@ class VerifiedSecurityContext(BaseModel):
     auth_verified: bool
     auth_issuer: str
     auth_strength: int = Field(ge=0, le=10)
+    # factors set to true in the signed authentication assertion, and its optional
+    # ``authentication`` block (scheme, agent) -- filled by the gateway's authenticator
+    auth_factors: dict[str, bool] = Field(default_factory=dict)
+    auth_scheme: str = ""
+    auth_subject_kind: str = ""
+    auth_agent_id: str | None = None
     workflow_verified: bool
     workflow_issuer: str | None = None
     approval_valid: bool = False

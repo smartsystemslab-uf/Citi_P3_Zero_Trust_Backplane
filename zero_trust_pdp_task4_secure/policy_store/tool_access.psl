@@ -1,0 +1,42 @@
+// Shared tool access policies (PSL). Translated from legacy_policy_store/tool_access.yaml
+// (bundle.tool_access 1.0.0). Deny-overrides; see front_office.psl.
+
+// @policy_set bundle.tool_access
+// @version 2.0.0
+// @source legacy_policy_store/tool_access.yaml
+vunit tool_access (pdp_request) {
+
+  // @rule policy.tool.knowledge_search
+  // @nl Knowledge and compliance agents may search managed policy content.
+  // @permit
+  property knowledge_search =
+      (subject.id == "agent.front_office.knowledge_base" || subject.id == "agent.front_office.compliance")
+      && resource.id == "resource.front_office.policy_knowledge_base"
+      && (action == "read" || action == "search");
+
+  // Transfer execution. Legacy: MANUAL_REVIEW (priority 300) overridden by ALLOW with both
+  // approvals (priority 360). As deny-overrides: permitted in the customer-transaction
+  // workflow, held for manual review unless both approvals are valid.
+
+  // @rule policy.tool.transfer_approved
+  // @nl A transfer may proceed only when approval and secondary authorization are signed and request-bound.
+  // @permit
+  // @obligation enhanced_logging(reason=financial_write)
+  // @obligation require_idempotency_key
+  // @obligation independent_resource_audit
+  property transfer_approved =
+      subject.id == "agent.front_office.transaction_processing"
+      && resource.id == "resource.front_office.banking_transfer"
+      && action == "execute"
+      && workflow.id == "workflow.front_office.customer_transaction";
+
+  // @rule policy.tool.transfer_pending_review
+  // @nl Transfer execution is blocked until signed approval and independent authorization are present.
+  // @on_violation MANUAL_REVIEW
+  transfer_pending_review: assert always (authz_request
+      && subject.id == "agent.front_office.transaction_processing"
+      && resource.id == "resource.front_office.banking_transfer"
+      && action == "execute"
+      && workflow.id == "workflow.front_office.customer_transaction"
+      -> approval.valid && approval.secondary_valid);
+}

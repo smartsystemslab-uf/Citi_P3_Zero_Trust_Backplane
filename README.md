@@ -267,6 +267,45 @@ Examples:
 
 The integrated demo starts the real signed Task 4 PDP in-process and verifies Task 3 / Task 4 registry compatibility before runtime testing.
 
+### 7.1 Policies are PSL (IEEE 1850), decided deny-overrides
+
+Every policy -- the Task 4 policies, the generated least-privilege policies of the native
+runtime, and the Task 1 natural-language intent rules -- is a **PSL** policy in the signed store
+`zero_trust_pdp_task4_secure/policy_store/` (`*.psl` + the typed field catalogue
+`policy_fields.yaml`, each with a detached Ed25519 signature, verified at load with rollback
+protection). The old YAML bundles are in `legacy_policy_store/` and are used only by the
+differential report.
+
+* **Language and compiler:** `zero_trust_psl/` (package `zt_psl`, CLI `zt-psl`): parser, field
+  catalogue, deny-overrides decision engine (request rules, indexed by their equality guards),
+  temporal monitors (workflow rules), intent translator, signing. See
+  `zero_trust_psl/docs/PSL_SUPPORTED_SUBSET.md`.
+* **Decision:** no priorities. A request needs a permission (`@permit`) and must violate no
+  constraint; the strictest violated rule decides (DENY > REAUTHENTICATE > MANUAL_REVIEW);
+  `FLAG` rules never block and add `anomaly_flag`. Adding a rule can only make a decision stricter.
+* **Natural language → PSL:** `zt-psl intent` translates `zero_trust_task1/manifest/policy_intent.yaml`
+  (controlled grammar + `policy_intent_bindings.yaml`) into `policy_store/intent.psl`; each rule keeps
+  its text (`@nl`) and origin (`@source`). Untranslatable phrases fail explicitly. Report:
+  `docs/PSL_INTENT_TRANSLATION.md`, consistency check: `docs/PSL_INTENT_CONSISTENCY.md`.
+* **Where rules run:** PDP (`pdp_request`), native runtime and gateway monitors (`workflow_run`),
+  distributed-runtime gateway (`gateway_input` / `gateway_output` / `gateway_tool`, tool-path
+  monitors in `gateway_runtime.psl`), evaluation harness (`harness_output`).
+* **Evidence:** `docs/PSL_DIFFERENTIAL_REPORT.md` (552,960 requests: translated store identical to
+  the legacy engine; with the intent rules 128 decisions stricter, none more permissive),
+  `docs/PSL_NATIVE_DIFFERENTIAL_REPORT.md`, `docs/PSL_POLICY_RULES.md` (every rule),
+  `docs/PSL_PERFORMANCE_REPORT.md` (decision latency legacy vs PSL).
+
+After editing a policy: `python zero_trust_pdp_task4_secure/scripts/sign_psl_policies.py`, then
+`--check` (development key only).
+
+### 7.2 SPIFFE scheme B and the distributed runtime
+
+`zero_trust_identity/` (workload X.509-SVID + agent certificate + RFC 9421 signatures) and
+`distributed_runtime/` (MCP gateway PEP, one container per ADK agent, SPIRE, agent-credential
+issuer) run the original CITI-MAS agents with every hop authenticated by both identity layers and
+every decision taken from the same signed PSL store; the PDP re-checks the authentication result
+(`policy_store/identity.psl`). See `distributed_runtime/README.md` and `docs/SPIFFE_PSL_DESIGN.md`.
+
 ---
 
 ## 8. Task 5 Permit Lease and Cache Safety
@@ -1207,6 +1246,13 @@ Citi_P3_Zero_Trust_Backplane/
 ├── Zero_Trust_Task3_PEP_Integrated/
 │   └── zero_trust_pep_task3_integrated/
 ├── zero_trust_pdp_task4_secure/
+│   ├── policy_store/          # signed PSL policies + field catalogue
+│   └── legacy_policy_store/   # former YAML bundles (differential report only)
+├── zero_trust_psl/            # PSL language, compiler, decision engine, monitors, intent translator
+├── zero_trust_identity/       # SPIFFE scheme B: X.509-SVID mTLS + agent certificates (RFC 9421)
+├── distributed_runtime/       # MCP gateway PEP, one container per agent, SPIRE (Docker)
+├── native_mas_runtime/        # in-process Backplane engine for the CITI-MAS ADK runtime
+├── docs/                      # design, differential / translation / performance reports
 ├── zero_trust_task5/
 └── integrated_demo/
     ├── run_demo.py

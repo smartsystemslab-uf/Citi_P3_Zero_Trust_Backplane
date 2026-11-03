@@ -1,0 +1,32 @@
+// Authenticated identity at the PDP.
+//
+// The distributed-runtime gateway authenticates every caller with SPIFFE scheme B: the
+// workload X.509-SVID over mTLS, plus -- for agents -- an agent certificate bound to that
+// workload and an RFC 9421 request signature; services (the ingress front end) are found in
+// the controlled service map. The result travels in the IdP-signed authentication assertion
+// and the PDP re-checks it here, so a PEP defect cannot turn a partly verified caller,
+// another agent's identity, or a service identity into an allowed tool or route decision.
+// Requests without an authentication block (auth.scheme == "", e.g. the in-process native
+// runtime) are not affected.
+
+// @policy_set identity
+// @version 1.1.0
+// @source docs/SPIFFE_PSL_DESIGN.md
+vunit spiffe_scheme_b (pdp_request) {
+
+  // @rule identity.spiffe-b-agent-verified
+  // @nl A request that the gateway authenticated with SPIFFE scheme B as an agent is decided only if the signed authentication assertion shows both verified factors (workload SVID and agent credential) and names the same agent as the request subject.
+  spiffe_b_agent_verified: assert always (authz_request && auth.scheme == "B" && auth.subject_kind == "agent"
+      -> auth.factor.workload_identity && auth.factor.agent_credential && auth.agent_bound);
+
+  // @rule identity.spiffe-b-service-io-only
+  // @nl A caller authenticated as a service (verified workload SVID, controlled service map, no agent credential) can only obtain decisions for the MAS input and output channels, never for an agent route or a tool.
+  spiffe_b_service_io_only: assert always (authz_request && auth.scheme == "B" && auth.subject_kind == "service"
+      -> auth.factor.workload_identity
+         && (resource.runtime_id == "mas_input_channel" || resource.runtime_id == "mas_output_channel"));
+
+  // @rule identity.spiffe-b-known-subject-kind
+  // @nl A scheme B authentication result names its subject kind (agent or service); anything else is denied.
+  spiffe_b_known_subject_kind: assert never (authz_request && auth.scheme == "B"
+      && auth.subject_kind != "agent" && auth.subject_kind != "service");
+}
