@@ -1,11 +1,11 @@
 {
- "requests": 566800,
- "same_decision": 566704,
- "different_decision": 96,
- "seconds": 161.3,
+ "requests": 582400,
+ "same_decision": 582272,
+ "different_decision": 128,
+ "seconds": 155.1,
  "corpus": {
   "subjects": 65,
-  "resource_actions": 109,
+  "resource_actions": 112,
   "workflows": [
    "workflow.back_office.eod_processing",
    "workflow.front_office.customer_transaction",
@@ -27,22 +27,22 @@
    "night"
   ]
  },
- "legacy_policy_version": "0722345c6277b54b",
- "psl_policy_version": "fb7bf10db912c7a2",
+ "legacy_policy_version": "8eb3b4b44d4c7e5b",
+ "psl_policy_version": "660daf4906ba83be",
  "outcomes": {
   "legacy": {
-   "DENY": 558520,
-   "ALLOW_WITH_OBLIGATIONS": 7184,
+   "DENY": 573880,
+   "ALLOW_WITH_OBLIGATIONS": 7424,
    "ALLOW": 440,
    "REAUTHENTICATE": 40,
    "MANUAL_REVIEW": 616
   },
   "psl": {
-   "DENY": 558520,
-   "ALLOW_WITH_OBLIGATIONS": 7280,
+   "DENY": 573912,
+   "ALLOW_WITH_OBLIGATIONS": 7504,
    "ALLOW": 344,
    "REAUTHENTICATE": 40,
-   "MANUAL_REVIEW": 616
+   "MANUAL_REVIEW": 600
   }
  },
  "differences": [
@@ -93,15 +93,556 @@
      "policy.tool.knowledge_search"
     ]
    }
+  },
+  {
+   "legacy": "MANUAL_REVIEW",
+   "psl": "DENY",
+   "legacy_policy": "policy.tool.transfer_pending_review",
+   "psl_policy": "intent.execute-transfer-caller-restriction",
+   "count": 8,
+   "example": {
+    "subject": "agent.front_office.transaction_processing",
+    "resource": "resource.front_office.banking_transfer",
+    "action": "execute",
+    "workflow": "workflow.front_office.customer_transaction",
+    "risk": "low",
+    "auth_strength": 1,
+    "approval": false,
+    "secondary": false,
+    "time": "business_hours",
+    "legacy_reason": "matched_policy:policy.tool.transfer_pending_review",
+    "psl_reason": "psl_violation:core.critical_write_requires_dual_approval,intent.execute-transfer-caller-restriction,policy.native.pep.customer_transaction.execute_transfer.pending_review,policy.tool.transfer_pending_review",
+    "psl_matched": [
+     "policy.native.pep.customer_transaction.execute_transfer.approved",
+     "policy.tool.transfer_approved",
+     "core.critical_write_requires_dual_approval",
+     "intent.execute-transfer-caller-restriction",
+     "policy.native.pep.customer_transaction.execute_transfer.pending_review",
+     "policy.tool.transfer_pending_review"
+    ]
+   }
+  },
+  {
+   "legacy": "ALLOW_WITH_OBLIGATIONS",
+   "psl": "DENY",
+   "legacy_policy": "policy.tool.transfer_approved",
+   "psl_policy": "intent.execute-transfer-caller-restriction",
+   "count": 8,
+   "example": {
+    "subject": "agent.front_office.transaction_processing",
+    "resource": "resource.front_office.banking_transfer",
+    "action": "execute",
+    "workflow": "workflow.front_office.customer_transaction",
+    "risk": "low",
+    "auth_strength": 1,
+    "approval": true,
+    "secondary": true,
+    "time": "business_hours",
+    "legacy_reason": "matched_policy:policy.tool.transfer_approved",
+    "psl_reason": "psl_violation:intent.execute-transfer-caller-restriction",
+    "psl_matched": [
+     "policy.native.pep.customer_transaction.execute_transfer.approved",
+     "policy.tool.transfer_approved",
+     "intent.execute-transfer-caller-restriction"
+    ]
+   }
+  },
+  {
+   "legacy": "MANUAL_REVIEW",
+   "psl": "DENY",
+   "legacy_policy": "policy.ledger.eod_pending_review",
+   "psl_policy": "intent.apply-ledger-updates-pipeline-gate",
+   "count": 8,
+   "example": {
+    "subject": "agent.back_office.ledger_update",
+    "resource": "resource.back_office.ledger",
+    "action": "update",
+    "workflow": "workflow.back_office.eod_processing",
+    "risk": "low",
+    "auth_strength": 1,
+    "approval": false,
+    "secondary": false,
+    "time": "business_hours",
+    "legacy_reason": "matched_policy:policy.ledger.eod_pending_review",
+    "psl_reason": "psl_violation:core.critical_write_requires_dual_approval,intent.apply-ledger-updates-pipeline-gate,intent.require-validation-before-ledger,policy.ledger.eod_pending_review,policy.native.pep.ledger_update.apply_ledger_updates.pending_review",
+    "psl_matched": [
+     "policy.ledger.eod_approved_update",
+     "policy.native.pep.ledger_update.apply_ledger_updates.approved",
+     "core.critical_write_requires_dual_approval",
+     "intent.apply-ledger-updates-pipeline-gate",
+     "intent.require-validation-before-ledger",
+     "policy.ledger.eod_pending_review",
+     "policy.native.pep.ledger_update.apply_ledger_updates.pending_review"
+    ]
+   }
+  },
+  {
+   "legacy": "ALLOW_WITH_OBLIGATIONS",
+   "psl": "DENY",
+   "legacy_policy": "policy.ledger.eod_approved_update",
+   "psl_policy": "intent.apply-ledger-updates-pipeline-gate",
+   "count": 8,
+   "example": {
+    "subject": "agent.back_office.ledger_update",
+    "resource": "resource.back_office.ledger",
+    "action": "update",
+    "workflow": "workflow.back_office.eod_processing",
+    "risk": "low",
+    "auth_strength": 1,
+    "approval": true,
+    "secondary": true,
+    "time": "business_hours",
+    "legacy_reason": "matched_policy:policy.ledger.eod_approved_update",
+    "psl_reason": "psl_violation:intent.apply-ledger-updates-pipeline-gate,intent.require-validation-before-ledger",
+    "psl_matched": [
+     "policy.ledger.eod_approved_update",
+     "policy.native.pep.ledger_update.apply_ledger_updates.approved",
+     "intent.apply-ledger-updates-pipeline-gate",
+     "intent.require-validation-before-ledger"
+    ]
+   }
   }
  ],
  "obligation_differences": [
+  {
+   "legacy_policy": "policy.native.pep.scanner.scan_edge_066_back_office_eod_workflow_validation_checkpoint_agent.allow",
+   "psl_permits_and_violations": [
+    "policy.native.pep.scanner.scan_edge_066_back_office_eod_workflow_validation_checkpoint_agent.allow"
+   ],
+   "added_in_psl": [
+    "audit_log"
+   ],
+   "removed_in_psl": [],
+   "count": 80
+  },
+  {
+   "legacy_policy": "policy.native.pep.scanner.scan_edge_067_back_office_eod_workflow_eod_processing_agent.allow",
+   "psl_permits_and_violations": [
+    "policy.native.pep.scanner.scan_edge_067_back_office_eod_workflow_eod_processing_agent.allow"
+   ],
+   "added_in_psl": [
+    "audit_log"
+   ],
+   "removed_in_psl": [],
+   "count": 80
+  },
+  {
+   "legacy_policy": "policy.native.pep.scanner.scan_edge_068_back_office_eod_workflow_ledger_update_agent.allow",
+   "psl_permits_and_violations": [
+    "policy.native.pep.scanner.scan_edge_068_back_office_eod_workflow_ledger_update_agent.allow"
+   ],
+   "added_in_psl": [
+    "audit_log"
+   ],
+   "removed_in_psl": [],
+   "count": 80
+  },
+  {
+   "legacy_policy": "policy.native.pep.scanner.scan_edge_069_back_office_eod_workflow_reconciliation_agent.allow",
+   "psl_permits_and_violations": [
+    "policy.native.pep.scanner.scan_edge_069_back_office_eod_workflow_reconciliation_agent.allow"
+   ],
+   "added_in_psl": [
+    "audit_log"
+   ],
+   "removed_in_psl": [],
+   "count": 80
+  },
+  {
+   "legacy_policy": "policy.native.pep.scanner.scan_edge_070_back_office_eod_workflow_report_writing_agent.allow",
+   "psl_permits_and_violations": [
+    "policy.native.pep.scanner.scan_edge_070_back_office_eod_workflow_report_writing_agent.allow"
+   ],
+   "added_in_psl": [
+    "audit_log"
+   ],
+   "removed_in_psl": [],
+   "count": 80
+  },
+  {
+   "legacy_policy": "policy.native.pep.scanner.scan_edge_071_back_office_eod_workflow_exception_agent.allow",
+   "psl_permits_and_violations": [
+    "policy.native.pep.scanner.scan_edge_071_back_office_eod_workflow_exception_agent.allow"
+   ],
+   "added_in_psl": [
+    "audit_log"
+   ],
+   "removed_in_psl": [],
+   "count": 80
+  },
+  {
+   "legacy_policy": "policy.native.pep.scanner.scan_edge_072_back_office_router_back_office_eod_workflow.allow",
+   "psl_permits_and_violations": [
+    "policy.native.pep.scanner.scan_edge_072_back_office_router_back_office_eod_workflow.allow"
+   ],
+   "added_in_psl": [
+    "audit_log"
+   ],
+   "removed_in_psl": [],
+   "count": 80
+  },
+  {
+   "legacy_policy": "policy.native.pep.scanner.scan_edge_073_front_office_transaction_workflow_transaction_monitoring_agent.allow",
+   "psl_permits_and_violations": [
+    "policy.native.pep.scanner.scan_edge_073_front_office_transaction_workflow_transaction_monitoring_agent.allow"
+   ],
+   "added_in_psl": [
+    "audit_log"
+   ],
+   "removed_in_psl": [],
+   "count": 80
+  },
+  {
+   "legacy_policy": "policy.native.pep.scanner.scan_edge_074_front_office_transaction_workflow_fraud_detection_agent.allow",
+   "psl_permits_and_violations": [
+    "policy.native.pep.scanner.scan_edge_074_front_office_transaction_workflow_fraud_detection_agent.allow"
+   ],
+   "added_in_psl": [
+    "audit_log"
+   ],
+   "removed_in_psl": [],
+   "count": 80
+  },
+  {
+   "legacy_policy": "policy.native.pep.scanner.scan_edge_075_front_office_transaction_workflow_compliance_agent.allow",
+   "psl_permits_and_violations": [
+    "policy.native.pep.scanner.scan_edge_075_front_office_transaction_workflow_compliance_agent.allow"
+   ],
+   "added_in_psl": [
+    "audit_log"
+   ],
+   "removed_in_psl": [],
+   "count": 80
+  },
+  {
+   "legacy_policy": "policy.native.pep.scanner.scan_edge_076_front_office_transaction_workflow_decision_making_agent.allow",
+   "psl_permits_and_violations": [
+    "policy.native.pep.scanner.scan_edge_076_front_office_transaction_workflow_decision_making_agent.allow"
+   ],
+   "added_in_psl": [
+    "audit_log"
+   ],
+   "removed_in_psl": [],
+   "count": 80
+  },
+  {
+   "legacy_policy": "policy.native.pep.scanner.scan_edge_077_customer_service_chatbot_workflow_chatbot_intent_agent.allow",
+   "psl_permits_and_violations": [
+    "policy.native.pep.scanner.scan_edge_077_customer_service_chatbot_workflow_chatbot_intent_agent.allow"
+   ],
+   "added_in_psl": [
+    "audit_log"
+   ],
+   "removed_in_psl": [],
+   "count": 80
+  },
+  {
+   "legacy_policy": "policy.native.pep.scanner.scan_edge_078_customer_service_chatbot_workflow_knowledge_base_agent.allow",
+   "psl_permits_and_violations": [
+    "policy.native.pep.scanner.scan_edge_078_customer_service_chatbot_workflow_knowledge_base_agent.allow"
+   ],
+   "added_in_psl": [
+    "audit_log"
+   ],
+   "removed_in_psl": [],
+   "count": 80
+  },
+  {
+   "legacy_policy": "policy.native.pep.scanner.scan_edge_079_customer_service_chatbot_workflow_customer_service_agent.allow",
+   "psl_permits_and_violations": [
+    "policy.native.pep.scanner.scan_edge_079_customer_service_chatbot_workflow_customer_service_agent.allow"
+   ],
+   "added_in_psl": [
+    "audit_log"
+   ],
+   "removed_in_psl": [],
+   "count": 80
+  },
+  {
+   "legacy_policy": "policy.native.pep.scanner.scan_edge_080_customer_service_chatbot_workflow_transaction_processing_agent.allow",
+   "psl_permits_and_violations": [
+    "policy.native.pep.scanner.scan_edge_080_customer_service_chatbot_workflow_transaction_processing_agent.allow"
+   ],
+   "added_in_psl": [
+    "audit_log"
+   ],
+   "removed_in_psl": [],
+   "count": 80
+  },
+  {
+   "legacy_policy": "policy.native.pep.scanner.scan_edge_081_front_office_router_front_office_transaction_workflow.allow",
+   "psl_permits_and_violations": [
+    "policy.native.pep.scanner.scan_edge_081_front_office_router_front_office_transaction_workflow.allow"
+   ],
+   "added_in_psl": [
+    "audit_log"
+   ],
+   "removed_in_psl": [],
+   "count": 80
+  },
+  {
+   "legacy_policy": "policy.native.pep.scanner.scan_edge_082_front_office_router_customer_service_chatbot_workflow.allow",
+   "psl_permits_and_violations": [
+    "policy.native.pep.scanner.scan_edge_082_front_office_router_customer_service_chatbot_workflow.allow"
+   ],
+   "added_in_psl": [
+    "audit_log"
+   ],
+   "removed_in_psl": [],
+   "count": 80
+  },
+  {
+   "legacy_policy": "policy.native.pep.scanner.scan_edge_083_mid_office_router_mid_office_planning_workflow.allow",
+   "psl_permits_and_violations": [
+    "policy.native.pep.scanner.scan_edge_083_mid_office_router_mid_office_planning_workflow.allow"
+   ],
+   "added_in_psl": [
+    "audit_log"
+   ],
+   "removed_in_psl": [],
+   "count": 80
+  },
+  {
+   "legacy_policy": "policy.native.pep.scanner.scan_edge_084_mid_office_router_representative_assistant_workflow.allow",
+   "psl_permits_and_violations": [
+    "policy.native.pep.scanner.scan_edge_084_mid_office_router_representative_assistant_workflow.allow"
+   ],
+   "added_in_psl": [
+    "audit_log"
+   ],
+   "removed_in_psl": [],
+   "count": 80
+  },
+  {
+   "legacy_policy": "policy.native.pep.scanner.scan_edge_085_mid_office_planning_parallel_validation_agent.allow",
+   "psl_permits_and_violations": [
+    "policy.native.pep.scanner.scan_edge_085_mid_office_planning_parallel_validation_agent.allow"
+   ],
+   "added_in_psl": [
+    "audit_log"
+   ],
+   "removed_in_psl": [],
+   "count": 80
+  },
+  {
+   "legacy_policy": "policy.native.pep.scanner.scan_edge_086_mid_office_planning_parallel_support_guidance_agent.allow",
+   "psl_permits_and_violations": [
+    "policy.native.pep.scanner.scan_edge_086_mid_office_planning_parallel_support_guidance_agent.allow"
+   ],
+   "added_in_psl": [
+    "audit_log"
+   ],
+   "removed_in_psl": [],
+   "count": 80
+  },
+  {
+   "legacy_policy": "policy.native.pep.scanner.scan_edge_087_mid_office_planning_workflow_data_analysis_agent.allow",
+   "psl_permits_and_violations": [
+    "policy.native.pep.scanner.scan_edge_087_mid_office_planning_workflow_data_analysis_agent.allow"
+   ],
+   "added_in_psl": [
+    "audit_log"
+   ],
+   "removed_in_psl": [],
+   "count": 80
+  },
+  {
+   "legacy_policy": "policy.native.pep.scanner.scan_edge_088_mid_office_planning_workflow_forecasting_agent.allow",
+   "psl_permits_and_violations": [
+    "policy.native.pep.scanner.scan_edge_088_mid_office_planning_workflow_forecasting_agent.allow"
+   ],
+   "added_in_psl": [
+    "audit_log"
+   ],
+   "removed_in_psl": [],
+   "count": 80
+  },
+  {
+   "legacy_policy": "policy.native.pep.scanner.scan_edge_089_mid_office_planning_workflow_staff_scheduling_agent.allow",
+   "psl_permits_and_violations": [
+    "policy.native.pep.scanner.scan_edge_089_mid_office_planning_workflow_staff_scheduling_agent.allow"
+   ],
+   "added_in_psl": [
+    "audit_log"
+   ],
+   "removed_in_psl": [],
+   "count": 80
+  },
+  {
+   "legacy_policy": "policy.native.pep.scanner.scan_edge_090_mid_office_planning_workflow_mid_office_planning_parallel.allow",
+   "psl_permits_and_violations": [
+    "policy.native.pep.scanner.scan_edge_090_mid_office_planning_workflow_mid_office_planning_parallel.allow"
+   ],
+   "added_in_psl": [
+    "audit_log"
+   ],
+   "removed_in_psl": [],
+   "count": 80
+  },
+  {
+   "legacy_policy": "policy.native.pep.scanner.scan_edge_091_mid_office_planning_workflow_planning_summary_agent.allow",
+   "psl_permits_and_violations": [
+    "policy.native.pep.scanner.scan_edge_091_mid_office_planning_workflow_planning_summary_agent.allow"
+   ],
+   "added_in_psl": [
+    "audit_log"
+   ],
+   "removed_in_psl": [],
+   "count": 80
+  },
+  {
+   "legacy_policy": "policy.native.pep.scanner.scan_edge_092_representative_assist_parallel_financial_data_agent.allow",
+   "psl_permits_and_violations": [
+    "policy.native.pep.scanner.scan_edge_092_representative_assist_parallel_financial_data_agent.allow"
+   ],
+   "added_in_psl": [
+    "audit_log"
+   ],
+   "removed_in_psl": [],
+   "count": 80
+  },
+  {
+   "legacy_policy": "policy.native.pep.scanner.scan_edge_093_representative_assist_parallel_recommender_agent.allow",
+   "psl_permits_and_violations": [
+    "policy.native.pep.scanner.scan_edge_093_representative_assist_parallel_recommender_agent.allow"
+   ],
+   "added_in_psl": [
+    "audit_log"
+   ],
+   "removed_in_psl": [],
+   "count": 80
+  },
+  {
+   "legacy_policy": "policy.native.pep.scanner.scan_edge_094_representative_assist_parallel_loan_agent.allow",
+   "psl_permits_and_violations": [
+    "policy.native.pep.scanner.scan_edge_094_representative_assist_parallel_loan_agent.allow"
+   ],
+   "added_in_psl": [
+    "audit_log"
+   ],
+   "removed_in_psl": [],
+   "count": 80
+  },
+  {
+   "legacy_policy": "policy.native.pep.scanner.scan_edge_095_representative_assist_parallel_risk_compliance_agent.allow",
+   "psl_permits_and_violations": [
+    "policy.native.pep.scanner.scan_edge_095_representative_assist_parallel_risk_compliance_agent.allow"
+   ],
+   "added_in_psl": [
+    "audit_log"
+   ],
+   "removed_in_psl": [],
+   "count": 80
+  },
+  {
+   "legacy_policy": "policy.native.pep.scanner.scan_edge_096_representative_assistant_workflow_representative_assist_parallel.allow",
+   "psl_permits_and_violations": [
+    "policy.native.pep.scanner.scan_edge_096_representative_assistant_workflow_representative_assist_parallel.allow"
+   ],
+   "added_in_psl": [
+    "audit_log"
+   ],
+   "removed_in_psl": [],
+   "count": 80
+  },
+  {
+   "legacy_policy": "policy.native.pep.scanner.scan_edge_097_representative_assistant_workflow_representative_merge_agent.allow",
+   "psl_permits_and_violations": [
+    "policy.native.pep.scanner.scan_edge_097_representative_assistant_workflow_representative_merge_agent.allow"
+   ],
+   "added_in_psl": [
+    "audit_log"
+   ],
+   "removed_in_psl": [],
+   "count": 80
+  },
+  {
+   "legacy_policy": "policy.native.pep.scanner.scan_edge_098_aml_investigation_workflow_aml_investigator.allow",
+   "psl_permits_and_violations": [
+    "policy.native.pep.scanner.scan_edge_098_aml_investigation_workflow_aml_investigator.allow"
+   ],
+   "added_in_psl": [
+    "audit_log"
+   ],
+   "removed_in_psl": [],
+   "count": 80
+  },
+  {
+   "legacy_policy": "policy.native.pep.scanner.scan_edge_099_aml_investigation_workflow_aml_reporter.allow",
+   "psl_permits_and_violations": [
+    "policy.native.pep.scanner.scan_edge_099_aml_investigation_workflow_aml_reporter.allow"
+   ],
+   "added_in_psl": [
+    "audit_log"
+   ],
+   "removed_in_psl": [],
+   "count": 80
+  },
+  {
+   "legacy_policy": "policy.native.pep.scanner.scan_edge_100_aml_office_router_aml_investigation_workflow.allow",
+   "psl_permits_and_violations": [
+    "policy.native.pep.scanner.scan_edge_100_aml_office_router_aml_investigation_workflow.allow"
+   ],
+   "added_in_psl": [
+    "audit_log"
+   ],
+   "removed_in_psl": [],
+   "count": 80
+  },
+  {
+   "legacy_policy": "policy.native.pep.native.route_user_proxy_agent_front_office_router.allow",
+   "psl_permits_and_violations": [
+    "policy.native.pep.native.route_user_proxy_agent_front_office_router.allow"
+   ],
+   "added_in_psl": [
+    "audit_log"
+   ],
+   "removed_in_psl": [],
+   "count": 80
+  },
+  {
+   "legacy_policy": "policy.native.pep.native.route_user_proxy_agent_mid_office_router.allow",
+   "psl_permits_and_violations": [
+    "policy.native.pep.native.route_user_proxy_agent_mid_office_router.allow"
+   ],
+   "added_in_psl": [
+    "audit_log"
+   ],
+   "removed_in_psl": [],
+   "count": 80
+  },
+  {
+   "legacy_policy": "policy.native.pep.native.route_user_proxy_agent_back_office_router.allow",
+   "psl_permits_and_violations": [
+    "policy.native.pep.native.route_user_proxy_agent_back_office_router.allow"
+   ],
+   "added_in_psl": [
+    "audit_log"
+   ],
+   "removed_in_psl": [],
+   "count": 80
+  },
+  {
+   "legacy_policy": "policy.native.pep.scanner.scan_edge_016_decision_making_agent_submit_manual_review.approved",
+   "psl_permits_and_violations": [
+    "policy.native.pep.scanner.scan_edge_016_decision_making_agent_submit_manual_review.approved"
+   ],
+   "added_in_psl": [
+    "audit_log"
+   ],
+   "removed_in_psl": [],
+   "count": 40
+  },
   {
    "legacy_policy": "policy.mid_office.financial_data_read",
    "psl_permits_and_violations": [
     "policy.mid_office.financial_data_read",
     "policy.native.pep.mid_office.financial_data.read_profile.allow"
    ],
+   "added_in_psl": [
+    "enhanced_logging{\"reason\": \"native_mas_runtime\"}"
+   ],
+   "removed_in_psl": [],
    "count": 20
   },
   {
@@ -110,6 +651,10 @@
     "policy.back_office.eod_read_batches",
     "policy.native.pep.eod_processing.get_batches.allow"
    ],
+   "added_in_psl": [
+    "enhanced_logging{\"reason\": \"native_mas_runtime\"}"
+   ],
+   "removed_in_psl": [],
    "count": 16
   },
   {
@@ -118,22 +663,10 @@
     "policy.front_office.fraud_read_transaction_history",
     "policy.native.pep.fraud_review.read_history.allow"
    ],
-   "count": 8
-  },
-  {
-   "legacy_policy": "policy.tool.transfer_approved",
-   "psl_permits_and_violations": [
-    "policy.native.pep.customer_transaction.execute_transfer.approved",
-    "policy.tool.transfer_approved"
+   "added_in_psl": [
+    "enhanced_logging{\"reason\": \"native_mas_runtime\"}"
    ],
-   "count": 8
-  },
-  {
-   "legacy_policy": "policy.ledger.eod_approved_update",
-   "psl_permits_and_violations": [
-    "policy.ledger.eod_approved_update",
-    "policy.native.pep.ledger_update.apply_ledger_updates.approved"
-   ],
+   "removed_in_psl": [],
    "count": 8
   }
  ]

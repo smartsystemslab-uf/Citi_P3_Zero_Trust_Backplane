@@ -30,7 +30,6 @@ vunit intent_pdp_request (pdp_request) {
   // @nl No agent may transfer control across domain boundaries (front→back, mid→front, etc.) without going through user_proxy_agent. Prevents unauthorized domain escalation (F_route).
   // @source zero_trust_task1/manifest/policy_intent.yaml#no-cross-domain-transfers
   // @obligation audit_log
-  // @disabled Enabling it would deny 13 legitimate routes of the real MAS: the Task 2 scanner assigns the mid-office workflow agents (mid_office_planning_workflow, mid_office_planning_parallel, representative_assistant_workflow, representative_assist_parallel) to domain 'shared' instead of 'mid_office'. Fix the domain data (or the rule), then remove this entry. Evidence: zt_psl intent consistency check against generated_pep_plan.json.
   intent_no_cross_domain_transfers: assert always (authz_request && resource.target_type == "subject" -> !(request.cross_domain && subject.runtime_id != "user_proxy_agent"));
 
   // @rule intent.execute-transfer-caller-restriction

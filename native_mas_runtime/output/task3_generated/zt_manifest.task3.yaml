@@ -5,7 +5,7 @@ metadata:
   manifest_version: 1.0.0-alpha.1
   environment: prototype
   created_at: '2026-07-26T00:00:00Z'
-  updated_at: '2026-09-06T06:01:26.891564Z'
+  updated_at: '2026-11-03T15:11:37.510276Z'
   owner: zero_trust_backplane_team
   source_revision: task1+task2-runtime-graph-reconciled
   description: Project-wide baseline containing current provisional architecture and
@@ -1897,11 +1897,11 @@ spec:
         extensions: {}
     attributes:
       scanner_source_type: subject
-  - id: agent.shared.mid_office_planning_parallel
+  - id: agent.mid_office.mid_office_planning_parallel
     type: agent
     roles:
     - workflow
-    domain: shared
+    domain: mid_office
     enabled: true
     metadata:
       display_name: mid_office_planning_parallel
@@ -1927,11 +1927,11 @@ spec:
         extensions: {}
     attributes:
       scanner_source_type: subject
-  - id: agent.shared.mid_office_planning_workflow
+  - id: agent.mid_office.mid_office_planning_workflow
     type: agent
     roles:
     - workflow
-    domain: shared
+    domain: mid_office
     enabled: true
     metadata:
       display_name: mid_office_planning_workflow
@@ -1957,11 +1957,11 @@ spec:
         extensions: {}
     attributes:
       scanner_source_type: subject
-  - id: agent.shared.representative_assist_parallel
+  - id: agent.mid_office.representative_assist_parallel
     type: agent
     roles:
     - workflow
-    domain: shared
+    domain: mid_office
     enabled: true
     metadata:
       display_name: representative_assist_parallel
@@ -1987,11 +1987,11 @@ spec:
         extensions: {}
     attributes:
       scanner_source_type: subject
-  - id: agent.shared.representative_assistant_workflow
+  - id: agent.mid_office.representative_assistant_workflow
     type: agent
     roles:
     - workflow
-    domain: shared
+    domain: mid_office
     enabled: true
     metadata:
       display_name: representative_assistant_workflow
@@ -4698,9 +4698,9 @@ spec:
         extensions: {}
     attributes:
       scanner_target_type: subject
-  - id: resource.shared.other_mid_office_planning_workflow
+  - id: resource.mid_office.other_mid_office_planning_workflow
     type: other
-    domain: shared
+    domain: mid_office
     classification: internal
     actions:
     - name: read
@@ -4733,9 +4733,9 @@ spec:
         extensions: {}
     attributes:
       scanner_target_type: subject
-  - id: resource.shared.other_representative_assistant_workflow
+  - id: resource.mid_office.other_representative_assistant_workflow
     type: other
-    domain: shared
+    domain: mid_office
     classification: internal
     actions:
     - name: read
@@ -4943,9 +4943,9 @@ spec:
         extensions: {}
     attributes:
       scanner_target_type: subject
-  - id: resource.shared.other_mid_office_planning_parallel
+  - id: resource.mid_office.other_mid_office_planning_parallel
     type: other
-    domain: shared
+    domain: mid_office
     classification: internal
     actions:
     - name: read
@@ -5153,9 +5153,9 @@ spec:
         extensions: {}
     attributes:
       scanner_target_type: subject
-  - id: resource.shared.other_representative_assist_parallel
+  - id: resource.mid_office.other_representative_assist_parallel
     type: other
-    domain: shared
+    domain: mid_office
     classification: internal
     actions:
     - name: read
@@ -5434,6 +5434,7 @@ spec:
     attributes:
       native_runtime_tree: true
       resource_kind: agent
+      scanner_target_type: subject
   - id: resource.mid_office.agent_mid_office_router
     type: other
     domain: mid_office
@@ -5470,6 +5471,7 @@ spec:
     attributes:
       native_runtime_tree: true
       resource_kind: agent
+      scanner_target_type: subject
   - id: resource.back_office.agent_back_office_router
     type: other
     domain: back_office
@@ -5506,6 +5508,7 @@ spec:
     attributes:
       native_runtime_tree: true
       resource_kind: agent
+      scanner_target_type: subject
   interfaces:
   - id: interface.http.pdp_authorize
     type: http
@@ -10174,8 +10177,8 @@ spec:
       banking_repo: D:\Lab\Citi_P3
   - id: edge.scanner.scan_edge_083_mid_office_router_mid_office_planning_workflow
     caller_id: agent.mid_office.mid_office_router
-    target_id: resource.shared.other_mid_office_planning_workflow
-    resource_id: resource.shared.other_mid_office_planning_workflow
+    target_id: resource.mid_office.other_mid_office_planning_workflow
+    resource_id: resource.mid_office.other_mid_office_planning_workflow
     action: read
     workflow_id: null
     interface_id: null
@@ -10212,8 +10215,8 @@ spec:
       banking_repo: D:\Lab\Citi_P3
   - id: edge.scanner.scan_edge_084_mid_office_router_representative_assistant_workflow
     caller_id: agent.mid_office.mid_office_router
-    target_id: resource.shared.other_representative_assistant_workflow
-    resource_id: resource.shared.other_representative_assistant_workflow
+    target_id: resource.mid_office.other_representative_assistant_workflow
+    resource_id: resource.mid_office.other_representative_assistant_workflow
     action: read
     workflow_id: null
     interface_id: null
@@ -10249,7 +10252,7 @@ spec:
       task2_operation_class: read
       banking_repo: D:\Lab\Citi_P3
   - id: edge.scanner.scan_edge_085_mid_office_planning_parallel_validation_agent
-    caller_id: agent.shared.mid_office_planning_parallel
+    caller_id: agent.mid_office.mid_office_planning_parallel
     target_id: resource.mid_office.other_validation_agent
     resource_id: resource.mid_office.other_validation_agent
     action: read
@@ -10287,7 +10290,7 @@ spec:
       task2_operation_class: read
       banking_repo: D:\Lab\Citi_P3
   - id: edge.scanner.scan_edge_086_mid_office_planning_parallel_support_guidance_agent
-    caller_id: agent.shared.mid_office_planning_parallel
+    caller_id: agent.mid_office.mid_office_planning_parallel
     target_id: resource.mid_office.other_support_guidance_agent
     resource_id: resource.mid_office.other_support_guidance_agent
     action: read
@@ -10325,7 +10328,7 @@ spec:
       task2_operation_class: read
       banking_repo: D:\Lab\Citi_P3
   - id: edge.scanner.scan_edge_087_mid_office_planning_workflow_data_analysis_agent
-    caller_id: agent.shared.mid_office_planning_workflow
+    caller_id: agent.mid_office.mid_office_planning_workflow
     target_id: resource.mid_office.other_data_analysis_agent
     resource_id: resource.mid_office.other_data_analysis_agent
     action: read
@@ -10363,7 +10366,7 @@ spec:
       task2_operation_class: read
       banking_repo: D:\Lab\Citi_P3
   - id: edge.scanner.scan_edge_088_mid_office_planning_workflow_forecasting_agent
-    caller_id: agent.shared.mid_office_planning_workflow
+    caller_id: agent.mid_office.mid_office_planning_workflow
     target_id: resource.mid_office.other_forecasting_agent
     resource_id: resource.mid_office.other_forecasting_agent
     action: read
@@ -10401,7 +10404,7 @@ spec:
       task2_operation_class: read
       banking_repo: D:\Lab\Citi_P3
   - id: edge.scanner.scan_edge_089_mid_office_planning_workflow_staff_scheduling_agent
-    caller_id: agent.shared.mid_office_planning_workflow
+    caller_id: agent.mid_office.mid_office_planning_workflow
     target_id: resource.mid_office.other_staff_scheduling_agent
     resource_id: resource.mid_office.other_staff_scheduling_agent
     action: read
@@ -10439,9 +10442,9 @@ spec:
       task2_operation_class: read
       banking_repo: D:\Lab\Citi_P3
   - id: edge.scanner.scan_edge_090_mid_office_planning_workflow_mid_office_planning_parallel
-    caller_id: agent.shared.mid_office_planning_workflow
-    target_id: resource.shared.other_mid_office_planning_parallel
-    resource_id: resource.shared.other_mid_office_planning_parallel
+    caller_id: agent.mid_office.mid_office_planning_workflow
+    target_id: resource.mid_office.other_mid_office_planning_parallel
+    resource_id: resource.mid_office.other_mid_office_planning_parallel
     action: read
     workflow_id: null
     interface_id: null
@@ -10477,7 +10480,7 @@ spec:
       task2_operation_class: read
       banking_repo: D:\Lab\Citi_P3
   - id: edge.scanner.scan_edge_091_mid_office_planning_workflow_planning_summary_agent
-    caller_id: agent.shared.mid_office_planning_workflow
+    caller_id: agent.mid_office.mid_office_planning_workflow
     target_id: resource.mid_office.other_planning_summary_agent
     resource_id: resource.mid_office.other_planning_summary_agent
     action: read
@@ -10515,7 +10518,7 @@ spec:
       task2_operation_class: read
       banking_repo: D:\Lab\Citi_P3
   - id: edge.scanner.scan_edge_092_representative_assist_parallel_financial_data_agent
-    caller_id: agent.shared.representative_assist_parallel
+    caller_id: agent.mid_office.representative_assist_parallel
     target_id: resource.mid_office.other_financial_data_agent
     resource_id: resource.mid_office.other_financial_data_agent
     action: read
@@ -10553,7 +10556,7 @@ spec:
       task2_operation_class: read
       banking_repo: D:\Lab\Citi_P3
   - id: edge.scanner.scan_edge_093_representative_assist_parallel_recommender_agent
-    caller_id: agent.shared.representative_assist_parallel
+    caller_id: agent.mid_office.representative_assist_parallel
     target_id: resource.mid_office.other_recommender_agent
     resource_id: resource.mid_office.other_recommender_agent
     action: read
@@ -10591,7 +10594,7 @@ spec:
       task2_operation_class: read
       banking_repo: D:\Lab\Citi_P3
   - id: edge.scanner.scan_edge_094_representative_assist_parallel_loan_agent
-    caller_id: agent.shared.representative_assist_parallel
+    caller_id: agent.mid_office.representative_assist_parallel
     target_id: resource.mid_office.other_loan_agent
     resource_id: resource.mid_office.other_loan_agent
     action: read
@@ -10629,7 +10632,7 @@ spec:
       task2_operation_class: read
       banking_repo: D:\Lab\Citi_P3
   - id: edge.scanner.scan_edge_095_representative_assist_parallel_risk_compliance_agent
-    caller_id: agent.shared.representative_assist_parallel
+    caller_id: agent.mid_office.representative_assist_parallel
     target_id: resource.mid_office.other_risk_compliance_agent
     resource_id: resource.mid_office.other_risk_compliance_agent
     action: read
@@ -10667,9 +10670,9 @@ spec:
       task2_operation_class: read
       banking_repo: D:\Lab\Citi_P3
   - id: edge.scanner.scan_edge_096_representative_assistant_workflow_representative_assist_parallel
-    caller_id: agent.shared.representative_assistant_workflow
-    target_id: resource.shared.other_representative_assist_parallel
-    resource_id: resource.shared.other_representative_assist_parallel
+    caller_id: agent.mid_office.representative_assistant_workflow
+    target_id: resource.mid_office.other_representative_assist_parallel
+    resource_id: resource.mid_office.other_representative_assist_parallel
     action: read
     workflow_id: null
     interface_id: null
@@ -10705,7 +10708,7 @@ spec:
       task2_operation_class: read
       banking_repo: D:\Lab\Citi_P3
   - id: edge.scanner.scan_edge_097_representative_assistant_workflow_representative_merge_agent
-    caller_id: agent.shared.representative_assistant_workflow
+    caller_id: agent.mid_office.representative_assistant_workflow
     target_id: resource.mid_office.other_representative_merge_agent
     resource_id: resource.mid_office.other_representative_merge_agent
     action: read
