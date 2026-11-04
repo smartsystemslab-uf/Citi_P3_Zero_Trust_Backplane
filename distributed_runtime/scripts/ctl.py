@@ -3,11 +3,12 @@
   build                 stage the MAS build input, build the spire / backend / runtime images
   prepare               generate compose, fresh deployment keys, re-signed PSL store, SPIRE entries,
                         agent registry, service map, golden data
-  start                 SPIRE, agent-credential issuer, bank backend, gateway, 9 agent workloads,
+  start                 SPIRE, agent-credential issuer, bank backend, gateway, 13 agent workloads,
                         ingress client  [--svid-ttl S] [--agent-cert-ttl S] [--conn-mode reuse|new|new-resume]
   status                running containers + health of gateway and agents
-  run SCENARIO [...]    one ingress request burst (read, write, workflow, workflow_mismatch,
-                        workflow_not_ready, ledger_direct, custom); extra args go to the ingress client
+  run SCENARIO [...]    one ingress request burst (read, write, write_direct, workflow, workflow_mismatch,
+                        workflow_not_ready, ledger_direct, knowledge, custom); extra args go to the
+                        ingress client (--count N, --no-approvals, --user-role R, --entry A --message M, ...)
   verify                business side effects + audit trails (hash chain, PSL audit correlation)
   unit-test             zero_trust_identity unit tests inside the runtime image
   functional-test       end-to-end tests (pytest distributed_runtime/tests/functional)
