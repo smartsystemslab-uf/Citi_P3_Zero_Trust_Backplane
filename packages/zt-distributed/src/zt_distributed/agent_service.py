@@ -126,23 +126,28 @@ class AgentService:
         run = RUN.get()
         if run is None:
             return {"status": "agent_error", "reason": "outbound call outside an invocation"}
-        body = {"request_id": str(uuid.uuid4()), "workflow_run_id": run.workflow_run_id, "trace_id": run.trace_id,
-                **payload}
-        t0 = time.perf_counter_ns()
-        try:
-            status, data, info = await self.gateway.post(
-                f"{self.gw_url}/v1/agents/{target}/invoke", body, headers={"X-ZT-Agent-Id": self.agent_id},
-                sign_for=(body["request_id"], run.workflow_run_id))
-        except Exception as exc:
-            self._count("route_transport_error")
-            return {"status": "agent_error", "reason": f"{type(exc).__name__}: {exc}"[:300], "target_agent": target}
-        self.spans.add({"ts": time.time(), "kind": "route", "name": target, "status": status,
-                        "sign_ms": round(info["sign_ms"], 4), "rtt_ms": round(info["rtt_ms"], 4),
-                        "total_ms": round((time.perf_counter_ns() - t0) / 1e6, 4)})
-        if status == 200 and data.get("status") == "ok":
-            return data
-        self._count(f"route_{status}")
-        self._maybe_reenroll(status, data)
+        for attempt in (1, 2):
+            serial = self._cert_serial()
+            body = {"request_id": str(uuid.uuid4()), "workflow_run_id": run.workflow_run_id,
+                    "trace_id": run.trace_id, **payload}
+            t0 = time.perf_counter_ns()
+            try:
+                status, data, info = await self.gateway.post(
+                    f"{self.gw_url}/v1/agents/{target}/invoke", body, headers={"X-ZT-Agent-Id": self.agent_id},
+                    sign_for=(body["request_id"], run.workflow_run_id))
+            except Exception as exc:
+                self._count("route_transport_error")
+                return {"status": "agent_error", "reason": f"{type(exc).__name__}: {exc}"[:300],
+                        "target_agent": target}
+            self.spans.add({"ts": time.time(), "kind": "route", "name": target, "status": status,
+                            "sign_ms": round(info["sign_ms"], 4), "rtt_ms": round(info["rtt_ms"], 4),
+                            "total_ms": round((time.perf_counter_ns() - t0) / 1e6, 4)})
+            if status == 200 and data.get("status") == "ok":
+                return data
+            self._count(f"route_{status}")
+            if attempt == 1 and await self._recover_revoked_cert(status, data, serial):
+                continue
+            break
         return {"status": "zero_trust_denied" if status in (401, 403) else "agent_error",
                 "reason": data.get("reason") or data.get("detail") or data.get("error"), "target_agent": target,
                 **({"rules": data["rules"]} if data.get("rules") else {})}
@@ -153,23 +158,28 @@ class AgentService:
         if run is None or self.mcp is None:
             return {"status": "tool_error", "reason": "tool call outside an invocation"}
         call_id = call_id or str(uuid.uuid4())
-        request_id = str(uuid.uuid4())
-        meta = call_meta(request_id=request_id, workflow_run_id=run.workflow_run_id, trace_id=run.trace_id,
-                         idempotency_key=f"adk:{run.workflow_run_id}:{self.agent_id}:{call_id}", call_id=call_id,
-                         state=state)
-        t0 = time.perf_counter_ns()
-        t_mono = time.monotonic()
-        try:
-            res = await self.mcp.call(mcp_name(self.agent_id, tool), args, meta)
-        except Exception as exc:          # transport / JSON-RPC errors (incl. a PEP 401/403 ending the session)
-            err = f"{type(exc).__name__}: {exc}"[:200]
-            rej = self.mcp_auth.last_reject if self.mcp_auth is not None else None
-            if rej is not None and rej["t"] >= t_mono:
-                err = f"pep_{int(rej['status'])}:{rej['reason']} ({err})"[:200]
-                self._maybe_reenroll(int(rej["status"]), {"reason": rej["reason"]})
-            self._count("mcp_transport_error")
-            return {"status": "zero_trust_denied" if err.startswith("pep_4") else "tool_error", "tool": tool,
-                    "agent": self.agent_id, "reason": err}
+        for attempt in (1, 2):
+            serial = self._cert_serial()
+            request_id = str(uuid.uuid4())         # a fresh request (signature nonce); same call and idempotency key
+            meta = call_meta(request_id=request_id, workflow_run_id=run.workflow_run_id, trace_id=run.trace_id,
+                             idempotency_key=f"adk:{run.workflow_run_id}:{self.agent_id}:{call_id}",
+                             call_id=call_id, state=state)
+            t0 = time.perf_counter_ns()
+            t_mono = time.monotonic()
+            try:
+                res = await self.mcp.call(mcp_name(self.agent_id, tool), args, meta)
+                break
+            except Exception as exc:      # transport / JSON-RPC errors (incl. a PEP 401/403 ending the session)
+                err = f"{type(exc).__name__}: {exc}"[:200]
+                rej = self.mcp_auth.last_reject if self.mcp_auth is not None else None
+                if rej is not None and rej["t"] >= t_mono:
+                    err = f"pep_{int(rej['status'])}:{rej['reason']} ({err})"[:200]
+                    if attempt == 1 and await self._recover_revoked_cert(int(rej["status"]),
+                                                                         {"reason": rej["reason"]}, serial):
+                        continue
+                self._count("mcp_transport_error")
+                return {"status": "zero_trust_denied" if err.startswith("pep_4") else "tool_error", "tool": tool,
+                        "agent": self.agent_id, "reason": err}
         is_error, structured, content = result_parts(res)
         self.spans.add({"ts": time.time(), "kind": "mcp_call", "name": tool, "status": "error" if is_error else "ok",
                         "sign_ms": round(self.sign_times.pop(request_id, 0.0), 4),
@@ -188,9 +198,23 @@ class AgentService:
     def _count(self, key: str) -> None:
         self.counters[key] = self.counters.get(key, 0) + 1
 
-    def _maybe_reenroll(self, status: int, body: dict[str, Any]) -> None:
-        if self.creds is not None and status == 401 and body.get("reason") == "agent_cert_revoked":
-            asyncio.get_running_loop().create_task(self.creds.reenroll("pep_reported_agent_cert_revoked"))
+    def _cert_serial(self) -> str | None:
+        cred = self.creds.cred if self.creds is not None else None
+        return cred.serial if cred is not None else None
+
+    async def _recover_revoked_cert(self, status: int, body: dict[str, Any], serial: str | None) -> bool:
+        """The PEP refused a request because this agent's certificate is revoked (an admin disable ->
+        enable bumps the agent's identity version and revokes its certificates). Re-enroll and report
+        whether the request may be sent once more with the new certificate. That is safe: the PEP
+        refuses such a request at authentication, before any authorization or execution, and a
+        retried tool call keeps its idempotency key. While the agent is disabled the issuer refuses
+        the enrollment, so nothing is retried."""
+        if self.creds is None or status != 401 or body.get("reason") != "agent_cert_revoked":
+            return False
+        renewed = await self.creds.reenroll("pep_reported_agent_cert_revoked", stale_serial=serial)
+        if renewed:
+            self._count("retried_after_reenrollment")
+        return renewed
 
     # ---------------- inbound ----------------------------------------------
     async def invoke(self, request: web.Request) -> web.Response:

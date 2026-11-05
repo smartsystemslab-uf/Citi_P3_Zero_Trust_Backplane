@@ -190,6 +190,19 @@ def tool_parameters(tool: Any) -> tuple[dict[str, Any], str]:
     return params, str(raw.get("description") or "")
 
 
+async def _list_and_close(toolset: Any, timeout: float) -> list[Any]:
+    """List a toolset's tools and close the toolset in the same event loop. Its connections (e.g. an
+    MCP stdio server process) belong to the loop that opened them and can only be closed there;
+    closing from another loop leaves the server process running."""
+    try:
+        return list(await asyncio.wait_for(toolset.get_tools(None), timeout))
+    finally:
+        try:
+            await asyncio.wait_for(toolset.close(), timeout)
+        except Exception:                         # noqa: BLE001 -- best effort; the listing decides
+            pass
+
+
 def _run_coro_blocking(coro_factory: Any, timeout: float) -> Any:
     """Run an async call to completion whether or not an event loop is running here."""
     result: dict[str, Any] = {}
@@ -541,15 +554,11 @@ class _Walker:
         tools: list[Any] = []
         if resolve:
             try:
-                tools = list(_run_coro_blocking(lambda: toolset.get_tools(None), self.toolset_timeout))
+                tools = _run_coro_blocking(lambda: _list_and_close(toolset, self.toolset_timeout),
+                                           2 * self.toolset_timeout + 5)
                 record["resolved"] = True
             except BaseException as exc:          # noqa: BLE001 -- recorded, decided below
                 record["error"] = f"{type(exc).__name__}: {exc}"[:300]
-            finally:
-                try:
-                    _run_coro_blocking(lambda: toolset.close(), self.toolset_timeout)
-                except BaseException:             # noqa: BLE001
-                    pass
         declared = self.declared_toolset_tools.get(short) or self.declared_toolset_tools.get(ts_name) or []
         for tool in tools:
             params, desc = tool_parameters(tool)
