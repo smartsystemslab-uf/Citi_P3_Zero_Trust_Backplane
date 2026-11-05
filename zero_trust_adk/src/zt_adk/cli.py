@@ -128,15 +128,15 @@ def cmd_inspect(ns: argparse.Namespace) -> int:
 
 # ---------------------------------------------------------------------------- run
 def cmd_run(ns: argparse.Namespace) -> int:
-    from google.adk.runners import Runner
     from google.adk.sessions import InMemorySessionService
     from google.genai import types
 
     from .discovery import load_object, resolve_app
-    from .plugin import ZeroTrustPlugin
+    from .plugin import ZeroTrustPlugin, protected_runner
 
     prof = _profile(ns)
-    root, name, _plugins = resolve_app(load_object(prof.app, [prof.path(p) for p in prof.python_paths]))
+    app_obj = load_object(prof.app, [prof.path(p) for p in prof.python_paths])
+    root, name, _plugins = resolve_app(app_obj)
     script = ns.playback or (prof.model_override.script if prof.model_override else None)
     if script:
         from .testing.playback import install_playback
@@ -146,7 +146,8 @@ def cmd_run(ns: argparse.Namespace) -> int:
     plugin = ZeroTrustPlugin.from_profile(prof, root_agent=root)
     app_name = prof.app_name or name or root.name
     sessions = InMemorySessionService()
-    runner = Runner(app_name=app_name, agent=root, session_service=sessions, plugins=[plugin])
+    # the application's own plugins and App configuration stay; the PEP runs first
+    runner = protected_runner(app_obj, plugin, root_agent=root, app_name=app_name, session_service=sessions)
 
     async def go() -> None:
         session = await sessions.create_session(app_name=app_name, user_id=ns.user)
@@ -265,7 +266,30 @@ def main(argv: list[str] | None = None) -> int:
     ns = ap.parse_args(argv)
     handler = {"init": cmd_init, "keys": cmd_keys, "build": cmd_build, "check": cmd_check, "inspect": cmd_inspect,
                "run": cmd_run, "approvals": cmd_approvals, "audit": cmd_audit}[ns.cmd]
-    return handler(ns)
+    try:
+        return handler(ns)
+    except _expected_errors() as exc:
+        if os.environ.get("ZT_ADK_DEBUG"):
+            raise
+        print(f"zt-adk {ns.cmd}: error: {exc}\n(set ZT_ADK_DEBUG=1 for the traceback)", file=sys.stderr)
+        return 2
+
+
+def _expected_errors() -> tuple[type[BaseException], ...]:
+    """What a user's input can cause (profile, application, keys, bundle, approvals): reported as
+    one message, not a traceback."""
+    import yaml
+
+    from .approvals import ApprovalError
+    from .build import BuildError
+    from .bundle import BundleError
+    from .discovery import DiscoveryError
+    from .engine import EngineError
+    from .keys import KeyError_
+    from .plugin import StaleBundleError
+
+    return (ApprovalError, BuildError, BundleError, DiscoveryError, EngineError, KeyError_, StaleBundleError,
+            ValueError, yaml.YAMLError, FileNotFoundError, ImportError)
 
 
 if __name__ == "__main__":

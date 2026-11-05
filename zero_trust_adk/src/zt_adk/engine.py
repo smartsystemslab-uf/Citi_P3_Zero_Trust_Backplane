@@ -480,10 +480,17 @@ class ProtectionEngine:
             return self.authorize(run, None, parameters=parameters, event=event, caller=caller, target=target)
         op_record = self.operation_record(run, placement, parameters)
         req_hash = operation_hash(op_record)
-        approvals = run.approved_ops.get(req_hash) or self._stored_approvals(req_hash)
+        stored = None if req_hash in run.approved_ops else self._stored_approvals(req_hash)
+        approvals = run.approved_ops.get(req_hash) or (stored[1] if stored else None)
         v = self.authorize(run, placement, parameters=parameters, event=event, caller=caller, target=target,
                            idempotency_key=idempotency_key, approvals=approvals)
         if v.decision != "MANUAL_REVIEW":
+            if stored is not None and v.allowed:
+                # an approval granted after an earlier call of this run was held: consumed now
+                v.approval_id = stored[0]
+                self.approvals.mark(stored[0], "used")
+                self.audit.write("APPROVAL_APPLIED", run=run.workflow_instance_id, approval_id=stored[0],
+                                 allowed=True, decision=v.decision, durable=True)
             return v
         op = self.operation(agent, tool) or {}
         purposes = ["human_approval"] + (["secondary_authorization"] if op.get("secondary_approval") else [])
@@ -517,8 +524,9 @@ class ProtectionEngine:
                          allowed=v.allowed, decision=v.decision, durable=True)
         return v
 
-    def _stored_approvals(self, req_hash: str) -> dict[str, Any] | None:
-        """An approval granted earlier (e.g. after a held call) for exactly this operation."""
+    def _stored_approvals(self, req_hash: str) -> tuple[str, dict[str, Any]] | None:
+        """(approval id, assertions) of an approval granted earlier (e.g. after a held call) for
+        exactly this operation and not used yet."""
         from datetime import datetime, timezone
 
         for req in self.approvals.find_for_hash(req_hash):
@@ -531,7 +539,8 @@ class ProtectionEngine:
             exp = min(datetime.fromisoformat(d[p]["expires_at"].replace("Z", "+00:00")) for p in purposes)
             if exp <= datetime.now(timezone.utc):
                 continue
-            return {"human_approval": d.get("human_approval"), "secondary_authorization": d.get("secondary_authorization")}
+            return req.approval_id, {"human_approval": d.get("human_approval"),
+                                     "secondary_authorization": d.get("secondary_authorization")}
         return None
 
     def should_execute(self, verdict: Verdict, *, critical: bool = False) -> bool:
@@ -624,6 +633,21 @@ class ProtectionEngine:
                          result_sha256=hashlib.sha256(json.dumps(result, sort_keys=True, default=str).encode()).hexdigest(),
                          result_policy=check.decision, durable=pending.critical)
         return result, check
+
+    def deny_undeclared_call(self, run: RunContext, agent: str, name: str, args: Mapping[str, Any]) -> Verdict:
+        """The model called a function ADK does not offer this agent (none of its tools, not
+        a transfer it may make). Nothing can run; the attempt is refused, audited, and -- as a
+        sign of a manipulated model -- taints the run like flagged content does."""
+        target = str(args.get("agent_name", "") or "") if name == "transfer_to_agent" else ""
+        reason = (f"UNDECLARED_FUNCTION: {agent} may not call {name}"
+                  + (f" (transfer to {target!r} is not one ADK offers this agent)" if target else ""))
+        v = Verdict(False, "DENY", reason, "LOCAL_DEFAULT_DENY", policy_version=self.policy_version)
+        if self.profile["content"].get("taint_on_flag", True):
+            run.taint(f"undeclared_function:{agent}/{name}")
+        self.audit.write("UNDECLARED_FUNCTION_CALL", run=run.workflow_instance_id, trace_id=run.trace_id,
+                         caller=agent, target=target or name, parameters=_param_summary(dict(args)),
+                         mode=self.mode, **v.summary(), durable=True)
+        return v
 
     def abort_tool(self, pending: PendingTool | None, error: str = "") -> None:
         if pending is None:

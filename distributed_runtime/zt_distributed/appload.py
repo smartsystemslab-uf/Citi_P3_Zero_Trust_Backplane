@@ -8,7 +8,7 @@ executes its tools.
 from __future__ import annotations
 
 import os
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
@@ -27,10 +27,13 @@ class LoadedApp:
     model: SystemModel
     agents: dict[str, Any]
     tools: dict[str, Any]
+    plugins: list[Any] = field(default_factory=list)      # the application's own plugins (App / Runner)
 
 
 def load_app(profile_path: Path | None = None, *, resolve_toolsets: bool = False,
              apply_model_override: bool = True) -> LoadedApp:
+    from zt_adk.plugin import own_plugins
+
     prof = load_profile(profile_path or PROFILE_PATH)
     obj = load_object(prof.app, [prof.path(p) for p in prof.python_paths])
     root, name, _plugins = resolve_app(obj)
@@ -43,4 +46,4 @@ def load_app(profile_path: Path | None = None, *, resolve_toolsets: bool = False
     resolution = {n: ov.resolve for n, ov in prof.toolsets.items()}
     model, agents, tools = discover(root, app_name=app_name, resolve_toolsets=resolve_toolsets,
                                     declared_toolset_tools=declared, toolset_resolution=resolution)
-    return LoadedApp(prof, root, app_name, model, agents, tools)
+    return LoadedApp(prof, root, app_name, model, agents, tools, own_plugins(obj))

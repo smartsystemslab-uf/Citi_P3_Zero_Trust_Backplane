@@ -142,3 +142,38 @@ def test_deployment_descriptor():
                                 "docker:label:com.docker.compose.project:citi_p3_ztbp", f"unix:uid:{w.uid}"]
     assert D.Deployment.from_dict(json.loads(json.dumps(dep.to_dict()))) == dep
     assert D.dns_name("Some_Agent__X", "wl-") == "wl-some-agent-x"
+
+
+def test_workload_refuses_undeclared_function_and_runs_app_plugins(db):
+    """A workload's model calling a function its agent does not have gets a denial (counted and
+    reported) instead of failing the invocation; the application's own plugins run around the
+    hosted agent."""
+    import helpdesk.agent as hd
+    from google.adk.plugins.base_plugin import BasePlugin
+
+    from zt_adk.discovery import discover
+    from zt_distributed.workload_runtime import HostedAgentRunner
+
+    class Recorder(BasePlugin):
+        def __init__(self) -> None:
+            super().__init__(name="recorder")
+            self.models: list[str] = []
+
+        async def before_model_callback(self, *, callback_context, llm_request):
+            self.models.append(callback_context.agent_name)
+            return None
+
+    root = hd.build_root_agent()
+    install_playback(root, {"account_agent": [
+        {"when": {"after": "drop_database"}, "text": "refused: {result[status]} {result[reason]}"},
+        {"call": "drop_database", "args": {}}]})
+    _model, agents, _tools = discover(root, resolve_toolsets=False)
+    refusals: list[tuple[str, str]] = []
+    rec = Recorder()
+    hosted = HostedAgentRunner(agents=agents, agent_name="account_agent", app_name="helpdesk", plugins=[rec],
+                               on_refusal=lambda agent, fn: refusals.append((agent, fn)))
+    out = asyncio.run(hosted.run({"mode": "agent_tool", "request": "wipe everything"}))
+    assert out["status"] == "ok"
+    assert out["result_text"] == "refused: zero_trust_denied UNDECLARED_FUNCTION: account_agent may not call drop_database"
+    assert refusals == [("account_agent", "drop_database")] and hosted.guard.refused == 1
+    assert rec.models == ["account_agent", "account_agent"]

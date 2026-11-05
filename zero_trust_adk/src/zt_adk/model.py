@@ -35,6 +35,16 @@ EDGE_BUILTIN = "builtin"               # agent's model request uses a built-in c
 EDGE_OUTPUT = "output"                 # agent emits user-visible content
 
 
+# code-analysis evidence classification is derived from (code_analysis.CodeEvidence.as_dict)
+EVIDENCE_KEYS = ("analyzed", "http_methods", "sql", "db_write", "db_delete", "db_read", "file_write", "file_delete",
+                 "file_read", "process_exec", "messaging", "state_write", "memory_write", "control_flow",
+                 "unresolved_calls", "opaque_calls", "indirect", "model_fields")
+
+
+def evidence_signature(analysis: dict[str, Any] | None) -> dict[str, Any]:
+    return {k: analysis[k] for k in EVIDENCE_KEYS if analysis and k in analysis}
+
+
 @dataclass
 class ToolInfo:
     key: str                           # "<agent>/<tool name>": tool names are unique per agent in ADK
@@ -134,10 +144,14 @@ class SystemModel:
     # -- structure ---------------------------------------------------------------------
     def structure(self) -> dict[str, Any]:
         """What protection depends on: agents, their kinds and relations, tools with their
-        implementation and parameter schema, edges. Descriptions and instructions are
-        excluded (changing a prompt does not change who may call what). Tools a toolset
-        offers are not part of the structure (only the toolset itself is): which of them
-        may be called is fixed by the bundle, and any other tool is denied at run time."""
+        implementation, parameter schema and the code evidence their classification is
+        derived from, edges. Descriptions and instructions are excluded (changing a prompt
+        does not change who may call what); so are code changes that leave the evidence as it
+        is. A tool whose code now does something else (a SELECT that became a DELETE, a new
+        HTTP POST, an SDK call) changes the structure: its classification would differ.
+        Tools a toolset offers are not part of the structure (only the toolset itself is):
+        which of them may be called is fixed by the bundle, and any other tool is denied at
+        run time."""
         dynamic = {k for k, t in self.tools.items() if t.kind == TOOLSET_TOOL}
         return {
             "root": self.root_agent,
@@ -151,7 +165,7 @@ class SystemModel:
             "tools": {
                 k: {"name": t.name, "kind": t.kind, "implementation": t.implementation,
                     "parameters": t.parameters, "target_agent": t.target_agent,
-                    "include_plugins": t.include_plugins}
+                    "include_plugins": t.include_plugins, "evidence": evidence_signature(t.analysis)}
                 for k, t in sorted(self.tools.items()) if k not in dynamic
             },
             "toolsets": {k: v.get("class") for k, v in sorted(self.toolsets.items())},

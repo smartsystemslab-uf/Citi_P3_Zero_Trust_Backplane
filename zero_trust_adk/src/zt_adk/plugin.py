@@ -17,7 +17,10 @@ Boundaries (every decision comes from the signed PSL store of the bundle):
              behind it runs in a child runner that inherits this plugin and the run context
 * tool       before_tool: tool_call rules, PDP tool placement (Permit Lease, approvals for
              MANUAL_REVIEW), workflow monitor admission, obligations, idempotency;
-             after_tool: masking, tool_result content rules (deny, or flag = taint the run)
+             after_tool: masking, tool_result content rules (deny, or flag = taint the run);
+             on_tool_error: a call of a function ADK does not offer the agent is refused and
+             audited and taints the run (ADK alone ends the run with an exception up to 2.7);
+             later ADK 2.x first offers such a call to before_tool, where it is refused the same way
 * model      before_model: only functions the bundle lists for the agent, built-in
              capabilities only for agents that declare them (model_request rules + PDP)
 * output     on_event: user-visible text is checked (output_message rules + PDP output
@@ -89,6 +92,47 @@ def _denial(boundary: str, verdict: Verdict, **extra: Any) -> dict[str, Any]:
         out["approval_id"] = verdict.approval_id
     out.update(extra)
     return out
+
+
+def own_plugins(app: Any) -> list[Any]:
+    """The application's own plugins (of an App or a Runner), without a ZeroTrustPlugin it may
+    already register: the Backplane adds exactly one."""
+    plugins = list(getattr(app, "plugins", None) or [])
+    manager = getattr(app, "plugin_manager", None)            # a Runner
+    if not plugins and manager is not None:
+        plugins = list(getattr(manager, "plugins", None) or [])
+    return [p for p in plugins if not isinstance(p, ZeroTrustPlugin)]
+
+
+def protected_runner(app: Any, plugin: "ZeroTrustPlugin", *, root_agent: Any, app_name: str,
+                     session_service: Any) -> Any:
+    """A Runner for the application object ``app`` (App, root agent or Runner), with ``plugin``
+    first and the application's own plugins after it. An App keeps its whole configuration
+    (context cache, resumability, compaction, ...). ADK runs plugins in order and the first
+    callback that returns a value ends the chain, so the PEP decides before any other plugin."""
+    from google.adk.apps import App
+    from google.adk.runners import Runner
+
+    plugins = [plugin, *own_plugins(app)]
+    adk_app = app if isinstance(app, App) else getattr(app, "app", None)
+    if isinstance(adk_app, App):
+        return Runner(app=adk_app.model_copy(update={"root_agent": root_agent, "plugins": plugins}),
+                      app_name=app_name, session_service=session_service)
+    return Runner(app_name=app_name, agent=root_agent, plugins=plugins, session_service=session_service)
+
+
+def missing_tool(tool: Any) -> bool:
+    """ADK's stand-in for a function call that names no tool of the agent: a plain BaseTool
+    described "Tool not found". ADK up to 2.7 passes it to on_tool_error with the ValueError of
+    the lookup (and ends the run if no callback answers); later 2.x versions first offer it to
+    the before_tool callbacks."""
+    from google.adk.tools.base_tool import BaseTool
+
+    return type(tool) is BaseTool and str(getattr(tool, "description", "")) == "Tool not found"
+
+
+def tool_not_found(tool: Any, error: Exception) -> bool:
+    return isinstance(error, ValueError) and missing_tool(tool)
 
 
 def _denial_content(boundary: str, verdict: Verdict, trace_id: str) -> types.Content:
@@ -257,6 +301,8 @@ class ZeroTrustPlugin(BasePlugin):
         agent = str(getattr(tool_context, "agent_name", "") or "")
         name = str(getattr(tool, "name", "") or "")
         ctx = st.ctx
+        if missing_tool(tool):                # a function ADK does not offer this agent (later ADK 2.x)
+            return self._refuse_undeclared(st, agent, name, tool_args)
         if name == TRANSFER_TOOL:
             target = str(tool_args.get("agent_name", "") or "")
             placement = self.engine.route_placement(agent, target)
@@ -328,8 +374,19 @@ class ZeroTrustPlugin(BasePlugin):
         token = st.agent_tool_tokens.pop(call_key, None)
         if token is not None:
             _NESTED.reset(token)
-        self.engine.abort_tool(st.pending_tools.pop(call_key, None), f"{type(error).__name__}: {error}")
+        pending = st.pending_tools.pop(call_key, None)
+        if pending is None and token is None and tool_not_found(tool, error):
+            # The model called a function ADK does not offer this agent (ADK up to 2.7: ADK would
+            # end the whole run with an exception). The PEP refuses the call; the agent goes on.
+            return self._refuse_undeclared(st, str(getattr(tool_context, "agent_name", "") or ""), name,
+                                           tool_args)
+        self.engine.abort_tool(pending, f"{type(error).__name__}: {error}")
         return None
+
+    def _refuse_undeclared(self, st: _RunState, agent: str, name: str, tool_args: Any) -> dict[str, Any]:
+        v = self.engine.deny_undeclared_call(st.ctx, agent, name, dict(tool_args or {}))
+        boundary = "agent_route" if name == TRANSFER_TOOL else "tool"
+        return _denial(boundary, v, tool=name, agent=agent, trace_id=st.ctx.trace_id)
 
     # -- model requests ------------------------------------------------------------------------------
     async def before_model_callback(self, *, callback_context: Any, llm_request: Any) -> Any:

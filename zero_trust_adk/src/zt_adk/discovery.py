@@ -90,7 +90,22 @@ def resolve_app(obj: Any) -> tuple[Any, str | None, list[Any]]:
         name = getattr(obj, "name", None) or getattr(obj, "app_name", None)
         plugins = list(getattr(obj, "plugins", None) or [])
         return root, name, plugins
+    node = root if root is not None else (obj if _is_workflow_node(obj) else getattr(obj, "node", None))
+    if node is not None and _is_workflow_node(node):
+        raise DiscoveryError(
+            f"the application's root is a graph workflow node ({type(node).__name__} "
+            f"{getattr(node, 'name', '')!r}, google.adk.workflow): zt-adk protects agent trees "
+            "(LlmAgent, SequentialAgent / ParallelAgent / LoopAgent, custom BaseAgent orchestration, "
+            "AgentTool) and does not protect graph workflows yet")
     raise DiscoveryError(f"{type(obj).__name__} is neither an ADK App, an agent nor a Runner")
+
+
+def _is_workflow_node(obj: Any) -> bool:
+    try:
+        from google.adk.workflow import BaseNode            # ADK >= 2.x
+    except ImportError:
+        return False
+    return isinstance(obj, BaseNode) and not isinstance(obj, BaseAgent)
 
 
 # ---------------------------------------------------------------------------------------

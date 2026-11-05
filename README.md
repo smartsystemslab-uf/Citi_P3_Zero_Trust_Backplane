@@ -1,9 +1,10 @@
 # Zero Trust Backplane for Google ADK multi-agent systems
 
-The Backplane protects **any multi-agent system written with Google ADK** (1.x and 2.x) without
-changing its code. It learns the system from the application itself (agents, sub-agents,
-workflows, custom orchestration agents, transfers, `AgentTool`s, function tools, toolsets,
-built-in tools). From that it generates a **signed protection bundle**:
+The Backplane protects **any multi-agent system written with Google ADK** (1.x and 2.x) as an
+agent tree, without changing its code (ADK 2.x graph workflows are not supported yet, §9). It
+learns the system from the application itself (agents, sub-agents, workflow agents, custom
+orchestration agents, transfers, `AgentTool`s, function tools, toolsets, built-in tools). From
+that it generates a **signed protection bundle**:
 
 * a Policy Enforcement Point (PEP) for every interaction;
 * least-privilege permissions;
@@ -209,6 +210,11 @@ The end-user role comes **only** from `register_session`, called by your trusted
 plugin never trusts session state written by agents or clients.
 
 `AgentTool` children run with the plugin too: ADK passes plugins to them by default.
+
+**Your own plugins.** List `ZeroTrustPlugin` first: `plugins=[plugin, *your_plugins]`. ADK runs
+plugins in order, and the first callback that returns a value ends the chain, so the PEP decides
+before any other plugin. `zt_adk.plugin.protected_runner(app, plugin, ...)` builds such a Runner
+from your `App`, keeping its plugins and configuration; `zt-adk run` uses it.
 
 ### 2.6 Try it from the command line
 
@@ -583,10 +589,16 @@ python -m pytest zero_trust_adk\tests                         # generic package:
 python -m pytest distributed_runtime\tests\unit               # staging, hosting, gateway monitors, PSL guard
 python -m pytest distributed_runtime\tests\functional         # Docker end to end (after ctl build + prepare)
 python -m pytest zero_trust_identity\tests                    # SPIFFE scheme B library
-python -m pytest zero_trust_psl\tests zero_trust_pdp_task4_secure\tests zero_trust_task5\tests `
-    Zero_Trust_Task3_PEP_Integrated\zero_trust_pep_task3_integrated\tests interface_standard\tests `
-    zero_trust_task2\tests native_mas_runtime\tests integrated_demo\tests
+foreach ($suite in "zero_trust_psl\tests", "zero_trust_pdp_task4_secure\tests", "zero_trust_task5\tests",
+                   "Zero_Trust_Task3_PEP_Integrated\zero_trust_pep_task3_integrated\tests",
+                   "interface_standard\tests", "zero_trust_task2\tests", "native_mas_runtime\tests",
+                   "integrated_demo\tests") {
+    python -m pytest $suite
+}
 ```
+
+Run each suite in its own pytest process, as above. Several suites are packages named `tests`
+with their own `conftest.py`; collected in one process they collide (`ImportPathMismatchError`).
 
 * **Without an API key:** the generic tests run the example application, and Citi when
   `CITI_MAS_COPY` is set, under a real ADK `Runner` with the playback model.
@@ -607,6 +619,24 @@ python -m pytest zero_trust_psl\tests zero_trust_pdp_task4_secure\tests zero_tru
   by pattern and checksum. Tune them with `content.custom` and `extra_patterns`.
 * **Shadow mode.** `mode: shadow` records decisions without blocking, except critical
   operations, which stay blocked.
+* **Classification never assumes a harmless read.** A tool is classified as pure computation
+  only when the analysis saw every call it makes. A call into an SDK or object it cannot enter
+  (`self.client.refunds.create(...)`) leaves the decision to the name and the conservative
+  default; a tool that changes module-level or instance state has a side effect. `REPORT.md`
+  shows the evidence per tool; declare what the code cannot say in `tools:`.
+* **A changed tool is a changed application.** The bundle's fingerprint covers the code evidence
+  each tool's classification comes from. A tool whose code now does something else (a `SELECT`
+  that became a `DELETE`, a new HTTP `POST`) makes the plugin refuse the bundle until it is
+  rebuilt; edits that leave the evidence as it is (comments, docstrings, prompts) do not.
+* **A function the agent does not have.** When the model calls a function ADK does not offer
+  that agent (a hallucinated tool, another agent's tool, a transfer it may not make), the plugin
+  refuses the call, audits it (`UNDECLARED_FUNCTION_CALL`) and taints the run; the agent goes on.
+  (ADK alone ends the run with an exception up to 2.7; later 2.x versions tell the model the
+  tool does not exist, without an audit record or a taint.)
+* **Graph workflows are not supported yet.** ADK 2.x `google.adk.workflow.Workflow` (graph of
+  nodes and edges) as the application's root is refused at build with an explicit message.
+  Agent trees are supported in full, on ADK 2.x and 1.x: `LlmAgent`, `SequentialAgent`,
+  `ParallelAgent`, `LoopAgent`, custom `BaseAgent` orchestration and `AgentTool`.
 
 ---
 

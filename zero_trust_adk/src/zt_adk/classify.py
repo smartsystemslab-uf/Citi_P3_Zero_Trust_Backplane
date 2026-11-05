@@ -9,6 +9,11 @@ Precedence, per attribute:
 4. a conservative default: an operation nothing explains is treated as a side effect of
    high criticality (protected, logged, idempotency required) -- never as a harmless read.
 
+Absence of evidence is not evidence of a harmless read: code is called pure only when the
+analysis saw every call it makes (application code it entered, or library code known to be
+free of external effects). A call into an SDK or object it cannot see into leaves the decision
+to the name and the conservative default.
+
 Criticality ``critical`` means: irreversible or high-impact (deletion, process execution,
 credential or permission changes, money movement, external publication of data). Critical
 operations need a human approval by default (``approvals.critical``).
@@ -125,12 +130,19 @@ def classify_tool(tool: M.ToolInfo, profile: Profile, *, target_agent_critical: 
             elif a.get("state_write"):
                 action, side_effect, crit = "write", True, "medium"
                 evidence.append("code changes ADK session state only")
-            elif a.get("reads"):
+            elif a.get("reads") and not a.get("opaque_calls"):
                 action, side_effect, crit = "read", False, "low"
                 evidence.append("code only reads (SQL SELECT, HTTP GET, file reads)")
-            elif a.get("analyzed") and not a.get("unresolved_calls"):
+            elif a.get("memory_write"):
+                action, side_effect, crit = "write", True, "medium"
+                evidence.append("code changes application objects that outlive the call (module-level or "
+                                "instance state)")
+            elif a.get("analyzed") and not a.get("unresolved_calls") and not a.get("opaque_calls"):
                 action, side_effect, crit = "read", False, "low"
-                evidence.append("code has no I/O and no unresolved calls (pure computation)")
+                evidence.append("code has no I/O, no state change and no calls it cannot see into "
+                                "(pure computation)")
+            if action is None and a.get("opaque_calls"):
+                evidence.append(f"calls the analysis cannot see into: {list(a['opaque_calls'])[:5]}")
             if a.get("indirect", {}).get("side_effect") and not side_effect:
                 evidence.append("callees may write (lazy initialisation / helpers): ignored for classification, "
                                 "the tool's own operation decides")

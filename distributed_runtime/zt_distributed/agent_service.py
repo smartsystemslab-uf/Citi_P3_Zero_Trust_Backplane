@@ -107,7 +107,12 @@ class AgentService:
         app = load_app()
         if app.model.fingerprint() != self.dep.fingerprint:
             raise RuntimeError("the application in this image differs from the deployment descriptor")
-        self.hosted = HostedAgentRunner(agents=app.agents, agent_name=self.agent_id, app_name=app.app_name)
+        def refused(agent: str, function: str) -> None:
+            self._count("undeclared_function_refused")
+            self.events.emit("undeclared_function_refused", agent=agent, function=function)
+
+        self.hosted = HostedAgentRunner(agents=app.agents, agent_name=self.agent_id, app_name=app.app_name,
+                                        plugins=app.plugins, on_refusal=refused)
         remote.HOOKS.invoke_agent = self._call_agent
         remote.HOOKS.call_tool = self._call_tool
         self.spans.start()

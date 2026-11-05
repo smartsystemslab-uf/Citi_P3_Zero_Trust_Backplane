@@ -17,19 +17,51 @@ from __future__ import annotations
 import time
 import uuid
 from dataclasses import dataclass, field
-from typing import Any
+from typing import Any, Callable
 
 from google.adk.agents import BaseAgent
 from google.adk.events import Event, EventActions
+from google.adk.plugins.base_plugin import BasePlugin
 from google.adk.runners import Runner
 from google.adk.sessions import InMemorySessionService
 from google.genai import types
 
 from zt_adk.discovery import resumable
+from zt_adk.plugin import missing_tool, tool_not_found
 
 from .remote import dump_event, host_agent, load_event
 
 USER_ID = "zt-workload"
+
+
+class UndeclaredCallGuard(BasePlugin):
+    """A function call of the hosted agent's model that names none of the tools ADK offers it.
+
+    In a workload every tool is a proxy of a call the gateway authorizes; a function that is not
+    one of them cannot leave the workload. ADK up to 2.7 ends the invocation with an exception (the
+    caller would get an agent error); the call is refused instead -- the model receives a
+    denial and the agent goes on -- and the refusal is counted and reported as an event."""
+
+    def __init__(self, on_refusal: Callable[[str, str], None] | None = None) -> None:
+        super().__init__(name="zt_workload_undeclared_call_guard")
+        self.on_refusal = on_refusal
+        self.refused = 0
+
+    async def before_tool_callback(self, *, tool: Any, tool_args: dict[str, Any], tool_context: Any) -> Any:
+        return self._refuse(tool, tool_context) if missing_tool(tool) else None       # later ADK 2.x
+
+    async def on_tool_error_callback(self, *, tool: Any, tool_args: dict[str, Any], tool_context: Any,
+                                     error: Exception) -> Any:
+        return self._refuse(tool, tool_context) if tool_not_found(tool, error) else None   # ADK up to 2.7
+
+    def _refuse(self, tool: Any, tool_context: Any) -> dict[str, Any]:
+        agent = str(getattr(tool_context, "agent_name", "") or "")
+        name = str(getattr(tool, "name", "") or "")
+        self.refused += 1
+        if self.on_refusal is not None:
+            self.on_refusal(agent, name)
+        return {"status": "zero_trust_denied", "boundary": "tool", "decision": "DENY",
+                "reason": f"UNDECLARED_FUNCTION: {agent} may not call {name}", "tool": name, "agent": agent}
 
 
 def _state_delta(before: dict[str, Any], after: dict[str, Any]) -> dict[str, Any]:
@@ -46,11 +78,20 @@ def _final_text(events: list[Event]) -> str:
 
 
 class HostedAgentRunner:
-    def __init__(self, *, agents: dict[str, BaseAgent], agent_name: str, app_name: str) -> None:
+    def __init__(self, *, agents: dict[str, BaseAgent], agent_name: str, app_name: str,
+                 plugins: list[Any] | tuple[Any, ...] = (),
+                 on_refusal: Callable[[str, str], None] | None = None) -> None:
+        """``plugins``: the application's own plugins. Their agent, model and tool callbacks run
+        around the hosted agent as in one process. A run of the distributed application is
+        coordinated by the gateway, not by one ADK Runner, so their run-level callbacks
+        (on_user_message, before_run, on_event, after_run) fire only for AgentTool invocations,
+        which are a Runner run of their own."""
         self.agent = host_agent(agents, agent_name)
         self.app_name = app_name
         self.sessions = InMemorySessionService()
-        self.runner = Runner(app_name=app_name, agent=self.agent, session_service=self.sessions)
+        self.guard = UndeclaredCallGuard(on_refusal)
+        self.runner = Runner(app_name=app_name, agent=self.agent, session_service=self.sessions,
+                             plugins=[self.guard, *plugins])
 
     async def run(self, payload: dict[str, Any]) -> dict[str, Any]:
         mode = payload.get("mode")

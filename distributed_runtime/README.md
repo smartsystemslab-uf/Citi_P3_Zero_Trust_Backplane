@@ -34,6 +34,15 @@ agent-issuer (its own Agent CA) issues agent certificates bound to the workload 
   | `AgentTool`s | `RemoteAgentTool` |
 
   ADK runs the agent as usual: transfers, workflows, `output_key`, state, events.
+* **The application's own plugins run in every workload.** Their agent, model and tool callbacks
+  fire around the hosted agent as in one process. A run of the distributed application is
+  coordinated by the gateway, not by one ADK Runner, so run-level callbacks (`on_user_message`,
+  `before_run`, `on_event`, `after_run`) fire only for `AgentTool` invocations, which are a
+  Runner run of their own.
+* **A function the hosted agent does not have** (a hallucinated tool, another agent's tool) is
+  refused in the workload instead of failing the invocation: the model receives a denial, the
+  workload counts it (`undeclared_function_refused`) and reports an event. Nothing reaches the
+  gateway: every tool a workload can call is a proxy of a call the gateway authorizes.
 * **Tools run in the gateway's tool host.** The tool host uses the application's own
   functions, with a real ADK `ToolContext`; the state delta goes back to the caller. A workload
   sees its tools over MCP (Streamable HTTP, official SDK), named `<agent>__<tool>`. The data

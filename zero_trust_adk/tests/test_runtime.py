@@ -142,6 +142,44 @@ def test_unanswered_approval_holds_the_call(desk):
     assert r["status"] == "pending_approval" and r["approval_id"].startswith("apr-")
 
 
+def test_approval_granted_after_the_hold_is_used_once(desk, built):
+    """The call is held (nobody answered in time); the approval arrives afterwards and the same
+    operation is requested again in the same run: it is allowed once, and the approval is consumed."""
+    import asyncio
+
+    from zt_adk.approvals import ApprovalStore
+    from zt_adk.engine import RunContext
+    from zt_adk.keys import approver_issuer, load_private
+    from zt_backplane.evidence_issuer import IssuerKey
+
+    tmp, _, _ = built
+    s = desk()
+    eng = s.plugin.engine
+    eng.profile["approvals"]["wait_seconds"] = 0.3
+    run = RunContext(invocation_id="held")
+    placement = eng.tool_placement("account_agent", "reset_password")
+    args = {"username": "alice"}
+
+    def request(key: str):
+        return asyncio.run(eng.authorize_operation(run, placement, parameters=args, event="TOOL_AUTHORIZATION",
+                                                   caller="account_agent", target="reset_password",
+                                                   idempotency_key=key, agent="account_agent",
+                                                   tool="reset_password"))
+
+    held = request("k1")
+    assert held.decision == "MANUAL_REVIEW" and held.approval_id
+    store = ApprovalStore(s.state_dir / "approvals")
+    key = IssuerKey(approver_issuer("alice", False), "key-1", load_private(tmp / "approver-keys" / "approver_alice_private.pem"))
+    store.decide(held.approval_id, key=key, purpose="human_approval", approve=True, approver="alice",
+                 lifetime_seconds=120)
+    again = request("k2")
+    assert again.allowed and again.approval_id == held.approval_id
+    assert store.get(held.approval_id).status == "used"
+    assert [r["approval_id"] for r in audit(s.state_dir) if r["event"] == "APPROVAL_APPLIED"] == [held.approval_id]
+    third = request("k3")                                   # the used approval does not allow it again
+    assert not third.allowed and third.approval_id != held.approval_id
+
+
 def test_approval_by_wrong_key_is_rejected(desk, built, tmp_path):
     """An approval signed by a key the PDP does not trust for human_approval is refused by the PDP."""
     import asyncio
@@ -248,6 +286,75 @@ def test_injected_function_and_builtin_are_refused(desk):
     names, undeclared = eng.builtin_names("web_research_agent", {"google_search"})
     assert names == ["google_search"] and not undeclared
     assert eng.check_model_request(run, "web_research_agent", [], names, undeclared).allowed
+
+
+def test_called_function_the_agent_does_not_have_is_refused_not_a_crash(desk):
+    """A model that calls a function ADK does not offer its agent (a hallucinated tool, another
+    agent's tool, a transfer it may not make): the call is refused and audited, the run is
+    tainted, and the agent goes on, on every ADK version (ADK up to 2.7 raises, later 2.x versions
+    offer the call to before_tool first)."""
+    from zt_adk.testing.playback import install_playback, load_script
+
+    s = desk()
+    script = load_script(EXAMPLE / "playback.yaml")
+    script["account_agent"] = [
+        {"when": {"after": "drop_database"}, "text": "refused: {result[status]}"},
+        {"when": {"after": "notify_user"}, "text": "refused: {result[status]}"},
+        {"when": {"user": "(?i)wipe"}, "call": "drop_database", "args": {}},
+        {"when": {"user": "(?i)notify"}, "call": "notify_user", "args": {"username": "alice"}},
+    ] + script["account_agent"]
+    install_playback(s.runner.agent, script)
+    out = s.say("wipe the account database")
+    assert results(out)["drop_database"]["status"] == "zero_trust_denied"
+    assert "UNDECLARED_FUNCTION" in results(out)["drop_database"]["reason"]
+    assert "refused: zero_trust_denied" in texts(out)
+    out = s.say("notify the account owner")             # notify_user is a tool of another agent
+    assert results(out)["notify_user"]["status"] == "zero_trust_denied"
+    recs = [r for r in audit(s.state_dir) if r["event"] == "UNDECLARED_FUNCTION_CALL"]
+    assert [r["target"] for r in recs] == ["drop_database", "notify_user"]
+    done = [r for r in audit(s.state_dir) if r["event"] == "RUN_COMPLETE"]
+    assert done and all(r["tainted"] for r in done)
+
+
+def test_protected_runner_keeps_the_applications_own_plugins(desk):
+    """zt-adk run (and any host using protected_runner) runs the App with its own plugins and
+    configuration; the PEP is first, and an app that registers a ZeroTrustPlugin itself does not
+    get a second one."""
+    import asyncio
+
+    from google.adk.apps import App
+    from google.adk.plugins.base_plugin import BasePlugin
+    from google.adk.sessions import InMemorySessionService
+    from google.genai import types
+
+    from zt_adk.plugin import protected_runner
+
+    class Recorder(BasePlugin):
+        def __init__(self) -> None:
+            super().__init__(name="recorder")
+            self.tools: list[str] = []
+
+        async def before_tool_callback(self, *, tool, tool_args, tool_context):
+            self.tools.append(tool.name)
+            return None
+
+    s = desk()
+    rec = Recorder()
+    app = App(name="helpdesk", root_agent=s.runner.agent, plugins=[rec, s.plugin])
+    sessions = InMemorySessionService()
+    runner = protected_runner(app, s.plugin, root_agent=app.root_agent, app_name="helpdesk",
+                              session_service=sessions)
+    assert [p.name for p in runner.plugin_manager.plugins] == [s.plugin.name, "recorder"]
+    sess = asyncio.run(sessions.create_session(app_name="helpdesk", user_id="u1"))
+    s.plugin.register_session(sess.id, user_role="employee")
+
+    async def go():
+        return [ev async for ev in runner.run_async(user_id="u1", session_id=sess.id, new_message=types.Content(
+            role="user", parts=[types.Part(text="Look up user alice")]))]
+
+    out = asyncio.run(go())
+    assert results(out)["lookup_user"]["status"] == "ok"
+    assert rec.tools == ["transfer_to_agent", "lookup_user"]
 
 
 def test_overlay_argument_rule(desk):

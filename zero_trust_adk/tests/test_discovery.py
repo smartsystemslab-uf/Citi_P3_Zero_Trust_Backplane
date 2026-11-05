@@ -76,6 +76,37 @@ def test_fingerprint_ignores_prompts_but_not_structure():
     assert c.fingerprint() != a.fingerprint()
 
 
+def test_fingerprint_follows_what_the_tool_code_does(tmp_path, monkeypatch):
+    """A tool whose code now does something else (its classification would differ) makes the
+    bundle stale; a change that leaves the code evidence as it is (docstring, comments) does not."""
+    import importlib
+    import sys
+    import uuid
+
+    pkg = f"fp_app_{uuid.uuid4().hex[:8]}"
+    (tmp_path / pkg).mkdir()
+    (tmp_path / pkg / "__init__.py").write_text("")
+    mod = tmp_path / pkg / "tools.py"
+    body = ('def find_order(order_id: str) -> list:\n'
+            '    """{doc}"""\n'
+            '    import sqlite3\n'
+            '    with sqlite3.connect(":memory:") as c:\n'
+            '        return c.execute("{sql} FROM orders WHERE id = ?", (order_id,)).fetchall()\n')
+    monkeypatch.syspath_prepend(str(tmp_path))
+
+    def fingerprint(doc: str, sql: str) -> str:
+        mod.write_text(body.format(doc=doc, sql=sql))
+        sys.modules.pop(f"{pkg}.tools", None)
+        tools = importlib.import_module(f"{pkg}.tools")
+        root = LlmAgent(name="orders", model="gemini-2.5-flash", tools=[tools.find_order])
+        model, _, _ = discover(root)
+        return model.fingerprint()
+
+    reads = fingerprint("Find an order.", "SELECT *")
+    assert fingerprint("Look up one order by id.", "SELECT *") == reads
+    assert fingerprint("Find an order.", "DELETE") != reads
+
+
 def test_transfer_flags_are_respected():
     child = LlmAgent(name="child", model="gemini-2.5-flash", disallow_transfer_to_parent=True,
                      disallow_transfer_to_peers=True)

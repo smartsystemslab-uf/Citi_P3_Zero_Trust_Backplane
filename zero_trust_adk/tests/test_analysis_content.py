@@ -77,6 +77,114 @@ def test_http_post_and_pure_function():
     assert ev.analyzed and not ev.has_operation()
 
 
+class PaymentService:
+    """A tool object around an SDK client the analysis cannot enter."""
+
+    def __init__(self, client) -> None:
+        self.client = client
+        self.refunded: list[str] = []
+
+    def refund_payment(self, payment_id: str) -> dict:
+        """Refund a payment."""
+        return self.client.refunds.create(payment=payment_id)
+
+    def refund_in_memory(self, payment_id: str) -> dict:
+        """Refund a payment (in-memory ledger)."""
+        self.refunded.append(payment_id)
+        return {"status": "ok"}
+
+
+LEDGER: dict[str, str] = {}
+
+
+def settle_invoice(invoice_id: str) -> str:
+    """Settle an invoice through a library the analysis does not enter."""
+    import yaml  # noqa: F401  (resolved through the globals below when analysed)
+    return yaml.safe_dump({"invoice": invoice_id})
+
+
+def record_entry(key: str, value: str) -> dict:
+    LEDGER[key] = value
+    return {"status": "ok"}
+
+
+def build_quote(amount: float, note: str) -> dict:
+    import datetime as _dt  # noqa: F401
+    local = {"amount": round(amount * 1.02, 2)}
+    local["note"] = note.strip().lower()
+    return {**local, "at": _dt.datetime.now().isoformat()}
+
+
+def charge_customer(customer_id: str, amount: int) -> str:
+    """Charge the card on file: a read, then a call into a payment library."""
+    import sqlite3
+    with sqlite3.connect(":memory:") as c:
+        card = c.execute("SELECT card FROM customers WHERE id = ?", (customer_id,)).fetchone()
+    return yaml.safe_dump({"card": card, "amount": amount})      # stands in for an SDK charge call
+
+
+def save_profile(user_id: str, data: dict, db) -> dict:
+    """Store a user profile (document database client passed in)."""
+    ref = db.collection("profiles").document(user_id)
+    ref.update(data)
+    return {"status": "ok"}
+
+
+def tally(words: list) -> dict:
+    """Count words."""
+    counts = {}
+    seen = []
+    for w in words:
+        counts[w] = counts.get(w, 0) + 1
+        seen.append(w)
+    counts.update({"total": len(seen)})
+    return counts
+
+
+def find_customers(name: str) -> list:
+    """Look up customers (ORM-style query chain)."""
+    import sqlite3
+    with sqlite3.connect(":memory:") as c:
+        return c.execute("SELECT * FROM customers WHERE name = ?", (name,)).fetchall()
+
+
+import yaml  # noqa: E402  (module-level import: settle_invoice resolves it through its globals)
+
+
+def test_absence_of_evidence_is_not_a_harmless_read():
+    sdk = analyze_callable(PaymentService(object()).refund_payment)
+    assert sdk.analyzed and not sdk.has_operation() and "self.client.refunds.create" in sdk.opaque_calls
+    lib = analyze_callable(settle_invoice)
+    assert "yaml.safe_dump" in lib.opaque_calls
+    assert analyze_callable(PaymentService(object()).refund_in_memory).memory_write
+    assert analyze_callable(record_entry).memory_write
+    pure = analyze_callable(build_quote)                       # local mutation, stdlib values: pure
+    assert not pure.opaque_calls and not pure.memory_write and not pure.unresolved_calls
+
+    refund = classify_tool(_tool("refund_payment", PaymentService(object()).refund_payment), PROFILE)
+    assert refund.side_effect and refund.criticality == "critical" and refund.requires_approval
+    mem = classify_tool(_tool("refund_in_memory", PaymentService(object()).refund_in_memory), PROFILE)
+    assert mem.side_effect and mem.criticality == "critical"
+    settle = classify_tool(_tool("settle_invoice", settle_invoice), PROFILE)
+    assert settle.side_effect and settle.criticality == "critical"  # no verb: side effect; "invoice" is critical
+    rec = classify_tool(_tool("record_entry", record_entry), PROFILE)
+    assert rec.action == "create" and rec.side_effect
+    quote = classify_tool(_tool("build_quote", build_quote), PROFILE)
+    assert quote.action == "read" and not quote.side_effect
+    # a read does not outweigh a call the analysis could not see into
+    charge = classify_tool(_tool("charge_customer", charge_customer), PROFILE)
+    assert charge.side_effect and charge.criticality == "critical" and charge.requires_approval
+    find = classify_tool(_tool("find_customers", find_customers), PROFILE)
+    assert find.action == "read" and not find.side_effect
+    # an update of an SDK object is not an in-memory update; one of a value the tool built is
+    assert "ref.update" in analyze_callable(save_profile).opaque_calls
+    store = classify_tool(_tool("save_profile", save_profile), PROFILE)
+    assert store.side_effect and store.action == "create"
+    counted = analyze_callable(tally)
+    assert not counted.opaque_calls and not counted.memory_write
+    assert classify_tool(_tool("tally", tally), PROFILE).action == "read"
+
+
 def _tool(name: str, fn, params: dict | None = None) -> M.ToolInfo:
     return M.ToolInfo(key=f"a/{name}", name=name, agent="a", kind=M.FUNCTION,
                       parameters={"type": "object", "properties": params or {}},
