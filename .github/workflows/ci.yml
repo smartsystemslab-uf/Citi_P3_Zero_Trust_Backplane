@@ -47,9 +47,17 @@ jobs:
         shell: bash
         run: python -m pytest -p no:cacheprovider distributed_runtime/tests/unit -q
       - name: Backplane components
+        # One pytest process per suite: several suites are packages named "tests" with their own
+        # conftest.py, which collide (ImportPathMismatchError) when collected in one process.
         shell: bash
         run: |
-          python -m pytest -p no:cacheprovider -q \
+          set -e
+          for suite in \
             zero_trust_psl/tests zero_trust_pdp_task4_secure/tests zero_trust_task5/tests \
             Zero_Trust_Task3_PEP_Integrated/zero_trust_pep_task3_integrated/tests interface_standard/tests \
             zero_trust_task2/tests zero_trust_identity/tests native_mas_runtime/tests integrated_demo/tests
+          do
+            echo "::group::$suite"
+            python -m pytest -p no:cacheprovider -q "$suite"
+            echo "::endgroup::"
+          done
