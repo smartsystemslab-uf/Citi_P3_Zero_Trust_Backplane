@@ -1,6 +1,6 @@
 # Host test suites of the Zero Trust Backplane. The Docker end-to-end tests
-# (distributed_runtime/tests/functional) and the Citi P3 regression (needs a copy of the Citi app,
-# CITI_MAS_COPY) skip themselves here; run them locally (README §8).
+# (packages/zt-distributed/tests/functional) and the Citi P3 regression (needs a copy of the Citi app,
+# CITI_MAS_COPY) skip themselves here; run them locally (README, Tests).
 name: ci
 
 on:
@@ -25,37 +25,27 @@ jobs:
         run: |
           python -m pip install --upgrade pip setuptools wheel
           python -m pip install \
-            -e interface_standard \
-            -e Zero_Trust_Task3_PEP_Integrated/zero_trust_pep_task3_integrated \
-            -e zero_trust_pdp_task4_secure \
-            -e zero_trust_task5 \
-            -e zero_trust_psl \
-            -e zero_trust_identity \
-            -e "zero_trust_adk[test]" \
-            -r distributed_runtime/deploy/requirements.txt \
+            -e packages/zt-interface -e packages/zt-scanner -e packages/zt-pep -e packages/zt-pdp \
+            -e packages/zt-lease -e packages/zt-psl -e packages/zt-identity \
+            -e "packages/zt-adk[test]" -e packages/zt-distributed \
             "${{ matrix.adk }}"
           python -c "import google.adk; print('google-adk', google.adk.__version__)"
       - name: Policy store and configuration
         shell: bash
         run: |
-          python zero_trust_pdp_task4_secure/scripts/sign_psl_policies.py --check
-          python zero_trust_pdp_task4_secure/scripts/validate_configuration.py
-      - name: Generic package (zt-adk)
-        shell: bash
-        run: python -m pytest -p no:cacheprovider zero_trust_adk/tests -q
-      - name: Distributed runtime (unit)
-        shell: bash
-        run: python -m pytest -p no:cacheprovider distributed_runtime/tests/unit -q
-      - name: Backplane components
+          python packages/zt-pdp/scripts/sign_psl_policies.py --check
+          python packages/zt-pdp/scripts/validate_configuration.py
+      - name: Tests
         # One pytest process per suite: several suites are packages named "tests" with their own
         # conftest.py, which collide (ImportPathMismatchError) when collected in one process.
         shell: bash
         run: |
           set -e
           for suite in \
-            zero_trust_psl/tests zero_trust_pdp_task4_secure/tests zero_trust_task5/tests \
-            Zero_Trust_Task3_PEP_Integrated/zero_trust_pep_task3_integrated/tests interface_standard/tests \
-            zero_trust_task2/tests zero_trust_identity/tests native_mas_runtime/tests integrated_demo/tests
+            packages/zt-adk/tests packages/zt-distributed/tests/unit \
+            packages/zt-psl/tests packages/zt-pdp/tests packages/zt-lease/tests packages/zt-pep/tests \
+            packages/zt-interface/tests packages/zt-scanner/tests packages/zt-identity/tests \
+            legacy/citi_p3/native_runtime/tests legacy/citi_p3/integrated_demo/tests
           do
             echo "::group::$suite"
             python -m pytest -p no:cacheprovider -q "$suite"

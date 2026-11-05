@@ -1,0 +1,118 @@
+// Distributed-runtime gateway: runtime-monitored properties of the MCP tool path
+// (SPIFFE scheme B: workload X.509-SVID over mTLS + agent certificate bound to it).
+//
+// Evaluated only by the gateway PEP (runtime "gateway"). Every trusted event of a scope is
+// one step; one monitor instance per scope key (attempt, operation, batch, participation).
+// Admission events are checked BEFORE the step happens: a violating admission is refused and
+// the business function never runs. The workflow_run rules of intent.psl are evaluated in the
+// same process by the engine's own monitor (authorize / begin_tool / finish_tool).
+// Origin: properties P1-P6 of the Citi_P3_MCP_PSL_Monitor experiment (scheme B part).
+
+// @policy_set gateway.runtime
+// @version 1.0.0
+// @source packages/zt-distributed (gateway PEP, MCP tools/call path)
+// @runtime gateway
+vunit gateway_request_attempt (request_attempt) {
+
+  // @rule gateway.P1_identity
+  // @nl A tool call is admitted only after THIS request passed both identity layers: the verified workload SVID of the mTLS peer and the agent certificate, registry and RFC 9421 signature bound to that workload.
+  P1_identity: assert (identity_verified && identity.workload_ok && identity.agent_registered && identity.agent_credential_ok) before execution_admitted;
+
+  // @rule gateway.P1_authorization
+  // @nl A tool call is admitted only after the PDP allowed this request.
+  P1_authorization: assert authorization_allowed before execution_admitted;
+
+  // @rule gateway.P1_permit
+  // @nl A tool call is admitted only after a Permit Lease bound to this request was verified.
+  P1_permit: assert permit_verified before execution_admitted;
+
+  // @rule gateway.P1_binding
+  // @nl At admission the Permit Lease still binds tool, resource, arguments and the authenticated caller.
+  P1_binding: assert never (execution_admitted && !permit.bound);
+
+  // @rule gateway.P1_admission
+  // @nl The business function starts only through an admission.
+  P1_admission: assert execution_admitted before execution_started;
+
+  // @rule gateway.P2_request
+  // @nl Once any layer rejected or denied this request, it is never executed.
+  P2_request: assert never { (identity_rejected || run_rejected || authorization_denied ||
+                              authorization_unavailable || permit_rejected || obligation_rejected ||
+                              request_denied) ; [*] ; (execution_admitted || execution_started) };
+
+  // @rule gateway.P5_live
+  // @nl At admission the Permit Lease is unexpired and not revoked, and the caller's agent credential is still valid.
+  P5_live: assert never (execution_admitted && !permit.live);
+
+  // @rule gateway.P6_pre_audit
+  // @nl A durable, correlated pre-execution audit record exists before the business function starts.
+  P6_pre_audit: assert (audit_pre_recorded && audit.correlated && audit.durable) before execution_started;
+
+  // @rule gateway.P6_post_audit
+  // @nl Every outcome (success, failure, denial) is followed by a correlated outcome record before the request scope closes.
+  P6_post_audit: assert always ((execution_succeeded || execution_failed || request_denied) ->
+                                eventually! (audit_post_recorded && audit.correlated));
+
+  // @rule gateway.P6_outcome_after_start
+  // @nl An execution outcome is reported only for a started business function.
+  P6_outcome_after_start: assert execution_started before (execution_succeeded || execution_failed);
+
+  // @rule gateway.P6_outcome_recorded
+  // @nl A started business function reports an outcome before the request scope closes.
+  P6_outcome_recorded: assert always (execution_started -> eventually! (execution_succeeded || execution_failed));
+
+  // @rule gateway.P6_single_outcome
+  // @nl Each request has at most one execution outcome.
+  P6_single_outcome: assert never { (execution_succeeded || execution_failed) ; [*] ;
+                                    (execution_succeeded || execution_failed) };
+}
+
+// @policy_set gateway.runtime.operation
+// @version 1.0.0
+// @source packages/zt-distributed (gateway PEP, MCP tools/call path)
+// @runtime gateway
+vunit gateway_operation (operation) {
+
+  // @rule gateway.P2_operation
+  // @nl A terminally denied operation (same run, agent, tool and arguments) is not executed later through a new request id, JSON-RPC id, MCP session or idempotency key.
+  P2_operation: assert never { op_denied ; [*] ; execution_admitted };
+
+  // @rule gateway.P3_at_most_once
+  // @nl A protected critical write executes at most once per operation; a new admission is allowed only after the previous one ended in an explicit failure.
+  P3_at_most_once: assert never { (execution_admitted && tool.critical) ; (!execution_failed)[*] ;
+                                  (execution_admitted && tool.critical) };
+}
+
+// @policy_set gateway.runtime.eod_batch
+// @version 1.0.0
+// @source packages/zt-distributed (gateway PEP, MCP tools/call path)
+// @runtime gateway
+vunit gateway_eod_batch (workflow_batch) {
+
+  // @rule gateway.P4_ledger_after_readiness
+  // @nl Ledger posting for a batch is admitted only after readiness validation of that batch succeeded in this run with ready = true.
+  P4_ledger_after_readiness: assert readiness_ready before ledger_admitted;
+
+  // @rule gateway.P4_report_after_match
+  // @nl The EOD report for a batch is admitted only after its reconciliation matched in this run.
+  P4_report_after_match: assert recon_matched before report_admitted;
+
+  // @rule gateway.P4_exception_after_mismatch
+  // @nl An exception case for a batch is admitted only after its reconciliation showed a mismatch in this run.
+  P4_exception_after_mismatch: assert recon_mismatched before exception_admitted;
+}
+
+// @policy_set gateway.runtime.participation
+// @version 1.0.0
+// @source packages/zt-distributed (gateway PEP, MCP tools/call path)
+// @runtime gateway
+vunit gateway_participation (workflow_participation) {
+
+  // @rule gateway.P4_participant
+  // @nl An agent executes tools of a workflow run only after this gateway dispatched it in that run.
+  P4_participant: assert dispatched before execution_admitted;
+
+  // @rule gateway.P4_within_dispatch
+  // @nl An agent executes tools of a workflow run only while its dispatch in that run is in flight.
+  P4_within_dispatch: assert never { dispatch_ended ; (!dispatched)[*] ; execution_admitted };
+}

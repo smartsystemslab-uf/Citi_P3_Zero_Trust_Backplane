@@ -6,7 +6,7 @@ Branch `feature/spiffe-psl`. Decisions by the project owner (2026-11-02):
   agent credential (agent certificate bound to the workload SPIFFE ID, RFC 9421 message
   signature, registry state, replay window).
 * **Policies:** every natural-language / YAML policy becomes a **PSL** policy (IEEE 1850).
-  Decision semantics change from Task 4's "highest priority wins" to **deny-overrides**: every
+  Decision semantics change from PDP's "highest priority wins" to **deny-overrides**: every
   applicable rule must hold; a single violated rule refuses the request. Every resulting
   behaviour change is listed (differential report), none is silent.
 
@@ -19,17 +19,17 @@ MCP gateway), adapted to this repository.
 | item | state |
 |---|---|
 | SPIFFE | placeholders only: `identity_context.yaml` "deferred to Phase 4", `trusted_issuers.yaml` dev PEM keys with `TODO ... SPIFFE trust roots`; the native runtime sends `auth_factors: {workload_identity: true}` as a self-asserted claim |
-| Task 1 `policy_intent.yaml` | 24 rules, 45 conditions in controlled natural language; header says "compiled into OPA Rego in Phase 3" -- **no code reads it; none of these rules is enforced** |
-| Task 4 `policy_store/*.yaml` | 16 signed structured policies (subject/resource/action/workflow/risk/auth/approval/time matchers, effect, priority, obligations), evaluated by `PolicyEngine` (highest priority, then strongest effect) plus a hard-coded critical-write rule in `engine.py` |
-| native runtime | runs the Task 4 PDP in-process (FastAPI TestClient) inside the CITI-MAS process; generates `native_mas_runtime.yaml` from the 105 Task 3 placements |
-| tests | 69 passed, 2 skipped (interface 4, Task 2 11, Task 3 10+2s, Task 4 23, Task 5 16, integrated_demo 5) |
+| Unified Interface `policy_intent.yaml` | 24 rules, 45 conditions in controlled natural language; header says "compiled into OPA Rego in Phase 3" -- **no code reads it; none of these rules is enforced** |
+| PDP `policy_store/*.yaml` | 16 signed structured policies (subject/resource/action/workflow/risk/auth/approval/time matchers, effect, priority, obligations), evaluated by `PolicyEngine` (highest priority, then strongest effect) plus a hard-coded critical-write rule in `engine.py` |
+| native runtime | runs the PDP in-process (FastAPI TestClient) inside the CITI-MAS process; generates `native_runtime.yaml` from the 105 PEP generator placements |
+| tests | 69 passed, 2 skipped (interface 4, static scanner 11, PEP generator 10+2s, PDP 23, Permit Lease 16, integrated_demo 5) |
 
 ## 2. PSL as the Backplane policy language
 
 ### 2.1 Language
 
 Same core as the verified monitor (IEEE 1850-2010, Verilog flavour, simple subset; see
-`zero_trust_psl/docs/PSL_SUPPORTED_SUBSET.md`), extended in the **Boolean layer** only:
+`packages/zt-psl/docs/PSL_SUPPORTED_SUBSET.md`), extended in the **Boolean layer** only:
 
 * hierarchical field references (Verilog hierarchical names): `subject.id`, `resource.critical`,
   `security.auth_strength`, `param.amount`;
@@ -51,7 +51,7 @@ any other PSL tool, so the files stay plain PSL):
 // @rule   policy.ledger.report_deny_update
 // @nl     Explicitly deny report-agent ledger writes.
 // @on_violation DENY
-// @source zero_trust_pdp_task4_secure/legacy_policy_store/ledger_access.yaml
+// @source packages/zt-pdp/legacy_policy_store/ledger_access.yaml
 P_report_no_ledger_update: assert never (authz_request && subject.id == "agent.back_office.report"
                                           && resource.id == "resource.back_office.ledger" && action == "update");
 ```
@@ -77,7 +77,7 @@ For a verified request the PDP evaluates every applicable rule:
 1. **Default deny** -- the generated rule `R_default_deny: assert always (authz_request -> permitted)`
    where `permitted` is the disjunction of all `@permit` properties. No permission → DENY.
 2. **Constraints** -- every other request rule. A violated rule contributes its `@on_violation`.
-3. **Outcome** = the strictest contributed outcome, DENY > REAUTHENTICATE > MANUAL_REVIEW (Task 4's
+3. **Outcome** = the strictest contributed outcome, DENY > REAUTHENTICATE > MANUAL_REVIEW (PDP's
    precedence); if nothing is violated → ALLOW, or ALLOW_WITH_OBLIGATIONS when the permissions that
    hold carry obligations (union of their obligations).
 4. The response lists every violated rule id (`reason`, `matched_policy_ids`) and the permissions
@@ -96,10 +96,10 @@ sources, field catalogue and compiler; a mismatch refuses to load (`MonitorStale
 
 | source | method | output |
 |---|---|---|
-| Task 4 `policy_store/*.yaml` (16) | translator for the structured matchers + **semantic** handling of priority patterns (e.g. `*_pending_review` MANUAL_REVIEW + higher-priority `*_approved` ALLOW → permission + constraint "never (scope && !(approval && secondary))" with `@on_violation MANUAL_REVIEW`) | `policy_store/*.psl` |
+| PDP `policy_store/*.yaml` (16) | translator for the structured matchers + **semantic** handling of priority patterns (e.g. `*_pending_review` MANUAL_REVIEW + higher-priority `*_approved` ALLOW → permission + constraint "never (scope && !(approval && secondary))" with `@on_violation MANUAL_REVIEW`) | `policy_store/*.psl` |
 | engine's hard-coded critical-write rule | explicit PSL constraint (`@on_violation MANUAL_REVIEW`) | `policy_store/core.psl` |
-| Task 1 `policy_intent.yaml` (24 rules) | deterministic translator for the controlled grammar (`is present`, `== / !=`, `in [..]`, `NOT ( .. AND .. )`, `len(x) >= n`, `does not match pattern P`, ...); runtime names → canonical IDs through the unified bindings; `session_state.X` prerequisites → **temporal** rules over trusted events (not over agent-writable session state); phrases outside the grammar → explicit error, then a named trusted checker AP | `policy_store/intent_*.psl` |
-| native generated bundle | generator emits PSL instead of YAML | `output/task4_policy_store/native_mas_runtime.psl` |
+| Unified Interface `policy_intent.yaml` (24 rules) | deterministic translator for the controlled grammar (`is present`, `== / !=`, `in [..]`, `NOT ( .. AND .. )`, `len(x) >= n`, `does not match pattern P`, ...); runtime names → canonical IDs through the unified bindings; `session_state.X` prerequisites → **temporal** rules over trusted events (not over agent-writable session state); phrases outside the grammar → explicit error, then a named trusted checker AP | `policy_store/intent_*.psl` |
+| native generated bundle | generator emits PSL instead of YAML | `output/pdp_policy_store/native_runtime.psl` |
 
 The old YAML files move to `legacy_policy_store/` and are used only by the differential test.
 
@@ -110,16 +110,16 @@ rule that causes it.
 
 ## 4. SPIFFE scheme B (as implemented)
 
-* `zero_trust_identity/` (package `zt_identity`) -- X.509-SVID acquisition (SPIFFE Workload API),
+* `packages/zt-identity/` (package `zt_identity`) -- X.509-SVID acquisition (SPIFFE Workload API),
   mTLS with SPIFFE-ID peer verification, agent-credential issuer and registry, RFC 9421
   signer/verifier with content digest and replay window, controlled service map (ported from the
   experiments; scheme A and C0 removed). 25 unit tests (run inside the runtime image).
-* `distributed_runtime/` (package `zt_distributed`) -- the MCP gateway PEP, one container per
+* `packages/zt-distributed/` (package `zt_distributed`) -- the MCP gateway PEP, one container per
   agent (13 original ADK agents: transaction monitoring, the customer-service chatbot path to
   `execute_transfer`, the EOD workflow), agent-credential issuer, ingress client, SPIRE server +
   agent (x509pop node attestation; docker label + compose project + per-workload UID selectors),
   compose generator, control CLI. Every hop is authenticated by both layers before any policy is
-  consulted; see `distributed_runtime/README.md`.
+  consulted; see `packages/zt-distributed/README.md`.
 * **Identity facts reach the PDP as PSL fields.** The gateway's backplane adapter puts the
   verification result into the IdP-signed authentication assertion (`authentication` block); the
   evidence verifier exposes `auth.scheme`, `auth.subject_kind`, `auth.factor.*` (factors are
@@ -134,7 +134,7 @@ rule that causes it.
   scopes `request_attempt`, `operation`, `workflow_batch`, `workflow_participation`). The
   `workflow_run` intent rules run in the engine's monitor at authorize / begin_tool / finish_tool.
   All of them are loaded from the one signed store the PDP verifies.
-* **Deviation from the plan -- PDP edge:** the distributed runtime runs the Task 4 PDP in-process
+* **Deviation from the plan -- PDP edge:** the distributed runtime runs the PDP in-process
   inside the gateway (as the native runtime does), so there is no network hop to the PDP to protect
   with mTLS; the PEP request proof and decision signatures are unchanged. A separately deployed PDP
   would need that edge.
@@ -159,13 +159,13 @@ rule that causes it.
 
 | check | result |
 |---|---|
-| zero_trust_psl | 143 passed (incl. guard-index equivalence vs exhaustive evaluation) |
-| Task 4 PDP | 36 passed (incl. differential equivalence and 7 SPIFFE identity-rule tests) |
-| Task 2 / Task 3 / Task 5 / interface / integrated_demo / native runtime | 13 / 12 / 16 / 4 / 5 / 14 passed (incl. scanner domain inheritance; cross-domain rule on the real agent tree; stale scan cache rescanned) |
-| zero_trust_identity | 25 passed inside the runtime image (10 workload-layer tests also on the host) |
-| distributed_runtime unit (host) | 60 passed (gateway monitors from the signed store, PSL guard, content checks) |
-| distributed_runtime end to end (Docker, SPIRE) | 15 passed: identities, separate agent CA, read, transfer via customer-service path, direct transfer refused (`intent.execute-transfer-caller-restriction.order`), approval required, EOD clean + mismatch, EOD not ready, direct ledger post refused, knowledge path, 3 input-rule refusals, disable/enable with lease revocation, SVID + agent-certificate rotation |
-| integrated demo | modes 1 and 2: ALL TASKS 1-5 INTEGRATED: PASS; Task 6 real workflows (on a staged copy of the MAS, so the MAS database is not written): ALL TASKS 1-6 INTEGRATED: PASS |
+| packages/zt-psl | 143 passed (incl. guard-index equivalence vs exhaustive evaluation) |
+| PDP | 36 passed (incl. differential equivalence and 7 SPIFFE identity-rule tests) |
+| static scanner / PEP generator / Permit Lease / interface / integrated_demo / native runtime | 13 / 12 / 16 / 4 / 5 / 14 passed (incl. scanner domain inheritance; cross-domain rule on the real agent tree; stale scan cache rescanned) |
+| packages/zt-identity | 25 passed inside the runtime image (10 workload-layer tests also on the host) |
+| packages/zt-distributed unit (host) | 60 passed (gateway monitors from the signed store, PSL guard, content checks) |
+| packages/zt-distributed end to end (Docker, SPIRE) | 15 passed: identities, separate agent CA, read, transfer via customer-service path, direct transfer refused (`intent.execute-transfer-caller-restriction.order`), approval required, EOD clean + mismatch, EOD not ready, direct ledger post refused, knowledge path, 3 input-rule refusals, disable/enable with lease revocation, SVID + agent-certificate rotation |
+| integrated demo | modes 1 and 2: ALL COMPONENTS INTEGRATED: PASS; real-workflow real workflows (on a staged copy of the MAS, so the MAS database is not written): ALL COMPONENTS AND REAL WORKFLOWS INTEGRATED: PASS |
 | differential (552,960 requests) | translated store: 0 differences; with intent rules: 128 stricter (all `intent.execute-transfer-caller-restriction`), 0 more permissive |
 | native differential (582,400 requests, real MAS store) | 128 different decisions, none more permissive: 96 ALLOW -> ALLOW_WITH_OBLIGATIONS, 32 MANUAL_REVIEW / ALLOW_WITH_OBLIGATIONS -> DENY (transfer caller restriction, ledger pipeline gate); obligation differences only add obligations (`audit_log` from the enabled cross-domain rule on every agent route, `enhanced_logging`), none removed |
 | intent consistency (105 placements of the real MAS) | 0 conflicts for all 12 `pdp_request` intent rules, none disabled |
@@ -173,15 +173,15 @@ rule that causes it.
 
 Resolved 2026-11-03:
 
-* `intent.no-cross-domain-transfers` is **enabled**. It had been `@disabled` because the Task 2
+* `intent.no-cross-domain-transfers` is **enabled**. It had been `@disabled` because the static scanner
   scanner put the factory-built mid-office workflow agents (`mid_office_planning_workflow`,
   `mid_office_planning_parallel`, `representative_assistant_workflow`,
   `representative_assist_parallel`, built in the generic `agents/workflow_agents.py`) into domain
   `shared`, so 13 legitimate mid-office routes looked cross-domain. The scanner now gives an agent
   whose path names no office the office of its parents when all of them agree
-  (`zt_scan.inherit_agent_domains`, recorded as `domain_source`); the consistency check over the
+  (`zt_scanner.inherit_agent_domains`, recorded as `domain_source`); the consistency check over the
   105 placements of the real MAS (incl. the 3 routes only the ADK tree shows) reports 0 conflicts.
-* Found on the way and fixed: (1) the native runtime reused a cached Task 2 scan regardless of
+* Found on the way and fixed: (1) the native runtime reused a cached static scanner scan regardless of
   the scanner version -- the MAS plugin and the gateway (`gwout` volume) start with
   `refresh=False`, so they would have kept the old `shared` domains; the cache now carries a
   scanner fingerprint and is rescanned when it differs. (2) Route targets that only the

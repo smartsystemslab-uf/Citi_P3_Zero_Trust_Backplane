@@ -1,0 +1,20 @@
+# Deterministic model decisions for the claims desk (tests and keyless demos).
+agents:
+  intake_agent:
+    - when: {after: lookup_policy, result_status: ok, user: "(?i)(?P<amount>\\d+)\\s*(?:usd|dollars)"}
+      text: "claim C-1 for policy {result[policy_id]} amount {amount}"
+    - when: {after: lookup_policy}
+      text: "claim C-0 for unknown policy amount 0"
+    - when: {user: "(?i)policy (?P<policy>P-\\d+).*?(?P<amount>\\d+)\\s*(?:usd|dollars)"}
+      call: lookup_policy
+      args: {policy_id: "{policy}"}
+    - text: "Which policy and amount?"
+  adjuster_agent:
+    - when: {after: read_claim_history}
+      text: "history of {result[claim_id]}: {result[history]}"
+    - call: read_claim_history
+      args: {claim_id: "C-1"}
+  notifier_agent:
+    - text: "the holder was told"
+  writer_agent:
+    - text: "The claim was processed."

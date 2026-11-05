@@ -1,4 +1,4 @@
-// Citi P3 intent rules (formerly zero_trust_task1/manifest/policy_intent.yaml) as PSL overlays of the
+// Citi P3 intent rules (formerly legacy/citi_p3/manifest_spec/manifest/policy_intent.yaml) as PSL overlays of the
 // generic zt-adk bundle. They compile against the generated field catalogue: resource.runtime_id of
 // a tool is "<agent>/<tool>", args.<parameter> fields exist for every discovered tool parameter.
 // Deny-overrides: these rules only narrow what the generated least-privilege permits allow.
