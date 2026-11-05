@@ -1,4 +1,4 @@
-# Task 4 PDP policy set (PSL)
+# PDP policy set (PSL)
 
 Generated from back_office.psl, core.psl, front_office.psl, gateway_runtime.psl, identity.psl, intent.psl, ledger_access.psl, mid_office.psl, tool_access.psl + field catalogue `policy_fields.yaml` (source sha256 `e6a072169fb10d7e`). Do not edit.
 
@@ -387,7 +387,7 @@ always (authz_request && resource.target_type == "subject" && subject.runtime_id
 
 obligations: {"parameters": {}, "type": "audit_log"}
 atomic propositions: `authz_request`, `resource.runtime_id == "customer_service_chatbot_workflow"`, `resource.runtime_id == "front_office_transaction_workflow"`, `resource.target_type == "subject"`, `subject.runtime_id == "front_office_router"`
-source: zero_trust_task1/manifest/policy_intent.yaml#front-office-router-allowed-targets
+source: legacy/citi_p3/manifest_spec/manifest/policy_intent.yaml#front-office-router-allowed-targets
 
 ## `intent.mid-office-router-allowed-targets` (constraint)
 
@@ -399,7 +399,7 @@ always (authz_request && resource.target_type == "subject" && subject.runtime_id
 
 obligations: {"parameters": {}, "type": "audit_log"}
 atomic propositions: `authz_request`, `resource.runtime_id == "mid_office_planning_workflow"`, `resource.runtime_id == "representative_assistant_workflow"`, `resource.target_type == "subject"`, `subject.runtime_id == "mid_office_router"`
-source: zero_trust_task1/manifest/policy_intent.yaml#mid-office-router-allowed-targets
+source: legacy/citi_p3/manifest_spec/manifest/policy_intent.yaml#mid-office-router-allowed-targets
 
 ## `intent.back-office-router-allowed-targets` (constraint)
 
@@ -411,7 +411,7 @@ always (authz_request && resource.target_type == "subject" && subject.runtime_id
 
 obligations: {"parameters": {}, "type": "audit_log"}
 atomic propositions: `authz_request`, `resource.runtime_id == "back_office_eod_workflow"`, `resource.target_type == "subject"`, `subject.runtime_id == "back_office_router"`
-source: zero_trust_task1/manifest/policy_intent.yaml#back-office-router-allowed-targets
+source: legacy/citi_p3/manifest_spec/manifest/policy_intent.yaml#back-office-router-allowed-targets
 
 ## `intent.no-cross-domain-transfers` (constraint)
 
@@ -423,7 +423,7 @@ always (authz_request && resource.target_type == "subject" -> !(request.cross_do
 
 obligations: {"parameters": {}, "type": "audit_log"}
 atomic propositions: `authz_request`, `request.cross_domain`, `resource.target_type == "subject"`, `subject.runtime_id != "user_proxy_agent"`
-source: zero_trust_task1/manifest/policy_intent.yaml#no-cross-domain-transfers
+source: legacy/citi_p3/manifest_spec/manifest/policy_intent.yaml#no-cross-domain-transfers
 
 ## `intent.execute-transfer-caller-restriction` (constraint)
 
@@ -435,7 +435,7 @@ always (authz_request && resource.runtime_id == "banking_transfer" && action == 
 
 obligations: {"parameters": {}, "type": "audit_log"}, {"parameters": {}, "type": "emit_financial_event"}
 atomic propositions: `action == "execute"`, `args.amount.finite_nonzero`, `args.destination_account.nonempty`, `args.source_account.nonempty`, `authz_request`, `resource.runtime_id == "banking_transfer"`, `subject.runtime_id == "transaction_processing_agent"`
-source: zero_trust_task1/manifest/policy_intent.yaml#execute-transfer-caller-restriction
+source: legacy/citi_p3/manifest_spec/manifest/policy_intent.yaml#execute-transfer-caller-restriction
 
 ## `intent.execute-transfer-non-caller-block` (constraint)
 
@@ -446,7 +446,7 @@ never (authz_request && resource.runtime_id == "banking_transfer" && action == "
 ```
 
 atomic propositions: `action == "execute"`, `authz_request`, `resource.runtime_id == "banking_transfer"`, `subject.runtime_id != "transaction_processing_agent"`
-source: zero_trust_task1/manifest/policy_intent.yaml#execute-transfer-non-caller-block
+source: legacy/citi_p3/manifest_spec/manifest/policy_intent.yaml#execute-transfer-non-caller-block
 
 ## `intent.apply-ledger-updates-pipeline-gate` (constraint)
 
@@ -458,7 +458,7 @@ always (authz_request && resource.runtime_id == "ledger" && action == "update" &
 
 obligations: {"parameters": {}, "type": "audit_log"}, {"parameters": {}, "type": "emit_ledger_event"}
 atomic propositions: `action == "update"`, `args.posting_instructions.nonempty`, `authz_request`, `resource.runtime_id == "ledger"`, `subject.runtime_id == "ledger_update_agent"`
-source: zero_trust_task1/manifest/policy_intent.yaml#apply-ledger-updates-pipeline-gate
+source: legacy/citi_p3/manifest_spec/manifest/policy_intent.yaml#apply-ledger-updates-pipeline-gate
 
 ## `intent.update-transaction-status-rationale-required` (constraint)
 
@@ -470,7 +470,7 @@ always (authz_request && resource.runtime_id == "update_transaction_status" && s
 
 obligations: {"parameters": {}, "type": "audit_log"}
 atomic propositions: `args.rationale.length >= 20`, `args.status == "APPROVED"`, `args.status == "MANUAL_REVIEW"`, `args.status == "REJECTED"`, `authz_request`, `resource.runtime_id == "update_transaction_status"`, `subject.runtime_id == "decision_making_agent"`
-source: zero_trust_task1/manifest/policy_intent.yaml#update-transaction-status-rationale-required
+source: legacy/citi_p3/manifest_spec/manifest/policy_intent.yaml#update-transaction-status-rationale-required
 
 ## `intent.resolve-ledger-entry-valid-amount` (constraint)
 
@@ -482,7 +482,7 @@ always (authz_request && resource.runtime_id == "resolve_ledger_entry" && subjec
 
 obligations: {"parameters": {}, "type": "audit_log"}, {"parameters": {}, "type": "emit_ledger_event"}
 atomic propositions: `args.correction_amount.finite_nonzero`, `args.note.nonempty`, `authz_request`, `resource.runtime_id == "resolve_ledger_entry"`, `subject.runtime_id == "exception_agent"`
-source: zero_trust_task1/manifest/policy_intent.yaml#resolve-ledger-entry-valid-amount
+source: legacy/citi_p3/manifest_spec/manifest/policy_intent.yaml#resolve-ledger-entry-valid-amount
 
 ## `intent.submit-manual-review-decision-agent-only` (constraint)
 
@@ -494,7 +494,7 @@ always (authz_request && resource.runtime_id == "submit_manual_review" && subjec
 
 obligations: {"parameters": {}, "type": "audit_log"}
 atomic propositions: `authz_request`, `resource.runtime_id == "submit_manual_review"`, `subject.runtime_id == "decision_making_agent"`
-source: zero_trust_task1/manifest/policy_intent.yaml#submit-manual-review-decision-agent-only
+source: legacy/citi_p3/manifest_spec/manifest/policy_intent.yaml#submit-manual-review-decision-agent-only
 
 ## `intent.tool-argument-json-validity` (constraint)
 
@@ -505,7 +505,7 @@ always (authz_request && resource.target_type != "subject" -> args.well_formed)
 ```
 
 atomic propositions: `args.well_formed`, `authz_request`, `resource.target_type != "subject"`
-source: zero_trust_task1/manifest/policy_intent.yaml#tool-argument-json-validity
+source: legacy/citi_p3/manifest_spec/manifest/policy_intent.yaml#tool-argument-json-validity
 
 ## `intent.require-validation-before-ledger` (constraint)
 
@@ -517,7 +517,7 @@ always (authz_request && resource.runtime_id == "ledger" && action == "update" &
 
 obligations: {"parameters": {}, "type": "audit_log"}
 atomic propositions: `action == "update"`, `args.posting_instructions.nonempty`, `authz_request`, `resource.runtime_id == "ledger"`, `subject.runtime_id == "ledger_update_agent"`
-source: zero_trust_task1/manifest/policy_intent.yaml#require-validation-before-ledger
+source: legacy/citi_p3/manifest_spec/manifest/policy_intent.yaml#require-validation-before-ledger
 
 ## `intent.require-valid-session` (constraint)
 
@@ -529,7 +529,7 @@ always (input_received -> session.id_present && (user.role == "customer" || user
 
 obligations: {"parameters": {}, "type": "audit_log"}
 atomic propositions: `input_received`, `session.id_present`, `user.role == "auditor"`, `user.role == "customer"`, `user.role == "internal_rep"`, `user.role == "ops_scheduler"`, `user.role == "system"`
-source: zero_trust_task1/manifest/policy_intent.yaml#require-valid-session
+source: legacy/citi_p3/manifest_spec/manifest/policy_intent.yaml#require-valid-session
 
 ## `intent.block-prompt-injection-patterns` (constraint)
 
@@ -541,7 +541,7 @@ always (input_received -> !input.prompt_injection_detected)
 
 obligations: {"parameters": {}, "type": "audit_log"}
 atomic propositions: `input.prompt_injection_detected`, `input_received`
-source: zero_trust_task1/manifest/policy_intent.yaml#block-prompt-injection-patterns
+source: legacy/citi_p3/manifest_spec/manifest/policy_intent.yaml#block-prompt-injection-patterns
 
 ## `intent.trigger-eod-reconciliation-system-only` (constraint)
 
@@ -553,7 +553,7 @@ always (tool_call && tool.name == "trigger_eod_reconciliation" -> (user.role == 
 
 obligations: {"parameters": {}, "type": "audit_log"}, {"parameters": {}, "type": "emit_batch_event"}
 atomic propositions: `tool.name == "trigger_eod_reconciliation"`, `tool_call`, `user.role == "ops_scheduler"`, `user.role == "system"`
-source: zero_trust_task1/manifest/policy_intent.yaml#trigger-eod-reconciliation-system-only
+source: legacy/citi_p3/manifest_spec/manifest/policy_intent.yaml#trigger-eod-reconciliation-system-only
 
 ## `intent.no-account-id-in-output` (constraint)
 
@@ -565,7 +565,7 @@ always (output_emitted -> !output.contains.account_id)
 
 obligations: {"parameters": {}, "type": "audit_log"}
 atomic propositions: `output.contains.account_id`, `output_emitted`
-source: zero_trust_task1/manifest/policy_intent.yaml#no-account-id-in-output
+source: legacy/citi_p3/manifest_spec/manifest/policy_intent.yaml#no-account-id-in-output
 
 ## `intent.no-ssn-in-output` (constraint)
 
@@ -577,7 +577,7 @@ always (output_emitted -> !output.contains.ssn)
 
 obligations: {"parameters": {}, "type": "audit_log"}, {"parameters": {}, "type": "alert_privacy_team"}
 atomic propositions: `output.contains.ssn`, `output_emitted`
-source: zero_trust_task1/manifest/policy_intent.yaml#no-ssn-in-output
+source: legacy/citi_p3/manifest_spec/manifest/policy_intent.yaml#no-ssn-in-output
 
 ## `intent.no-email-in-output` (constraint)
 
@@ -589,7 +589,7 @@ always (output_emitted -> !output.contains.email)
 
 obligations: {"parameters": {}, "type": "audit_log"}
 atomic propositions: `output.contains.email`, `output_emitted`
-source: zero_trust_task1/manifest/policy_intent.yaml#no-email-in-output
+source: legacy/citi_p3/manifest_spec/manifest/policy_intent.yaml#no-email-in-output
 
 ## `intent.no-phone-in-output` (constraint)
 
@@ -601,7 +601,7 @@ always (output_emitted -> !output.contains.phone)
 
 obligations: {"parameters": {}, "type": "audit_log"}
 atomic propositions: `output.contains.phone`, `output_emitted`
-source: zero_trust_task1/manifest/policy_intent.yaml#no-phone-in-output
+source: legacy/citi_p3/manifest_spec/manifest/policy_intent.yaml#no-phone-in-output
 
 ## `intent.no-sensitive-amount-in-output` (constraint)
 
@@ -613,7 +613,7 @@ always (output_emitted -> !output.contains.unexplained_internal_amount)
 
 obligations: {"parameters": {}, "type": "audit_log"}
 atomic propositions: `output.contains.unexplained_internal_amount`, `output_emitted`
-source: zero_trust_task1/manifest/policy_intent.yaml#no-sensitive-amount-in-output
+source: legacy/citi_p3/manifest_spec/manifest/policy_intent.yaml#no-sensitive-amount-in-output
 
 ## `intent.required-text-terms-in-decision-output` (constraint)
 
@@ -625,7 +625,7 @@ always (harness_check -> output.required_terms_present)
 
 obligations: {"parameters": {}, "type": "audit_log"}
 atomic propositions: `harness_check`, `output.required_terms_present`
-source: zero_trust_task1/manifest/policy_intent.yaml#required-text-terms-in-decision-output
+source: legacy/citi_p3/manifest_spec/manifest/policy_intent.yaml#required-text-terms-in-decision-output
 
 ## `intent.expected-status-must-match` (constraint)
 
@@ -637,7 +637,7 @@ always (harness_check -> output.status_matches_expectation)
 
 obligations: {"parameters": {}, "type": "audit_log"}
 atomic propositions: `harness_check`, `output.status_matches_expectation`
-source: zero_trust_task1/manifest/policy_intent.yaml#expected-status-must-match
+source: legacy/citi_p3/manifest_spec/manifest/policy_intent.yaml#expected-status-must-match
 
 ## `intent.execute-transfer-caller-restriction.order` (temporal)
 
@@ -648,7 +648,7 @@ source: zero_trust_task1/manifest/policy_intent.yaml#expected-status-must-match
 ```
 
 monitor: 3 states, 10 letters; verdicts `PSV`
-source: zero_trust_task1/manifest/policy_intent.yaml#execute-transfer-caller-restriction
+source: legacy/citi_p3/manifest_spec/manifest/policy_intent.yaml#execute-transfer-caller-restriction
 
 ## `intent.apply-ledger-updates-pipeline-gate.order` (temporal)
 
@@ -659,7 +659,7 @@ source: zero_trust_task1/manifest/policy_intent.yaml#execute-transfer-caller-res
 ```
 
 monitor: 5 states, 64 letters; verdicts `PVPPS`
-source: zero_trust_task1/manifest/policy_intent.yaml#apply-ledger-updates-pipeline-gate
+source: legacy/citi_p3/manifest_spec/manifest/policy_intent.yaml#apply-ledger-updates-pipeline-gate
 
 ## `intent.resolve-ledger-entry-valid-amount.order` (temporal)
 
@@ -670,7 +670,7 @@ source: zero_trust_task1/manifest/policy_intent.yaml#apply-ledger-updates-pipeli
 ```
 
 monitor: 3 states, 24 letters; verdicts `PVS`
-source: zero_trust_task1/manifest/policy_intent.yaml#resolve-ledger-entry-valid-amount
+source: legacy/citi_p3/manifest_spec/manifest/policy_intent.yaml#resolve-ledger-entry-valid-amount
 
 ## `intent.submit-manual-review-decision-agent-only.order` (temporal)
 
@@ -681,7 +681,7 @@ source: zero_trust_task1/manifest/policy_intent.yaml#resolve-ledger-entry-valid-
 ```
 
 monitor: 9 states, 96 letters; verdicts `PVPPPPPPS`
-source: zero_trust_task1/manifest/policy_intent.yaml#submit-manual-review-decision-agent-only
+source: legacy/citi_p3/manifest_spec/manifest/policy_intent.yaml#submit-manual-review-decision-agent-only
 
 ## `intent.require-upstream-reports-before-decision.order` (temporal)
 
@@ -692,7 +692,7 @@ source: zero_trust_task1/manifest/policy_intent.yaml#submit-manual-review-decisi
 ```
 
 monitor: 9 states, 18 letters; verdicts `PVPPPPPPS`
-source: zero_trust_task1/manifest/policy_intent.yaml#require-upstream-reports-before-decision
+source: legacy/citi_p3/manifest_spec/manifest/policy_intent.yaml#require-upstream-reports-before-decision
 
 ## `intent.require-validation-before-ledger.order` (temporal)
 
@@ -703,7 +703,7 @@ source: zero_trust_task1/manifest/policy_intent.yaml#require-upstream-reports-be
 ```
 
 monitor: 3 states, 32 letters; verdicts `PVS`
-source: zero_trust_task1/manifest/policy_intent.yaml#require-validation-before-ledger
+source: legacy/citi_p3/manifest_spec/manifest/policy_intent.yaml#require-validation-before-ledger
 
 ## `policy.ledger.eod_approved_update` (permit)
 

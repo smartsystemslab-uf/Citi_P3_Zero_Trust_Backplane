@@ -7,7 +7,7 @@
  },
  "parts": [
   {
-   "label": "Task 4 policies, same content (PSL store without the new intent / identity rules)",
+   "label": "PDP policies, same content (PSL store without the new intent / identity rules)",
    "requests": 69120,
    "rounds": 3,
    "samples_per_engine": 207360,
@@ -33,7 +33,7 @@
    "psl_vs_legacy_p99": 1.214
   },
   {
-   "label": "Task 4 policy store as deployed (PSL incl. intent and identity rules)",
+   "label": "PDP policy store as deployed (PSL incl. intent and identity rules)",
    "requests": 69120,
    "rounds": 3,
    "samples_per_engine": 207360,
@@ -59,7 +59,7 @@
    "psl_vs_legacy_p99": 1.649
   },
   {
-   "label": "Native MAS runtime store (Task 4 + generated least-privilege policies)",
+   "label": "Native MAS runtime store (PDP + generated least-privilege policies)",
    "requests": 582400,
    "rounds": 3,
    "samples_per_engine": 1747200,

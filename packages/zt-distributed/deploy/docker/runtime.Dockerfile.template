@@ -1,0 +1,44 @@
+# Runtime image of the distributed runtime for ONE protected ADK application: gateway PEP, agent
+# workloads, agent-credential issuer, ingress client, ops helper. Generated per application by
+# `zt-distributed build --project ...` (zt_distributed.stack) into runtime/build/runtime.Dockerfile.
+#   build context:          the repository root (filtered by runtime.Dockerfile.dockerignore)
+#   named context `app`:    the staged copy of the application (runtime/build/app)
+FROM {python_image}
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1
+
+# 1. the application's own requirements first: they decide the google-adk version (and every other
+#    version the application depends on)
+{copy_requirements}
+RUN {install_requirements} \
+ && (pip freeze --exclude-editable | grep -E '^[A-Za-z0-9_.-]+==' || true) > /opt/app-constraints.txt
+
+# 2. the Backplane, constrained to the versions the application installed: pip either fits the
+#    Backplane around them or fails the build. It never changes a package the application installed.
+COPY packages /opt/zt/packages
+RUN pip install -c /opt/app-constraints.txt \
+        -e /opt/zt/packages/zt-interface -e /opt/zt/packages/zt-scanner -e /opt/zt/packages/zt-pep \
+        -e /opt/zt/packages/zt-pdp -e /opt/zt/packages/zt-lease -e /opt/zt/packages/zt-psl \
+        -e /opt/zt/packages/zt-identity -e /opt/zt/packages/zt-adk -e /opt/zt/packages/zt-distributed \
+    || {{ echo "zt-distributed: the application's requirements conflict with the Backplane's (pip resolution" \
+               "error above). The versions the application installed are constraints and were not changed." >&2; \
+          exit 1; }} \
+ && pip freeze --exclude-editable > /opt/pip-freeze.txt
+
+# 3. the application
+COPY --from=app . /opt/app
+ENV ZT_ADK_PROFILE=/opt/app/{profile_name} \
+    ZT_DEPLOYMENT=/etc/zt/deployment.json
+
+# Fail the build if the time-zone database is missing (PSL windows), a development key or a
+# secret of the application made it into the image, or the application cannot be protected
+# (discovery errors: duplicate agent names, AgentTool without plugins, unsupported tools).
+RUN python -c "from zoneinfo import ZoneInfo; ZoneInfo('America/New_York')" \
+ && ! ls /opt/zt/packages/zt-pdp/security/dev_keys/*.pem 2>/dev/null \
+ && test ! -e /opt/app/.env && test ! -e /opt/app/.zt \
+ && python -m zt_distributed.describe > /opt/describe.json \
+ && chmod -R a+rX /opt/zt /opt/app
+WORKDIR /opt/app

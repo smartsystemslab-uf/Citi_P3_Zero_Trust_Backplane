@@ -1,0 +1,23 @@
+# Demo reconciliation map between the legacy Unified Interface inventory names and the
+# canonical unified-interface IDs consumed by PEP generator/4/5.
+subjects:
+  agent.front_office.fraud:
+    discovered_runtime_id: fraud_detection_agent
+    manifest_id: fraud_detection_agent
+  agent.front_office.transaction_processing:
+    discovered_runtime_id: transaction_processing_agent
+    manifest_id: transaction_processing_agent
+  agent.back_office.eod:
+    discovered_runtime_id: eod_processing_agent
+    manifest_id: eod_processing_agent
+interfaces:
+  interface.mcp.execute_transfer:
+    discovered_runtime_id: execute_transfer
+    manifest_id: execute_transfer
+  interface.mcp.ledger_update:
+    discovered_runtime_id: apply_ledger_updates
+    manifest_id: apply_ledger_updates
+resources:
+  resource.front_office.transaction_history:
+    discovered_runtime_id: transactions
+    manifest_table_name: transactions

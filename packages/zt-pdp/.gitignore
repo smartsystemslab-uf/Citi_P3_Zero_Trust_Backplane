@@ -1,0 +1,12 @@
+.venv/
+__pycache__/
+.pytest_cache/
+*.pyc
+runtime/*.json
+runtime/*.jsonl
+!runtime/.gitkeep
+# Local development trust material (zt_pdp.dev_material): generated per checkout, never committed
+security/dev_keys/*.pem
+security/dev_keys/.dev_material.lock
+policy_store/*.sig.json
+legacy_policy_store/*.sig.json

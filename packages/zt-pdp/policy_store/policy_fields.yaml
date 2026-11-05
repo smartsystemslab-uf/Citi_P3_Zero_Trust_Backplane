@@ -1,0 +1,207 @@
+# PSL field catalogue of the Zero Trust Backplane policy set.
+#
+# Every field a PSL policy may mention, its type and the TRUSTED source that computes it.
+# Values come only from the verified request (PEP-signed), the evidence verifier (signed
+# assertions), the registries, trusted checkers run by the evaluating component, and events
+# that component observed itself -- never from unverified client or agent claims (agent
+# session state is LLM output and is NOT a source). This file is part of the signed policy
+# set (policy_fields.sig.json): changing a field's meaning changes the policies.
+#
+# Scopes and who evaluates them:
+#   pdp_request     -- PDP, every authorization request (deny unless permitted)
+#   gateway_input   -- distributed-runtime gateway, every ingress message (check-only)
+#   gateway_output  -- distributed-runtime gateway, every ingress response (check-only)
+#   gateway_tool    -- distributed-runtime gateway, every tool call, user/session facts (check-only)
+#   workflow_run    -- temporal, per workflow run: native runtime and gateway monitors
+#   request_attempt, operation, workflow_batch, workflow_participation
+#                   -- temporal, distributed-runtime gateway only (MCP tool path, SPIFFE scheme B)
+#   harness_output  -- evaluation harness only (scenario expectations, check-only)
+catalog_version: 1
+
+windows:
+  business_hours_new_york: {timezone: America/New_York, days: [MON, TUE, WED, THU, FRI], start: "08:00", end: "18:00"}
+
+scopes:
+  pdp_request:
+    kind: request
+    description: >
+      One authorization request at the PDP, evaluated after signature, replay and
+      evidence verification and after subject/resource/action were resolved against the
+      registries (unknown subject/resource or undefined action is denied before any policy).
+    events: {authz_request: "*"}
+    fields:
+      subject.id:               {type: string, source: "PDPRequest.subject.canonical_id, resolved in the identity registry"}
+      subject.runtime_id:       {type: string, source: "PDPRequest.subject.runtime_id, must match the registry binding"}
+      subject.type:             {type: string, source: "identity registry: type"}
+      subject.domain:           {type: string, source: "identity registry: domain ('' when unset)"}
+      subject.role.*:           {type: bool, missing: false, source: "identity registry: roles (absent role = false)"}
+      resource.id:              {type: string, source: "PDPRequest.resource.canonical_id, resolved in the resource catalogue"}
+      resource.runtime_id:      {type: string, source: "PDPRequest.resource.runtime_id, must match the catalogue binding ('' when unset)"}
+      resource.domain:          {type: string, source: "resource catalogue: domain ('' when unset)"}
+      resource.classification:  {type: string, source: "resource catalogue: classification"}
+      resource.critical:        {type: bool, source: "resource catalogue: critical"}
+      resource.target_type:     {type: string, source: "resource catalogue: attributes.scanner_target_type, e.g. 'subject' for agent route targets ('' when unset)"}
+      action:                   {type: string, source: "PDPRequest.action (defined for the resource)"}
+      workflow.id:              {type: string, source: "PDPRequest.context.workflow_id ('' when absent)"}
+      workflow.verified:        {type: bool, source: "evidence verifier: signed workflow assertion bound to the request"}
+      environment:              {type: string, source: "PDPRequest.context.environment"}
+      risk.level:               {type: enum, values: [low, medium, high, critical], source: "evidence verifier: signed risk assertion"}
+      risk.score:               {type: int, source: "evidence verifier: signed risk assertion (0-1000)"}
+      auth.strength:            {type: int, source: "evidence verifier: signed authentication assertion (0-10)"}
+      approval.valid:           {type: bool, source: "evidence verifier: signed human approval bound to the request hash"}
+      approval.secondary_valid: {type: bool, source: "evidence verifier: independent secondary authorization bound to the request hash"}
+      identity.verified:        {type: bool, source: "evidence verifier: PEP request proof and identity evidence"}
+      auth.scheme:              {type: string, source: "evidence verifier: signed authentication assertion, authentication.auth_mode ('B' = SPIFFE scheme B at the distributed-runtime gateway; '' when the assertion has no authentication block, e.g. the in-process native runtime)"}
+      auth.subject_kind:        {type: string, source: "evidence verifier: signed authentication assertion, authentication.subject_kind ('agent' = agent certificate verified, 'service' = controlled service map entry; '' when absent)"}
+      auth.factor.*:            {type: bool, missing: false, source: "evidence verifier: factor set to true in the signed authentication assertion (absent factor = false)"}
+      auth.agent_bound:         {type: bool, source: "evidence verifier: authentication.agent_id of the signed assertion equals PDPRequest.subject.runtime_id (false when absent)"}
+      time.in.*:                {type: bool, source: "PDP clock (decision time) evaluated against the windows of this catalogue"}
+      # PDP checkers over PDPRequest.parameters (the tool arguments, bound by the request hash)
+      args.well_formed:         {type: bool, source: "PDP checker: parameters are a JSON object without null values at any depth"}
+      args.status:              {type: string, source: "PDP checker: parameters.status as text ('' when absent)"}
+      args.rationale.length:    {type: int, source: "PDP checker: length of parameters.rationale (0 when absent or not text)"}
+      args.note.nonempty:       {type: bool, source: "PDP checker: parameters.note is non-empty text"}
+      args.correction_amount.finite_nonzero: {type: bool, source: "PDP checker: parameters.correction_amount is a finite number != 0"}
+      args.source_account.nonempty:      {type: bool, source: "PDP checker: parameters.source_account is non-empty text"}
+      args.destination_account.nonempty: {type: bool, source: "PDP checker: parameters.destination_account is non-empty text"}
+      args.amount.finite_nonzero:        {type: bool, source: "PDP checker: parameters.amount is a finite number != 0"}
+      args.posting_instructions.nonempty: {type: bool, source: "PDP checker: parameters.posting_instructions is non-empty text"}
+      request.cross_domain:     {type: bool, source: "PDP: identity registry domain of the subject differs from the resource catalogue domain of the resource"}
+
+  gateway_input:
+    kind: request
+    default_deny: false
+    description: Every message entering the MAS through the gateway ingress (before any agent runs).
+    events: {input_received: "*"}
+    fields:
+      session.id_present:            {type: bool, source: "gateway: the ingress request carries a non-empty session id"}
+      user.role:                     {type: string, source: "gateway: role of the authenticated ingress caller ('' when unknown)"}
+      input.prompt_injection_detected: {type: bool, source: "gateway checker: message matches the prompt-injection pattern list"}
+
+  gateway_output:
+    kind: request
+    default_deny: false
+    description: Every final response leaving the MAS through the gateway ingress.
+    events: {output_emitted: "*"}
+    fields:
+      output.contains.account_id:   {type: bool, source: "gateway checker: account-number pattern in the response"}
+      output.contains.ssn:          {type: bool, source: "gateway checker: SSN pattern in the response"}
+      output.contains.email:        {type: bool, source: "gateway checker: e-mail pattern in the response"}
+      output.contains.phone:        {type: bool, source: "gateway checker: phone-number pattern in the response"}
+      output.contains.unexplained_internal_amount: {type: bool, source: "gateway checker: internal ledger amount not present in the request"}
+
+  gateway_tool:
+    kind: request
+    default_deny: false
+    description: Every tool call at the gateway PEP, with facts of the workflow run's originating user session.
+    events: {tool_call: "*"}
+    fields:
+      tool.name:  {type: string, source: "gateway: name of the MCP tool being called"}
+      user.role:  {type: string, source: "gateway: role of the authenticated ingress caller that started the workflow run ('' when unknown)"}
+
+  workflow_run:
+    kind: temporal
+    key: [workflow_run_id]
+    description: >
+      Trusted events of one workflow run, observed by the component that runs the agents'
+      routes and tools (native runtime or gateway). tool_admitted and agent_routed are
+      controllable (checked before the step happens); results come from the business
+      function's own return value.
+    events:
+      agent_routed:  [route.from, route.to]
+      tool_admitted: [tool.agent, tool.name]
+      tool_succeeded: [tool.agent, tool.name, result.ready]
+      tool_failed:   [tool.agent, tool.name]
+    fields:
+      route.from:   {type: string, source: "runtime: agent that transfers control (authenticated caller of the route)"}
+      route.to:     {type: string, source: "runtime: agent that receives control"}
+      tool.agent:   {type: string, source: "runtime: authenticated agent calling the tool"}
+      tool.name:    {type: string, source: "runtime: tool being called"}
+      result.ready: {type: bool, source: "runtime: tool result field 'ready' is true (false when absent)"}
+
+  # ---- distributed-runtime gateway (MCP tool path) -------------------------------------
+  # Events are produced by the gateway PEP from server-side results only (authenticator
+  # output, signed PDP decision, Permit Lease decoded and verified with the Permit Lease
+  # validator, revocation service, the business function's own return value) -- never
+  # from client-supplied MCP _meta fields. Admission events (execution_admitted,
+  # execution_started, ledger/report/exception_admitted) are checked before the step.
+  request_attempt:
+    kind: temporal
+    key: [attempt_id]
+    description: One tools/call HTTP request processed by the gateway (server-generated attempt id).
+    events:
+      request_received:      []
+      identity_verified:     [identity.workload_ok, identity.agent_registered, identity.agent_credential_ok]
+      identity_rejected:     []
+      run_rejected:          []
+      authorization_allowed: []
+      authorization_denied:  []
+      authorization_unavailable: []
+      permit_verified:       []
+      permit_rejected:       []
+      obligation_rejected:   []
+      execution_requested:   []
+      execution_admitted:    [permit.bound, permit.live, tool.critical]
+      audit_pre_recorded:    [audit.correlated, audit.durable]
+      execution_started:     []
+      execution_succeeded:   []
+      execution_failed:      []
+      request_denied:        []
+      audit_post_recorded:   [audit.correlated]
+    fields:
+      identity.workload_ok:        {type: bool, source: "gateway: the mTLS peer presented a verified X.509-SVID of the trust domain and the authenticated identity carries that SPIFFE ID"}
+      identity.agent_registered:   {type: bool, source: "gateway: agent_id comes from the verified agent certificate and the agent registry lists the peer workload as allowed"}
+      identity.agent_credential_ok: {type: bool, source: "gateway: agent certificate chain, registry state, RFC 9421 signature, content digest and replay window verified for THIS request"}
+      permit.bound:  {type: bool, source: "gateway: Permit Lease claims (signature-verified) match this request: subject of the authenticated agent, resource, action, request hash, argument digest, caller"}
+      permit.live:   {type: bool, source: "gateway clock < lease expires_at, RevocationService.validate_lease passes, agent credential not past notAfter"}
+      tool.critical: {type: bool, source: "PEP generator placement: protected critical write"}
+      audit.correlated: {type: bool, source: "gateway PSL audit: record correlation fields equal the attempt's bindings"}
+      audit.durable: {type: bool, source: "gateway PSL audit: pre-execution record written and flushed (fsync for critical tools)"}
+
+  operation:
+    kind: temporal
+    key: [workflow_run_id, agent, tool, args_sha256]
+    description: >
+      One business operation, independent of request id, idempotency key, MCP session and
+      JSON-RPC id; created only after authentication; closed with the workflow run.
+    events:
+      op_denied:           []
+      execution_admitted:  [tool.critical]
+      execution_succeeded: []
+      execution_failed:    []
+    fields:
+      tool.critical: {type: bool, source: "PEP generator placement: protected critical write"}
+
+  workflow_batch:
+    kind: temporal
+    key: [workflow_run_id, batch_id]
+    description: EOD tools of one batch in one workflow run; results are the tools' own return values at this gateway.
+    events:
+      readiness_ready:     []
+      readiness_not_ready: []
+      recon_matched:       []
+      recon_mismatched:    []
+      ledger_admitted:     []
+      report_admitted:     []
+      exception_admitted:  []
+      batch_other:         []
+    fields: {}
+
+  workflow_participation:
+    kind: temporal
+    key: [workflow_run_id, agent]
+    description: Dispatches of one agent in one workflow run by this gateway (entry agent or authorised route hop).
+    events:
+      dispatched:         []
+      dispatch_ended:     []
+      execution_admitted: []
+    fields: {}
+
+  harness_output:
+    kind: request
+    default_deny: false
+    description: Evaluation-harness checks of a scenario's final output (not available in production).
+    events: {harness_check: "*"}
+    fields:
+      output.required_terms_present:       {type: bool, source: "evaluation harness: all required_text_terms of the active scenario are present"}
+      output.status_matches_expectation:   {type: bool, source: "evaluation harness: output status equals scenario_expectation.expected_status (true when undefined)"}

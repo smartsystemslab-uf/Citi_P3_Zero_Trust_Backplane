@@ -1,9 +1,0 @@
-{
-  "input_pep_present": true,
-  "logical_pep_count": 105,
-  "mode": "enforce",
-  "native_runtime": true,
-  "output_pep_present": true,
-  "physical_pep_count": 12,
-  "policy_version": "660daf4906ba83be"
-}
