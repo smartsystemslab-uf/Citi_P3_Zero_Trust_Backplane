@@ -98,6 +98,8 @@ def request_fields(
         "auth.strength": int(security.auth_strength),
         "approval.valid": bool(security.approval_valid),
         "approval.secondary_valid": bool(security.secondary_authorization_valid),
+        "approval.issuer": security.approval_issuer or "",
+        "approval.secondary_issuer": security.secondary_authorization_issuer or "",
         "identity.verified": bool(security.identity_verified),
         "auth.scheme": security.auth_scheme,
         "auth.subject_kind": security.auth_subject_kind,

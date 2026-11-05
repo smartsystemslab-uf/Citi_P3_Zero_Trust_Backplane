@@ -1,0 +1,76 @@
+// Citi P3 intent rules (formerly zero_trust_task1/manifest/policy_intent.yaml) as PSL overlays of the
+// generic zt-adk bundle. They compile against the generated field catalogue: resource.runtime_id of
+// a tool is "<agent>/<tool>", args.<parameter> fields exist for every discovered tool parameter.
+// Deny-overrides: these rules only narrow what the generated least-privilege permits allow.
+
+// @policy_set citi.intent.request
+// @version 1.0.0
+// @source profiles/citi_p3/policies/citi_intent.psl
+vunit citi_intent_request (pdp_request) {
+
+  // @rule citi.tool-arguments-well-formed
+  // @nl Tool arguments are a JSON object without null values.
+  args_well_formed: assert always (authz_request && resource.target_type != "subject" -> args.well_formed);
+
+  // @rule citi.execute-transfer-arguments
+  // @nl A transfer names a source and a destination account and a finite non-zero amount.
+  transfer_args: assert always (authz_request
+      && resource.runtime_id == "transaction_processing_agent/execute_transfer"
+      -> args.source_account.nonempty && args.destination_account.nonempty && args.amount.finite_nonzero);
+
+  // @rule citi.apply-ledger-updates-pipeline-gate
+  // @nl Ledger updates carry the batch id and the posting instructions produced upstream.
+  ledger_args: assert always (authz_request && resource.runtime_id == "ledger_update_agent/apply_ledger_updates"
+      -> args.batch_id.nonempty && args.posting_instructions.nonempty);
+
+  // @rule citi.manual-review-payload
+  // @nl A manual review names its case type and carries the decision payload.
+  review_args: assert always (authz_request && resource.runtime_id == "decision_making_agent/submit_manual_review"
+      -> args.case_type.nonempty && args.payload.nonempty);
+
+  // @rule citi.exception-case-summary
+  // @nl An EOD exception case states the batch and a mismatch summary of at least 10 characters.
+  exception_args: assert always (authz_request && resource.runtime_id == "exception_agent/create_exception_case"
+      -> args.batch_id.nonempty && args.mismatch_summary.length >= 10);
+
+  // @rule citi.report-body
+  // @nl An EOD report is stored only with a body.
+  report_args: assert always (authz_request && resource.runtime_id == "report_writing_agent/store_report"
+      -> args.batch_id.nonempty && args.report_body.nonempty);
+}
+
+// @policy_set citi.intent.order
+// @version 1.0.0
+// @source profiles/citi_p3/policies/citi_intent.psl
+vunit citi_intent_order (workflow_run) {
+
+  // @rule citi.ledger-after-validation
+  // @nl Ledger updates are applied only after the EOD readiness validation succeeded in the same run.
+  ledger_after_validation: assert ((tool_succeeded && tool.name == "validate_eod_readiness")
+      before (tool_admitted && tool.name == "apply_ledger_updates"));
+
+  // @rule citi.exception-after-reconciliation
+  // @nl An exception case is opened only after the reconciliation data was read in the same run.
+  exception_after_reconciliation: assert ((tool_succeeded && tool.name == "get_reconciliation_data")
+      before (tool_admitted && tool.name == "create_exception_case"));
+
+  // @rule citi.report-after-reconciliation
+  // @nl The EOD report is stored only after the reconciliation data was read in the same run.
+  report_after_reconciliation: assert ((tool_succeeded && tool.name == "get_reconciliation_data")
+      before (tool_admitted && tool.name == "store_report"));
+
+  // @rule citi.transfer-after-service-agent
+  // @nl A transfer runs only after the customer service agent handled the request in the same run.
+  transfer_after_service: assert ((agent_routed && route.to == "customer_service_agent")
+      before (tool_admitted && tool.name == "execute_transfer"));
+
+  // @rule citi.decision-after-monitoring
+  // @nl The decision agent starts only after transaction monitoring produced a result in the same run.
+  decision_after_monitoring: assert ((tool_succeeded && tool.agent == "transaction_monitoring_agent")
+      before (agent_routed && route.to == "decision_making_agent"));
+
+  // @rule citi.manual-review-after-monitoring
+  // @nl A manual review is submitted only after transaction monitoring produced a result in the same run.
+  review_after_monitoring: assert ((tool_succeeded && tool.agent == "transaction_monitoring_agent")
+      before (tool_admitted && tool.name == "submit_manual_review"));
+}

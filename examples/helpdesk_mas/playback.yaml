@@ -1,0 +1,99 @@
+# Deterministic model decisions for the example service desk (tests and keyless demos).
+# Used only when zt_adk.yaml sets model_override (see zt_adk.playback.yaml) or a test installs it.
+agents:
+  service_desk:
+    - when: {user: "(?i)password|unlock|account|look ?up|hardware"}
+      transfer: account_agent
+    - when: {user: "(?i)broken|down|incident|not working|fails"}
+      transfer: incident_workflow
+    - when: {user: "(?i)how|what|why|vendor|guide"}
+      transfer: triage_agent
+    - when: {user: "(?i)my ssn"}
+      text: "Your SSN on file is 123-45-6789."
+    - text: "I can help with accounts, how-to questions and incidents."
+
+  account_agent:
+    - when: {user: "(?i)broken|down|incident|not working|fails"}
+      transfer: incident_workflow
+    - when: {user: "(?i)^(how|what|why)|vendor|guide"}
+      transfer: triage_agent
+    - when: {after: lookup_user}
+      text: "Account {result[user][username]} ({result[user][department]}), locked={result[user][locked]}."
+    - when: {after: reset_password, result_status: ok}
+      text: "The password of {result[username]} was reset; a temporary password was issued."
+    - when: {after: reset_password}
+      text: "The password reset did not run: {result[status]} ({result[reason]})."
+    - when: {after: unlock_account}
+      text: "Unlock result: {result[status]}."
+    - when: {after: request_hardware}
+      text: "Hardware request {result[request_id]} is waiting for a manager decision."
+    - when: {user: "(?i)reset .*password (?:for|of) (?P<username>\\w+)"}
+      call: reset_password
+      args: {username: "{username}"}
+    - when: {user: "(?i)unlock (?:the )?(?:account )?(?:of |for )?(?P<username>\\w+)"}
+      call: unlock_account
+      args: {username: "{username}", reason: "user request"}
+    - when: {user: "(?i)hardware .*for (?P<username>\\w+): (?P<item>.+)$"}
+      call: request_hardware
+      args: {username: "{username}", item: "{item}"}
+    - when: {user: "(?i)look ?up (?:user )?(?P<username>\\w+)"}
+      call: lookup_user
+      args: {username: "{username}"}
+    - text: "Which account do you mean?"
+
+  triage_agent:
+    - when: {user: "(?i)password|unlock|account|look ?up|hardware"}
+      transfer: account_agent
+    - when: {user: "(?i)broken|down|incident|not working|fails"}
+      transfer: incident_workflow
+    - when: {after: search_kb}
+      text: "From the knowledge base: {result[articles]}"
+    - when: {after: web_research_agent}
+      text: "Vendor guidance: {result[result]}"
+    - when: {user: "(?i)vendor"}
+      call: web_research_agent
+      args: {request: "official vendor documentation for the VPN client"}
+    - when: {user: "(?i)how .*(?P<topic>vpn|printer|password)"}
+      call: search_kb
+      args: {query: "{topic}"}
+    - text: "Please describe the problem."
+
+  web_research_agent:
+    - text: "The vendor recommends updating the VPN client to the latest version and restarting the service."
+
+  intake_agent:
+    - when: {after: create_ticket}
+      text: "Ticket {result[ticket_id]} opened."
+    - when: {user: "(?i)(?P<username>alice|bob|carol)"}
+      call: create_ticket
+      args: {username: "{username}", summary: "Reported incident", priority: "high"}
+
+  asset_agent:
+    - when: {after: get_asset}
+      text: "Assets: {result[assets]}"
+    - when: {instruction: 'assets of (?P<username>\w+)'}
+      call: get_asset
+      args: {username: "{username}"}
+
+  history_agent:
+    - when: {after: get_ticket_history}
+      text: "History: {result[tickets]}"
+    - when: {instruction: 'tickets of (?P<username>\w+)'}
+      call: get_ticket_history
+      args: {username: "{username}"}
+
+  diagnostic_agent:
+    - when: {after: run_diagnostic}
+      text: "Diagnostic: {result[output]}"
+    - call: run_diagnostic
+      args: {asset_id: "PR-2001", check: "network"}
+
+  resolution_agent:
+    - when: {after: update_ticket, instruction: 'notify (?P<username>\w+)'}
+      call: notify_user
+      args: {username: "{username}", subject: "Incident resolved", body: "Your incident was resolved."}
+    - when: {after: notify_user}
+      text: "The ticket was closed and the user was notified ({result[status]})."
+    - when: {instruction: 'Update ticket (?P<ticket_id>INC-\w+)'}
+      call: update_ticket
+      args: {ticket_id: "{ticket_id}", status: "resolved", resolution: "Network check passed"}

@@ -28,6 +28,7 @@ class InMemoryReplayGuard:
         self.jti_ttl_seconds = jti_ttl_seconds
         self._challenges: dict[str, Challenge] = {}
         self._used_jti: dict[str, datetime] = {}
+        self._used_evidence: dict[str, datetime] = {}
         self._lock = threading.Lock()
 
     def issue(self, subject_canonical_id: str, subject_runtime_id: str, now: datetime | None = None) -> Challenge:
@@ -69,6 +70,16 @@ class InMemoryReplayGuard:
                 raise ValueError("nonce_subject_binding_mismatch")
             self._used_jti[jti] = now + timedelta(seconds=self.jti_ttl_seconds)
 
+    def consume_evidence(self, evidence_key: str, *, expires_at: datetime, now: datetime) -> None:
+        """Single use of a bound assertion (human approval, secondary authorization): the
+        same signed approval can back only one decision while it is valid."""
+        with self._lock:
+            self._purge(now)
+            if evidence_key in self._used_evidence:
+                raise ValueError(f"evidence_reuse_detected:{evidence_key.split(':', 1)[0]}")
+            self._used_evidence[evidence_key] = expires_at
+
     def _purge(self, now: datetime) -> None:
         self._challenges = {k: v for k, v in self._challenges.items() if v.expires_at >= now}
         self._used_jti = {k: v for k, v in self._used_jti.items() if v >= now}
+        self._used_evidence = {k: v for k, v in self._used_evidence.items() if v >= now}

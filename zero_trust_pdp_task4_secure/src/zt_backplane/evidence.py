@@ -140,6 +140,16 @@ class EvidenceVerifier:
             now=now,
         )
 
+        for purpose, assertion in (("human_approval", approval), ("secondary_authorization", secondary)):
+            if assertion:
+                try:
+                    self.replay_guard.consume_evidence(
+                        f"{purpose}:{self._required_string(assertion, 'issuer')}:"
+                        f"{self._required_string(assertion, 'evidence_id')}",
+                        expires_at=self._parse_time(assertion, "expires_at"), now=now)
+                except ValueError as exc:
+                    raise SecurityError(str(exc)) from exc
+
         evidence_ids = [
             self._required_string(identity_evidence, "jti"),
             self._required_string(risk, "evidence_id"),

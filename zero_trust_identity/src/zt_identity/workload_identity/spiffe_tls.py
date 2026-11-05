@@ -76,7 +76,7 @@ class WorkloadIdentity:
         self._lock = threading.RLock()
         self._loop: asyncio.AbstractEventLoop | None = None
         self.generation = 0
-        self._dir = Path("/dev/shm") / f"citi-svid-{os.getpid()}"
+        self._dir = Path("/dev/shm") / f"zt-svid-{os.getpid()}"
         self._dir.mkdir(mode=0o700, parents=True, exist_ok=True)
         os.chmod(self._dir, 0o700)
         t0 = time.monotonic()

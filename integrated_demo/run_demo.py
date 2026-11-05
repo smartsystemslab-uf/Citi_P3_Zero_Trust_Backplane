@@ -58,6 +58,7 @@ from zt_pep.placement import build_pep_plan
 from zt_task5.models import UnifiedAuthorizationRequest
 from zt_task5.service import build_task5_components, register_generated_pep
 from zt_task5.task3_adapter import PEPDenied, Task3PEPAdapter
+from zt_backplane.dev_material import dev_key_path
 from zt_backplane.psl_translate import bundle_to_psl, rebind_subject
 from zt_psl.fields import FieldCatalog
 from zt_psl.signing import load_private_key, sign_file
@@ -163,7 +164,7 @@ def _write_signed_psl(policy_path: Path, text: str) -> None:
     policy_path.write_text(text, encoding="utf-8")
     sign_file(
         policy_path,
-        load_private_key(TASK4_ROOT / "security" / "dev_keys" / "policy_private.pem"),
+        load_private_key(dev_key_path("policy_private.pem", TASK4_ROOT)),
         issuer="policy.prototype",
         key_id="policy-1",
     )

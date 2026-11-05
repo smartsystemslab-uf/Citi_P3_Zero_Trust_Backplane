@@ -66,15 +66,16 @@ class NativeTask4InProcessBridge:
         from zt_backplane.dev_evidence import build_signed_request
         from zt_backplane.canonical import request_proof_payload
         from zt_backplane.crypto import load_private_key, sign_mapping
+        from zt_backplane.dev_material import dev_key_path
 
         self._verify_decision_headers = verify_decision_headers
         self._build_signed_request = build_signed_request
         self._request_proof_payload = request_proof_payload
         self._sign_mapping = sign_mapping
         self._dev_pep_private_key = load_private_key(
-            self.task4_root / "security" / "dev_keys" / "pep_private.pem"
+            dev_key_path("pep_private.pem", self.task4_root)
         )
-        self.public_key = self.task4_root / "security" / "dev_keys" / "pdp_signing_public.pem"
+        self.public_key = dev_key_path("pdp_signing_public.pem", self.task4_root)
 
     def __call__(self, request: UnifiedAuthorizationRequest) -> Task4DecisionEnvelope:
         subject_runtime = self.subject_runtime_ids.get(request.subject)

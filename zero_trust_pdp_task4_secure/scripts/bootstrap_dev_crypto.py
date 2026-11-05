@@ -1,40 +1,34 @@
 #!/usr/bin/env python3
+"""Create (or with --force: replace) the local development keys of this checkout and sign the
+development policy stores with the local policy key. Nothing created here is committed.
+
+    python scripts/bootstrap_dev_crypto.py [--force]
+"""
 from __future__ import annotations
 
 import argparse
 from pathlib import Path
 
-from zt_backplane.crypto import generate_keypair
-
+from zt_backplane.dev_material import KEY_NAMES, ensure_dev_material, key_dir, legacy_bundle_files, psl_store_files
+from zt_psl.signing import sidecar_path
 
 ROOT = Path(__file__).resolve().parents[1]
-KEY_NAMES = ["pep", "risk", "idp", "workflow", "approval", "secondary", "policy"]
 
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--force", action="store_true", help="replace development keys")
+    parser.add_argument("--force", action="store_true", help="replace the development keys and re-sign the stores")
     args = parser.parse_args()
-    key_dir = ROOT / "security" / "dev_keys"
-    key_dir.mkdir(parents=True, exist_ok=True)
-
-    for name in KEY_NAMES:
-        private_path = key_dir / f"{name}_private.pem"
-        public_path = key_dir / f"{name}_public.pem"
-        if args.force or not private_path.exists() or not public_path.exists():
-            generate_keypair(private_path, public_path)
-
-    pdp_private = key_dir / "pdp_signing_private.pem"
-    pdp_public = key_dir / "pdp_signing_public.pem"
-    if args.force or not pdp_private.exists() or not pdp_public.exists():
-        generate_keypair(pdp_private, pdp_public)
-
-    from zt_psl.signing import load_private_key as load_psl_key, sign_file
-
-    psl_key = load_psl_key(key_dir / "policy_private.pem")
-    for path in sorted((ROOT / "policy_store").glob("*.psl")) + [ROOT / "policy_store" / "policy_fields.yaml"]:
-        sign_file(path, psl_key, issuer="policy.prototype", key_id="policy-1")
-    print("Development keys generated and PSL policies signed.")
+    if args.force:
+        for name in KEY_NAMES:
+            for suffix in ("_private.pem", "_public.pem"):
+                (key_dir(ROOT) / f"{name}{suffix}").unlink(missing_ok=True)
+        for path in psl_store_files(ROOT):
+            sidecar_path(path).unlink(missing_ok=True)
+        for path in legacy_bundle_files(ROOT):
+            path.with_suffix(".sig.json").unlink(missing_ok=True)
+    result = ensure_dev_material(ROOT)
+    print(f"keys created: {result['keys_created'] or 'none'}; signed: {len(result['signed'])} files")
 
 
 if __name__ == "__main__":
