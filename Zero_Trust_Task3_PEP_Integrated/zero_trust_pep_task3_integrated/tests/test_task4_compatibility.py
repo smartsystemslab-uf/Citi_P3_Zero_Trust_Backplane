@@ -38,13 +38,14 @@ def test_real_task4_pdp_end_to_end(manifest):
     sys.path.insert(0, str(task4 / "src"))
     try:
         from fastapi.testclient import TestClient
+        from zt_backplane.dev_material import dev_key_path
         from zt_backplane.pdp_service import build_runtime, create_app
 
         runtime = build_runtime()
         http_client = TestClient(create_app(runtime))
         client = Task4PDPClient(
             pdp_url="http://testserver",
-            pdp_public_key=task4 / "security" / "dev_keys" / "pdp_signing_public.pem",
+            pdp_public_key=dev_key_path("pdp_signing_public.pem", task4),
             http_client=http_client,
         )
         plan, _ = build_pep_plan(manifest)

@@ -28,6 +28,7 @@ sys.path.insert(0, str(BACKPLANE))
 
 from zt_backplane.canonical import sha256_hex                     # noqa: E402
 from zt_backplane.crypto import load_private_key, sign_mapping      # noqa: E402
+from zt_backplane.dev_material import dev_key_path                 # noqa: E402
 
 spec = importlib.util.spec_from_file_location("psl_differential_report", ROOT / "scripts" / "psl_differential_report.py")
 diff = importlib.util.module_from_spec(spec)
@@ -36,7 +37,7 @@ spec.loader.exec_module(diff)                                      # type: ignor
 
 def legacy_sign(path: Path, raw: dict) -> None:
     path.write_text(yaml.safe_dump(raw, sort_keys=False), encoding="utf-8")
-    key = load_private_key(ROOT / "security" / "dev_keys" / "policy_private.pem")
+    key = load_private_key(dev_key_path("policy_private.pem", ROOT))
     path.with_suffix(".sig.json").write_text(json.dumps({
         "schema_version": "1.0", "issuer": "policy.prototype", "key_id": "policy-1", "algorithm": "Ed25519",
         "signed_at": datetime.now(timezone.utc).isoformat(), "bundle_digest": sha256_hex(raw),

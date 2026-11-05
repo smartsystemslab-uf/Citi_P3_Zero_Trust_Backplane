@@ -1,134 +1,81 @@
-"""Post-run verification of business side effects and audit trails.
+"""Verification of the gateway's audit trails (host side, on runtime/state/gateway).
 
-Runs in the `ops` helper container (read-only queries). Reports the live databases'
-synthetic rows, the Backplane audit by event type/decision, the PDP decision log's hash
-chain and the gateway PSL audit (pre-execution / outcome correlation).
+* zt-adk audit (``audit.jsonl``): hash chain, events by type and decision
+* PDP decision log (``pdp_decisions.jsonl``): hash chain, decisions by outcome
+* gateway PSL audit (``psl_audit.jsonl``): every executed tool call has a correlated pre-execution
+  record (same attempt, request, agent, workload, tool, argument digest, run, permit), its permit
+  appears in the zt-adk audit, outcomes by layer and the monitors' violations
+
+    python -m zt_distributed.verify_state runtime/state/gateway
 """
 from __future__ import annotations
 
-import argparse
 import json
-import os
-import sqlite3
 import sys
 from collections import Counter
 from pathlib import Path
+from typing import Any
 
-from .backplane_adapter import BACKPLANE_ROOT
-
-GOLDEN_BALANCE = 20000 * 50000.0
-OUT = Path("/var/lib/zt-gateway/output")
-AUDIT = OUT / "native_mas_audit.jsonl"
-DECISIONS = OUT / "task4_decision_log.jsonl"
-PSL_AUDIT = OUT / "psl_audit.jsonl"
 CORR_FIELDS = ("attempt_id", "request_id", "agent", "workload", "tool", "args_sha256", "workflow_run_id",
                "permit_id", "auth_mode")
 
 
-def ro(path: str) -> sqlite3.Connection:
-    return sqlite3.connect(f"file:{path}?mode=ro", uri=True)
+def _lines(path: Path) -> list[dict[str, Any]]:
+    if not path.exists():
+        return []
+    return [json.loads(x) for x in path.read_text(encoding="utf-8").splitlines() if x.strip()]
 
 
-def main() -> None:
-    ap = argparse.ArgumentParser()
-    ap.add_argument("--archive", default=None, help="directory to store audit excerpts")
-    ns = ap.parse_args()
-    out: dict = {}
-    adk = ro("/var/lib/bankadk/banking.db")
-    out["eod_batches_by_status"] = dict(adk.execute(
-        "SELECT status, COUNT(*) FROM eod_batches WHERE batch_id LIKE 'EOD-B-%' OR batch_id LIKE 'EOD-M-%' "
-        "OR batch_id LIKE 'EOD-N-%' GROUP BY status"))
-    out["reports"] = adk.execute("SELECT COUNT(*) FROM reports").fetchone()[0]
-    out["exceptions"] = adk.execute("SELECT COUNT(*) FROM exceptions").fetchone()[0]
-    out["manual_reviews"] = adk.execute("SELECT COUNT(*) FROM manual_reviews").fetchone()[0]
-    bank = ro("/var/lib/bank/citi_banking.db")
-    out["new_transactions_by_status"] = dict(bank.execute(
-        "SELECT status, COUNT(*) FROM transactions WHERE transaction_id LIKE 'TX-%' GROUP BY status"))
-    bal = bank.execute("SELECT SUM(balance) FROM accounts WHERE account_id LIKE 'ACC-B%'").fetchone()[0]
-    dest = bank.execute("SELECT SUM(balance) FROM accounts WHERE account_id LIKE 'ACC-D%'").fetchone()[0]
-    out["source_debited_usd"] = round(GOLDEN_BALANCE - bal, 2)
-    out["destination_credited_usd"] = round(dest, 2)
+def verify(state_dir: Path) -> dict[str, Any]:
+    from zt_adk.audit import verify_chain
+    from zt_backplane.audit import ChainedAuditLogger
 
-    counts: Counter = Counter()
-    gateway_checks: Counter = Counter()
-    if AUDIT.exists():
-        with AUDIT.open(encoding="utf-8") as fh:
-            for line in fh:
-                ev = json.loads(line)
-                if ev.get("event_type") == "GATEWAY_PSL_CHECK":
-                    gateway_checks[f"{ev.get('scope')}:{ev.get('outcome')}"] += 1
-                elif "allowed" in ev:
-                    counts[f"{ev['event_type']}:{'allow' if ev['allowed'] else 'deny'}:{ev.get('reason', '')[:60]}"] += 1
-                else:
-                    counts[ev["event_type"]] += 1
-    out["native_audit_counts"] = dict(counts)
-    out["gateway_psl_checks"] = dict(gateway_checks)
-
-    chain_ok = None
-    n_decisions = 0
-    decisions: Counter = Counter()
-    if DECISIONS.exists():
-        sys.path.insert(0, str(BACKPLANE_ROOT / "zero_trust_pdp_task4_secure" / "src"))
-        from zt_backplane.audit import ChainedAuditLogger
-        chain_ok = bool(ChainedAuditLogger(DECISIONS).verify_chain())
-        with DECISIONS.open(encoding="utf-8") as fh:
-            for line in fh:
-                n_decisions += 1
-                decisions[json.loads(line)["decision"]] += 1
-    out["pdp_decision_log"] = {"records": n_decisions, "hash_chain_valid": chain_ok, "by_decision": dict(decisions)}
-
-    if PSL_AUDIT.exists():
-        out["psl_audit"] = psl_audit_summary()
-
-    if ns.archive:
-        dest_dir = Path(ns.archive)
-        dest_dir.mkdir(parents=True, exist_ok=True)
-        for src in (AUDIT, DECISIONS):
-            if not src.exists():
-                continue
-            lines = src.read_text(encoding="utf-8").splitlines()
-            keep = lines if len(lines) <= 400 else lines[:200] + lines[-200:]
-            (dest_dir / (src.stem + ".excerpt.jsonl")).write_text("\n".join(keep) + "\n", encoding="utf-8")
-        if PSL_AUDIT.exists():
-            (dest_dir / "psl_audit.jsonl").write_text(PSL_AUDIT.read_text(encoding="utf-8"), encoding="utf-8")
-        os.system(f"chmod -R a+rwX {dest_dir}")
-    print(json.dumps(out, sort_keys=True))
-
-
-def psl_audit_summary() -> dict:
-    """Gateway PSL audit: outcomes per layer/tool and correlation integrity (pre-execution
-    record, outcome record and the Backplane audit must refer to the same request)."""
-    recs = [json.loads(x) for x in PSL_AUDIT.read_text(encoding="utf-8").splitlines() if x.strip()]
-    pre = {r["attempt_id"]: r for r in recs if r.get("phase") == "pre_execution"}
-    outs = [r for r in recs if r.get("phase") == "outcome"]
-    native_permits = set()
-    if AUDIT.exists():
-        for line in AUDIT.read_text(encoding="utf-8").splitlines():
-            try:
-                e = json.loads(line)
-            except ValueError:
-                continue
-            if e.get("event_type") == "TOOL_AUTHORIZATION" and e.get("permit_id"):
-                native_permits.add(e["permit_id"])
+    out: dict[str, Any] = {}
+    audit_path = state_dir / "audit.jsonl"
+    recs = _lines(audit_path)
+    out["audit"] = {"chain": verify_chain(audit_path) if audit_path.exists() else None,
+                    "by_event": dict(Counter(r["event"] for r in recs)),
+                    "denials_by_event": dict(Counter(r["event"] for r in recs if r.get("allowed") is False))}
+    dec_path = state_dir / "pdp_decisions.jsonl"
+    decisions = _lines(dec_path)
+    out["pdp_decision_log"] = {"records": len(decisions),
+                               "hash_chain_valid": bool(ChainedAuditLogger(dec_path).verify_chain())
+                               if dec_path.exists() else None,
+                               "by_decision": dict(Counter(d.get("decision") for d in decisions))}
+    psl = _lines(state_dir / "psl_audit.jsonl")
+    pre = {r["attempt_id"]: r for r in psl if r.get("phase") == "pre_execution"}
+    outs = [r for r in psl if r.get("phase") == "outcome"]
     executed = [r for r in outs if r.get("outcome") in ("succeeded", "failed")]
-    corr_ok = sum(1 for r in executed if r["attempt_id"] in pre
-                  and all(pre[r["attempt_id"]].get(f) == r.get(f) for f in CORR_FIELDS))
-    permit_in_native = sum(1 for r in executed if r.get("permit_id") in native_permits)
+    permits = {r.get("permit_id") for r in recs if r.get("event") == "TOOL_AUTHORIZATION" and r.get("permit_id")}
     viol: Counter = Counter()
     for r in outs:
         for v in r.get("psl_violations") or []:
             viol[v["property_id"]] += 1
-    return {
-        "records": len(recs), "pre_execution": len(pre), "outcomes": len(outs),
+    out["psl_audit"] = {
+        "records": len(psl), "pre_execution": len(pre), "outcomes": len(outs), "executed": len(executed),
         "outcomes_by_result": dict(Counter(r.get("outcome") for r in outs)),
         "denials_by_layer": dict(Counter(r.get("layer") for r in outs if r.get("outcome") == "denied")),
         "executed_by_tool": dict(Counter(r.get("tool") for r in executed)),
-        "executed_with_correlated_pre_record": corr_ok, "executed": len(executed),
-        "executed_permit_in_native_audit": permit_in_native,
+        "executed_with_correlated_pre_record": sum(
+            1 for r in executed if r["attempt_id"] in pre and all(pre[r["attempt_id"]].get(f) == r.get(f)
+                                                                  for f in CORR_FIELDS)),
+        "executed_permit_in_audit": sum(1 for r in executed if r.get("permit_id") in permits),
         "pre_without_outcome": len(set(pre) - {r["attempt_id"] for r in outs}),
         "violations_by_property": dict(viol),
     }
+    a, p = out["audit"]["chain"], out["psl_audit"]
+    out["ok"] = bool((a is None or a.get("ok")) and out["pdp_decision_log"]["hash_chain_valid"] is not False
+                     and p["executed_with_correlated_pre_record"] == p["executed"]
+                     and p["executed_permit_in_audit"] == p["executed"] and p["pre_without_outcome"] == 0)
+    return out
+
+
+def main() -> int:
+    state = Path(sys.argv[1] if len(sys.argv) > 1 else "runtime/state/gateway")
+    result = verify(state)
+    print(json.dumps(result, indent=1, sort_keys=True))
+    return 0 if result["ok"] else 1
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

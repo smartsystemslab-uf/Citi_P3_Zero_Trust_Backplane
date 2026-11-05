@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "zero-trust-backplane-interface"
-version = "1.0.0a1"
+version = "1.1.0a1"
 description = "Unified interface and manifest standard for the Zero Trust Backplane"
 requires-python = ">=3.11"
 dependencies = [

@@ -26,7 +26,7 @@ from http_message_signatures import (
 from http_message_signatures.exceptions import HTTPMessageSignaturesException, InvalidSignature
 
 SIG_LABEL = "zt-agent"
-SIG_TAG = "citi-p3-agent/v1"
+SIG_TAG = "zt-adk-agent/v1"
 ALGORITHM = algorithms.ECDSA_P256_SHA256
 MAX_WINDOW_S = 60
 DEFAULT_WINDOW_S = 30

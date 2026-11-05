@@ -32,57 +32,93 @@ class Runtime:
     replay_guard: InMemoryReplayGuard
 
 
-def build_runtime() -> Runtime:
-    policy_dir = Path(os.getenv("ZT_POLICY_DIR", PROJECT_ROOT / "policy_store"))
-    identity_file = Path(os.getenv("ZT_IDENTITY_FILE", PROJECT_ROOT / "config" / "identities.yaml"))
-    resource_file = Path(os.getenv("ZT_RESOURCE_FILE", PROJECT_ROOT / "config" / "resources.yaml"))
-    trusted_issuers = Path(os.getenv("ZT_TRUSTED_ISSUERS", PROJECT_ROOT / "config" / "trusted_issuers.yaml"))
-    security_config_file = Path(os.getenv("ZT_SECURITY_CONFIG", PROJECT_ROOT / "config" / "security_context.yaml"))
-    policy_version_store = Path(
-        os.getenv("ZT_POLICY_VERSION_STORE", PROJECT_ROOT / "runtime" / "policy_versions.json")
-    )
-    audit_file = Path(os.getenv("ZT_AUDIT_LOG", PROJECT_ROOT / "runtime" / "decision_log.jsonl"))
-    pdp_private_key = Path(
-        os.getenv("ZT_PDP_PRIVATE_KEY", PROJECT_ROOT / "security" / "dev_keys" / "pdp_signing_private.pem")
-    )
+@dataclass(frozen=True)
+class PdpConfig:
+    """Every file and setting the PDP needs. ``from_env`` reads the ZT_* variables (defaults:
+    the development configuration of this checkout); deployments pass explicit paths."""
 
-    keys = TrustedKeyStore(trusted_issuers)
-    identities = IdentityRegistry.from_yaml(identity_file)
-    resources = ResourceCatalog.from_yaml(resource_file)
+    policy_dir: Path
+    identity_file: Path
+    resource_file: Path
+    trusted_issuers: Path
+    security_config: Path
+    policy_version_store: Path
+    audit_file: Path
+    pdp_private_key: Path
+    decision_issuer: str = "pdp.prototype"
+    decision_key_id: str = "pdp-decision-1"
+    nonce_ttl_seconds: int = 30
+    jti_ttl_seconds: int = 120
+    uses_dev_trust_store: bool = False
+
+    @classmethod
+    def from_env(cls) -> "PdpConfig":
+        dev = not os.getenv("ZT_TRUSTED_ISSUERS") or not os.getenv("ZT_PDP_PRIVATE_KEY")
+        return cls(
+            policy_dir=Path(os.getenv("ZT_POLICY_DIR", PROJECT_ROOT / "policy_store")),
+            identity_file=Path(os.getenv("ZT_IDENTITY_FILE", PROJECT_ROOT / "config" / "identities.yaml")),
+            resource_file=Path(os.getenv("ZT_RESOURCE_FILE", PROJECT_ROOT / "config" / "resources.yaml")),
+            trusted_issuers=Path(os.getenv("ZT_TRUSTED_ISSUERS", PROJECT_ROOT / "config" / "trusted_issuers.yaml")),
+            security_config=Path(os.getenv("ZT_SECURITY_CONFIG", PROJECT_ROOT / "config" / "security_context.yaml")),
+            policy_version_store=Path(
+                os.getenv("ZT_POLICY_VERSION_STORE", PROJECT_ROOT / "runtime" / "policy_versions.json")),
+            audit_file=Path(os.getenv("ZT_AUDIT_LOG", PROJECT_ROOT / "runtime" / "decision_log.jsonl")),
+            pdp_private_key=Path(
+                os.getenv("ZT_PDP_PRIVATE_KEY", PROJECT_ROOT / "security" / "dev_keys" / "pdp_signing_private.pem")),
+            decision_issuer=os.getenv("ZT_PDP_DECISION_ISSUER", "pdp.prototype"),
+            decision_key_id=os.getenv("ZT_PDP_DECISION_KEY_ID", "pdp-decision-1"),
+            nonce_ttl_seconds=int(os.getenv("ZT_NONCE_TTL_SECONDS", "30")),
+            jti_ttl_seconds=int(os.getenv("ZT_JTI_TTL_SECONDS", "120")),
+            uses_dev_trust_store=dev,
+        )
+
+
+def build_runtime(config: PdpConfig | None = None) -> Runtime:
+    config = config or PdpConfig.from_env()
+    if config.uses_dev_trust_store:
+        # the development trust store of this checkout is in use: create its local keys
+        # and store signatures on first use (zt_backplane.dev_material)
+        from .dev_material import ensure_dev_material
+
+        ensure_dev_material(PROJECT_ROOT)
+    keys = TrustedKeyStore(config.trusted_issuers)
+    identities = IdentityRegistry.from_yaml(config.identity_file)
+    resources = ResourceCatalog.from_yaml(config.resource_file)
     replay = InMemoryReplayGuard(
-        nonce_ttl_seconds=int(os.getenv("ZT_NONCE_TTL_SECONDS", "30")),
-        jti_ttl_seconds=int(os.getenv("ZT_JTI_TTL_SECONDS", "120")),
+        nonce_ttl_seconds=config.nonce_ttl_seconds,
+        jti_ttl_seconds=config.jti_ttl_seconds,
     )
     verifier = EvidenceVerifier(
         identities=identities,
         keys=keys,
         replay_guard=replay,
-        security_config=SecurityConfig(security_config_file),
+        security_config=SecurityConfig(config.security_config),
         clock=SystemClock(),
     )
     bundle = PslPolicyStore.load(
-        policy_dir,
+        config.policy_dir,
         keys=keys,
-        rollback_store=PolicyRollbackStore(policy_version_store),
+        rollback_store=PolicyRollbackStore(config.policy_version_store),
     )
     engine = PolicyEngine(
         bundle=bundle,
         identities=identities,
         resources=resources,
         evidence_verifier=verifier,
-        audit_logger=ChainedAuditLogger(audit_file),
+        audit_logger=ChainedAuditLogger(config.audit_file),
     )
     signer = DecisionSigner.from_file(
-        pdp_private_key,
-        issuer=os.getenv("ZT_PDP_DECISION_ISSUER", "pdp.prototype"),
-        key_id=os.getenv("ZT_PDP_DECISION_KEY_ID", "pdp-decision-1"),
+        config.pdp_private_key,
+        issuer=config.decision_issuer,
+        key_id=config.decision_key_id,
     )
     return Runtime(engine=engine, signer=signer, replay_guard=replay)
 
 
 class RuntimeHolder:
-    def __init__(self, runtime: Runtime):
+    def __init__(self, runtime: Runtime, config: PdpConfig | None = None):
         self._runtime = runtime
+        self._config = config
         self._lock = RLock()
 
     def get(self) -> Runtime:
@@ -90,14 +126,14 @@ class RuntimeHolder:
             return self._runtime
 
     def reload(self) -> Runtime:
-        replacement = build_runtime()
+        replacement = build_runtime(self._config)
         with self._lock:
             self._runtime = replacement
             return replacement
 
 
-def create_app(runtime: Runtime | None = None) -> FastAPI:
-    holder = RuntimeHolder(runtime or build_runtime())
+def create_app(runtime: Runtime | None = None, config: PdpConfig | None = None) -> FastAPI:
+    holder = RuntimeHolder(runtime or build_runtime(config), config)
     app = FastAPI(
         title="Zero Trust Backplane PDP — Security-Hardened Task 4",
         version="1.0.0",
@@ -182,7 +218,15 @@ def create_app(runtime: Runtime | None = None) -> FastAPI:
     return app
 
 
-app = create_app()
+
+def __getattr__(name: str) -> FastAPI:
+    """``zt_backplane.pdp_service:app`` (uvicorn): the service of the environment's
+    configuration, built on first access -- importing this module has no side effects."""
+    if name == "app":
+        global app
+        app = create_app()
+        return app
+    raise AttributeError(name)
 
 
 if __name__ == "__main__":

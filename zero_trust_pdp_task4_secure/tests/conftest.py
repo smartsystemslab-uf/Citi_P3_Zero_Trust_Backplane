@@ -53,6 +53,14 @@ def make_runtime(tmp_path: Path, now: datetime = DEFAULT_NOW) -> Runtime:
     return Runtime(engine=engine, signer=signer, replay_guard=replay)
 
 
+@pytest.fixture(scope="session", autouse=True)
+def _dev_material() -> None:
+    """Local development keys and first store signatures of this checkout (never committed)."""
+    from zt_backplane.dev_material import ensure_dev_material
+
+    ensure_dev_material(ROOT)
+
+
 @pytest.fixture()
 def runtime(tmp_path: Path) -> Runtime:
     return make_runtime(tmp_path)
