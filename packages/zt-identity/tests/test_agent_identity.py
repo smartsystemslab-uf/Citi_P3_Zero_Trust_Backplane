@@ -183,3 +183,57 @@ def test_b_same_signature_accepted_once(ca):
     with pytest.raises(AuthenticationError) as e:
         do(auth, dict(headers), body)
     assert e.value.code == "signature_replayed"
+
+
+class _Events:
+    def __init__(self):
+        self.seen = []
+
+    def emit(self, event, **fields):
+        self.seen.append(event)
+
+
+def _manager(enroll_impl):
+    import types
+
+    from zt_identity.agent_identity.client import AgentCredentialManager
+
+    m = AgentCredentialManager(agent_id="a1", workload_spiffe_id=lambda: WL, issuer_url="https://issuer",
+                               post_json=None, enrollment_key_path="unused", events=_Events())
+    m.cred = types.SimpleNamespace(serial="old")
+    m.enroll = types.MethodType(enroll_impl, m)
+    return m
+
+
+def test_reenroll_after_revocation_runs_once_for_concurrent_callers():
+    import asyncio
+    import types
+
+    calls = []
+
+    async def enroll(self):
+        calls.append(1)
+        await asyncio.sleep(0.05)
+        self.cred = types.SimpleNamespace(serial=f"new{len(calls)}")
+
+    async def go():
+        m = _manager(enroll)
+        results = await asyncio.gather(*(m.reenroll("pep_reported_agent_cert_revoked", stale_serial="old")
+                                         for _ in range(5)))
+        return m, results
+
+    m, results = asyncio.run(go())
+    assert results == [True] * 5 and len(calls) == 1 and m.cred.serial == "new1"
+    # a caller whose refused certificate was already replaced does not re-enroll again
+    assert asyncio.run(m.reenroll("late", stale_serial="old")) is True and len(calls) == 1
+
+
+def test_reenroll_reports_failure_while_the_agent_is_disabled():
+    import asyncio
+
+    async def enroll(self):
+        raise RuntimeError("enroll rejected: 403 agent_disabled")
+
+    m = _manager(enroll)
+    assert asyncio.run(m.reenroll("pep_reported_agent_cert_revoked", stale_serial="old")) is False
+    assert m.cred.serial == "old" and "agent_cert_reenroll_failed" in m.events.seen

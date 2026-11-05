@@ -192,10 +192,10 @@ def test_disable_enable_agent(up):
     en = stack.issuer_admin("enable", "account_agent")
     time.sleep(5)
     outcomes = []
-    for i in range(4):                                         # the old certificate is revoked: re-enrolment
+    for i in range(4):     # the old certificate is revoked: the agent re-enrolls and resends the refused call
         r = converse("Please look up user alice", session_id=f"ft-dis-2-{i}")[0]
         outcomes.append((r.get("results", {}).get("lookup_user") or {}).get("status"))
-    assert outcomes[-1] == "ok" and outcomes.count("ok") >= 3, outcomes
+    assert outcomes == ["ok"] * 4, outcomes
     record("disable_enable", disable=dis, enable=en, identity_changes=changes, outcomes_after_enable=outcomes)
 
 

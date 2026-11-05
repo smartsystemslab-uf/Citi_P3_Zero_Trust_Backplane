@@ -227,3 +227,62 @@ def test_strict_build_refuses_unknown_toolset_tools(tmp_path):
                 root_agent=root(), skip_static=True)
     assert any("every tool it offers at run time is denied" in w for w in res.warnings)
     build(profile_from_dict({**base, "strict": False}, tmp_path), root_agent=root(), skip_static=True)
+
+
+@pytest.mark.parametrize("fails", [False, True])
+def test_toolset_is_listed_and_closed_in_one_event_loop(fails):
+    """A toolset's connections belong to the event loop that opened them: discovery closes the toolset
+    in the loop that listed its tools, whether or not the listing succeeded."""
+    import asyncio
+
+    from google.adk.tools.base_toolset import BaseToolset
+
+    loops: dict[str, int] = {}
+
+    class TrackingToolset(BaseToolset):
+        async def get_tools(self, readonly_context=None):
+            loops["listed"] = id(asyncio.get_running_loop())
+            if fails:
+                raise ConnectionError("server down")
+            return [FunctionTool(func=_tool_read)]
+
+        async def close(self):
+            loops["closed"] = id(asyncio.get_running_loop())
+
+    root = LlmAgent(name="root", model="gemini-2.5-flash", tools=[TrackingToolset()])
+    model, _, _ = discover(root, declared_toolset_tools={"TrackingToolset": ["_tool_read"]})
+    assert "closed" in loops and loops["closed"] == loops["listed"]
+    assert model.toolsets["root/TrackingToolset"]["resolved"] is (not fails)
+
+
+def test_mcp_stdio_server_started_for_discovery_exits(tmp_path):
+    """Resolving an MCP stdio toolset starts the server; discovery must not leave it running."""
+    import sys
+    import time
+
+    try:
+        from google.adk.tools.mcp_tool.mcp_session_manager import StdioConnectionParams
+        from google.adk.tools.mcp_tool.mcp_toolset import McpToolset
+        from mcp import StdioServerParameters
+    except ImportError as exc:          # e.g. ADK 2.7 with mcp 2.x: ADK's own MCP client needs mcp 1.x
+        pytest.skip(f"this ADK's McpToolset cannot be used with the installed mcp: {exc}")
+
+    marker = tmp_path / "exited"
+    server = tmp_path / "server.py"
+    server.write_text(
+        "import pathlib\n"
+        "try:\n    from mcp.server.mcpserver import MCPServer as S\n"
+        "except ImportError:\n    from mcp.server.fastmcp import FastMCP as S\n"
+        "s = S('t')\n\n"
+        "@s.tool()\ndef ping(x: str) -> str:\n    return x\n\n"
+        "try:\n    s.run()\n"
+        f"finally:\n    pathlib.Path({str(marker)!r}).write_text('1')\n", encoding="utf-8")
+    ts = McpToolset(connection_params=StdioConnectionParams(
+        server_params=StdioServerParameters(command=sys.executable, args=[str(server)]), timeout=30))
+    model, _, _ = discover(LlmAgent(name="root", model="gemini-2.5-flash", tools=[ts]))
+    assert model.toolsets["root/McpToolset"]["resolved"], model.toolsets
+    assert "root/ping" in model.tools
+    deadline = time.monotonic() + 15
+    while not marker.exists() and time.monotonic() < deadline:
+        time.sleep(0.1)
+    assert marker.exists(), "the MCP stdio server started for discovery is still running"

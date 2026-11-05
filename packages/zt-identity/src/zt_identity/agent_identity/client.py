@@ -126,18 +126,27 @@ class AgentCredentialManager:
         self._install(new_key, body, "renewed", time.monotonic() - t0)
         self.renewals += 1
 
-    async def reenroll(self, reason: str) -> None:
+    async def reenroll(self, reason: str, *, stale_serial: str | None = None) -> bool:
         """Re-enroll with the pre-registered enrollment key after the current
-        certificate was revoked (e.g. admin disable -> enable)."""
-        if self._reenroll_lock.locked():
-            return
+        certificate was revoked (e.g. admin disable -> enable).
+
+        ``stale_serial``: the serial of the certificate the PEP refused. A caller
+        that passes it waits for a re-enrollment already in progress and does
+        not re-enroll again once that certificate was replaced. Returns whether
+        the agent holds a certificate other than ``stale_serial`` afterwards."""
+        if stale_serial is None and self._reenroll_lock.locked():
+            return False
         async with self._reenroll_lock:
+            if stale_serial is not None and self.cred is not None and self.cred.serial != stale_serial:
+                return True
             self.events.emit("agent_cert_reenroll_start", agent_id=self.agent_id, reason=reason)
             try:
                 await self.enroll()
                 self.reenrollments += 1
             except Exception as exc:
                 self.events.emit("agent_cert_reenroll_failed", error=str(exc)[:200])
+                return False
+            return self.cred is not None and self.cred.serial != stale_serial
 
     async def start(self) -> None:
         t0 = time.monotonic()
