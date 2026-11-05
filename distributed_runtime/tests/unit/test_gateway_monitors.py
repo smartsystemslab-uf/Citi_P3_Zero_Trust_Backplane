@@ -1,4 +1,4 @@
-"""Gateway temporal rules (policy_store/gateway_runtime.psl) executed from the SIGNED store
+"""Gateway temporal rules (50_gateway_runtime.psl of a protection bundle) executed from the SIGNED store
 with the real runtime: hand-derived expected verdicts for normal and violating traces of
 every property (ported from the PSL monitor experiment, scheme B), plus slicing,
 all-or-nothing admission, concurrency and capacity."""
@@ -16,8 +16,7 @@ ID_B = {"identity.workload_ok": True, "identity.agent_registered": True, "identi
 ADM = {"permit.bound": True, "permit.live": True, "tool.critical": False}
 PRE = {"audit.correlated": True, "audit.durable": True}
 POST = {"audit.correlated": True}
-ADMISSION_EVENTS = {"execution_admitted", "execution_started", "ledger_admitted", "report_admitted",
-                    "exception_admitted"}
+ADMISSION_EVENTS = {"execution_admitted", "execution_started"}
 
 
 def g(pid: str) -> str:
@@ -57,8 +56,7 @@ def test_store_defines_exactly_the_gateway_monitors(rt):
     assert pids == {g(p) for p in ("P1_identity", "P1_authorization", "P1_permit", "P1_binding", "P1_admission",
                                    "P2_request", "P5_live", "P6_pre_audit", "P6_post_audit",
                                    "P6_outcome_after_start", "P6_outcome_recorded", "P6_single_outcome",
-                                   "P2_operation", "P3_at_most_once", "P4_ledger_after_readiness",
-                                   "P4_report_after_match", "P4_exception_after_mismatch", "P4_participant",
+                                   "P2_operation", "P3_at_most_once", "P4_participant",
                                    "P4_within_dispatch")}
 
 
@@ -137,7 +135,7 @@ def test_duplicate_outcome_and_success_without_start(rt):
     assert (g("P6_outcome_after_start"), "execution_succeeded", "step") in play(r, normal()[:7] + [("execution_succeeded", {})])
 
 
-OP = ("wfr-1", "transaction_processing_agent", "execute_transfer", "digest")
+OP = ("wfr-1", "account_agent", "account_agent__reset_password", "digest")
 
 
 def op(r, ev, fields=None):
@@ -164,34 +162,8 @@ def test_non_critical_repeat_allowed_and_denied_operation_blocked(rt):
     assert not res.ok and res.violations[0].property_id == g("P2_operation")
 
 
-B_ = ("wfr-1", "EOD-B-000001")
-
-
-def wb(r, ev):
-    return step(r, "workflow_batch", B_, ev, {})
-
-
-def test_eod_preconditions(rt):
-    r = rt()
-    assert not wb(r, "ledger_admitted").ok                          # skipped readiness
-    r = rt()
-    assert wb(r, "readiness_not_ready").ok and not wb(r, "ledger_admitted").ok
-    r = rt()
-    for ev in ("readiness_ready", "batch_other", "ledger_admitted", "recon_matched", "report_admitted"):
-        assert wb(r, ev).ok, ev
-    r = rt()
-    for ev in ("readiness_ready", "ledger_admitted", "recon_mismatched"):
-        assert wb(r, ev).ok
-    assert not wb(r, "report_admitted").ok                          # report after mismatch
-    assert wb(r, "exception_admitted").ok
-    r = rt()
-    for ev in ("readiness_ready", "ledger_admitted", "recon_matched"):
-        assert wb(r, ev).ok
-    assert not wb(r, "exception_admitted").ok                       # exception without mismatch
-
-
 def test_participation(rt):
-    P = ("wfr-1", "ledger_update_agent")
+    P = ("wfr-1", "account_agent")
     r = rt()
     res = step(r, "workflow_participation", P, "execution_admitted", {})
     assert not res.ok and res.violations[0].property_id == g("P4_participant")
@@ -209,24 +181,22 @@ def test_slices_are_isolated(rt):
     r = rt()
     play(r, [("request_received", {}), ("authorization_denied", {}), ("request_denied", {})], key=("attempt-2",))
     assert play(r, normal()) == []
-    wb1, wb2 = ("wfr-1", "EOD-B-1"), ("wfr-2", "EOD-B-1")
-    step(r, "workflow_batch", wb1, "readiness_ready", {})
-    assert not step(r, "workflow_batch", wb2, "ledger_admitted", {}).ok     # no borrowing across runs
-    assert step(r, "workflow_batch", wb1, "ledger_admitted", {}).ok
+    p1, p2 = ("wfr-1", "agent_a"), ("wfr-2", "agent_a")
+    step(r, "workflow_participation", p1, "dispatched", {})
+    assert not step(r, "workflow_participation", p2, "execution_admitted", {}).ok   # no borrowing across runs
+    assert step(r, "workflow_participation", p1, "execution_admitted", {}).ok
 
 
 def test_multi_slice_admission_is_all_or_nothing(rt):
     r = rt()
-    P = ("wfr-1", "ledger_update_agent")
-    step(r, "workflow_participation", P, "dispatched", {})
+    P = ("wfr-1", "account_agent")
     play(r, normal()[:5])
     targets = [("request_attempt", K, "execution_admitted", r.bind("request_attempt", "execution_admitted", ADM)),
-               ("workflow_participation", P, "execution_admitted", {}),
-               ("workflow_batch", B_, "ledger_admitted", {})]               # readiness missing -> must fail
+               ("workflow_participation", P, "execution_admitted", {})]     # not dispatched -> must fail
     res = r.admit(targets)
-    assert not res.ok and [v.property_id for v in res.violations] == [g("P4_ledger_after_readiness")]
+    assert not res.ok and [v.property_id for v in res.violations] == [g("P4_participant")]
     assert r.verdicts("request_attempt", K)[g("P1_admission")] == "P"       # nothing committed
-    step(r, "workflow_batch", B_, "readiness_ready", {})
+    step(r, "workflow_participation", P, "dispatched", {})
     assert r.admit(targets).ok
 
 

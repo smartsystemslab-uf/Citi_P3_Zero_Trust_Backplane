@@ -10,6 +10,7 @@ import httpx
 
 from zt_backplane.decision_signing import verify_decision_headers
 from zt_backplane.dev_evidence import build_signed_request
+from zt_backplane.dev_material import dev_key_path
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -173,7 +174,7 @@ def main() -> None:
             signature_valid = verify_decision_headers(
                 body,
                 response.headers,
-                ROOT / "security" / "dev_keys" / "pdp_signing_public.pem",
+                dev_key_path("pdp_signing_public.pem", ROOT),
                 expected_request_hash=request.request_hash,
             )
             print(f"Decision:         {body['decision']}")

@@ -1,0 +1,37 @@
+# Deterministic model decisions for the Citi P3 regression run (tests only; the application's own
+# model is replaced, its agents, tools, workflows and custom orchestration run unchanged).
+agents:
+  user_proxy_agent:
+    - when: {user: "(?i)^transfer"}
+      transfer: front_office_router
+    - when: {user: "(?i)ledger"}
+      transfer: front_office_router              # misrouted on purpose: the router tries to cross domains
+    - when: {user: "(?i)account numbers"}
+      text: "Your accounts on file are CHK-001 and SVG-001."
+    - text: "How can I help with your banking today?"
+
+  front_office_router:
+    - when: {after: transfer_to_agent}
+      text: "This request cannot be handed to another office from here."
+    - when: {user: "(?i)ledger"}
+      transfer: back_office_router                # front office -> back office: cross-domain
+    - when: {user: "(?i)^transfer"}
+      transfer: customer_service_chatbot_workflow
+    - text: "Front office: please describe the request."
+
+  chatbot_intent_agent:
+    - text: '{"route": "service", "intent": "funds_transfer"}'
+
+  customer_service_agent:
+    - text: '{"service_type": "transaction_execution", "execution_required": true}'
+
+  transaction_processing_agent:
+    - when: {after: execute_transfer}
+      text: "The transfer request was processed."
+    - when: {user: "(?i)^transfer [0-9]+ from (?P<src>[A-Z]+-[0-9]+) to (?P<dst>[A-Z]+-[0-9]+)"}
+      call: execute_transfer
+      args: {source_account: "{src}", destination_account: "{dst}", amount: 250.0, memo: "regression"}
+    - text: "No transfer details found."
+
+  back_office_router:
+    - text: "Back office: please name the batch."

@@ -40,7 +40,7 @@ from zt_identity.workload_identity.connector import ConnectionStats, PeerIdentit
 from zt_identity.workload_identity.spiffe_tls import WorkloadIdentity
 from zt_identity.workload_identity.svid import PeerIdentityCache
 
-from .mcp_server import K_ATTEMPT, K_CALL_ID, K_IDEMPOTENCY, K_REQUEST_ID, K_TRACE_ID, K_WORKFLOW_RUN_ID
+from .mcp_server import K_ATTEMPT, K_CALL_ID, K_IDEMPOTENCY, K_REQUEST_ID, K_STATE, K_TRACE_ID, K_WORKFLOW_RUN_ID
 
 try:  # httpcore >= 1.0
     from httpcore import AnyIOBackend
@@ -285,7 +285,7 @@ class McpToolSession:
         try:
             async with streamable_http_client(self.url, http_client=self.http, terminate_on_close=True) as (r, w, sid):
                 async with ClientSession(r, w, client_info=types.Implementation(
-                        name=f"citi-p3-agent:{self.agent_id}", version="1.0.0"),
+                        name=f"zt-adk-agent:{self.agent_id}", version="1.0.0"),
                         read_timeout_seconds=self.read_timeout) as session:
                     t1 = time.perf_counter()
                     init = await session.initialize()
@@ -348,8 +348,25 @@ class McpToolSession:
                     await self._connect_locked("lazy_reconnect")
                 session = self.session
             assert session is not None
+        runner = self._task
+        call = asyncio.ensure_future(session.call_tool(name, arguments, read_timeout_seconds=self.read_timeout,
+                                                       meta=meta))
         try:
-            return await session.call_tool(name, arguments, read_timeout_seconds=self.read_timeout, meta=meta)
+            if runner is not None and not runner.done():
+                # The SDK session lives in the runner task. If the transport fails (e.g. the PEP
+                # answers 401 for a revoked agent certificate) the runner ends, but a pending
+                # call_tool would wait for its response until the read timeout: fail it now.
+                await asyncio.wait({call, runner}, return_when=asyncio.FIRST_COMPLETED)
+                if not call.done():
+                    call.cancel()
+                    try:
+                        await call
+                    except BaseException:  # noqa: BLE001 -- cancelled on purpose
+                        pass
+                    if self.session is session:
+                        self.session = None
+                    raise ConnectionError("MCP session ended while the call was pending")
+            return await call
         except McpError as exc:
             # HTTP 404 on a session request = the server no longer knows the session
             # (spec: the client MUST start a new session). This call stays failed (no
@@ -368,6 +385,9 @@ class McpToolSession:
 
 
 def call_meta(*, request_id: str, workflow_run_id: str, trace_id: str, idempotency_key: str, call_id: str,
-              attempt: int = 1) -> dict[str, Any]:
-    return {K_REQUEST_ID: request_id, K_WORKFLOW_RUN_ID: workflow_run_id, K_TRACE_ID: trace_id,
-            K_IDEMPOTENCY: idempotency_key, K_CALL_ID: call_id, K_ATTEMPT: attempt}
+              attempt: int = 1, state: dict[str, Any] | None = None) -> dict[str, Any]:
+    meta: dict[str, Any] = {K_REQUEST_ID: request_id, K_WORKFLOW_RUN_ID: workflow_run_id, K_TRACE_ID: trace_id,
+                            K_IDEMPOTENCY: idempotency_key, K_CALL_ID: call_id, K_ATTEMPT: attempt}
+    if state is not None:
+        meta[K_STATE] = state
+    return meta

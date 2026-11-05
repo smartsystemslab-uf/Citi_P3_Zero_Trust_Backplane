@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 from pathlib import Path
 
 from zt_pep.runtime import PEPDenied, PEPEnforcer, Task4PDPClient
@@ -14,10 +15,12 @@ def main() -> None:
     parser.add_argument("--task4-root", type=Path, required=True)
     parser.add_argument("--pdp", default="http://127.0.0.1:8080")
     args = parser.parse_args()
+    sys.path.insert(0, str(args.task4_root / "src"))
+    from zt_backplane.dev_material import dev_key_path
 
     client = Task4PDPClient(
         pdp_url=args.pdp,
-        pdp_public_key=args.task4_root / "security" / "dev_keys" / "pdp_signing_public.pem",
+        pdp_public_key=dev_key_path("pdp_signing_public.pem", args.task4_root),
     )
     enforcer = PEPEnforcer(
         args.plan,

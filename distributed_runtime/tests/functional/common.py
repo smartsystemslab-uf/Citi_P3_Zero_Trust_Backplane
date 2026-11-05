@@ -1,13 +1,15 @@
-"""Shared helpers for the end-to-end functional tests (host side, Docker deployment)."""
+"""Shared helpers of the end-to-end tests (host side, Docker deployment of the example service desk)."""
 from __future__ import annotations
 
 import json
+import subprocess
+import sys
+import threading
 import time
 from pathlib import Path
 from typing import Any
 
 from scripts import stack
-from zt_distributed import catalog
 
 ROOT = Path(__file__).resolve().parents[2]             # distributed_runtime/
 SESSION = time.strftime("%Y%m%dT%H%M%S")
@@ -21,71 +23,69 @@ def record(test: str, **data: Any) -> None:
     (OUT / "functional_evidence.json").write_text(json.dumps(EVIDENCE, indent=1, default=str), encoding="utf-8")
 
 
-def read_jsonl(path: Path) -> list[dict[str, Any]]:
-    if not path.exists():
-        return []
-    return [json.loads(x) for x in path.read_text(encoding="utf-8").splitlines() if x.strip()]
+def converse(*messages: str, role: str = "employee", session_id: str | None = None,
+             extra: list[str] | None = None) -> list[dict[str, Any]]:
+    args: list[str] = []
+    for m in messages:
+        args += ["--message", m]
+    if role:
+        args += ["--role", role]
+    if session_id:
+        args += ["--session-id", session_id]
+    return stack.ingress(*(args + (extra or [])))["results"]
 
 
-class Ctx:
-    def __init__(self, label: str = "b", **start_kwargs: Any) -> None:
-        self.label = label
-        self.info = stack.start(**start_kwargs)
-        self.env = self.info["env_for_runs"]
-        self.n = 0
-
-    def run(self, name: str, scenario: str, *, count: int = 2, fresh: bool = True,
-            extra: list[str] | None = None, offset: int = 0) -> dict[str, Any]:
-        """One ingress burst through the gateway; returns client results, gateway spans,
-        gateway stats and the verified state of the run."""
-        self.n += 1
-        rid = f"{self.label}-{self.n:02d}-{name}"
-        d = OUT / self.label / rid
-        stack.rotate_live(d / "pre", wait_s=0.2)
-        if fresh:
-            stack.restart_gateway(self.env)
-        args = ["--scenario", scenario, "--count", str(count), "--offset", str(offset),
-                f"--run-tag={rid[-12:]}"] + (extra or [])
-        client = stack.ingress(*args)
-        gw_stats = stack.http_local("zt-gateway", "/stats")
-        stack.rotate_live(d)
-        state = stack.verify_state(d / "audit")
-        d.mkdir(parents=True, exist_ok=True)
-        (d / "client.json").write_text(json.dumps(client, indent=1, default=str))
-        (d / "state.json").write_text(json.dumps(state, indent=1))
-        (d / "gateway_stats.json").write_text(json.dumps(gw_stats, indent=1))
-        return {"client": client, "results": client["results"], "gw": read_jsonl(d / "zt-gateway.spans.jsonl"),
-                "state": state, "dir": d, "gw_stats": gw_stats, "psl": gw_stats.get("psl")}
-
-    def health(self, agent_service: str) -> dict[str, Any]:
-        return stack.http_local(agent_service, "/health")
+def gateway_audit() -> list[dict[str, Any]]:
+    p = stack.STATE / "gateway" / "audit.jsonl"
+    return [json.loads(x) for x in p.read_text(encoding="utf-8").splitlines() if x.strip()] if p.exists() else []
 
 
-def svc(agent_id: str) -> str:
-    return catalog.AGENTS[agent_id].name
+class Background:
+    """A conversation that runs in the background (e.g. one that waits for an approval)."""
+
+    def __init__(self, *messages: str, role: str = "employee") -> None:
+        self.result: list[dict[str, Any]] | None = None
+        self.error: BaseException | None = None
+        self.thread = threading.Thread(target=self._run, args=(messages, role), daemon=True)
+        self.thread.start()
+
+    def _run(self, messages: tuple[str, ...], role: str) -> None:
+        try:
+            self.result = converse(*messages, role=role)
+        except BaseException as exc:  # noqa: BLE001
+            self.error = exc
+
+    def join(self, timeout: float = 300) -> list[dict[str, Any]]:
+        self.thread.join(timeout)
+        if self.error:
+            raise self.error
+        assert self.result is not None, "conversation did not finish"
+        return self.result
 
 
-def tool_spans(gw: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    return [g for g in gw if g.get("ep") == "mcp" and g.get("rpc_method") == "tools/call"]
+def probe(agent_workload: str, *args: str) -> dict[str, Any]:
+    """Run zt_distributed.probe inside an agent's workload as that workload's user."""
+    dep = stack.deployment()
+    w = dep.workload_by_name(agent_workload)
+    out = stack.dexec(agent_workload, "python", "-m", "zt_distributed.probe", *args, user=f"{w.uid}:{w.uid}",
+                      timeout=120)
+    return json.loads([ln for ln in out.splitlines() if ln.startswith("{")][-1])
 
 
-def rejected_spans(gw: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    return [g for g in gw if g.get("ep") == "mcp" and g.get("status") == 401]
-
-
-def assert_psl_clean(r: dict[str, Any], *, executions: int | None = None,
-                     denial_layers: set[str] | None = None) -> dict[str, Any]:
-    """The gateway PSL audit of a run: every executed call has a correlated pre-execution
-    record and an outcome record, its permit is in the Backplane audit, and no monitor
-    reported a violation (denials only from the expected layers)."""
-    pa = r["state"].get("psl_audit") or {}
-    assert pa, "no PSL audit written"
+def assert_psl_clean(state: dict[str, Any], *, expected_violations: set[str] = frozenset()) -> dict[str, Any]:
+    """Every executed call has a correlated pre-execution and outcome record and a permit in the
+    audit; monitor violations only where a test provoked them (refused admissions)."""
+    pa = state["psl_audit"]
     assert pa["pre_without_outcome"] == 0, pa
     assert pa["executed_with_correlated_pre_record"] == pa["executed"], pa
-    assert pa["executed_permit_in_native_audit"] == pa["executed"], pa
-    assert not pa["violations_by_property"], pa["violations_by_property"]
-    if executions is not None:
-        assert pa["executed"] == executions, pa
-    if denial_layers is not None:
-        assert set(pa["denials_by_layer"]) <= denial_layers, pa["denials_by_layer"]
-    return {"audit": pa, "monitor": {k: v for k, v in (r["psl"] or {}).items() if k in ("metrics", "counters")}}
+    assert pa["executed_permit_in_audit"] == pa["executed"], pa
+    assert set(pa["violations_by_property"]) <= set(expected_violations), pa["violations_by_property"]
+    return pa
+
+
+def python() -> str:
+    return sys.executable
+
+
+def run_cmd(*args: str) -> subprocess.CompletedProcess:
+    return subprocess.run(list(args), capture_output=True, text=True)

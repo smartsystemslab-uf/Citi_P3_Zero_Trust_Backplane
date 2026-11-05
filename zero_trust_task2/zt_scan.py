@@ -31,11 +31,58 @@ DEFAULT_EXCLUDED_DIRS = {
 }
 HTTP_METHODS = {"get", "post", "put", "patch", "delete", "head", "options"}
 KNOWN_AGENT_CONSTRUCTORS = {
-    "LlmAgent", "SequentialAgent", "ParallelAgent", "Agent", "BaseAgent",
+    "LlmAgent", "SequentialAgent", "ParallelAgent", "LoopAgent", "Agent", "BaseAgent", "RemoteA2aAgent",
     "ConversableAgent", "AssistantAgent", "UserProxyAgent", "ChatAgent",
     "RouterAgent", "WorkflowAgent",
 }
 AGENT_FACTORY_NAMES = {"create_agent", "build_agent", "make_agent", "new_agent", "agent_factory"}
+# Google ADK tool forms inside tools=[...] (resolved to the referenced function / agent / capability)
+ADK_FUNCTION_TOOL_WRAPPERS = {"FunctionTool", "LongRunningFunctionTool", "AuthenticatedFunctionTool"}
+ADK_BUILTIN_TOOL_CLASSES = {"GoogleSearchTool", "VertexAiSearchTool", "UrlContextTool", "EnterpriseWebSearchTool",
+                            "GoogleMapsGroundingTool", "BuiltInCodeExecutionTool", "DiscoveryEngineSearchTool"}
+ADK_BUILTIN_TOOL_NAMES = {"google_search", "url_context", "enterprise_web_search", "google_maps_grounding"}
+# Agent classes defined in the scanned repository (subclasses of an agent class), filled by scan_agents
+REPOSITORY_AGENT_CLASSES: set[str] = set()
+
+
+def adk_collection_items(node):
+    """Items of an ADK tools=[...] / sub_agents=[...] list as names.
+
+    tools: plain functions (f, or module.f -> f), FunctionTool(func=f) / LongRunningFunctionTool(f)
+    -> f, AgentTool(agent=a) -> 'agent_tool:a', model-side built-ins -> 'builtin:<name>', toolsets ->
+    'toolset:<Class>'; sub_agents: agent symbols and inline agent constructors (their name=)."""
+    if not isinstance(node, (ast.List, ast.Tuple, ast.Set)):
+        return []
+    out = []
+    for item in node.elts:
+        out.extend(_adk_item(item))
+    return [x for x in out if x]
+
+
+def _adk_item(item):
+    if isinstance(item, ast.Name):
+        return ["builtin:" + item.id] if item.id in ADK_BUILTIN_TOOL_NAMES else [item.id]
+    if isinstance(item, ast.Attribute):
+        return ["builtin:" + item.attr] if item.attr in ADK_BUILTIN_TOOL_NAMES else [item.attr]
+    if isinstance(item, ast.Call):
+        short = callable_name(item.func).rsplit(".", 1)[-1]
+        first = item.args[0] if item.args else None
+        if short in ADK_FUNCTION_TOOL_WRAPPERS:
+            target = keyword_node("func", item.keywords) or first
+            return _adk_item(target) if target is not None else []
+        if short.endswith("AgentTool"):
+            target = keyword_node("agent", item.keywords) or first
+            names = _adk_item(target) if target is not None else []
+            return ["agent_tool:" + n for n in names]
+        if short in ADK_BUILTIN_TOOL_CLASSES:
+            return ["builtin:" + short]
+        if short.endswith(("Toolset", "ToolSet")):
+            return ["toolset:" + short]
+        name = keyword_value("name", item.keywords)
+        if isinstance(name, str) and (short in KNOWN_AGENT_CONSTRUCTORS or short in REPOSITORY_AGENT_CLASSES
+                                      or short.endswith("Agent")):
+            return [name]                       # inline agent constructor
+    return []
 TOOL_DECORATORS = {
     "tool", "function_tool", "register_tool", "mcp_tool", "server.tool", "mcp.tool",
     "app.tool", "registry.tool", "kernel_function",
@@ -620,6 +667,8 @@ class AgentScanner(ast.NodeVisitor):
         if isinstance(raw, ast.Name) and raw.id in self._collection_aliases:
             dynamic_sources = [raw.id] if raw.id in self._dynamic_collections else []
             return list(self._collection_aliases[raw.id]), dynamic_sources
+        if isinstance(raw, (ast.List, ast.Tuple, ast.Set)):
+            return adk_collection_items(raw), []
         return extract_string_list(raw), []
 
     def visit_AnnAssign(self, node: ast.AnnAssign) -> Any:
@@ -644,7 +693,7 @@ class AgentScanner(ast.NodeVisitor):
         short = constructor.rsplit(".", 1)[-1]
         kw_names = {kw.arg for kw in node.keywords if kw.arg}
         agent_signal = bool(kw_names & {"name", "agent_id", "tools", "functions", "sub_agents", "agents", "instruction", "system_prompt", "model", "description"})
-        known = short in KNOWN_AGENT_CONSTRUCTORS or short in AGENT_FACTORY_NAMES
+        known = short in KNOWN_AGENT_CONSTRUCTORS or short in AGENT_FACTORY_NAMES or short in REPOSITORY_AGENT_CLASSES
         generic = (short.endswith("Agent") or short.lower().endswith("_agent")) and agent_signal
         if not (known or generic):
             # Preserve likely agent constructors that are not understood well enough.
@@ -702,12 +751,18 @@ class AgentScanner(ast.NodeVisitor):
                 if isinstance(value, str):
                     sub_agents.append(value)
         tools = list(dict.fromkeys(tools))
+        agent_tools = [t.split(":", 1)[1] for t in tools if t.startswith("agent_tool:")]
+        builtins = [t.split(":", 1)[1] for t in tools if t.startswith("builtin:")]
+        toolsets = [t.split(":", 1)[1] for t in tools if t.startswith("toolset:")]
+        tools = [t for t in tools if ":" not in t] + builtins
+        dynamic_tool_sources.extend(f"toolset:{t}" for t in toolsets)
+        sub_agents.extend(a for a in agent_tools if a not in sub_agents)
         sub_agents = [x for x in dict.fromkeys(sub_agents) if x != name_value]
 
         agent_type = short
         role = "specialist"
         pep_type = "tool_pep"
-        if "Sequential" in agent_type or "Parallel" in agent_type or "Workflow" in agent_type:
+        if "Sequential" in agent_type or "Parallel" in agent_type or "Loop" in agent_type or "Workflow" in agent_type:
             role = "workflow"
             pep_type = "none"
         elif sub_agents or "Router" in agent_type or "router" in name_value.lower():
@@ -725,6 +780,8 @@ class AgentScanner(ast.NodeVisitor):
             "risk_tier": "medium",
             "authorized_tools": tools,
             "authorized_transfers": sub_agents,
+            "agent_tools": agent_tools,
+            "builtin_tools": builtins,
             "dynamic_tool_sources": list(dict.fromkeys(dynamic_tool_sources)),
             "dynamic_agent_sources": list(dict.fromkeys(dynamic_agent_sources)),
             "reads_from": [],
@@ -1654,8 +1711,58 @@ def parse_python_file(path: Path, collector: Optional[UnresolvedCollector] = Non
         return None
 
 
+def builtin_tool_entities(agents: List[DraftEntity]) -> List[DraftEntity]:
+    """Model-side ADK built-in tools (google_search, ...) referenced by agents: no function in the
+    repository implements them (the model provider does), so they are created from the reference."""
+    out: List[DraftEntity] = []
+    seen: set[str] = set()
+    for agent in agents:
+        for name in agent.payload.get("builtin_tools", []) or []:
+            if name in seen:
+                continue
+            seen.add(name)
+            out.append(DraftEntity({
+                "tool_id": name,
+                "display_name": f"ADK built-in tool {name} (executed by the model provider)",
+                "source_type": "builtin", "source": "builtin",
+                "domain": agent.payload.get("domain", "shared"),
+                "action_type": "read", "has_side_effects": False, "risk_level": 1,
+                "requires_live_decision": False, "audit_required": False, "allowed_callers": [],
+                "calls_api": [], "calls_api_methods": [], "pii_fields": [], "compliance_tags": [],
+                "idempotency_key": None, "operation_class": operation_class("read"), "status": "provisional",
+                "detection_method": "adk_builtin_reference",
+                "source_ref": {"provided_by": "task2_scanner", "reference": agent.payload.get("source", {}).get("reference")},
+            }, agent.source_file, agent.source_line))
+    return out
+
+
+def collect_agent_classes(source_files: Iterable[Path]) -> set[str]:
+    """Names of classes in the repository that derive (transitively) from an agent class."""
+    bases_of: Dict[str, set[str]] = {}
+    for source in source_files:
+        tree = parse_python_file(source)
+        if tree is None:
+            continue
+        for node in ast.walk(tree):
+            if isinstance(node, ast.ClassDef):
+                bases_of.setdefault(node.name, set()).update(
+                    callable_name(b).rsplit(".", 1)[-1] for b in node.bases if callable_name(b))
+    known = set(KNOWN_AGENT_CONSTRUCTORS)
+    changed = True
+    while changed:
+        changed = False
+        for cls, bases in bases_of.items():
+            if cls not in known and bases & known:
+                known.add(cls)
+                changed = True
+    return known - set(KNOWN_AGENT_CONSTRUCTORS)
+
+
 def scan_agents(source_files: Iterable[Path], repo_root: Path, collector: Optional[UnresolvedCollector] = None) -> List[DraftEntity]:
     collector = collector or UnresolvedCollector(repo_root)
+    source_files = list(source_files)
+    REPOSITORY_AGENT_CLASSES.clear()
+    REPOSITORY_AGENT_CLASSES.update(collect_agent_classes(source_files))
     agents: List[DraftEntity] = []
     for source in source_files:
         tree = parse_python_file(source, collector)
@@ -2053,7 +2160,8 @@ def run_scan(
     referenced_tools = {tool for agent in agents for tool in agent.payload.get("authorized_tools", [])}
     python_tools = scan_tools(sources.python_files, repo_root, referenced_tools, collector)
     manifest_tools = scan_mcp_manifest_files(sources.mcp_manifest_files, repo_root, collector)
-    tools = dedupe_entities([*python_tools, *manifest_tools], "tool_id")
+    builtin_tools = builtin_tool_entities(agents)
+    tools = dedupe_entities([*python_tools, *manifest_tools, *builtin_tools], "tool_id")
 
     python_apis = scan_apis(sources.python_files, repo_root, collector)
     openapi_apis = scan_openapi_files(sources.openapi_files, repo_root, collector)

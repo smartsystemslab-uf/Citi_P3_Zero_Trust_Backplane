@@ -1,7 +1,7 @@
 """Agent credential profile (B): X.509 certificates from a dedicated Agent CA.
 
 The Agent CA is a separate trust root from the SPIRE workload CA. Each agent
-certificate carries exactly one URI SAN `urn:citi-p3:agent:<agent_id>`, is a
+certificate carries exactly one URI SAN `urn:zt-adk:agent:<agent_id>`, is a
 non-CA leaf with digitalSignature usage, and is short-lived.
 """
 from __future__ import annotations
@@ -17,8 +17,8 @@ from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import ec
 from cryptography.x509.oid import AttributeOID, ExtendedKeyUsageOID, ExtensionOID, NameOID
 
-AGENT_URN_PREFIX = "urn:citi-p3:agent:"
-RENEW_PROOF_CONTEXT = b"citi-p3-agent-renew/v1\x00"
+AGENT_URN_PREFIX = "urn:zt-adk:agent:"
+RENEW_PROOF_CONTEXT = b"zt-adk-agent-renew/v1\x00"
 
 
 class AgentCertError(Exception):

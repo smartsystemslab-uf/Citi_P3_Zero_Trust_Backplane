@@ -240,13 +240,9 @@
         },
         "domain": {
           "type": "string",
-          "enum": [
-            "front_office",
-            "mid_office",
-            "back_office",
-            "shared",
-            "external"
-          ]
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "maxLength": 64,
+          "description": "Security domain of the record. Free-form identifier chosen by the system owner (for example 'front_office', 'payments', 'shared', 'external'); policies may compare domains."
         },
         "enabled": {
           "type": "boolean",
@@ -345,13 +341,9 @@
         },
         "domain": {
           "type": "string",
-          "enum": [
-            "front_office",
-            "mid_office",
-            "back_office",
-            "shared",
-            "external"
-          ]
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "maxLength": 64,
+          "description": "Security domain of the record. Free-form identifier chosen by the system owner (for example 'front_office', 'payments', 'shared', 'external'); policies may compare domains."
         },
         "classification": {
           "type": "string",
@@ -509,13 +501,9 @@
         },
         "domain": {
           "type": "string",
-          "enum": [
-            "front_office",
-            "mid_office",
-            "back_office",
-            "shared",
-            "external"
-          ]
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "maxLength": 64,
+          "description": "Security domain of the record. Free-form identifier chosen by the system owner (for example 'front_office', 'payments', 'shared', 'external'); policies may compare domains."
         },
         "metadata": {
           "$ref": "#/$defs/recordMetadata"
@@ -798,6 +786,10 @@
           "enum": [
             "example",
             "prototype",
+            "dev",
+            "test",
+            "stage",
+            "prod",
             "citi_dev",
             "citi_test",
             "citi_stage",
@@ -867,7 +859,11 @@
               "type": "string"
             },
             "placeholder_token": {
-              "const": "__CITI_REQUIRED__"
+              "type": "string",
+              "enum": [
+                "__REQUIRED__",
+                "__CITI_REQUIRED__"
+              ]
             },
             "clock_skew_seconds": {
               "type": "integer",

@@ -1,0 +1,39 @@
+# The example service desk with its model replaced by the scripted playback (playback.yaml):
+# reproducible tests and keyless demos of every boundary, in-process and distributed.
+# Otherwise identical to zt_adk.yaml (same protections).
+version: 1
+app: "helpdesk.agent:app"
+python_paths: ["."]
+source_root: "."
+environment: test
+mode: enforce
+bundle_dir: .zt/playback/bundle
+keys_dir: .zt/playback/keys
+approver_keys_dir: .zt/playback/approver-keys
+state_dir: .zt/playback/state
+
+tools:
+  run_diagnostic: {criticality: high}
+  reset_password: {criticality: critical, requires_approval: true}
+  lookup_user: {mask_fields: [email]}
+
+approvals:
+  critical: single
+  wait_seconds: 60
+
+session:
+  roles: [employee, service_desk_staff]
+
+policies:
+  overlays: ["policies/*.psl"]
+
+identity:
+  trust_domain: helpdesk.zt-adk.test
+
+model_override: {type: playback, script: playback.yaml}
+
+distributed:
+  requirements: [requirements.txt]
+  app_paths: [helpdesk, policies, playback.yaml, requirements.txt, zt_adk.playback.yaml]
+  tool_host_environment: {HELPDESK_DB: /var/lib/helpdesk/helpdesk.db}
+  data_volumes: {helpdesk-data: /var/lib/helpdesk}

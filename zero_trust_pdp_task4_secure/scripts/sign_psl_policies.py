@@ -5,7 +5,8 @@
 
 Writes NAME.sig.json next to every *.psl file and policy_fields.yaml. With --check, only
 verifies (exit 1 on any missing/invalid signature) and compiles the set.
-DEVELOPMENT ONLY: production policies are signed by the release pipeline with a Citi key.
+DEVELOPMENT ONLY: the development key is generated locally on first use (never committed);
+deployments sign their policy store with their own key (zt-adk build).
 """
 from __future__ import annotations
 
@@ -30,6 +31,9 @@ def main() -> int:
     ap.add_argument("--check", action="store_true")
     ns = ap.parse_args()
     directory = Path(ns.dir)
+    from zt_backplane.dev_material import ensure_dev_material
+
+    ensure_dev_material(ROOT)          # local development keys + first signatures of a fresh checkout
     if ns.check:
         from zt_backplane.crypto import TrustedKeyStore
         from zt_backplane.psl_policy import PslPolicyStore

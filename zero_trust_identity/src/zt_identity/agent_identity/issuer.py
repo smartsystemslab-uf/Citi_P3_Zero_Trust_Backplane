@@ -318,17 +318,17 @@ async def main_async(args: argparse.Namespace) -> None:
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--trust-domain", default=os.environ.get("CITI_TRUST_DOMAIN", "citi-p3.test"))
+    ap.add_argument("--trust-domain", default=os.environ.get("ZT_TRUST_DOMAIN", os.environ.get("CITI_TRUST_DOMAIN", "zt-adk.local")))
     ap.add_argument("--port", type=int, default=8444)
     ap.add_argument("--ca-key", default="/run/secrets/agent-ca/ca.key")
-    ap.add_argument("--ca-cert", default="/etc/citi/agent-ca/ca.pem")
-    ap.add_argument("--registry", default="/etc/citi/config/agent_registry.json")
+    ap.add_argument("--ca-cert", default="/etc/zt/agent-ca/ca.pem")
+    ap.add_argument("--registry", default="/etc/zt/config/agent_registry.json")
     ap.add_argument("--state", default="/var/lib/agent-issuer/state.json")
     ap.add_argument("--cert-ttl-seconds", default=os.environ.get("AGENT_CERT_TTL_SECONDS", "86400"))
     ap.add_argument("--gateway-spiffe-id", action="append",
-                    default=[os.environ.get("GATEWAY_SPIFFE_ID", "spiffe://citi-p3.test/ztbp/svc/zt-gateway")])
+                    default=[os.environ.get("GATEWAY_SPIFFE_ID", "spiffe://zt-adk.local/ztbp/svc/zt-gateway")])
     ap.add_argument("--admin-socket", default="/var/lib/agent-issuer/admin/admin.sock")
-    ap.add_argument("--events", default=os.environ.get("CITI_EVENTS_FILE"))
+    ap.add_argument("--events", default=os.environ.get("ZT_EVENTS_FILE", os.environ.get("CITI_EVENTS_FILE")))
     asyncio.run(main_async(ap.parse_args()))
 
 

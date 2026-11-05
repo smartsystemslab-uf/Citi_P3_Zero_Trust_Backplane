@@ -1,0 +1,42 @@
+# Zero Trust Backplane profile of the example IT service desk (see zt-adk init for all options).
+version: 1
+app: "helpdesk.agent:app"
+python_paths: ["."]
+source_root: "."
+environment: dev
+mode: enforce
+bundle_dir: .zt/bundle
+keys_dir: .zt/keys
+approver_keys_dir: .zt/approver-keys
+state_dir: .zt/state
+
+tools:
+  # The diagnostic probe only runs read-only checks: high, not critical (no approval needed).
+  run_diagnostic: {criticality: high}
+  # Password resets need a human approval (classified critical from the code; stated explicitly here).
+  reset_password: {criticality: critical, requires_approval: true}
+  # The lookup result carries e-mail addresses: masked before the model sees them.
+  lookup_user: {mask_fields: [email]}
+
+approvals:
+  critical: single
+  wait_seconds: 60
+
+session:
+  roles: [employee, service_desk_staff]
+
+policies:
+  overlays: ["policies/*.psl"]
+
+identity:
+  trust_domain: helpdesk.zt-adk.test
+
+# Distributed runtime (distributed_runtime/scripts/ctl.py build --project examples/helpdesk_mas).
+# The model key is read from .env next to this file (GOOGLE_API_KEY=..., or the Vertex AI settings)
+# at container start; it is never copied into the image.
+distributed:
+  requirements: [requirements.txt]
+  app_paths: [helpdesk, policies, requirements.txt]
+  secret_env_files: [.env]
+  tool_host_environment: {HELPDESK_DB: /var/lib/helpdesk/helpdesk.db}
+  data_volumes: {helpdesk-data: /var/lib/helpdesk}

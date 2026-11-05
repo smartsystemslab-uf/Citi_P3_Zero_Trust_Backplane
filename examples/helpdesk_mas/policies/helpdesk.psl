@@ -1,0 +1,31 @@
+// Rules of the service desk's owner, added to the generated policy store (zt_adk.yaml:
+// policies.overlays). They compile against the bundle's field catalogue: args.<parameter>
+// fields exist for every parameter of every tool.
+
+// @policy_set helpdesk.rules
+// @version 1.0.0
+// @source examples/helpdesk_mas/policies/helpdesk.psl
+vunit helpdesk_rules (pdp_request) {
+
+  // @rule helpdesk.ticket-status-values
+  // @nl A ticket can only be set to open, in_progress, resolved or closed.
+  ticket_status: assert always (authz_request && resource.runtime_id == "resolution_agent/update_ticket"
+      -> (args.status == "open" || args.status == "in_progress" || args.status == "resolved"
+          || args.status == "closed"));
+
+  // @rule helpdesk.unlock-needs-reason
+  // @nl An account is unlocked only with a stated reason of at least 10 characters.
+  unlock_reason: assert always (authz_request && resource.runtime_id == "account_agent/unlock_account"
+      -> args.reason.length >= 10);
+}
+
+// @policy_set helpdesk.order
+// @version 1.0.0
+// @source examples/helpdesk_mas/policies/helpdesk.psl
+vunit helpdesk_order (workflow_run) {
+
+  // @rule helpdesk.notify-after-update
+  // @nl A user is notified about an incident only after its ticket was updated successfully in the same run.
+  notify_after_update: assert ((tool_succeeded && tool.name == "update_ticket" && result.status == "ok")
+      before (tool_admitted && tool.name == "notify_user"));
+}

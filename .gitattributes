@@ -7,3 +7,4 @@ policy_fields.yaml -text
 # Interface schemas pinned by raw-byte SHA-256 (interface_contract/SCHEMA_SHA256.json, checked by
 # zero_trust_pdp_task4_secure/tests/test_interface_compatibility.py): same reason.
 **/interface_contract/schemas/*.json -text
+interface_standard/schemas/*.json -text

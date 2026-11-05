@@ -520,12 +520,13 @@ class NativeMasBackplane:
     def _write_signed_psl(task4_root: Path, policy_path: Path, text: str) -> None:
         """Write a runtime-generated PSL policy and sign it with the DEVELOPMENT policy key
         (output directory only; the source policy store is never modified)."""
+        from zt_backplane.dev_material import dev_key_path
         from zt_psl.signing import load_private_key, sign_file
 
         policy_path.write_text(text, encoding="utf-8")
         sign_file(
             policy_path,
-            load_private_key(task4_root / "security" / "dev_keys" / "policy_private.pem"),
+            load_private_key(dev_key_path("policy_private.pem", task4_root)),
             issuer="policy.prototype",
             key_id="policy-1",
         )

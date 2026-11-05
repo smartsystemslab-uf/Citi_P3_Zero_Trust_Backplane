@@ -1,0 +1,205 @@
+# PSL field catalogue of a zt-adk protection bundle (base part; zt-adk adds the argument
+# fields of the application's tools and the content-detector families of the profile).
+#
+# Every field a policy may mention, its type and the TRUSTED source that computes it. Values
+# come only from verified requests, signed assertions, the bundle's registries, checkers run
+# by the evaluating component and events that component observed itself -- never from agent
+# or model claims. This file is part of the signed policy store.
+#
+# Scopes and evaluators:
+#   pdp_request      Task 4 PDP, every authorization request (deny unless permitted)
+#   input_message    every user message (text or function response) entering the agents
+#   output_message   every piece of user-visible agent content
+#   agent_message    the request an agent sends to another agent through an AgentTool
+#   tool_call        every tool call, with facts of the run (user role, session, taint)
+#   tool_result      every tool result before the model sees it
+#   model_request    every model request (built-in capabilities, declared functions)
+#   workflow_run     temporal, per run: route and tool events (in-process plugin and gateway)
+#   request_attempt, operation, workflow_participation
+#                    temporal, distributed gateway only (MCP tool path, SPIFFE scheme B)
+catalog_version: 1
+
+windows: {}
+
+scopes:
+  pdp_request:
+    kind: request
+    description: >
+      One authorization request at the PDP, evaluated after signature, replay and evidence
+      verification and after subject/resource/action were resolved against the registries.
+    events: {authz_request: "*"}
+    fields:
+      subject.id:               {type: string, source: "PDPRequest.subject.canonical_id, resolved in the identity registry"}
+      subject.runtime_id:       {type: string, source: "PDPRequest.subject.runtime_id (the agent name), must match the registry binding"}
+      subject.type:             {type: string, source: "identity registry: type"}
+      subject.domain:           {type: string, source: "identity registry: domain"}
+      subject.role.*:           {type: bool, missing: false, source: "identity registry: roles (absent role = false)"}
+      resource.id:              {type: string, source: "PDPRequest.resource.canonical_id, resolved in the resource catalogue"}
+      resource.runtime_id:      {type: string, source: "PDPRequest.resource.runtime_id ('agent:<name>', '<agent>/<tool>', mas_input_channel, mas_output_channel)"}
+      resource.domain:          {type: string, source: "resource catalogue: domain"}
+      resource.classification:  {type: string, source: "resource catalogue: classification"}
+      resource.critical:        {type: bool, source: "resource catalogue: an action of the resource is critical"}
+      resource.target_type:     {type: string, source: "resource catalogue: 'subject' for agent targets ('' otherwise)"}
+      action:                   {type: string, source: "PDPRequest.action (defined for the resource)"}
+      workflow.id:              {type: string, source: "PDPRequest.context.workflow_id ('' outside a workflow)"}
+      workflow.verified:        {type: bool, source: "evidence verifier: signed workflow assertion bound to the request"}
+      environment:              {type: string, source: "PDPRequest.context.environment"}
+      risk.level:               {type: enum, values: [low, medium, high, critical], source: "evidence verifier: signed risk assertion"}
+      risk.score:               {type: int, source: "evidence verifier: signed risk assertion (0-1000)"}
+      auth.strength:            {type: int, source: "evidence verifier: signed authentication assertion (0-10)"}
+      approval.valid:           {type: bool, source: "evidence verifier: human approval signed by an approver key, bound to the request hash"}
+      approval.secondary_valid: {type: bool, source: "evidence verifier: independent secondary authorization bound to the request hash"}
+      approval.issuer:          {type: string, source: "evidence verifier: issuer of the verified human approval ('' when absent)"}
+      approval.secondary_issuer: {type: string, source: "evidence verifier: issuer of the verified secondary authorization ('' when absent)"}
+      identity.verified:        {type: bool, source: "evidence verifier: PEP request proof and identity evidence"}
+      auth.scheme:              {type: string, source: "signed authentication assertion: 'B' = SPIFFE scheme B (gateway), 'P' = in-process plugin, '' when absent"}
+      auth.subject_kind:        {type: string, source: "signed authentication assertion: 'agent' or 'service' ('' when absent)"}
+      auth.factor.*:            {type: bool, missing: false, source: "signed authentication assertion: verified factors (absent = false)"}
+      auth.agent_bound:         {type: bool, source: "signed authentication assertion names the request subject's agent"}
+      time.in.*:                {type: bool, source: "PDP clock evaluated against the catalogue's windows"}
+      args.well_formed:         {type: bool, source: "PDP checker: parameters are a JSON object without null values at any depth"}
+      request.cross_domain:     {type: bool, source: "PDP: subject domain differs from resource domain"}
+
+  input_message:
+    kind: request
+    default_deny: false
+    description: Every user message (text or a function response sent by the client) before any agent sees it.
+    events: {input_received: "*"}
+    fields:
+      session.present:                 {type: bool, source: "runtime: the run has a session id"}
+      user.role:                       {type: string, source: "runtime: role asserted by the authenticated ingress ('' when unknown)"}
+      entry.agent:                     {type: string, source: "runtime: agent the message starts or resumes"}
+      input.kind:                      {type: string, source: "runtime: 'text' or 'function_response'"}
+      input.length:                    {type: int, source: "runtime: characters of the message text"}
+      input.prompt_injection_detected: {type: bool, source: "content inspector: prompt-injection pattern list"}
+      input.contains.*:                {type: bool, missing: false, source: "content inspector: detector matched (absent = false)"}
+
+  output_message:
+    kind: request
+    default_deny: false
+    description: Every piece of user-visible agent content (streamed text is held until checked).
+    events: {output_emitted: "*"}
+    fields:
+      agent.name:                       {type: string, source: "runtime: authoring agent"}
+      user.role:                        {type: string, source: "runtime: role of the run's ingress session ('' when unknown)"}
+      output.length:                    {type: int, source: "runtime: characters of the content"}
+      output.prompt_injection_detected: {type: bool, source: "content inspector"}
+      output.contains.*:                {type: bool, missing: false, source: "content inspector: detector matched (absent = false)"}
+
+  agent_message:
+    kind: request
+    default_deny: false
+    description: The request an agent sends to another agent (AgentTool call, remote route).
+    events: {agent_message_sent: "*"}
+    fields:
+      route.from:                        {type: string, source: "runtime: calling agent"}
+      route.to:                          {type: string, source: "runtime: called agent"}
+      message.prompt_injection_detected: {type: bool, source: "content inspector"}
+      message.contains.*:                {type: bool, missing: false, source: "content inspector (absent = false)"}
+
+  tool_call:
+    kind: request
+    default_deny: false
+    description: Every tool call, with facts of the run that started it.
+    events: {tool_call_requested: "*"}
+    fields:
+      tool.name:       {type: string, source: "runtime: tool being called"}
+      tool.agent:      {type: string, source: "runtime: authenticated / in-process agent calling the tool"}
+      user.role:       {type: string, source: "runtime: role of the run's ingress session ('' when unknown)"}
+      session.present: {type: bool, source: "runtime: the run has a session id"}
+      run.tainted:     {type: bool, source: "runtime: an earlier tool result or agent message in this run was flagged by a content rule"}
+
+  tool_result:
+    kind: request
+    default_deny: false
+    description: Every tool result before the model sees it (indirect prompt injection, data leaving a tool).
+    events: {tool_result_received: "*"}
+    fields:
+      tool.name:                        {type: string, source: "runtime"}
+      tool.agent:                       {type: string, source: "runtime"}
+      result.prompt_injection_detected: {type: bool, source: "content inspector"}
+      result.contains.*:                {type: bool, missing: false, source: "content inspector (absent = false)"}
+
+  model_request:
+    kind: request
+    default_deny: false
+    description: Every model request of an agent (built-in capabilities and function declarations it carries).
+    events: {model_requested: "*"}
+    fields:
+      agent.name:                    {type: string, source: "runtime: agent that sends the request"}
+      request.builtin.*:             {type: bool, missing: false, source: "runtime: the request enables this model-side built-in tool (absent = false)"}
+      request.undeclared_functions:  {type: bool, source: "runtime: the request declares a function the bundle does not list for this agent"}
+      request.undeclared_builtins:   {type: bool, source: "runtime: the request enables a model-side capability no built-in tool of this agent declares"}
+
+  workflow_run:
+    kind: temporal
+    key: [workflow_run_id]
+    description: >
+      Trusted events of one run (one user message), observed by the component that runs the
+      agents' routes and tools. tool_admitted and agent_routed are checked before the step.
+    events:
+      agent_routed:   [route.from, route.to]
+      tool_admitted:  [tool.agent, tool.name]
+      tool_succeeded: [tool.agent, tool.name, result.status]
+      tool_failed:    [tool.agent, tool.name]
+    fields:
+      route.from:    {type: string, source: "runtime: agent that starts the next agent ('ingress' for the entry)"}
+      route.to:      {type: string, source: "runtime: agent that is started"}
+      tool.agent:    {type: string, source: "runtime: agent calling the tool"}
+      tool.name:     {type: string, source: "runtime: tool being called"}
+      result.status: {type: string, source: "runtime: the tool result's 'status' field as text ('' when absent)"}
+
+  request_attempt:
+    kind: temporal
+    key: [attempt_id]
+    description: One tools/call HTTP request processed by the gateway (server-generated attempt id).
+    events:
+      request_received:      []
+      identity_verified:     [identity.workload_ok, identity.agent_registered, identity.agent_credential_ok]
+      identity_rejected:     []
+      run_rejected:          []
+      authorization_allowed: []
+      authorization_denied:  []
+      authorization_unavailable: []
+      permit_verified:       []
+      permit_rejected:       []
+      obligation_rejected:   []
+      execution_requested:   []
+      execution_admitted:    [permit.bound, permit.live, tool.critical]
+      audit_pre_recorded:    [audit.correlated, audit.durable]
+      execution_started:     []
+      execution_succeeded:   []
+      execution_failed:      []
+      request_denied:        []
+      audit_post_recorded:   [audit.correlated]
+    fields:
+      identity.workload_ok:        {type: bool, source: "gateway: verified X.509-SVID of the mTLS peer equals the authenticated workload"}
+      identity.agent_registered:   {type: bool, source: "gateway: agent id from the verified agent certificate, registry lists the peer workload"}
+      identity.agent_credential_ok: {type: bool, source: "gateway: agent certificate chain, registry state, RFC 9421 signature, digest and replay window verified for THIS request"}
+      permit.bound:  {type: bool, source: "gateway: Permit Lease claims match this request (subject, resource, action, request hash, arguments, caller)"}
+      permit.live:   {type: bool, source: "gateway: lease unexpired and not revoked, agent credential valid"}
+      tool.critical: {type: bool, source: "PEP plan: protected critical operation"}
+      audit.correlated: {type: bool, source: "gateway PSL audit: record correlation fields equal the attempt's bindings"}
+      audit.durable: {type: bool, source: "gateway PSL audit: pre-execution record written and flushed (fsync for critical tools)"}
+
+  operation:
+    kind: temporal
+    key: [workflow_run_id, agent, tool, args_sha256]
+    description: One business operation, independent of request id, idempotency key, MCP session and JSON-RPC id.
+    events:
+      op_denied:           []
+      execution_admitted:  [tool.critical]
+      execution_succeeded: []
+      execution_failed:    []
+    fields:
+      tool.critical: {type: bool, source: "PEP plan: protected critical operation"}
+
+  workflow_participation:
+    kind: temporal
+    key: [workflow_run_id, agent]
+    description: Dispatches of one agent in one run by the gateway (entry agent or authorised route hop).
+    events:
+      dispatched:         []
+      dispatch_ended:     []
+      execution_admitted: []
+    fields: {}

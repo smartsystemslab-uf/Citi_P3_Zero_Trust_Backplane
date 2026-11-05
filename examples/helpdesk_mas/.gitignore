@@ -1,0 +1,4 @@
+.zt/
+helpdesk_data/
+__pycache__/
+.env
