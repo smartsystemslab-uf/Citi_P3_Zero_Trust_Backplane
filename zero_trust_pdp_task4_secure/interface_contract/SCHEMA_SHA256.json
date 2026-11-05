@@ -4,5 +4,5 @@
   "pdp_response.schema.json": "edc99dc2a25540f5b1b94d68ea6047f523d1069c129ff7649e0af64f4d4ccc5e",
   "permit_lease.schema.json": "31d60f5209cfb7e21420b3666e87ed8b06373ce100af8e537067f0108e5e5b6c",
   "policy_bundle.schema.json": "33551134188863cb950f5fee4e91ff4192884c72cc30a239150f04a73779a937",
-  "zt_manifest.schema.json": "411bd7e7be49eb20c01786a1fdebbf51c108ab09b87fe1bda7fbe899022bd957"
+  "zt_manifest.schema.json": "26f83a8568df3d1df2252c93ccfa5b7f0dca27a556d11916cd69501bbc087d56"
 }

@@ -8,13 +8,16 @@ to a temporary directory. Skipped if the MAS repository is not available.
 from __future__ import annotations
 
 import json
+import os
 import uuid
 from pathlib import Path
 
 import pytest
 
 BACKPLANE = Path(__file__).resolve().parents[2]
-MAS_ROOT = Path(r"D:\Lab\Citi_P3")
+# The Citi_P3 checkout (read only: the static scan never writes into it). CITI_MAS_REPO overrides
+# the default location next to this repository.
+MAS_ROOT = Path(os.environ.get("CITI_MAS_REPO") or BACKPLANE.parent / "Citi_P3")
 
 
 @pytest.fixture(scope="module")

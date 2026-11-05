@@ -1,0 +1,55 @@
+# Host test suites of the Zero Trust Backplane. The Docker end-to-end tests
+# (distributed_runtime/tests/functional) and the Citi P3 regression (needs a copy of the Citi app,
+# CITI_MAS_COPY) skip themselves here; run them locally (README §8).
+name: ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        adk: ["google-adk>=2,<3", "google-adk==1.31.1"]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install
+        shell: bash
+        run: |
+          python -m pip install --upgrade pip setuptools wheel
+          python -m pip install \
+            -e interface_standard \
+            -e Zero_Trust_Task3_PEP_Integrated/zero_trust_pep_task3_integrated \
+            -e zero_trust_pdp_task4_secure \
+            -e zero_trust_task5 \
+            -e zero_trust_psl \
+            -e zero_trust_identity \
+            -e "zero_trust_adk[test]" \
+            -r distributed_runtime/deploy/requirements.txt \
+            "${{ matrix.adk }}"
+          python -c "import google.adk; print('google-adk', google.adk.__version__)"
+      - name: Policy store and configuration
+        shell: bash
+        run: |
+          python zero_trust_pdp_task4_secure/scripts/sign_psl_policies.py --check
+          python zero_trust_pdp_task4_secure/scripts/validate_configuration.py
+      - name: Generic package (zt-adk)
+        shell: bash
+        run: python -m pytest -p no:cacheprovider zero_trust_adk/tests -q
+      - name: Distributed runtime (unit)
+        shell: bash
+        run: python -m pytest -p no:cacheprovider distributed_runtime/tests/unit -q
+      - name: Backplane components
+        shell: bash
+        run: |
+          python -m pytest -p no:cacheprovider -q \
+            zero_trust_psl/tests zero_trust_pdp_task4_secure/tests zero_trust_task5/tests \
+            Zero_Trust_Task3_PEP_Integrated/zero_trust_pep_task3_integrated/tests interface_standard/tests \
+            zero_trust_task2/tests zero_trust_identity/tests native_mas_runtime/tests integrated_demo/tests

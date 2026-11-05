@@ -1,0 +1,79 @@
+# Citi P3 banking MAS protected through the generic zt-adk path (regression profile).
+#
+# The application is NOT part of this repository and is never modified: point CITI_MAS_COPY at a
+# copy of D:\Lab\Citi_P3\citi_banking_adk (the directory that contains the bank_adk package), e.g.
+#
+#   $env:CITI_MAS_COPY = "D:\scratch\citi_banking_adk"        (PowerShell)
+#   export CITI_MAS_COPY=/scratch/citi_banking_adk            (bash)
+#   $env:BANKING_ADK_RUNTIME_DIR = "D:\scratch\citi_runtime"  (the bank database the app creates on import)
+#   $env:BANKING_USE_EXTERNAL_API = "false"                   (local database instead of the banking backend)
+#   zt-adk keys init --profile profiles/citi_p3/zt_adk.yaml --approver ops_lead --secondary risk_officer
+#   zt-adk build --profile profiles/citi_p3/zt_adk.yaml
+#
+# Everything below is a declaration about the application that its code cannot express; agents,
+# tools, routes and workflows are discovered from the live ADK object graph. Citi's former intent
+# rules are carried over as PSL overlays (policies/*.psl); caller restrictions ("only agent X may
+# call tool T") need no overlay: every permit is generated per discovered (agent, tool) placement.
+version: 1
+app: "bank_adk.app:create_app()"        # the application's own ADK App factory (no plugins of its own)
+python_paths: ["${CITI_MAS_COPY}"]
+source_root: "${CITI_MAS_COPY}"
+environment: citi_dev
+mode: enforce
+bundle_dir: .zt/bundle
+keys_dir: .zt/keys
+approver_keys_dir: .zt/approver-keys
+state_dir: .zt/state
+
+domains:
+  mode: subtree
+  default: shared                       # user_proxy_agent (the dispatcher)
+  agents:
+    front_office_router: front_office
+    mid_office_router: mid_office
+    back_office_router: back_office
+
+tools:
+  execute_transfer:
+    {action: execute, side_effect: true, criticality: critical, requires_approval: true,
+     allowed_roles: [customer, internal_rep]}
+  apply_ledger_updates:
+    {action: update, side_effect: true, criticality: critical, requires_approval: true,
+     allowed_roles: [ops_scheduler, system]}
+  submit_manual_review: {action: create, side_effect: true, criticality: high}
+  create_exception_case:
+    {action: create, side_effect: true, criticality: high, allowed_roles: [ops_scheduler, system]}
+  store_report:
+    {action: create, side_effect: true, criticality: medium, allowed_roles: [ops_scheduler, system]}
+  persist_validated_schedule:
+    {action: write, side_effect: true, criticality: medium, allowed_roles: [internal_rep, ops_scheduler, system]}
+
+approvals:
+  critical: dual                        # approver + independent secondary authorization
+  wait_seconds: 120
+
+content:
+  detectors:
+    ssn: {output: deny}
+    email: {output: deny}
+    phone: {output: deny}
+    credit_card: {output: deny}
+    private_key: {input: flag, output: deny, tool_result: flag}
+    api_key: {input: flag, output: deny, tool_result: flag}
+  custom:
+    account_id:
+      pattern: "\\b(?:ACC-)?(?:CHK|SVG|SAV|EXT)-[0-9]{3,}\\b"
+      ignore_case: false
+      output: deny
+
+session:
+  require_session: true
+  roles: [customer, internal_rep, ops_scheduler, system, auditor]
+
+policies:
+  overlays: ["policies/*.psl"]
+  workflow_order: true
+  deny_cross_domain_routes: true        # Citi: no transfers across office domains (the dispatcher is exempt)
+
+identity:
+  trust_domain: citi-p3.zt-adk.test

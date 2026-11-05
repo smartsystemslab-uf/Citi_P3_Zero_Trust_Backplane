@@ -13,7 +13,7 @@ from typing import Any
 class EventLog:
     def __init__(self, path: str | Path | None, *, component: str = "") -> None:
         self.path = Path(path) if path else None
-        self.component = component or os.environ.get("CITI_COMPONENT", "")
+        self.component = component or os.environ.get("ZT_COMPONENT", os.environ.get("CITI_COMPONENT", ""))
         self._lock = threading.Lock()
         if self.path is not None:
             self.path.parent.mkdir(parents=True, exist_ok=True)

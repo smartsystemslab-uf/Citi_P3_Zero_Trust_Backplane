@@ -1,11 +1,10 @@
 """PSL runtime monitoring of the MCP tool path inside the gateway PEP.
 
-The monitored properties are the temporal rules of the SIGNED policy store
-(zero_trust_pdp_task4_secure/policy_store/gateway_runtime.psl, runtime "gateway",
-scopes request_attempt / operation / workflow_batch / workflow_participation); they are
-loaded from the same verified PslPolicyStore the in-process PDP uses -- there is no
-second copy of the policies. The workflow_run rules of intent.psl are evaluated by the
-engine's own monitor in authorize / begin_tool / finish_tool.
+The monitored properties are the temporal rules of the SIGNED policy store of the protection
+bundle (50_gateway_runtime.psl, runtime "gateway", scopes request_attempt / operation /
+workflow_participation); they are loaded from the same verified PslPolicyStore the gateway's
+PDP uses -- there is no second copy of the policies. The workflow_run rules (workflow order,
+the owner's overlays) are evaluated by the engine's own monitor in begin_tool / finish_tool.
 
 Responsibilities
 * derive trusted events and field values from server-side results only (authenticator
@@ -38,13 +37,8 @@ from typing import Any, Callable, Mapping
 
 from zt_psl.runtime import CapacityExceeded, MonitorRuntime, Violation, args_digest
 
-GATEWAY_SCOPES = ("request_attempt", "operation", "workflow_batch", "workflow_participation")
-EOD_TOOLS = {"validate_eod_readiness", "get_eod_batch", "apply_ledger_updates", "get_reconciliation_data",
-             "create_exception_case", "store_report"}
-BATCH_ADMISSION = {"apply_ledger_updates": "ledger_admitted", "store_report": "report_admitted",
-                   "create_exception_case": "exception_admitted"}
-DEFAULT_CAPACITY = {"request_attempt": 20000, "operation": 50000, "workflow_batch": 20000,
-                    "workflow_participation": 20000}
+GATEWAY_SCOPES = ("request_attempt", "operation", "workflow_participation")
+DEFAULT_CAPACITY = {"request_attempt": 20000, "operation": 50000, "workflow_participation": 20000}
 P5_LIVE = "gateway.P5_live"
 
 Target = tuple[str, tuple, str, Mapping[str, Any]]      # (scope, key, event, catalogue field values)
@@ -237,7 +231,7 @@ class PslGuard:
     def authorization_result(self, att: Attempt, pending: Any, auth_ctx_flags: Mapping[str, bool]) -> str:
         """Classify the authorization result into trusted events.
         Returns 'allowed' | 'authorization_denied' | 'permit_rejected' | 'authorization_unavailable'."""
-        auth = pending.authorization
+        auth = pending.verdict
         ra = auth.runtime_authorization
         att.critical = bool(auth.placement and auth.placement.get("critical"))
         if auth.allowed and auth_ctx_flags.get("validate_ok"):
@@ -247,7 +241,7 @@ class PslGuard:
             return "allowed"
         if ra is None:                         # no generated PEP placement: local default deny
             return "authorization_denied"
-        if auth.source == "PSL_WORKFLOW_MONITOR":
+        if auth.source in ("PSL_WORKFLOW_MONITOR", "CONTENT_POLICY", "APPROVAL", "OBLIGATION"):
             # a workflow_run rule (intent.psl) refused the call after the PDP allowed it: a
             # terminal policy decision, not a permit failure
             return "authorization_denied"
@@ -267,11 +261,11 @@ class PslGuard:
     def _binding(self, att: Attempt, pending: Any, ident: Any, args_to_run: Mapping[str, Any]) -> tuple[bool, bool, str]:
         t0 = time.perf_counter_ns()
         try:
-            token = pending.authorization.runtime_authorization.token
+            token = pending.verdict.runtime_authorization.token
             comps = self.engine.components
             claims = comps.validator.decode_and_verify(token).claims          # Task 5 code, signature checked
             req = pending.request
-            placement = pending.authorization.placement or {}
+            placement = pending.verdict.placement or {}
             caller_ok = self.engine.bridge.subject_runtime_ids.get(claims.subject) == ident.agent_id == att.agent
             bound = bool(claims.request_hash == req.request_hash()
                          and claims.subject == str(placement.get("subject_canonical_id"))
@@ -304,9 +298,6 @@ class PslGuard:
             ("operation", att.op_key(), "execution_admitted", {"tool.critical": att.critical}),
             ("workflow_participation", (att.workflow_run_id, att.agent), "execution_admitted", {}),
         ]
-        batch = (att.args or {}).get("batch_id")
-        if att.tool in BATCH_ADMISSION and batch:
-            targets.append(("workflow_batch", (att.workflow_run_id, str(batch)), BATCH_ADMISSION[att.tool], {}))
         try:
             res = self.runtime.admit(self._bound(targets))
         except CapacityExceeded as exc:
@@ -386,26 +377,7 @@ class PslGuard:
     def execution_finished(self, att: Attempt, ok: bool, result: Any) -> None:
         ev = "execution_succeeded" if ok else "execution_failed"
         att.outcome = "succeeded" if ok else "failed"
-        t: list[Target] = [("request_attempt", att.key(), ev, {}), ("operation", att.op_key(), ev, {})]
-        batch = (att.args or {}).get("batch_id")
-        if ok and att.tool in EOD_TOOLS and batch:
-            t.append(("workflow_batch", (att.workflow_run_id, str(batch)), self._batch_event(att.tool, result), {}))
-        self._obs(att, t)
-
-    @staticmethod
-    def _batch_event(tool: str, result: Any) -> str:
-        try:
-            data = json.loads(result) if isinstance(result, str) else dict(result)
-        except Exception:
-            return "batch_other"
-        if tool == "validate_eod_readiness":
-            return "readiness_ready" if data.get("ready") is True else "readiness_not_ready"
-        if tool == "get_reconciliation_data":
-            diff = data.get("difference")
-            if diff is None or "error" in data:
-                return "batch_other"
-            return "recon_matched" if abs(float(diff)) < 0.005 else "recon_mismatched"
-        return "batch_other"
+        self._obs(att, [("request_attempt", att.key(), ev, {}), ("operation", att.op_key(), ev, {})])
 
     def finish(self, att: Attempt) -> list[dict[str, Any]]:
         """Outcome record + close of the request scope. Returns close violations."""
@@ -462,19 +434,3 @@ class PslGuard:
         snap.update(counters=dict(self.counters), open_runs=len(self.by_run), tickets=len(self.tickets),
                     audit_records=self.audit.records, audit_fsyncs=self.audit.fsyncs)
         return snap
-
-
-def guard_tools(tools: Mapping[str, Callable[..., Any]], guard_ref: Callable[[], PslGuard]) -> dict[str, Callable[..., Any]]:
-    """Wrap every business function: it runs only with a valid single-use admission ticket."""
-    out = {}
-    for name, fn in tools.items():
-        def make(name=name, fn=fn):
-            def guarded(_psl_ticket: Ticket | None = None, **kwargs: Any) -> Any:
-                guard_ref().redeem(_psl_ticket, name, kwargs)
-                return fn(**kwargs)
-            guarded.__name__ = name
-            guarded.__doc__ = fn.__doc__
-            guarded.__wrapped_original__ = fn       # type: ignore[attr-defined]
-            return guarded
-        out[name] = make()
-    return out

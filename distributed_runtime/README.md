@@ -1,79 +1,148 @@
-# Distributed runtime (SPIFFE scheme B + signed PSL policies)
+# Distributed runtime (any ADK application, SPIFFE scheme B, signed PSL policies)
 
-The original CITI-MAS ADK agents (D:\Lab\Citi_P3, unchanged), each in its own container, with
-the Zero Trust Backplane as a network PEP (the gateway) in front of every hop:
+The distributed runtime runs every agent of a protected ADK application in its own container.
+The Zero Trust Backplane sits between them as a network PEP, the gateway, so every hop passes
+through it. The application is the one named by a `zt_adk.yaml` profile (see the main README,
+§2–§3); it runs unchanged.
 
-```
+```text
 ingress-client --mTLS(SVID)--> zt-gateway --mTLS--> wl-<agent> (one ADK agent per workload)
                                   ^   |
-     agent --mTLS(SVID) + agent cert + RFC 9421 signature (MCP tools/call, agent routes)
-                                      +--> in-process Task 4 PDP + Task 5 Permit Lease
-                                           (native_mas_runtime engine, signed PSL store)
-SPIRE server/agent (x509pop node, docker+unix workload attestation) issues every SVID;
-agent-issuer (separate Agent CA) issues agent certificates bound to the workload SVID.
+     agent --mTLS(SVID) + agent certificate + RFC 9421 signature (agent routes, MCP tools/call)
+                                      +--> zt_adk engine: Task 4 PDP + Task 5 Permit Lease,
+                                           signed PSL store of the bundle, tool host
+SPIRE server/agent (x509pop node, docker + unix workload attestation) issues every SVID;
+agent-issuer (its own Agent CA) issues agent certificates bound to the workload SVID.
 ```
 
-## Identity: SPIFFE scheme B only
+## How the application is distributed
 
-* **Workload**: X.509-SVID from SPIRE, verified by OpenSSL on every connection (mTLS),
-  selectors = compose label + compose project + distinct UID per container.
-* **Agent**: agent certificate from the agent-issuer (its own CA, never the SPIRE CA), bound
-  to the workload SPIFFE ID; every HTTP request is signed (RFC 9421 + content digest, nonce,
-  replay window); the gateway checks the registry (enabled, revoked serials, allowed workloads).
-* The verified result goes to the PDP inside the IdP-signed authentication assertion; the PDP
-  re-checks it (`policy_store/identity.psl`): a scheme-B agent request is decided only if both
-  factors were verified and the assertion names the request's subject.
-* Registry changes (disable / enable) bump the identity version and revoke outstanding Permit Leases.
+* **One image per application.** `ctl build` stages the application (`distributed.app_paths`)
+  and installs its requirements first; they decide the ADK version. It then installs the
+  Backplane. Inside the image, `zt_distributed.describe` imports the application and derives the
+  deployment (one workload per agent, entry agents, workload UIDs, SPIFFE IDs). The deployment
+  therefore always matches the code that will run.
+* **One agent per workload.** A workload hosts exactly one agent of the application's tree
+  (`remote.host_agent`). Everything around that agent is replaced by a remote proxy that calls
+  the gateway, signed with the workload's credentials:
 
-## Policies: one signed PSL store
+  | around the agent | replaced by |
+  |---|---|
+  | sub-agents, workflow steps, custom-agent children | `RemoteAgentProxy` |
+  | the parent, for transfers | `RemoteLlmParentProxy` |
+  | function tools | `RemoteFunctionTool` |
+  | `AgentTool`s | `RemoteAgentTool` |
 
-All decisions come from `zero_trust_pdp_task4_secure/policy_store` (signed, verified at load,
-re-signed with a fresh deployment key by `prepare`):
+  ADK runs the agent as usual: transfers, workflows, `output_key`, state, events.
+* **Tools run in the gateway's tool host.** The tool host uses the application's own
+  functions, with a real ADK `ToolContext`; the state delta goes back to the caller. A workload
+  sees its tools over MCP (Streamable HTTP, official SDK), named `<agent>__<tool>`. The data
+  volumes and secrets of the tools exist only in the gateway.
+* **Conversations live at the gateway.** The ingress sends one message per turn. The gateway
+  keeps the conversation and resumes at the agent ADK itself would choose.
+
+## Identity: SPIFFE scheme B
+
+* **Workload.** Each workload has an X.509-SVID from SPIRE, verified on every connection (mTLS).
+  The selectors are the compose label, the compose project and a distinct UID per container.
+* **Agent.** Each agent has a certificate from the agent issuer, a CA of its own and never the
+  SPIRE CA. The certificate is bound to the workload's SPIFFE ID. Every HTTP request is signed
+  (RFC 9421 with content digest, nonce and replay window).
+* **Gateway checks.** The gateway checks the registry: whether the agent is enabled, its revoked
+  serials and its allowed workloads.
+* **PDP checks.** The verified result reaches the PDP inside a signed authentication assertion.
+  The PDP re-checks it (`20_identity.psl`): a scheme-B agent request is decided only if both
+  factors were verified and the assertion names the request's agent.
+* **Registry changes.** `admin disable` or `admin enable` bumps the agent's identity version,
+  which revokes its outstanding Permit Leases and blocks dispatch to a disabled agent.
+* **A valid identity is not enough.** A workload is refused when it uses its own credentials for
+  a tool or route that:
+  * lies outside its generated placements;
+  * lies outside a run the gateway dispatched to it;
+  * violates the signed policies.
+
+  `zt_distributed.probe` and the functional tests demonstrate this.
+
+## Policies: the bundle's signed PSL store
+
+`prepare` builds the protection bundle inside the image, from the image's application and its
+staged profile, with fresh deployment keys. The gateway enforces it:
 
 | where | PSL scope | rules |
 |---|---|---|
-| PDP (every route / tool / input / output authorization) | `pdp_request` | Task 4 policies, generated least-privilege policies, `intent.psl` request rules, `identity.psl` |
-| gateway ingress | `gateway_input` | valid session + allowed role; prompt-injection patterns |
-| gateway response | `gateway_output` | no account id / SSN / e-mail / phone; unexplained amounts flagged |
-| gateway tool path | `gateway_tool` | EOD trigger only for system sessions |
-| engine monitor (authorize / begin_tool / finish_tool) | `workflow_run` | `intent.psl` prerequisites (e.g. customer-service step before `execute_transfer`, validated readiness before ledger posting) |
-| gateway tool-path monitor | `request_attempt`, `operation`, `workflow_batch`, `workflow_participation` | `gateway_runtime.psl`: P1-P6 (identity, PDP, permit binding, no execution after denial, at-most-once critical writes, EOD preconditions, participation, live lease/credential, write-ahead audit) |
+| PDP (every route, tool, input and output authorization) | `pdp_request` | approvals, least-privilege permits, domains, identity, owner overlays |
+| gateway ingress | `input_message`, `output_message` | session, roles, prompt injection, PII and secret detectors |
+| gateway tool path | `tool_call`, `tool_result`, `agent_message` | role restrictions, result detectors, injection |
+| engine monitors | `workflow_run` | workflow order, owner prerequisites |
+| PSL guard (tool path) | `request_attempt`, `operation`, `workflow_participation` | `50_gateway_runtime.psl` properties (see below) |
 
-The MAS itself only ever sees hashes of input and output; the content rules are enforced at the
-gateway, where the text is. Every business function runs only with a single-use PSL admission
-ticket; the pre-execution audit record is written (fsync for critical tools) before it starts.
+The `50_gateway_runtime.psl` properties:
 
-## Layout
+* identity;
+* PDP decision and permit binding;
+* no execution after a denial;
+* at-most-once critical writes;
+* participation;
+* live lease and credential;
+* write-ahead audit.
 
-```
-zt_distributed/   gateway, agent service, PSL guard, gateway content checks, MCP server/client,
-                  backplane adapter, prepare, verify_state, ingress client, scripted model fixture
-deploy/           Dockerfiles (+ allowlist .dockerignore), SPIRE config, compose generator, locks
-scripts/          ctl.py / ctl.ps1 (build, prepare, start, run, verify, admin, stop), stack.py,
-                  stage_mas.py (read-only staging of the MAS repo as build input)
-tests/unit/       host tests: gateway monitors from the signed store, PSL guard, content checks
-tests/functional/ end-to-end tests against the Docker deployment
-```
+Every tool runs only with a single-use PSL admission ticket. Its pre-execution audit record is
+written (with fsync for critical tools) before it starts.
 
 ## Run
 
+The SPIRE release tarball must be downloaded once into `deploy/vendor/`; the steps are in
+`deploy/vendor/README.md`. After that:
+
 ```powershell
-.\distributed_runtime\scripts\ctl.ps1 build       # stage MAS input, build spire/backend/runtime images
-.\distributed_runtime\scripts\ctl.ps1 prepare     # fresh keys, re-signed store, SPIRE entries, golden data
+.\distributed_runtime\scripts\ctl.ps1 build --project examples\helpdesk_mas\zt_adk.playback.yaml
+.\distributed_runtime\scripts\ctl.ps1 prepare
 .\distributed_runtime\scripts\ctl.ps1 start
-.\distributed_runtime\scripts\ctl.ps1 run write --count 2
+.\distributed_runtime\scripts\ctl.ps1 run -m "Look up user alice" -m "Unlock the account of alice" --role employee
+.\distributed_runtime\scripts\ctl.ps1 approvals list          # show | approve ID --approver NAME | deny | wait
+.\distributed_runtime\scripts\ctl.ps1 admin disable account_agent
 .\distributed_runtime\scripts\ctl.ps1 verify
-.\distributed_runtime\scripts\ctl.ps1 unit-test        # zero_trust_identity tests inside the image
-.\distributed_runtime\scripts\ctl.ps1 functional-test
-.\distributed_runtime\scripts\ctl.ps1 stop
+.\distributed_runtime\scripts\ctl.ps1 stop                    # --purge also removes the volumes
+python -m pytest distributed_runtime\tests\unit
+python -m pytest distributed_runtime\tests\functional         # needs build + prepare
 ```
 
-Only compose project `citi_p3_ztbp` (containers `ztbp-*`) is touched. The MAS repository is
-read, never modified: it tracks a `.env` and a `.venv`, so `stage_mas.py` copies its source
-tree without secrets, venvs, caches, databases and run outputs into `runtime/build/` (git-ignored)
-and records a provenance file; the images are built from that copy. The committed development
-keys of `zero_trust_pdp_task4_secure/security/dev_keys` are excluded from the image; `prepare`
-generates fresh keys into a Docker volume that only the gateway mounts.
+How the commands behave:
 
-The LLM is replaced by a deterministic model-output fixture (`scripted_model.py`); agents,
-instructions, tools, the ADK runner, identities, PEP/PDP, Permit Leases and monitors are real.
+* **One application at a time.** `--project` names the application (a directory with
+  `zt_adk.yaml`, or the file); later commands reuse it.
+* **Only one compose project is touched.** That is the project named in
+  `distributed.compose_project`, `citi_p3_ztbp` by default.
+* **Secrets are never baked into the image.** `.env`, `.zt` and the dev keys are excluded at
+  build time, and the image build fails if one slips in. Model keys (`secret_env_files`) reach
+  only the agent workloads, and tool secrets (`tool_host_secret_env_files`) only the gateway;
+  compose reads both at start.
+
+### The application's side
+
+All of this is configured in the profile's `distributed` section:
+
+| need of the application | profile setting |
+|---|---|
+| backends its tools call | `services` |
+| databases | `data_volumes` (with `tool_host_environment`) |
+| one-time setup | `setup_command` |
+
+The application's code stays as it is. A profile kept outside the application's tree works too:
+`app_paths` may be absolute or use `${VAR}`. Such entries are staged under `_ext/`, and the
+profile's paths are rewritten to match (`zt_distributed/staging.py`).
+
+## Layout
+
+```text
+zt_distributed/   deployment (describe), appload, remote proxies + hosting (workload_runtime), agent_service,
+                  gateway + gateway_engine, MCP server/client, PSL guard, staging, prepare, ingress client,
+                  verify_state, probe, loopback (in-process wiring used by the hosting tests)
+deploy/           runtime Dockerfile template (+ allowlist .dockerignore), SPIRE image and config,
+                  Backplane requirements, vendored SPIRE release
+scripts/          ctl.py / ctl.ps1 and stack.py (build, prepare, start, run, approvals, admin, verify, stop)
+tests/unit/       hosting == in-process, staging, gateway monitors, PSL guard
+tests/functional/ end-to-end tests against the Docker deployment of the example application
+runtime/          generated (git-ignored): staged app, compose file, deployment, public material, state
+results/          live logs and functional-test evidence
+```
