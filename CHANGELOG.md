@@ -1,5 +1,26 @@
 # Changelog
 
+## 1.1.0
+
+Adds the **ZT Console**, a browser interface for setting up, running and testing a protected application. It is a new,
+separate package (`packages/zt-console`). No existing package, profile, policy or test is changed and the protection
+behaves exactly as in 1.0.1; the root README gains section 2.9 and a layout entry.
+
+* **Set up, run and test from a browser:** create keys, build and check the bundle; send any message as any end-user
+  role, in one or several turns; state the expected outcome (boundary, rule, answer text) and get a pass or fail; save
+  tests, run batches and campaigns, export the results; stop a run in progress.
+* **See every decision:** what each boundary decided, with the sentence of each rule that fired; the system (agents,
+  tool classification), the policies and the audit log with chain verification; held approvals (signing from the page
+  only in development mode, `--dev-approve`).
+* It starts the real `zt-adk` command and reads the files the Backplane writes, and holds no protection logic. It drives
+  the in-process runtime only, has no user login and is meant for one local user.
+* **Documentation:** `packages/zt-console/docs/ZT_CONSOLE_GUI_USER_GUIDE.md` (configuration, every page, limitations,
+  what stays in the terminal) and `ZT_CONSOLE_GUI_PLACEMENT.md` (how the GUI attaches to the Backplane).
+
+Tests: 51 API and unit tests (`packages/zt-console/tests`), a 24-step browser test and an accessibility audit
+(`tests/e2e`, Chrome and Node required). Verified on macOS with Python 3.12, Chrome and the scripted playback model; a
+live model, Linux and Windows were not run. The suite is separate from the CI job.
+
 ## 1.0.1
 
 Fixes two defects found by running v1.0.0 on a new ADK application (a veterinary clinic MAS on
