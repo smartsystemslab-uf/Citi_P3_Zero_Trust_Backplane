@@ -1,0 +1,7 @@
+# Output of local installs and the browser tests; never committed.
+build/
+dist/
+tests/e2e/shots/
+node_modules/
+package-lock.json
+.zt-console/
