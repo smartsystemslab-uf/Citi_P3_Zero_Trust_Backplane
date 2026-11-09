@@ -32,7 +32,7 @@ separate package (`packages/zt-console`); installing it changes nothing in the B
 | **Audit** | Browse, filter and search every decision, page by page; verify the audit log's hash chain. | Audit |
 | **Monitor** | Runs, decisions by outcome and boundary, the rules that stop most requests, recent runs. | Dashboard |
 | **Learn** | The boundaries, the life of a request, a glossary, and the command behind each button. | Learn |
-| **Accessibility** | Usable from desktop to phone width and by keyboard; no accessibility violations found by axe-core at three widths. All displayed text is rendered as plain text. | All pages |
+| **Accessibility** | Usable from desktop to phone width and by keyboard. All displayed text is rendered as plain text. | All pages |
 
 **What stays in the terminal.** The GUI does not do the following. The commands are the Backplane's own (repository README,
 sections 2 to 5):
@@ -47,11 +47,11 @@ sections 2 to 5):
 | Approve operations in production, with approver keys on the approvers' devices | `zt-adk approvals approve ID --approver NAME [--secondary]` |
 | Run and manage the distributed Docker runtime | `zt-distributed build`, `prepare`, `start`, `run`, `approvals`, `admin`, `verify`, `stop` (README section 5) |
 
-The limitations of the GUI itself are listed in [section 7](#7-limitations).
+The limitations of the GUI itself are in [section 7](#7-limitations).
 
 **Contents:** [1 Quick start](#1-quick-start) · [2 Configuration](#2-configuration) · [3 First run](#3-first-run) ·
 [4 Test Lab](#4-test-lab) · [5 Other pages](#5-other-pages) · [6 Recipes](#6-recipes) ·
-[7 Limitations](#7-limitations) · [8 Troubleshooting](#8-troubleshooting) · [9 Verification](#9-verification) ·
+[7 Limitations](#7-limitations) · [8 Troubleshooting](#8-troubleshooting) ·
 [Appendix: commands behind the buttons](#appendix-commands-behind-the-buttons)
 
 ---
@@ -353,55 +353,17 @@ exist only for the helpdesk example.
 
 ## 7. Limitations
 
-The console has the following known limitations. Each follows from its design or from the interfaces it uses; the last
-column gives the recommended way to work with it.
-
-### 7.1 Scope
-
-| Limitation | Reason | Recommendation |
-|---|---|---|
-| **Only the in-process runtime** (`zt-adk run`) is driven. The distributed Docker runtime (gateway, SPIFFE identities, one container per agent) is not. | The console drives the command line, and the distributed runtime has no single "run a message" command. | Use `zt-distributed` for that runtime. The console can still test the same application in-process. |
-| **Profile, policies and keys are not edited from the page.** Only **Create keys** (for the approver names you enter, `alice` and `bob` by default), **Build bundle** and **Check bundle** are offered. | The console is a test and inspection surface, not a configuration editor. | Edit `zt_adk.yaml` and the policy files as described in the repository README, then rebuild. |
-| **Presets exist for the helpdesk example only.** | They contain messages written for that application. | Save your own tests for other applications. |
-| **A scripted model answers from its script.** A message outside the script receives a canned reply (for example "I can help with accounts, how-to questions and incidents."), although every protection check still runs. | The playback model is a deterministic stand-in. | Use the presets, or a live model, to explore behaviour beyond the script. |
-
-### 7.2 Security
-
-| Limitation | Reason | Recommendation |
-|---|---|---|
-| **No login; intended for one local user.** | Developer tool. | Keep it on `127.0.0.1`, or use an SSH tunnel. |
-| **`--dev-approve` lets anyone who can reach the console approve operations** using the local approver keys. | Convenience for development and unattended tests. | Use it on a development machine only. In production, approver keys stay on the approvers' devices. |
-| **The audit-chain check is unkeyed.** It detects accidental and naive edits; someone able to rewrite the file can also recompute the hashes. | The console reproduces `zt-adk audit verify`, which uses an unkeyed hash chain. | Treat "Chain intact" as an integrity check, not as protection against a determined attacker. Restrict access to the state folder. |
-| **No encryption** (plain HTTP). | Local use. | Do not expose it to an untrusted network (see 2.7). |
-
-### 7.3 Operation
-
-| Limitation | Reason | Recommendation |
-|---|---|---|
-| **One operation at a time, for the whole console.** A second run or setup action while one is in progress is refused ("another operation is in progress"), including one started from another browser tab. Campaigns therefore run tests sequentially. (Each tab otherwise has its own application, draft and results.) | The tool writes to one audit log and state folder per application; overlapping runs would mix their records. | Wait for completion, or use **Stop**. Reading pages (Audit, System, Approvals) remains available. |
-| **A stopped run is incomplete.** **Stop** ends the command abruptly; the decisions recorded before it stopped are shown, and an approval request it created stays pending. | Stopping cannot be graceful: the command has no cancel interface. | Run the test again if a complete result is needed. |
-| **Time limits:** run 150 s, create keys 120 s, check 180 s, build 15 min. A run waiting for an approval spends its time on the approval wait. | A stuck command must not block the console. | Shorten `approvals.wait_seconds` in a test profile, or approve sooner. |
-| **A run's decisions are the audit records written while it ran.** If `zt-adk` is run on the same application at the same time, its records can appear in the trace. | Audit records carry no run identifier. | Do not run the same application from a terminal and from the console simultaneously. |
-| **The answer is read from the command's text output:** the last agent line that is not a tool call, an engine message or a refusal notice (a JSON object). Continuation lines of a multi-line answer are kept. An answer that itself begins with `{` is not shown as the answer. | `zt-adk run` has no machine-readable output. | Decisions never depend on this. Read *Raw command output* if an answer looks wrong. |
-| **Approvers cannot be added after the keys exist.** **Create keys** takes the names you enter (default `alice` and `bob`) once. | Adding an approver is a separate command. | Use `zt-adk keys add-approver NAME [--secondary]`, then rebuild. |
-
-### 7.4 Data and logs
-
-| Limitation | Reason | Recommendation |
-|---|---|---|
-| **Large audit logs: the pages read the newest 8 MB** (about 11,000 records at typical size). Audit and Dashboard display a notice when the log is larger. *Verify chain* always reads the whole file. | Keeps pages fast: a 50,000-record test log answered every view in under a second. | Archive or rotate old logs. |
-| **The Audit page shows 300 records at a time** (**Load more** adds the next 300). Only the newest 8 MB of the log are available (see above). | Keeps the page responsive. | Narrow the list with the filters and the search box. |
-| **Run history stores raw test text** (messages, answers, raw output) as files in the data folder, on the machine running the console. | Required to reload traces. | The folder excludes itself from version control; delete it to clear the history. Do not place real secrets in tests. |
-| **The editor draft, batch text and results are kept per browser tab for the session.** They are restored after a reload but are lost when the tab is closed, and are not restored if the browser blocks session storage. | They live in the tab's session storage, not on the server. | Use **Save as test** to keep a test and **Export** to keep results. Moving between pages is safe, and a run continues if the Test Lab is left. |
-| **Times are shown in the browser's time zone and language.** The interface is in English only. | Browser defaults are used. | None required. |
-
-### 7.5 Verification and platforms
-
-| Limitation | Reason | Recommendation |
-|---|---|---|
-| **Tested with the scripted (playback) model only.** | No live-model key was available for testing. | A live model can be used, but answer text and timing are unverified. The decisions come from the audit log in either case. |
-| **Tested on macOS with Python 3.12 and Chrome.** Linux, Windows and other browsers were not run (the Windows `zt-adk.exe` lookup is covered by a unit test). | Test environment. | Report problems with the platform and browser used. |
-| **Not part of the repository's CI job.** | The console is a separate suite. | Run it as described in section 9. |
+- Only the in-process runtime (`zt-adk run`) is driven; the distributed Docker runtime is not. Use `zt-distributed` for that.
+- No login and no encryption: the console is for one local user on `127.0.0.1`. `--dev-approve` lets anyone who can reach it approve operations, so use it on a development machine only.
+- One operation at a time for the whole console: a second run or setup action is refused until the first ends or is stopped.
+- A stopped or timed-out run is incomplete, and an approval it created stays pending. Approving it later does not resume it; run the test again.
+- The answer text is read from the command's text output; the decisions come from the audit log. If an answer looks wrong, check *Raw command output*.
+- A run's trace is the audit records written while it ran, so do not run the same application from a terminal and the console at the same time.
+- *Chain intact* is an integrity check, not tamper-proofing: the audit chain is unkeyed, as in `zt-adk audit verify`.
+- Audit and Dashboard read only the newest 8 MB of the log (a notice appears when it is larger); *Verify chain* reads all of it.
+- Presets exist for the helpdesk example only, and a scripted model gives canned replies to messages outside its script.
+- Run history keeps raw test text (messages, answers, output) in the data folder; keep real secrets out of tests.
+- Tested with the scripted model on macOS with Chrome; a live model, Linux, Windows and other browsers were not run.
 
 ---
 
@@ -425,52 +387,6 @@ column gives the recommended way to work with it.
 | A saved test is missing | It belongs to a different application. | Select the right profile in the **Application** drop-down. |
 
 ---
-
-## 9. Verification
-
-The console was verified on macOS with Python 3.12, the real `zt-adk` and the scripted model, using a fresh copy of the
-example application with no keys and no bundle (so first-time setup is covered).
-
-| Test | Coverage | Result |
-|---|---|---|
-| API and unit tests (`pytest`; no Docker or API key) | Host, header and content-security-policy guards; views and explanations; audit verification (including a comparison with `zt_adk.audit.verify_chain`) and paging; runs; expectations; saved tests; run history; per-request profile selection; setup and approver names; stopping a run, a setup action and a timeout (including the processes the command started); answer parsing; error handling; absence of review material from the package | **51 passed** |
-| Browser end-to-end (Chrome) | First run from nothing; create keys and build; presets; multi-turn tests with expectations; batch; save and delete; stopping a run; draft and results restored after a reload; a campaign of all twelve presets including an approval; every page; audit paging; one application per tab and keys for custom approver names; approving from the page; run history; leaving the Test Lab during an auto-approved run; CSV safety; no JavaScript or unexpected HTTP errors | **24 of 24 steps passed** |
-| Accessibility and layout (axe-core) | WCAG 2.1 A and AA and best practices on every page at 1440, 820 and 390 px; horizontal overflow; console errors | **No violations**, no overflow, no errors on 21 page views (7 pages × 3 widths) |
-| Second application (claims workflow, via the API) | Profile discovery and switching; keys, build and check; workflow system view; a blocked claim; an unknown role | Passed |
-| Edge cases against the real tool | A second run during a run is refused; an unapproved critical operation ends as *Held*; the role `-x` is treated as a value, not an option; shell characters in a role are rejected; a 50,000-record log answers in under a second; **Stop** ends a run together with the child process it started | Passed |
-
-The browser step "leaving the Test Lab during an auto-approved run" was confirmed to **fail** when the defect it guards
-against is reintroduced, and to pass on the released code. The unit tests for stopping assert that the command's child
-process is gone afterwards, and the paging test shows that without its anchor a record written meanwhile shifts the next page.
-
-### Repeating the tests
-
-**API and unit tests** need neither Docker, an API key nor a browser. From the repository root:
-
-```bash
-python -m pip install -e "packages/zt-console[test]"
-python -m pytest packages/zt-console/tests
-```
-
-**Browser tests** need Node 18 or newer, Chrome or Chromium, and `puppeteer-core@22` (later major versions are
-ES-module only) with `axe-core`, installed outside the repository. They start from an application with **no keys and no
-bundle**, so use a fresh copy of the example. Starting the console with two profiles also enables the step that checks
-that each tab keeps its own application:
-
-```bash
-npm install --prefix /tmp/zt-e2e puppeteer-core@22 axe-core
-cp -R examples/helpdesk_mas /tmp/zt-e2e-app
-zt-console --profile /tmp/zt-e2e-app/zt_adk.playback.yaml --profile /tmp/zt-e2e-app/zt_adk.yaml \
-           --dev-approve --port 8790 --data-dir /tmp/zt-e2e-data &
-
-export NODE_PATH=/tmp/zt-e2e/node_modules
-export CHROME="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"     # adjust for your system
-BASE=http://127.0.0.1:8790 SHOTS=/tmp/zt-e2e-shots node packages/zt-console/tests/e2e/ui_e2e.cjs
-BASE=http://127.0.0.1:8790 node packages/zt-console/tests/e2e/a11y_audit.cjs     # after the first script
-```
-
-Run `ui_e2e.cjs` first: the accessibility audit needs the bundle it builds. Exit code 0 means every step passed; the
-screenshots of each step are written to `SHOTS`. `ONLY="text"` limits the run to steps whose name contains the text.
 
 ---
 

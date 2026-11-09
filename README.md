@@ -575,7 +575,7 @@ python -m pytest packages\zt-distributed\tests\functional     # Docker end to en
 * **CI:** `.github/workflows/ci.yml` runs the host suites on Linux and Windows.
 * **ZT Console:** `python -m pytest packages\zt-console\tests` (install it with `-e "packages\zt-console[test]"`).
   It is a separate suite and is not part of the CI job above; the browser tests are described in
-  section 9 of the user guide (`packages/zt-console/docs/ZT_CONSOLE_GUI_USER_GUIDE.md`).
+  `packages/zt-console/README.md`.
 
 ---
 

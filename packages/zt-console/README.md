@@ -8,6 +8,7 @@ read from the files the Backplane writes. Installing it changes nothing in the o
 * **[User guide](docs/ZT_CONSOLE_GUI_USER_GUIDE.md)**: [what the GUI supports](docs/ZT_CONSOLE_GUI_USER_GUIDE.md#what-the-gui-supports),
   configuration, a first run, every page, recipes, limitations and troubleshooting.
 * **[Where the GUI attaches](docs/ZT_CONSOLE_GUI_PLACEMENT.md)**: design note on how the GUI sits on top of the Backplane.
+* Both documents are also available as PDF in [docs/](docs/).
 
 ## Start
 
@@ -69,12 +70,28 @@ The unit tests use a small synthetic bundle and a stand-in for `zt-adk`. One tes
 verification with `zt_adk.audit.verify_chain` when `zt-adk` is installed.
 
 A browser end-to-end test and an accessibility audit (axe-core at desktop, tablet and phone widths) drive the real
-`zt-adk` from a fresh application with no keys and no bundle. They are not part of the unit tests because they need
-Chrome and Node; the commands are in [section 9 of the user guide](docs/ZT_CONSOLE_GUI_USER_GUIDE.md#9-verification).
+`zt-adk` from a fresh application with no keys and no bundle. They need Node 18 or newer, Chrome or Chromium, and
+`puppeteer-core@22` (later major versions are ES-module only) with `axe-core`, installed outside the repository. Start the
+console with two profiles to include the step that checks one application per tab:
+
+```bash
+npm install --prefix /tmp/zt-e2e puppeteer-core@22 axe-core
+cp -R examples/helpdesk_mas /tmp/zt-e2e-app
+zt-console --profile /tmp/zt-e2e-app/zt_adk.playback.yaml --profile /tmp/zt-e2e-app/zt_adk.yaml \
+           --dev-approve --port 8790 --data-dir /tmp/zt-e2e-data &
+
+export NODE_PATH=/tmp/zt-e2e/node_modules
+export CHROME="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"     # adjust for your system
+BASE=http://127.0.0.1:8790 SHOTS=/tmp/zt-e2e-shots node packages/zt-console/tests/e2e/ui_e2e.cjs
+BASE=http://127.0.0.1:8790 node packages/zt-console/tests/e2e/a11y_audit.cjs     # after the first script
+```
+
+Run `ui_e2e.cjs` first: the audit needs the bundle it builds. Exit code 0 means every step passed. `ONLY="text"` limits
+the run to steps whose name contains the text.
 
 ## Limits
 
-The full list, with the reason for each, is in [section 7 of the user guide](docs/ZT_CONSOLE_GUI_USER_GUIDE.md#7-limitations). In short:
+The list is in [section 7 of the user guide](docs/ZT_CONSOLE_GUI_USER_GUIDE.md#7-limitations). In short:
 
 * It drives the **in-process** protection (`zt-adk run`). The distributed Docker runtime is not driven from the page.
 * No user authentication; local single-user use only.

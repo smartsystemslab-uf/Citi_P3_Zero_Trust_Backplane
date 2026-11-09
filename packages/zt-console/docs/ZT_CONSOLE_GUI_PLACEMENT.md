@@ -122,5 +122,4 @@ README, sections 2 to 5):
 * Its audit-chain check is unkeyed, like `zt-adk audit verify`.
 * It was tested with the scripted model on the example applications (no live model), on macOS with Chrome.
 
-The full list, with reasons and workarounds, is in
-[section 7 of the user guide](ZT_CONSOLE_GUI_USER_GUIDE.md#7-limitations).
+The complete list is in [section 7 of the user guide](ZT_CONSOLE_GUI_USER_GUIDE.md#7-limitations).
