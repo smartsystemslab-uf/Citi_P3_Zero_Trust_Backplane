@@ -15,7 +15,7 @@ behaves exactly as in 1.0.1; the root README gains section 2.9 and a layout entr
 * It starts the real `zt-adk` command and reads the files the Backplane writes, and holds no protection logic. It drives
   the in-process runtime only, has no user login and is meant for one local user.
 * **Documentation:** `packages/zt-console/docs/ZT_CONSOLE_GUI_USER_GUIDE.md` (configuration, every page, limitations,
-  what stays in the terminal) and `ZT_CONSOLE_GUI_PLACEMENT.md` (how the GUI attaches to the Backplane).
+  what stays in the terminal) and `ZT_CONSOLE_GUI_PLACEMENT.md` (how the GUI attaches to the Backplane), each also as PDF.
 
 Tests: 51 API and unit tests (`packages/zt-console/tests`), a 24-step browser test and an accessibility audit
 (`tests/e2e`, Chrome and Node required). Verified on macOS with Python 3.12, Chrome and the scripted playback model; a
